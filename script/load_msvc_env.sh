@@ -24,7 +24,7 @@ fi
 
 readonly PATH_ARRAY=(
     "${VS_PATH}/Common7/IDE/"
-    "${VS_PATH}/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin"
+    # "${VS_PATH}/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin"
     "${VS_PATH}/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja"
     "${VS_PATH}/Common7/IDE/CommonExtensions/Microsoft/TeamFoundation/Team Explorer"
     "${VS_PATH}/Common7/IDE/CommonExtensions/Microsoft/TestWindow"

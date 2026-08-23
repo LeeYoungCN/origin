@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     origin_set_debug_logger_level(ORG_DBG_LVL_DEBUG);
     DEBUG_LOGGER_INFO("Running main() from {}", __FILE__);
 
-    origin::common::debug::working_env::ShowWorkingEnv();
+    origin_show_working_env();
 
     testing::InitGoogleTest(&argc, argv);
     auto rst = RUN_ALL_TESTS();

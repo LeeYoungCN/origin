@@ -172,8 +172,11 @@ const char* GetCppStandard()
 
 }  // namespace
 
-namespace origin::common::debug::working_env {
-void ShowWorkingEnv()
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void origin_show_working_env()
 {
     std::cout << "OS: " << GetOsName() << std::endl;
     std::cout << "Arch: " << GetArchitecture() << std::endl;
@@ -190,4 +193,6 @@ void ShowWorkingEnv()
     PrintEnvParams();
 }
 
-}  // namespace origin::common::debug::working_env
+#ifdef __cplusplus
+}
+#endif

@@ -129,7 +129,7 @@ void LoggerImplBase::flush()
     flush_it();
 }
 
-void LoggerImplBase::backend_log(const LogMsg& logMsg)
+void LoggerImplBase::backend_log(const LogMsg& logMsg) const
 {
     for (const auto& sink : _sinks) {
         if (sink->should_log(logMsg.level)) {
@@ -138,7 +138,7 @@ void LoggerImplBase::backend_log(const LogMsg& logMsg)
     }
 }
 
-void LoggerImplBase::backend_flush()
+void LoggerImplBase::backend_flush() const
 {
     for (const auto& sink : _sinks) {
         sink->flush();

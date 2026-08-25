@@ -28,9 +28,9 @@ public:
     ~DailyFileSink() override = default;
 
     [[nodiscard]] std::string file() const;
-    [[nodiscard]] std::vector<std::string> get_file_list();
+    [[nodiscard]] std::vector<std::string> get_file_list() const;
 
-    void set_max_files(uint32_t maxFiles);
+    void set_max_files(uint32_t maxFiles) const;
     [[nodiscard]] uint32_t max_files() const;
 };
 

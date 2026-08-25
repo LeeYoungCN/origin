@@ -17,7 +17,7 @@ LoggerSt *origin_root_logger()
     return new struct LoggerSt(ROOT_LOGGER);
 }
 
-void origin_set_root_logger(LoggerSt *logger)
+void origin_set_root_logger(const LoggerSt *logger)
 {
     RETURN_IF_PTR_NULL(logger);
     RETURN_IF_PTR_NULL(logger->ptr);
@@ -90,14 +90,14 @@ void origin_log(const char *file, int line, const char *func, OriginLogLevel lev
     va_end(args);
 }
 
-bool origin_register_logger(LoggerSt *logger)
+bool origin_register_logger(const LoggerSt *logger)
 {
     RETURN_VALUE_IF_PTR_NULL(logger, false);
 
     return REGISTRY.register_logger(logger->ptr);
 }
 
-void origin_register_or_replace_logger(LoggerSt *logger)
+void origin_register_or_replace_logger(const LoggerSt *logger)
 {
     RETURN_IF_PTR_NULL(logger);
 
@@ -139,7 +139,7 @@ TaskPoolSt *origin_root_task_pool()
     }
 }
 
-void origin_initialize_logger(LoggerSt *logger, bool autoRegister)
+void origin_initialize_logger(LoggerSt const *logger, bool autoRegister)
 {
     RETURN_IF_PTR_NULL(logger);
     REGISTRY.initialize_logger(logger->ptr, autoRegister);
@@ -161,7 +161,7 @@ void origin_set_pattern_all(const char *pattern)
     REGISTRY.set_pattern_all(pattern);
 }
 
-void origin_set_formatter_all(FormatterSt *formatter)
+void origin_set_formatter_all(FormatterSt const *formatter)
 {
     RETURN_IF_PTR_NULL(formatter);
     RETURN_IF_PTR_NULL(formatter->ptr);

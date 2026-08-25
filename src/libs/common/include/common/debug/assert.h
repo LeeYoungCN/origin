@@ -16,9 +16,9 @@
 
 #ifdef NDEBUG
 
-#ifndef COMMON_ASSERT
-#define COMMON_ASSERT(condition) (static_cast<void>(0))
-#endif  // COMMON_ASSERT
+#ifndef ORIGIN_ASSERT
+#define ORIGIN_ASSERT(condition) (static_cast<void>(0))
+#endif  // ORIGIN_ASSERT
 
 #ifndef COMMON_ASSERT_MSG
 #define COMMON_ASSERT_MSG(condition, msg, ...) (static_cast<void>(0))
@@ -26,22 +26,21 @@
 
 #else
 
-#ifndef COMMON_ASSERT
-#define COMMON_ASSERT(condition)            \
-    do {                                    \
-        if (!(condition)) {                 \
-            DEBUG_LOG_ERR("ASSERT FAILED"); \
-            std::abort();                   \
-        }                                   \
-    } while (0)
-#endif  // COMMON_ASSERT
-
-#ifndef COMMON_ASSERT_MSG
-#define COMMON_ASSERT_MSG(condition, fmt, ...)               \
+#ifndef ORIGIN_ASSERT
+#define ORIGIN_ASSERT(condition)                             \
     do {                                                     \
         if (!(condition)) {                                  \
-            DEBUG_LOG_FATAL(fmt __VA_OPT__(, ) __VA_ARGS__); \
+            DEBUG_LOGGER_FATAL("assert("#condition ")"); \
         }                                                    \
+    } while (0)
+#endif  // ORIGIN_ASSERT
+
+#ifndef COMMON_ASSERT_MSG
+#define COMMON_ASSERT_MSG(condition, fmt, ...)                  \
+    do {                                                        \
+        if (!(condition)) {                                     \
+            DEBUG_LOGGER_FATAL(fmt __VA_OPT__(, ) __VA_ARGS__); \
+        }                                                       \
     } while (0)
 #endif  // COMMON_ASSERT_MSG
 #endif  // NDEBUG

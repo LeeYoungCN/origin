@@ -34,10 +34,9 @@ public:
     [[nodiscard]] std::unique_ptr<Formatter> clone() const override;
 
 private:
-    void log_msg_to_content(char symbol, const LogMsg& logMsg, std::string& logContent);
-    void format_time(const LogMsg& logMsg, std::string& logContent);
+    static void log_msg_to_content(char symbol, const LogMsg& logMsg, std::string& logContent);
+    static void format_time(const LogMsg& logMsg, std::string& logContent);
 
-private:
     const std::string _pattern{PatternFormatter::DEFAULT_PATTERN};
 };
 }  // namespace origin::logging

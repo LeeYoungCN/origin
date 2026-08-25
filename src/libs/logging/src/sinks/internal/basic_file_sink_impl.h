@@ -28,7 +28,7 @@ protected:
     const std::string _directory;
     const std::string _filename;
     const std::string _filenameStem;
-    const std::string _extention;
+    const std::string _extension;
     bool _overwrite{false};
     filesystem::FileWriter _fileWriter;
 };

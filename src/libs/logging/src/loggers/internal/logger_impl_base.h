@@ -46,8 +46,8 @@ public:
     void flush() override;
     void force_log(const LogSource& source, LogLevel level, std::string_view message) override;
 
-    void backend_log(const LogMsg& logMsg);
-    void backend_flush();
+    void backend_log(const LogMsg& logMsg) const;
+    void backend_flush() const;
 
 protected:
     virtual void log_it(const LogMsg& logMsg) = 0;

@@ -28,7 +28,7 @@ RotatingFileSinkImplBase::RotatingFileSinkImplBase(std::string_view file, bool o
 
 std::vector<std::string> RotatingFileSinkImplBase::get_file_list()
 {
-    std::lock_guard lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     std::vector<std::string> rst;
     rst.reserve(_fileQue.size());
     for (auto& i : _fileQue) {
@@ -76,7 +76,7 @@ void RotatingFileSinkImplBase::delete_overflow_file()
         if (!delete_file(file, DELETE_FILE_RETRY, DELETE_FILE_SLEEP_MS)) {
             DEBUG_LOGGER_ERR("Delete {} failed. {}", _itemName, file);
         } else {
-            DEBUG_LOGGER_DBG("Delete {} sucess. {}", _itemName, file);
+            DEBUG_LOGGER_DBG("Delete {} success. {}", _itemName, file);
         }
         _fileQue.pop_front();
     }

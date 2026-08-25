@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <condition_variable>
-#include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <utility>
@@ -69,7 +68,7 @@ public:
     /**
      * @brief 单个出队，并移除队首元素。
      *
-     * @param  待出队的元素。
+     * @param item 待出队的元素。
      * @return true 出队成功。
      * @return false 队列为空。
      */
@@ -201,7 +200,7 @@ public:
     /**
      * @brief 单个出队，并移除队首元素。
      *
-     * @param  待出队的元素。
+     * @param item 待出队的元素。
      * @return true 出队成功。
      * @return false 抢锁失败或队列为空。
      */

@@ -60,7 +60,7 @@ void SinkImplBase::set_pattern(std::string_view pattern)
 void SinkImplBase::set_formatter(std::unique_ptr<Formatter> formatter)
 {
     RETURN_IF_PTR_NULL(formatter);
-    std::lock_guard lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     _formatter = std::move(formatter);
 }
 

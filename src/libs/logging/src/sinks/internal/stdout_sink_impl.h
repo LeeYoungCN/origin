@@ -17,7 +17,7 @@ public:
 private:
     void log_it(const LogMsg &logMsg) override;
     void flush_it() override;
-    void sink_it(std::string_view message);
+    void sink_it(std::string_view message) const;
 
 private:
     FILE *m_stream = stdout;

@@ -27,12 +27,12 @@ public:
 
 public:
     [[nodiscard]] std::string file() const;
-    [[nodiscard]] std::vector<std::string> get_file_list();
+    [[nodiscard]] std::vector<std::string> get_file_list() const;
 
-    void set_max_file_size(uint32_t maxFileSize);
+    void set_max_file_size(uint32_t maxFileSize) const;
     [[nodiscard]] uint32_t max_file_size() const;
 
-    void set_max_files(uint32_t maxFiles);
+    void set_max_files(uint32_t maxFiles) const;
     [[nodiscard]] uint32_t max_files() const;
 };
 }  // namespace origin::logging

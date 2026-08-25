@@ -1,6 +1,5 @@
 #include "logging/sinks/stdout_sink.h"
 
-#include <cstdio>
 #include <memory>
 
 #include "logging/sinks/sink_base.h"

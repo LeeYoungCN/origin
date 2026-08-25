@@ -28,7 +28,7 @@ BasicFileSinkImpl::BasicFileSinkImpl(std::string_view file, bool overwrite,
       _directory(get_directory(_file)),
       _filename(get_filename(_file)),
       _filenameStem(get_filename_stem(_file)),
-      _extention(get_extension(_file)),
+      _extension(get_extension(_file)),
       _overwrite(overwrite),
       _fileWriter(_file)
 {

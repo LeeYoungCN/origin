@@ -22,9 +22,7 @@ public:
 
 public:
     BlockingQueue()
-        : _capacity(BLOCKING_QUEUE_DEFAULT_CAPACITY),
-          _maxItems(BLOCKING_QUEUE_DEFAULT_CAPACITY + 1),
-          _items(_maxItems)
+        : _items(_maxItems)
     {
     }
 
@@ -173,4 +171,4 @@ private:
 };
 }  // namespace origin::container
 
-#endif  // COMMON_CONTAINER_CIRCULAR_QUEUE_HPP
+#endif  // COMMON_CONTAINER_BLOCKING_QUEUE_HPP

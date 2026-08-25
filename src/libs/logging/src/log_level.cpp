@@ -5,10 +5,12 @@
 
 namespace origin::logging {
 
+namespace {
 struct LogLvlStrInfo {
     std::string_view full;
     std::string_view abbr;
 };
+}  // namespace
 
 std::string_view log_level_to_string(LogLevel level, bool full)
 {

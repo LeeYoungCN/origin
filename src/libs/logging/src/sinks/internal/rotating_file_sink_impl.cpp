@@ -22,6 +22,7 @@
 namespace origin::logging {
 using namespace origin::filesystem;
 
+namespace {
 struct LogFileInfo {
     uint32_t idx{0};
     std::string file;
@@ -42,6 +43,7 @@ struct LogFileInfo {
             file);
     }
 };
+}  // namespace
 
 RotatingFileSinkImpl::RotatingFileSinkImpl() : RotatingFileSinkImpl(get_default_log_file("log")) {}
 
@@ -78,7 +80,7 @@ RotatingFileSinkImpl::RotatingFileSinkImpl(std::string_view file, uint32_t maxFi
 
 void RotatingFileSinkImpl::set_max_file_size(uint32_t maxFileSize)
 {
-    std::lock_guard lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     if (maxFileSize > 0) {
         _maxFileSize.store(maxFileSize);
     } else {
@@ -126,7 +128,7 @@ void RotatingFileSinkImpl::init_file_queue()
             continue;
         }
 
-        uint32_t idx = parse_log_index(entry.path().filename().string());
+        uint32_t const idx = parse_log_index(entry.path().filename().string());
 
         if (idx < RotatingFileSink::MIN_INDEX || idx > RotatingFileSink::MAX_INDEX) {
             continue;
@@ -167,7 +169,7 @@ void RotatingFileSinkImpl::set_next_idx(uint32_t idx)
 
 uint32_t RotatingFileSinkImpl::get_next_idx()
 {
-    uint32_t idx = _nextIdx++;
+    uint32_t const idx = _nextIdx++;
 
     if (_nextIdx > RotatingFileSink::MAX_INDEX) {
         _nextIdx = RotatingFileSink::MIN_INDEX;
@@ -176,7 +178,7 @@ uint32_t RotatingFileSinkImpl::get_next_idx()
     return idx;
 }
 
-uint32_t RotatingFileSinkImpl::parse_log_index(std::string_view filename)
+uint32_t RotatingFileSinkImpl::parse_log_index(std::string_view filename) const
 {
     constexpr uint32_t MIN_SUFFIX_LEN = 2;  // .1
     constexpr uint32_t MAX_SUFFIX_LEN = 6;  // .20000

@@ -1,6 +1,5 @@
 #include "logging/sinks/rotating_file_sink.h"
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -30,13 +29,13 @@ std::string RotatingFileSink::file() const
     return dynamic_cast<const RotatingFileSinkImpl *>(_pImpl.get())->file();
 }
 
-std::vector<std::string> RotatingFileSink::get_file_list()
+std::vector<std::string> RotatingFileSink::get_file_list() const
 {
     throw_if_pimpl_null();
     return dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->get_file_list();
 }
 
-void RotatingFileSink::set_max_file_size(uint32_t maxFileSize)
+void RotatingFileSink::set_max_file_size(uint32_t maxFileSize) const
 {
     throw_if_pimpl_null();
     dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->set_max_file_size(maxFileSize);
@@ -48,7 +47,7 @@ uint32_t RotatingFileSink::max_file_size() const
     return dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->max_file_size();
 }
 
-void RotatingFileSink::set_max_files(uint32_t maxFiles)
+void RotatingFileSink::set_max_files(uint32_t maxFiles) const
 {
     throw_if_pimpl_null();
     return dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->set_max_files(maxFiles);

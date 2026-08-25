@@ -131,7 +131,7 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(std::string_view filename)
         return 0;
     }
 
-    if (get_extension(filename) != _extention) {
+    if (get_extension(filename) != _extension) {
         return 0;
     }
 
@@ -176,7 +176,7 @@ std::string DailyFileSinkImpl::calc_log_file(TimestampMs time)
                                 dateTime.year,
                                 dateTime.month,
                                 dateTime.day,
-                                _extention);
+                                _extension);
     return join_paths({_directory, filename});
 }
 

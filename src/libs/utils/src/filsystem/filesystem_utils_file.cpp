@@ -324,7 +324,7 @@ TimestampMs get_file_modify_time(std::string_view path)
         int sz =
             MultiByteToWideChar(CP_UTF8, 0, path.data(), static_cast<int>(path.size()), nullptr, 0);
         if (sz > 0) {
-            wpath.resize(sz);
+            wpath.resize(static_cast<size_t>(sz));
             MultiByteToWideChar(
                 CP_UTF8, 0, path.data(), static_cast<int>(path.size()), &wpath[0], sz);
         }

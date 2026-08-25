@@ -28,7 +28,7 @@ public:
     std::shared_ptr<Logger> root_logger();
     Logger* root_logger_raw();
     void set_root_logger(std::shared_ptr<Logger> newLogger);
-#pragma endregion root
+#pragma endregion
 
 #pragma region logging manager
     void initialize_logger(const std::shared_ptr<Logger>& logger, bool autoRegister = true);
@@ -55,7 +55,7 @@ public:
 private:
     bool register_logger_it(std::shared_ptr<Logger> logger);
     void register_or_replace_logger_it(std::shared_ptr<Logger> logger);
-    bool exist_it(std::string_view name);
+    bool exist_it(std::string_view name) const;
 
 protected:
     Registry();

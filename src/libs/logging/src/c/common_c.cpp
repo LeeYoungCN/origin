@@ -51,9 +51,7 @@ std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[], 
     std::vector<std::shared_ptr<Sink>> sinkPtrs;
     sinkPtrs.reserve(sinkCnt);
     for (uint32_t i = 0; i < sinkCnt; ++i) {
-        if (sinks[i]->ptr != nullptr) {
-            sinkPtrs.emplace_back(sinks[i]->ptr);
-        }
+        sinkPtrs.emplace_back(sinks[i]->ptr);
     }
     return sinkPtrs;
 }

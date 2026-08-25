@@ -1,6 +1,5 @@
 #include "logging/sinks/daily_file_sink.h"
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -34,13 +33,13 @@ std::string DailyFileSink::file() const
     return dynamic_cast<const DailyFileSinkImpl *>(_pImpl.get())->file();
 }
 
-std::vector<std::string> DailyFileSink::get_file_list()
+std::vector<std::string> DailyFileSink::get_file_list() const
 {
     throw_if_pimpl_null();
     return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->get_file_list();
 }
 
-void DailyFileSink::set_max_files(uint32_t maxFiles)
+void DailyFileSink::set_max_files(uint32_t maxFiles) const
 {
     throw_if_pimpl_null();
     return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->set_max_files(maxFiles);

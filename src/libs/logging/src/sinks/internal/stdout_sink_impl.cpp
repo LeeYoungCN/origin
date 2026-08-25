@@ -25,7 +25,7 @@ void StdoutSinkImpl::log_it(const LogMsg &logMsg)
     sink_it(content);
 }
 
-void StdoutSinkImpl::sink_it(std::string_view message)
+void StdoutSinkImpl::sink_it(std::string_view message) const
 {
     fprintf(m_stream, "%s\n", message.data());
     std::fflush(m_stream);

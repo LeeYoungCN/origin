@@ -30,7 +30,7 @@ private:
     std::string get_next_file();
     uint32_t get_next_idx();
     void set_next_idx(uint32_t idx);
-    uint32_t parse_log_index(std::string_view file);
+    uint32_t parse_log_index(std::string_view file) const;
     void init_file_queue() override;
 
 private:

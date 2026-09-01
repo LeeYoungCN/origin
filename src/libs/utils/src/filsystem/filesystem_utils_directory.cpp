@@ -109,11 +109,17 @@ bool delete_dir(std::string_view path, bool recursive)
 {
     if (!dir_exists(path)) {
         bool rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
-        DEBUG_LOGGER_COND(rst,
-                          "Delete dir {}: \"{}\". msg: \"{}\".",
-                          recursive ? "recursive" : "not recursive",
-                          path.data(),
-                          get_thread_last_err_msg());
+        if (!rst) {
+            DEBUG_LOGGER_ERR("Delete dir {} failed. dir: \"{}\". msg: \"{}\".",
+                             recursive ? "recursive" : "not recursive",
+                             path.data(),
+                             get_thread_last_err_msg());
+        } else {
+            DEBUG_LOGGER_TRACE("Delete dir {} success. dir: \"{}\". msg: \"{}\".",
+                               recursive ? "recursive" : "not recursive",
+                               path.data(),
+                               get_thread_last_err_msg());
+        }
         return rst;
     }
     try {

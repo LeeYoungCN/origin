@@ -85,13 +85,4 @@ void origin_debug_logger_log(const char* file, int line, const char* func, Origi
         std::abort();                                                       \
     } while (0)
 
-#define DEBUG_LOGGER_COND(condition, format, ...)                            \
-    do {                                                                     \
-        if (!(condition)) {                                                  \
-            DEBUG_LOGGER_ERR("[FAILED] " format __VA_OPT__(, ) __VA_ARGS__); \
-        } else {                                                             \
-            DEBUG_LOGGER_DBG("[SUCCESS] " format __VA_OPT__(, ) __VA_ARGS__) \
-        }                                                                    \
-    } while (0)
-
 #endif  // COMMON_DEBUG_DEBUG_LOG_HPP

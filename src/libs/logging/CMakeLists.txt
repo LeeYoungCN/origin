@@ -2,11 +2,8 @@ set(LIB_NAME logging)
 list(APPEND LIB_LIST ${LIB_NAME})
 set(LIB_LIST "${LIB_LIST}" CACHE STRING "" FORCE)
 
-if (MINGW)
-    add_library(${LIB_NAME} STATIC)
-else()
-    add_library(${LIB_NAME} SHARED)
-endif()
+add_library(${LIB_NAME} SHARED)
+target_compile_definitions(${LIB_NAME} PRIVATE LOGGING_BUILD_SHARED)
 
 file(GLOB_RECURSE SRC_LIST src "*.cpp" "*.c")
 target_sources(${LIB_NAME} PRIVATE ${SRC_LIST})
@@ -29,7 +26,6 @@ set_target_properties(${LIB_NAME} PROPERTIES
 )
 
 target_link_libraries(${LIB_NAME} PRIVATE common utils)
-target_compile_definitions(${LIB_NAME} PRIVATE COMMON_BUILD_SHARED)
 
 set_target_properties(${LIB_NAME} PROPERTIES
     WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号

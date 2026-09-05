@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "logging/c/logging_c.h"
 
-namespace test::test_logging {
+namespace logging_test {
 
 class TestSyncLogger : public ::testing::Test {
 protected:
@@ -14,4 +14,4 @@ protected:
     LoggerSt *_logger{nullptr};
     SinkSt *_sink{nullptr};
 };
-}  // namespace test::test_logging
+}  // namespace logging_test

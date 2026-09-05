@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "detail/common.h"
+#include "detail/log_content_buffer_sink.h"
 #include "gtest/gtest.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
@@ -11,15 +13,13 @@
 #include "logging/log_source.h"
 #include "logging/loggers/async_logger.h"
 #include "logging/logging.h"
-#include "test_logging_utils/common.h"
-#include "test_logging_utils/log_content_buffer_sink.h"
 #include "utils/date_time_utils.h"
 
-using namespace test::test_logging;
+using namespace logging_test;
 using namespace origin::date_time;
 using namespace origin::logging;
 
-namespace test::test_logging {
+namespace logging_test {
 
 class TestAsyncLogger : public ::testing::Test {
 protected:
@@ -246,4 +246,4 @@ TEST_F(TestAsyncLogger, set_formatter)
     }
 }
 
-}  // namespace test::test_logging
+}  // namespace logging_test

@@ -5,16 +5,7 @@ file(GLOB_RECURSE SRC_LIST "*.cpp")
 
 target_sources(${TEST_RUNTIME_NAME} PRIVATE ${SRC_LIST})
 
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_THIRD_PARTY_PATH}/googletest")
-
-find_package(GTest QUIET)
-
-if (NOT GTest_FOUND)
-    message(STATUS "GTest not found, fetching with FetchContent")
-    include(${CMAKE_SOURCE_DIR}/cmake/fetch_content.cmake)
-endif()
-
-target_link_libraries(${TEST_RUNTIME_NAME} ${LIB_LIST} GTest::gtest)
+target_link_libraries(${TEST_RUNTIME_NAME} GTest::gtest ${LIB_LIST} ${TEST_LIB_LIST})
 
 # 添加ctest测试
 add_test(NAME TEST_ALL COMMAND ${TEST_RUNTIME_NAME})

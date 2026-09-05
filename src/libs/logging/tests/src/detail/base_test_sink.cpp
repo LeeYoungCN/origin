@@ -7,7 +7,7 @@
 #include "common/debug/debug_logger.h"
 #include "logging/formatters/pattern_formatter.h"
 
-namespace test::test_logging {
+namespace logging_test {
 using namespace origin::logging;
 
 BaseTestSink::~BaseTestSink()
@@ -63,4 +63,4 @@ std::string_view BaseTestSink::param_str() const
     return _paramStr;
 }
 
-}  // namespace test::test_logging
+}  // namespace logging_test

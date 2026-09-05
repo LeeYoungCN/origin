@@ -15,7 +15,7 @@
 
 using namespace origin::logging;
 
-namespace test::test_logging {
+namespace logging_test {
 class BaseTestSink : public Sink {
 public:
     BaseTestSink() = default;
@@ -43,6 +43,6 @@ protected:
     std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};
 };
-}  // namespace test::test_logging
+}  // namespace logging_test
 
 #endif  // TEST_LOGGING_TEST_UTILS_BASE_TEST_SINK_H

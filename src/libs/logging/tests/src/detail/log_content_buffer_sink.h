@@ -11,7 +11,7 @@
 
 using namespace origin::logging;
 
-namespace test::test_logging {
+namespace logging_test {
 class LogContentBufferSink : public BaseTestSink {
 public:
     LogContentBufferSink();
@@ -34,6 +34,6 @@ private:
     std::vector<std::string> _buffer;
     std::vector<std::string> _disk;
 };
-}  // namespace test::test_logging
+}  // namespace logging_test
 
 #endif  // TEST_LOGGING_TEST_UTILS_LOG_CONTENT_BUFFER_SINK_H

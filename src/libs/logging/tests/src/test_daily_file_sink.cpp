@@ -9,16 +9,16 @@
 
 #include "common/constants/date_time_constants.h"
 #include "common/types/date_time_types.h"
+#include "detail/common.h"
 #include "gtest/gtest.h"
 #include "logging/log_level.h"
 #include "logging/log_msg.h"
 #include "logging/log_source.h"
 #include "logging/sinks/daily_file_sink.h"
-#include "test_logging_utils/common.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 
-namespace test::test_logging {
+namespace logging_test {
 using namespace origin::date_time;
 using namespace origin::logging;
 using namespace origin::filesystem;
@@ -248,4 +248,4 @@ TEST_F(TestDailyFileSink, delete_when_existing_files)
 
     TestRotateAndDelete(test_info_, maxFiles, existFiles, rotationDays);
 }
-}  // namespace test::test_logging
+}  // namespace logging_test

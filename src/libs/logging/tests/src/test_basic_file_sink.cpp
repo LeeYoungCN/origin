@@ -1,15 +1,15 @@
 #include <string>
 
 #include "common/constants/filesystem_constants.h"
+#include "detail/common.h"
 #include "gtest/gtest.h"
 #include "logging/sinks/basic_file_sink.h"
-#include "test_logging_utils/common.h"
 #include "utils/filesystem_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
 
-namespace test::test_logging {
+namespace logging_test {
 class TestBasicFileSink : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
@@ -89,4 +89,4 @@ TEST_F(TestBasicFileSink, sink_log_and_flush)
     }
 }
 
-}  // namespace test::test_logging
+}  // namespace logging_test

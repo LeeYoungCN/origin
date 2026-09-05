@@ -5,11 +5,11 @@
 #include <vector>
 
 #include "common/constants/filesystem_constants.h"
+#include "detail/common.h"
 #include "gtest/gtest.h"
 #include "logging/log_level.h"
 #include "logging/log_source.h"
 #include "logging/sinks/rotating_file_sink.h"
-#include "test_logging_utils/common.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 
@@ -17,7 +17,7 @@ using namespace origin::logging;
 using namespace origin::filesystem;
 using namespace origin::date_time;
 
-namespace test::test_logging {
+namespace logging_test {
 class TestRotatingFileSink : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
@@ -337,4 +337,4 @@ TEST_F(TestRotatingFileSink, rotate_and_delete_with_zero_max_files)
 
     TestRotateAndDelete(test_info_, maxFiles, startIdx, existFileCount, rotateCnt);
 }
-}  // namespace test::test_logging
+}  // namespace logging_test

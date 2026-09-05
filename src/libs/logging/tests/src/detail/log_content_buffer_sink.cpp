@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-namespace test::test_logging {
+namespace logging_test {
 LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
 {
     _paramStr = std::string("LogContentBufferSink, Capacity: ") + std::to_string(_capacity);
@@ -58,4 +58,4 @@ void LogContentBufferSink::flush_it()
     _buffer.clear();
 }
 
-}  // namespace test::test_logging
+}  // namespace logging_test

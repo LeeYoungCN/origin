@@ -7,7 +7,7 @@
 #include "gtest/gtest.h"
 #include "logging/log_level.h"
 
-namespace test::test_logging {
+namespace logging_test {
 const std::vector<origin::logging::LogLevel> LOG_LEVELS = {origin::logging::LogLevel::TRACE,
                                                            origin::logging::LogLevel::DEBUG,
                                                            origin::logging::LogLevel::INFO,
@@ -20,5 +20,5 @@ std::string get_logger_name(const testing::TestInfo* test_info);
 
 std::string get_log_dir();
 
-}  // namespace test::test_logging
+}  // namespace logging_test
 #endif  // TEST_LOGGING_TEST_UTILS_COMMON_H

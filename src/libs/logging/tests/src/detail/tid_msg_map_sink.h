@@ -7,7 +7,7 @@
 #include "common/types/thread_types.h"
 #include "logging/log_msg.h"
 
-namespace test::test_logging {
+namespace logging_test {
 class TidMsgMapSink : public BaseTestSink {
 public:
     TidMsgMapSink() = default;
@@ -22,5 +22,5 @@ protected:
 private:
     std::map<ThreadId, LogMsg> _buffer;
 };
-}  // namespace test::test_logging
+}  // namespace logging_test
 #endif  // TEST_LOGGING_TEST_UTILS_TID_MSG_SINK_H

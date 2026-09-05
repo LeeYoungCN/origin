@@ -1,17 +1,17 @@
 #include <format>
 #include <string>
 
+#include "detail/common.h"
 #include "gtest/gtest.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
 #include "logging/log_msg.h"
-#include "test_logging_utils/common.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
 #include "utils/thread_utils.h"
 
-namespace test::test_logging {
+namespace logging_test {
 
 using namespace origin::logging;
 
@@ -187,4 +187,4 @@ TEST_F(TestPatternFormatter, default_pattern)
     EXPECT_EQ(content, expect);
 }
 
-}  // namespace test::test_logging
+}  // namespace logging_test

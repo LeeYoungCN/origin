@@ -5,7 +5,7 @@ set(LIB_LIST "${LIB_LIST}" CACHE STRING "" FORCE)
 add_library(${LIB_NAME} SHARED)
 target_compile_definitions(${LIB_NAME} PRIVATE LOGGING_BUILD_SHARED)
 
-file(GLOB_RECURSE SRC_LIST src "*.cpp" "*.c")
+file(GLOB_RECURSE SRC_LIST "src/*.cpp" "src/*.c")
 target_sources(${LIB_NAME} PRIVATE ${SRC_LIST})
 
 target_include_directories(${LIB_NAME}
@@ -17,7 +17,7 @@ target_include_directories(${LIB_NAME}
 )
 
 if (MINGW)
-    target_link_libraries(${LIB_NAME} PRIVATE pthread)
+    target_link_libraries(${LIB_NAME} PUBLIC pthread)
 endif()
 
 set_target_properties(${LIB_NAME} PROPERTIES
@@ -25,7 +25,7 @@ set_target_properties(${LIB_NAME} PROPERTIES
     IMPORT_PREFIX "lib"   # 给导入库(.lib)加前缀
 )
 
-target_link_libraries(${LIB_NAME} PRIVATE common utils)
+target_link_libraries(${LIB_NAME} PUBLIC common utils)
 
 set_target_properties(${LIB_NAME} PROPERTIES
     WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号
@@ -37,3 +37,7 @@ install(DIRECTORY include/
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 install(TARGETS ${LIB_NAME} COMPONENT ${LIB_NAME})
+
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

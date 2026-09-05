@@ -5,7 +5,7 @@
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
 
-namespace test::test_logging {
+namespace logging_test {
 using namespace origin;
 std::string get_logger_name(const testing::TestInfo* test_info)
 {
@@ -16,4 +16,4 @@ std::string get_log_dir()
 {
     return filesystem::join_paths({process::get_proc_directory(), "logs"});
 }
-}  // namespace test::test_logging
+}  // namespace logging_test

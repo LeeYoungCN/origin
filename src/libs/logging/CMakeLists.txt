@@ -23,13 +23,11 @@ endif()
 set_target_properties(${LIB_NAME} PROPERTIES
     PREFIX "lib"          # 给输出文件名加前缀
     IMPORT_PREFIX "lib"   # 给导入库(.lib)加前缀
+    WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号
+    DEBUG_POSTFIX "d"
 )
 
 target_link_libraries(${LIB_NAME} PUBLIC common utils)
-
-set_target_properties(${LIB_NAME} PROPERTIES
-    WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号
-)
 
 install(DIRECTORY include/
         DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include

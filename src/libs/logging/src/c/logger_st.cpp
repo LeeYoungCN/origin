@@ -42,7 +42,7 @@ void origin_destroy_logger(LoggerSt *logger)
 {
     if (logger != nullptr) {
         if (logger->ptr != nullptr) {
-            DEBUG_LOGGER_DBG("Release logger. Name: {}, UseCnt: {}.",
+            ORIGIN_DEBUG_DBG("Release logger. Name: {}, UseCnt: {}.",
                              logger->ptr->name(),
                              logger->ptr.use_count());
             logger->ptr.reset();

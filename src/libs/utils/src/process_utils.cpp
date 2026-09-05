@@ -37,14 +37,14 @@ std::string get_proc_path()
     DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH_STD);
     if (length == 0 || length >= MAX_PATH_STD) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
-        DEBUG_LOGGER_ERR("[FAILED][WIN32] Get process path, length: {}", length);
+        ORIGIN_DEBUG_ERR("[WIN32] Get process path failed, length: {}", length);
         length = 0;
     }
 #elif OS_LINUX
     auto length = readlink("/proc/self/exe", path, MAX_PATH_STD - 1);
     if (length == -1) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
-        DEBUG_LOGGER_ERR("[FAILED][Linux]Failed to get process path.");
+        ORIGIN_DEBUG_ERR("[Linux] Get process path failed.");
         length = 0;
     }
     path[length] = '\0';
@@ -52,13 +52,13 @@ std::string get_proc_path()
     uint32_t size = sizeof(path);
     if (_NSGetExecutablePath(path, &size) != 0) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
-        DEBUG_LOGGER_ERR("[FAILED][Macos]Failed to get process path.");
+        ORIGIN_DEBUG_ERR("[Macos] Get process path failed.");
     }
 #else
 #error "Unsupport system."
 #endif
     set_thread_last_err(ERR_COMM_SUCCESS);
-    DEBUG_LOGGER_TRACE("Get process path: {}", path);
+    ORIGIN_DEBUG_TRACE("Get process path: {}", path);
     return path;
 }
 

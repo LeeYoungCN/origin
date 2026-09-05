@@ -12,7 +12,7 @@ using namespace origin::logging;
 
 BaseTestSink::~BaseTestSink()
 {
-    DEBUG_LOGGER_DBG("Release Sink. {}", _paramStr);
+    ORIGIN_DEBUG_DBG("Release Sink. {}", _paramStr);
 }
 
 BaseTestSink::BaseTestSink(std::string_view parameter) : _paramStr(parameter) {}

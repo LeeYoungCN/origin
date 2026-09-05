@@ -55,7 +55,7 @@ void origin_detroy_sink(SinkSt *sink)
 {
     if (sink != nullptr) {
         if (sink->ptr != nullptr) {
-            DEBUG_LOGGER_DBG(
+            ORIGIN_DEBUG_DBG(
                 "Release SinkSt. UseCnt: {}. {}", sink->ptr.use_count(), sink->ptr->param_str());
             sink->ptr.reset();
         }

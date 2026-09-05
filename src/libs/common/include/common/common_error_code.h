@@ -1,5 +1,5 @@
-#ifndef COMMON_ERROR_CODE_H
-#define COMMON_ERROR_CODE_H
+#ifndef ORIGIN_COMMON_ERROR_CODE_H
+#define ORIGIN_COMMON_ERROR_CODE_H
 
 #include "common/types/error_code_types.h"
 
@@ -85,8 +85,8 @@ static inline const char *get_comm_err_msg(ErrorCode errCode)
             return "Container overflow";
         // Unknown error code.
         default:
-            return "Unkown error code";
+            return "Unknown error code";
     };
 }
 
-#endif  // COMMON_ERROR_CODE_H
+#endif  // ORIGIN_COMMON_ERROR_CODE_H

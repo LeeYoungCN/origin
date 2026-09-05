@@ -67,20 +67,20 @@ void TestConcurrentBlockingQueueMt::TearDown()
 
 void TestConcurrentBlockingQueueMt::ProducerLoop()
 {
-    DEBUG_LOGGER_INFO("Producer thread start. curr: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Producer thread start. curr: {}, max: {}.",
                       _totalConsumeItemCnt.load(),
                       _totalProduceItemCnt);
     for (uint32_t i = 0; i < MAX_NUM; ++i) {
         _queue->enqueue_wait(TestEntry(i));
     }
-    DEBUG_LOGGER_INFO("Producer thread finish. curr: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Producer thread finish. curr: {}, max: {}.",
                       _totalConsumeItemCnt.load(),
                       _totalProduceItemCnt);
 }
 
 void TestConcurrentBlockingQueueMt::ConsumerLoopWait()
 {
-    DEBUG_LOGGER_INFO("Consumer thread start. Curr total consume: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Consumer thread start. Curr total consume: {}, max: {}.",
                       _totalConsumeItemCnt.load(),
                       _totalProduceItemCnt);
     uint32_t dequeueItemCnt = 0;
@@ -92,14 +92,14 @@ void TestConcurrentBlockingQueueMt::ConsumerLoopWait()
         ++_totalConsumeItemCnt;
         ++dequeueItemCnt;
     }
-    DEBUG_LOGGER_INFO("Consumer thread finish. thread consume: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Consumer thread finish. thread consume: {}, max: {}.",
                       dequeueItemCnt,
                       _totalProduceItemCnt);
 }
 
 void TestConcurrentBlockingQueueMt::ConsumerLoopWaitFor()
 {
-    DEBUG_LOGGER_INFO("Consumer thread start. curr total consume: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Consumer thread start. curr total consume: {}, max: {}.",
                       _totalConsumeItemCnt.load(),
                       _totalProduceItemCnt);
     uint32_t threadConsumeItemCnt = 0;
@@ -112,7 +112,7 @@ void TestConcurrentBlockingQueueMt::ConsumerLoopWaitFor()
             ++threadConsumeItemCnt;
         }
     }
-    DEBUG_LOGGER_INFO("Consumer thread finish. thread consume: {}, max: {}.",
+    ORIGIN_DEBUG_INFO("Consumer thread finish. thread consume: {}, max: {}.",
                       threadConsumeItemCnt,
                       _totalProduceItemCnt);
 }

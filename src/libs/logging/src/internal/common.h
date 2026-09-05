@@ -8,13 +8,13 @@
 
 #define RETURN_IF_PTR_NULL(ptr)             \
     if (!(ptr)) {                           \
-        DEBUG_LOGGER_ERR(#ptr " nullptr."); \
+        ORIGIN_DEBUG_ERR(#ptr " nullptr."); \
         return;                             \
     }
 
 #define RETURN_VALUE_IF_PTR_NULL(ptr, value) \
     if (!(ptr)) {                            \
-        DEBUG_LOGGER_ERR(#ptr " nullptr.");  \
+        ORIGIN_DEBUG_ERR(#ptr " nullptr.");  \
         return value;                        \
     }
 

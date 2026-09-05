@@ -50,7 +50,7 @@ uint32_t RotatingFileSinkImplBase::max_files_it() const
 void RotatingFileSinkImplBase::push_back_file(std::string_view file)
 {
     _fileQue.emplace_back(file);
-    DEBUG_LOGGER_TRACE("Enqueue {}. {}", _itemName, file);
+    ORIGIN_DEBUG_TRACE("Enqueue {}. {}", _itemName, file);
 }
 
 void RotatingFileSinkImplBase::rotate(std::string_view newFile)
@@ -60,7 +60,7 @@ void RotatingFileSinkImplBase::rotate(std::string_view newFile)
     if (rename_file(file(), newFile, true, RENAME_FILE_RETRY, RENAME_FILE_SLEEP_MS)) {
         _fileWriter.reopen(true);
         push_back_file(newFile);
-        DEBUG_LOGGER_DBG("Rotate log file success. {}", newFile);
+        ORIGIN_DEBUG_DBG("Rotate log file success. {}", newFile);
     } else {
         _fileWriter.reopen(false);
     }
@@ -74,9 +74,9 @@ void RotatingFileSinkImplBase::delete_overflow_file()
     while (_fileQue.size() > _maxFiles.load()) {
         auto file = _fileQue.front();
         if (!delete_file(file, DELETE_FILE_RETRY, DELETE_FILE_SLEEP_MS)) {
-            DEBUG_LOGGER_ERR("Delete {} failed. {}", _itemName, file);
+            ORIGIN_DEBUG_ERR("Delete {} failed. {}", _itemName, file);
         } else {
-            DEBUG_LOGGER_DBG("Delete {} success. {}", _itemName, file);
+            ORIGIN_DEBUG_DBG("Delete {} success. {}", _itemName, file);
         }
         _fileQue.pop_front();
     }

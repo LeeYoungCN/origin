@@ -17,7 +17,7 @@ void origin_destroy_task_pool(TaskPoolSt *taskPool)
 {
     if (taskPool != nullptr) {
         if (taskPool->ptr != nullptr) {
-            DEBUG_LOGGER_DBG("Release TaskPoolSt. UseCnt: {}. {}.",
+            ORIGIN_DEBUG_DBG("Release TaskPoolSt. UseCnt: {}. {}.",
                              taskPool->ptr.use_count(),
                              taskPool->ptr->param_str());
             taskPool->ptr.reset();

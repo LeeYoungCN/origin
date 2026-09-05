@@ -42,7 +42,7 @@ EntryType get_entry_type(std::string_view path)
     std::error_code ec;  // 用于非抛出式错误处理
     fs::file_status status = fs::symlink_status(path, ec);
     if (ec) {
-        DEBUG_LOGGER_ERR("Failed to get symlink status. errCode: {}", ec.value());
+        ORIGIN_DEBUG_ERR("Failed to get symlink status. errCode: {}", ec.value());
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
         return EntryType::UNKNOWN;
     }
@@ -62,7 +62,7 @@ EntryType get_entry_type(std::string_view path)
             return EntryType::SOCKET;
         case fs::file_type::unknown:
         default:
-            DEBUG_LOGGER_WARN("Unknown entry type: {}", path);
+            ORIGIN_DEBUG_WARN("Unknown entry type: {}", path);
             return EntryType::UNKNOWN;
     }
 }

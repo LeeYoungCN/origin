@@ -24,7 +24,7 @@ TaskPool::TaskPool(uint32_t capacity, uint32_t threadCnt)
       _threadCnt(threadCnt),
       _paramStr(std::format("Capacity: {}, Thread count: {}.", capacity, threadCnt))
 {
-    DEBUG_LOGGER_DBG("Create task pool. {}", _paramStr);
+    ORIGIN_DEBUG_DBG("Create task pool. {}", _paramStr);
     if (capacity == 0) {
         throw std::invalid_argument("Capacity must be greater than zero.");
     }
@@ -39,7 +39,7 @@ TaskPool::TaskPool(uint32_t capacity, uint32_t threadCnt)
 TaskPool::~TaskPool()
 {
     shutdown();
-    DEBUG_LOGGER_DBG("Release task pool. {}", _paramStr);
+    ORIGIN_DEBUG_DBG("Release task pool. {}", _paramStr);
 }
 
 void TaskPool::log(const std::shared_ptr<LoggerImplBase>& logger, const LogMsg& logMsg)
@@ -58,7 +58,7 @@ void TaskPool::start()
         _threadPool.emplace_back(&TaskPool::worker_loop, this, i + 1);
     }
 
-    DEBUG_LOGGER_TRACE("Task pool start.");
+    ORIGIN_DEBUG_TRACE("Task pool start.");
 }
 
 void TaskPool::shutdown()
@@ -75,12 +75,12 @@ void TaskPool::shutdown()
 
     _threadPool.clear();
 
-    DEBUG_LOGGER_TRACE("Task pool shutdown.");
+    ORIGIN_DEBUG_TRACE("Task pool shutdown.");
 }
 
 void TaskPool::worker_loop(uint32_t idx)
 {
-    DEBUG_LOGGER_DBG("Log thread pool worker loop start. [{}/{}]", idx, _threadCnt);
+    ORIGIN_DEBUG_DBG("Log thread pool worker loop start. [{}/{}]", idx, _threadCnt);
     bool isRunning = true;
     while (isRunning) {
         LogTask task;
@@ -99,7 +99,7 @@ void TaskPool::worker_loop(uint32_t idx)
                 break;
         }
     }
-    DEBUG_LOGGER_DBG("Log task pool worker loop shutdown. [{}/{}]", idx, _threadCnt);
+    ORIGIN_DEBUG_DBG("Log task pool worker loop shutdown. [{}/{}]", idx, _threadCnt);
 }
 
 std::string_view TaskPool::param_str()

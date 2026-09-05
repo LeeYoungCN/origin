@@ -47,11 +47,11 @@ std::string get_curr_working_dir()
         set_thread_last_err(ERR_COMM_SUCCESS);
         return p.string();
     } catch (const fs::filesystem_error& e) {
-        DEBUG_LOGGER_ERR("Get current working dir failed.");
+        ORIGIN_DEBUG_ERR("Get current working dir failed.");
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
         return "";
     } catch (const std::exception& e) {
-        DEBUG_LOGGER_ERR("Get current working dir failed.");
+        ORIGIN_DEBUG_ERR("Get current working dir failed.");
         set_thread_last_err(ConvertExceptionToErrorCode(e));
         return "";
     }
@@ -62,7 +62,7 @@ std::string join_paths(const std::vector<std::string>& parts)
 {
     if (parts.empty()) {
         set_thread_last_err(ERR_UTILS_PATH_INVALID);
-        DEBUG_LOGGER_ERR("[FAILED] Join paths. list empty: {}", get_thread_last_err_msg());
+        ORIGIN_DEBUG_WARN("Join paths failed. list empty: {}", get_thread_last_err_msg());
         return "";
     }
     fs::path result(parts[0]);
@@ -81,14 +81,14 @@ std::string normalize_path(std::string_view path)
         return normalized.string();
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
-        DEBUG_LOGGER_ERR("[FAILED] Normalized path: {}, message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Normalized path faild. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
         return "";
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
-        DEBUG_LOGGER_ERR("[FAILED] Normalized path: {}, message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Normalized path faild. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
@@ -111,14 +111,14 @@ std::string to_absolute_path(std::string_view relPath, std::string_view baseDir)
         return absPath.string();
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
-        DEBUG_LOGGER_ERR("[FAILED] Absolute path: {}, message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Absolute path faild. path: \"{}\", message: {}. ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());
         return "";
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
-        DEBUG_LOGGER_ERR("[FAILED] Absolute path: {}, message: {}.ex: {}",
+        ORIGIN_DEBUG_ERR("Absolute path faild. path: \"{}\", message: {}.ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());

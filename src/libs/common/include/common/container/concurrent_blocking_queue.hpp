@@ -164,7 +164,7 @@ public:
             if (!_popCv.wait_for(lock, std::chrono::milliseconds(durationMs), [this]() -> bool {
                     return !_queue.empty();
                 })) {
-                DEBUG_LOGGER_DBG("Dequeue timeout.");
+                ORIGIN_DEBUG_DBG("Dequeue timeout.");
                 return false;
             }
 
@@ -275,7 +275,7 @@ private:
         if (idx >= _queue.size()) {
             std::string errmsg =
                 std::format("Out of range. idx: {}, queue size: {}.", idx, _queue.size());
-            DEBUG_LOGGER_ERR(errmsg);
+            ORIGIN_DEBUG_ERR(errmsg);
             throw std::out_of_range(errmsg);
         }
     }

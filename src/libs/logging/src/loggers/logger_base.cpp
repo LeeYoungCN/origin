@@ -14,13 +14,13 @@ namespace origin::logging {
 LoggerBase::LoggerBase(std::shared_ptr<Logger> pImpl) : _pImpl(std::move(pImpl))
 {
     throw_if_pimpl_null();
-    DEBUG_LOGGER_DBG("Create logger. Name: \"{}\".", _pImpl->name());
+    ORIGIN_DEBUG_DBG("Create logger. Name: \"{}\".", _pImpl->name());
 }
 
 LoggerBase::~LoggerBase()
 {
     if (_pImpl != nullptr) {
-        DEBUG_LOGGER_DBG("Release logger. Name: \"{}\".", _pImpl->name());
+        ORIGIN_DEBUG_DBG("Release logger. Name: \"{}\".", _pImpl->name());
         _pImpl.reset();
     }
 }

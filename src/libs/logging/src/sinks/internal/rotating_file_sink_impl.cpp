@@ -62,12 +62,12 @@ RotatingFileSinkImpl::RotatingFileSinkImpl(std::string_view file, uint32_t maxFi
       _maxFileSize(maxFileSize)
 {
     if (maxFileSize == 0) {
-        DEBUG_LOGGER_ERR("Create RotatingFileSinkImpl failed. maxFileSize is 0.");
+        ORIGIN_DEBUG_ERR("Create RotatingFileSinkImpl failed. maxFileSize is 0.");
         throw std::invalid_argument("maxFileSize is 0.");
     }
 
     if (maxFiles > RotatingFileSink::MAX_FILES) {
-        DEBUG_LOGGER_ERR("Create RotatingFileSinkImpl failed. maxFiles out of range.");
+        ORIGIN_DEBUG_ERR("Create RotatingFileSinkImpl failed. maxFiles out of range.");
         throw std::out_of_range("maxFiles out of range.");
     }
 
@@ -84,7 +84,7 @@ void RotatingFileSinkImpl::set_max_file_size(uint32_t maxFileSize)
     if (maxFileSize > 0) {
         _maxFileSize.store(maxFileSize);
     } else {
-        DEBUG_LOGGER_ERR("maxFileSize invalid: {}.", maxFileSize);
+        ORIGIN_DEBUG_ERR("maxFileSize invalid: {}.", maxFileSize);
     }
 }
 
@@ -98,7 +98,7 @@ void RotatingFileSinkImpl::set_max_files(uint32_t maxFiles)
     if (maxFiles <= RotatingFileSink::MAX_FILES) {
         set_max_files_it(maxFiles);
     } else {
-        DEBUG_LOGGER_ERR("maxFiles invalid: {}. maxFiles should be less than or equal to {}.",
+        ORIGIN_DEBUG_ERR("maxFiles invalid: {}. maxFiles should be less than or equal to {}.",
                          maxFiles,
                          RotatingFileSink::MAX_FILES);
     }
@@ -148,7 +148,7 @@ void RotatingFileSinkImpl::init_file_queue()
 
     set_next_idx(logList.empty() ? RotatingFileSink::MIN_INDEX : logList.back().idx + 1);
     for (const auto& logInfo : logList) {
-        DEBUG_LOGGER_DBG("Find rotating log file. {}", logInfo.to_string());
+        ORIGIN_DEBUG_DBG("Find rotating log file. {}", logInfo.to_string());
         push_back_file(logInfo.file);
     }
 }
@@ -162,7 +162,7 @@ void RotatingFileSinkImpl::set_next_idx(uint32_t idx)
 {
     if (idx > RotatingFileSink::MAX_INDEX) {
         idx = RotatingFileSink::MIN_INDEX;
-        DEBUG_LOGGER_DBG("Rotate log file wrap around. nextIdx: {}.", _nextIdx);
+        ORIGIN_DEBUG_DBG("Rotate log file wrap around. nextIdx: {}.", _nextIdx);
     }
     _nextIdx = idx;
 }
@@ -173,7 +173,7 @@ uint32_t RotatingFileSinkImpl::get_next_idx()
 
     if (_nextIdx > RotatingFileSink::MAX_INDEX) {
         _nextIdx = RotatingFileSink::MIN_INDEX;
-        DEBUG_LOGGER_DBG("Rotate log file wrap around. nextIdx: {}.", _nextIdx);
+        ORIGIN_DEBUG_DBG("Rotate log file wrap around. nextIdx: {}.", _nextIdx);
     }
     return idx;
 }

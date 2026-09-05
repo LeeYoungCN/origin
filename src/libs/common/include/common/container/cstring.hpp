@@ -24,7 +24,7 @@ public:
             va_end(ap);
         }
         if (m_lastErrcode != ERR_COMM_SUCCESS) {
-            DEBUG_LOGGER_ERR("Construct cstring failed. errcode: {:#x}, msg: {}.",
+            ORIGIN_DEBUG_ERR("Construct cstring failed. errcode: {:#x}, msg: {}.",
                              m_lastErrcode,
                              get_comm_err_msg(m_lastErrcode));
         }
@@ -76,7 +76,7 @@ private:
             m_lastErrcode = ERR_COMM_SUCCESS;
         } else {
             m_lastErrcode = ERR_COMM_CTN_OVERFLOW;
-            DEBUG_LOGGER_ERR("CString overflow. cap: {}, len: {}, errcode: {:#x}.",
+            ORIGIN_DEBUG_ERR("CString overflow. cap: {}, len: {}, errcode: {:#x}.",
                              m_capacity,
                              m_length + fmtLen,
                              m_lastErrcode);

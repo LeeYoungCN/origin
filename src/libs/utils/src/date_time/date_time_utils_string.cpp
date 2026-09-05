@@ -90,7 +90,7 @@ std::string_view get_month_full_name(uint32_t month)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
         set_thread_last_err(ERR_UTILS_MONTH_INVALID);
-        DEBUG_LOGGER_ERR(
+        ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
         return "";
     }
@@ -102,7 +102,7 @@ std::string_view get_month_abbr_name(uint32_t month)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
         set_thread_last_err(ERR_UTILS_MONTH_INVALID);
-        DEBUG_LOGGER_ERR(
+        ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
         return "";
     }
@@ -114,7 +114,7 @@ std::string_view get_weekday_full_name(uint32_t weekday)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
         set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
-        DEBUG_LOGGER_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
+        ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
@@ -128,7 +128,7 @@ std::string_view get_weekday_abbr_name(uint32_t weekday)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
         set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
-        DEBUG_LOGGER_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
+        ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
@@ -151,7 +151,7 @@ std::string format_time_string(const DateTimeSt& dateTime, const std::string_vie
     size_t len = format_time_buffer(timeString.data(), timeString.capacity(), dateTime, format);
 
     if (len <= 0 || len > timeString.capacity()) {
-        DEBUG_LOGGER_ERR("Time format failed or buffer overflow. len: {}.", len);
+        ORIGIN_DEBUG_ERR("Time format failed or buffer overflow. len: {}.", len);
         len = 0;
     }
     timeString.resize(len);  // resize仅修改字符串的size属性，不拷贝数据
@@ -170,7 +170,7 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
                           const std::string_view& format)
 {
     if (buffer == nullptr || bufferSize == 0) {
-        DEBUG_LOGGER_ERR("Invalid param!");
+        ORIGIN_DEBUG_ERR("Invalid param!");
         return 0;
     }
     size_t formatIdx = 0;
@@ -184,7 +184,7 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
         uint32_t tmp = number;
         if (bufferIdx + numberLen >= bufferSize) {
             set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
-            DEBUG_LOGGER_ERR("Failed to insert number: %lu", number);
+            ORIGIN_DEBUG_ERR("Failed to insert number: %lu", number);
             return false;
         }
 
@@ -203,7 +203,7 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
 
         if (bufferIdx + insertName.length() >= bufferSize) {
             set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
-            DEBUG_LOGGER_ERR("Failed to insert string: {}", insertName.data());
+            ORIGIN_DEBUG_ERR("Failed to insert string: {}", insertName.data());
             return false;
         }
 
@@ -278,7 +278,7 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
         }
     }
     if (formatIdx < format.length() || bufferIdx >= bufferSize) {
-        DEBUG_LOGGER_ERR("Incomplete format processing (remaining: {}), message: {}",
+        ORIGIN_DEBUG_ERR("Incomplete format processing (remaining: {}), message: {}",
                          format.data() + formatIdx,
                          get_thread_last_err_msg());
         bufferIdx = 0;

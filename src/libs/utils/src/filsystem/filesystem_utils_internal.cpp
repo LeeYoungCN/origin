@@ -63,13 +63,13 @@ ErrorCode ConvertExceptionToErrorCode(const std::exception& ex)
     try {
         std::throw_with_nested(ex);
     } catch (const std::filesystem::filesystem_error& fse) {
-        DEBUG_LOGGER_WARN("File system error: {} (code: {})", fse.what(), fse.code().value());
+        ORIGIN_DEBUG_WARN("File system error: {} (code: {})", fse.what(), fse.code().value());
         return ConvertSysEcToErrorCode(fse.code());
     } catch (const std::system_error& se) {
-        DEBUG_LOGGER_WARN("System error: {} (code: {})", se.what(), se.code().value());
+        ORIGIN_DEBUG_WARN("System error: {} (code: {})", se.what(), se.code().value());
         return ConvertSysEcToErrorCode(se.code());
     } catch (const std::exception& other) {
-        DEBUG_LOGGER_ERR("Non-filesystem exception, ex: {}.", other.what());
+        ORIGIN_DEBUG_ERR("Non-filesystem exception, ex: {}.", other.what());
         return ERR_COMM_SYSTEM_ERROR;
     }
 }
@@ -81,7 +81,7 @@ ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
         return ERR_COMM_SUCCESS;
     }
     // 详细日志便于调试
-    DEBUG_LOGGER_WARN("Convert error: {} (category: {}, value: {})",
+    ORIGIN_DEBUG_WARN("Convert error: {} (category: {}, value: {})",
                       ec.message().c_str(),
                       ec.category().name(),
                       ec.value());
@@ -91,7 +91,7 @@ ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
     } else if (ec.category() == std::generic_category()) {
         return ConvertGenericCategory(ec);
     } else {
-        DEBUG_LOGGER_FATAL("Unknown error category: {}", ec.category().name());
+        ORIGIN_DEBUG_FATAL("Unknown error category: {}", ec.category().name());
         return ERR_COMM_UNKNOWN_ERROR;
     }
 }

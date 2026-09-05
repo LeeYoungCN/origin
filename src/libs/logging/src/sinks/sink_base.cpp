@@ -11,14 +11,14 @@ SinkBase::~SinkBase()
     if (_pImpl == nullptr) {
         return;
     }
-    DEBUG_LOGGER_DBG("Release Sink. {}", _pImpl->param_str());
+    ORIGIN_DEBUG_DBG("Release Sink. {}", _pImpl->param_str());
     _pImpl.reset();
 }
 
 SinkBase::SinkBase(std::unique_ptr<Sink> pImpl) : _pImpl(std::move(pImpl))
 {
     throw_if_pimpl_null();
-    DEBUG_LOGGER_DBG("Create Sink. {}", _pImpl->param_str());
+    ORIGIN_DEBUG_DBG("Create Sink. {}", _pImpl->param_str());
 }
 
 void SinkBase::log(const LogMsg& logMsg)

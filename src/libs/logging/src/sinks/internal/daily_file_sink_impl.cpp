@@ -56,22 +56,22 @@ DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, uint32_t hour, uint3
       _minute(minute)
 {
     if (file.empty()) {
-        DEBUG_LOGGER_ERR("Create DailyFileSinkImpl failed. baseFile empty.");
+        ORIGIN_DEBUG_ERR("Create DailyFileSinkImpl failed. baseFile empty.");
         throw std::invalid_argument("baseFile empty.");
     }
 
     if (_hour < MIN_HOUR || _hour > MAX_HOUR) {
-        DEBUG_LOGGER_ERR("Create DailyFileSinkImpl failed. hour invalid: {}.", _hour);
+        ORIGIN_DEBUG_ERR("Create DailyFileSinkImpl failed. hour invalid: {}.", _hour);
         throw std::out_of_range("hour out of range.");
     }
 
     if (_minute < MIN_MINUTE || _minute > MAX_MINUTE) {
-        DEBUG_LOGGER_ERR("Create DailyFileSinkImpl failed. minute invalid: {}.", hour);
+        ORIGIN_DEBUG_ERR("Create DailyFileSinkImpl failed. minute invalid: {}.", hour);
         throw std::out_of_range("minute out of range.");
     }
 
     if (maxFiles > DailyFileSink::MAX_FILES) {
-        DEBUG_LOGGER_ERR("Create DailyFileSinkImpl failed. maxFiles out of range: {}.", maxFiles);
+        ORIGIN_DEBUG_ERR("Create DailyFileSinkImpl failed. maxFiles out of range: {}.", maxFiles);
         throw std::out_of_range("maxFiles out of range.");
     }
 
@@ -96,7 +96,7 @@ void DailyFileSinkImpl::set_max_files(uint32_t maxFiles)
     if (maxFiles <= DailyFileSink::MAX_FILES) {
         set_max_files_it(maxFiles);
     } else {
-        DEBUG_LOGGER_ERR("maxFiles invalid: {}. maxFiles should be less than or equal to {}.",
+        ORIGIN_DEBUG_ERR("maxFiles invalid: {}. maxFiles should be less than or equal to {}.",
                          maxFiles,
                          DailyFileSink::MAX_FILES);
     }
@@ -202,7 +202,7 @@ void DailyFileSinkImpl::init_file_queue()
     std::sort(logList.begin(), logList.end());
     for (const auto& fileInfo : logList) {
         push_back_file(fileInfo.second);
-        DEBUG_LOGGER_DBG("Find daily log file. file: \"{}\"", fileInfo.second);
+        ORIGIN_DEBUG_DBG("Find daily log file. file: \"{}\"", fileInfo.second);
     }
 }
 

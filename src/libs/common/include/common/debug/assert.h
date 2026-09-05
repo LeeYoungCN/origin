@@ -27,11 +27,11 @@
 #else
 
 #ifndef ORIGIN_ASSERT
-#define ORIGIN_ASSERT(condition)                             \
-    do {                                                     \
-        if (!(condition)) {                                  \
-            DEBUG_LOGGER_FATAL("assert("#condition ")"); \
-        }                                                    \
+#define ORIGIN_ASSERT(condition)                          \
+    do {                                                  \
+        if (!(condition)) {                               \
+            ORIGIN_DEBUG_FATAL("assert(" #condition ")"); \
+        }                                                 \
     } while (0)
 #endif  // ORIGIN_ASSERT
 
@@ -39,7 +39,7 @@
 #define COMMON_ASSERT_MSG(condition, fmt, ...)                  \
     do {                                                        \
         if (!(condition)) {                                     \
-            DEBUG_LOGGER_FATAL(fmt __VA_OPT__(, ) __VA_ARGS__); \
+            ORIGIN_DEBUG_FATAL(fmt __VA_OPT__(, ) __VA_ARGS__); \
         }                                                       \
     } while (0)
 #endif  // COMMON_ASSERT_MSG

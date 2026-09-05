@@ -38,7 +38,7 @@ BasicFileSinkImpl::BasicFileSinkImpl(std::string_view file, bool overwrite,
 
     _fileWriter.open(_overwrite);
     if (_fileWriter.get_last_error() != ERR_COMM_SUCCESS) {
-        DEBUG_LOGGER_ERR("Create BasicFileSinkImpl failed. File: \"{}\", mode: {}. msg: \"{}\".",
+        ORIGIN_DEBUG_ERR("Create BasicFileSinkImpl failed. File: \"{}\", mode: {}. msg: \"{}\".",
                          file,
                          get_file_mode_str(_overwrite),
                          get_utils_err_msg(_fileWriter.get_last_error()));

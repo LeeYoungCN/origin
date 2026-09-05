@@ -1,6 +1,10 @@
 #ifndef COMMON_TYPES_ERROR_CODE_H
 #define COMMON_TYPES_ERROR_CODE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 typedef uint64_t ErrorCode;
@@ -8,13 +12,13 @@ typedef uint16_t ErrModuleId;
 typedef uint16_t ErrorType;
 typedef uint16_t ErrorId;
 
-enum ErrorSeverity {
+typedef enum {
     ERR_SEV_SUCCESS = 0,  // 成功(无错误)
     ERR_SEV_INFO = 1,     // 提示(不影响流程)
     ERR_SEV_WARN = 2,     // 警告(可能有风险)
     ERR_SEV_ERROR = 3,    // 错误(功能失败, 可恢复)
     ERR_SEV_FATAL = 4     // 严重错误(系统崩溃, 不可恢复)
-};
+} ErrorSeverity;
 
 #define ERR_SEVERITY_MASK \
     0xFFFF000000000000ULL  // 错误级别：高16位(第63~48位), 掩码0xFFFF000000000000
@@ -35,5 +39,7 @@ enum ErrorSeverity {
     ((ErrorCode)(((uint64_t)(severity) << ERR_SEVERITY_SHIFT) |                                    \
                  ((uint64_t)(module) << ERR_MODULE_SHIFT) | ((uint64_t)(type) << ERR_TYPE_SHIFT) | \
                  ((uint64_t)(errId) << ERR_ID_SHIFT)))
-
+#ifdef __cplusplus
+}
+#endif
 #endif  // COMMON_TYPES_ERROR_CODE_H

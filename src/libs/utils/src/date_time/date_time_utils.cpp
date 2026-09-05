@@ -37,10 +37,10 @@ bool safe_localtime(time_t timer, tm& timeInfo)
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
         // 特别处理负数时间戳的错误提示
         if (timer < 0) {
-            DEBUG_LOGGER_WARN(
-                "[FAILED] localtime_s may not support negative. time: {}, err: {}", timer, err);
+            ORIGIN_DEBUG_WARN(
+                "localtime_s may not support negative. time: {}, err: {}", timer, err);
         } else {
-            DEBUG_LOGGER_ERR("[FAILED] localtime_s. time: {}, err: {}", timer, err);
+            ORIGIN_DEBUG_ERR("localtime_s time failed. {}, err: {}", timer, err);
         }
         return false;
     }
@@ -48,7 +48,7 @@ bool safe_localtime(time_t timer, tm& timeInfo)
     // Linux/macOS 使用 localtime_r
     if (localtime_r(&timer, &timeInfo) == nullptr) {
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
-        DEBUG_LOGGER_ERR("[FAILED] localtime_r. time: {}, errno: {}", timer, errno);
+        ORIGIN_DEBUG_ERR("localtime_r time failed. {}, errno: {}", timer, errno);
         return false;
     }
 #endif
@@ -65,10 +65,9 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
         // 针对负数时间戳的错误做特殊提示
         if (timer < 0) {
-            DEBUG_LOGGER_WARN(
-                "[FAILED] gmtime_s may not support negative time: {}, err: {}", timer, err);
+            ORIGIN_DEBUG_WARN("gmtime_s may not support negative time: {}, err: {}", timer, err);
         } else {
-            DEBUG_LOGGER_ERR("[FAILED] gmtime_s time: {}, err: {}", timer, err);
+            ORIGIN_DEBUG_ERR("gmtime_s time failed. {}, err: {}", timer, err);
         }
         return false;
     }
@@ -76,7 +75,7 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
     // Linux/macOS使用gmtime_r（对负数时间戳支持更完善）
     if (gmtime_r(&timer, &timeInfo) == nullptr) {
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
-        DEBUG_LOGGER_ERR("[FAILED] gmtime_r. time: {}, errno: {}.", timer, errno);
+        ORIGIN_DEBUG_ERR("Gmtime_r time failed. {}, errno: {}.", timer, errno);
         return false;
     }
 #endif
@@ -172,7 +171,7 @@ DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone)
     }
 
     if (!rst) {
-        DEBUG_LOGGER_ERR("[FAILED] Get time info, zone: {}, message: {}.",
+        ORIGIN_DEBUG_ERR("Get time info failed. zone: {}, msg: {}.",
                          GetTimeZoneString(timeZone),
                          get_thread_last_err_msg());
     } else {

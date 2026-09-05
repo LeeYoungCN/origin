@@ -108,7 +108,7 @@ void Registry::shutdown()
             _rootTaskPool.reset();
         }
     }
-    DEBUG_LOGGER_DBG("Logging module shutdown.");
+    ORIGIN_DEBUG_DBG("Logging module shutdown.");
 }
 #pragma endregion
 
@@ -146,7 +146,7 @@ void Registry::remove_all()
         }
         _loggers.clear();
     }
-    DEBUG_LOGGER_DBG("Remove all loggers.");
+    ORIGIN_DEBUG_DBG("Remove all loggers.");
 }
 
 std::shared_ptr<Logger> Registry::get_logger(std::string_view name)
@@ -166,7 +166,7 @@ void Registry::init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
 {
     std::lock_guard<std::recursive_mutex> const lock(_taskPoolMtx);
     if (_rootTaskPool != nullptr) {
-        DEBUG_LOGGER_ERR("Task pool already initialized.");
+        ORIGIN_DEBUG_ERR("Task pool already initialized.");
         return;
     }
     _rootTaskPool = std::make_shared<TaskPool>(capacity, threadCnt);
@@ -183,7 +183,7 @@ std::shared_ptr<TaskPool> Registry::root_task_pool()
 bool Registry::register_logger_it(std::shared_ptr<Logger> logger)
 {
     if (exist_it(logger->name())) {
-        DEBUG_LOGGER_ERR("Logger already exist. LoggerName: {}.", logger->name());
+        ORIGIN_DEBUG_ERR("Logger already exist. LoggerName: {}.", logger->name());
         return false;
     }
     _loggers[logger->name()] = std::move(logger);

@@ -21,17 +21,14 @@ public:
     using traits_type = std::allocator_traits<allocator_type>;
 
 public:
-    BlockingQueue()
-        : _items(_maxItems)
-    {
-    }
+    BlockingQueue() : _items(_maxItems) {}
 
     explicit BlockingQueue(size_t capacity)
         : _capacity(capacity), _maxItems(capacity + 1), _items(_maxItems)
     {
         if (capacity == 0) {
             auto errmsg = std::format("Capacity invalid. capacity: {}.", capacity);
-            DEBUG_LOGGER_ERR(errmsg);
+            ORIGIN_DEBUG_ERR(errmsg);
             throw std::invalid_argument(errmsg);
         }
         _items.reserve(_maxItems);
@@ -100,7 +97,7 @@ public:
     bool dequeue()
     {
         if (empty()) {
-            DEBUG_LOGGER_ERR("Queue empty.");
+            ORIGIN_DEBUG_ERR("Queue empty.");
             return false;
         }
 
@@ -111,7 +108,7 @@ public:
     bool front(T& item)
     {
         if (empty()) {
-            DEBUG_LOGGER_ERR("Queue empty.");
+            ORIGIN_DEBUG_ERR("Queue empty.");
             return false;
         }
         item = _items[_head];
@@ -142,7 +139,7 @@ public:
     {
         if (idx >= size()) {
             std::string errmsg = std::format("Out of range. idx: {}, queue size: {}.", idx, size());
-            DEBUG_LOGGER_ERR(errmsg);
+            ORIGIN_DEBUG_ERR(errmsg);
             throw std::out_of_range(errmsg);
         }
     }

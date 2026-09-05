@@ -21,13 +21,13 @@ bool delete_file(std::string_view file, uint32_t maxRetry, uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
         if (filesystem::delete_file(file)) {
-            DEBUG_LOGGER_TRACE("Delete file success. file: \"{}\".", file);
+            ORIGIN_DEBUG_TRACE("Delete file success. file: \"{}\".", file);
             return true;
         }
         origin::date_time::sleep_ms(sleepMs);
     }
 
-    DEBUG_LOGGER_ERR(
+    ORIGIN_DEBUG_ERR(
         "Delete file failed. file: \"{}\", msg: \"{}\".", file, get_thread_last_err_msg());
     return false;
 }
@@ -37,13 +37,13 @@ bool rename_file(std::string_view src, std::string_view dest, bool overwrite, ui
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
         if (filesystem::rename_file(src, dest, overwrite)) {
-            DEBUG_LOGGER_TRACE("Rename file success. file: \"{}\".", dest);
+            ORIGIN_DEBUG_TRACE("Rename file success. file: \"{}\".", dest);
             return true;
         }
         origin::date_time::sleep_ms(sleepMs);
     }
 
-    DEBUG_LOGGER_ERR(
+    ORIGIN_DEBUG_ERR(
         "Rename file failed. file: \"{}\", msg: \"{}\".", dest, get_thread_last_err_msg());
     return false;
 }

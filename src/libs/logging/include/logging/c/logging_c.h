@@ -1,10 +1,11 @@
 #ifndef ORIGIN_LOGGING_C_LOGGING_C_H
 #define ORIGIN_LOGGING_C_LOGGING_C_H
 
-#include <cstdint>
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
+
+#include <stdint.h>
 #include <stdio.h>
 
 typedef struct LoggerSt LoggerSt;

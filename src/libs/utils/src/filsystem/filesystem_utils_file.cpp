@@ -44,6 +44,7 @@ namespace {
 namespace fs = std::filesystem;
 using namespace origin::filesystem;
 using namespace origin::filesystem::internal;
+using namespace origin::thread;
 #if OS_WINDOWS
 using namespace origin::date_time;
 #endif  // OS_WINDOWS

@@ -17,6 +17,7 @@
 
 namespace origin::filesystem {
 using namespace origin::filesystem::internal;
+using namespace origin::thread;
 
 FileWriterImpl::FileWriterImpl(std::string_view file) : _file(to_absolute_path(file))
 {

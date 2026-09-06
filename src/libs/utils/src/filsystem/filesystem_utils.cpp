@@ -31,6 +31,7 @@
 
 namespace origin::filesystem {
 namespace fs = std::filesystem;
+using namespace origin::thread;
 
 EntryType get_entry_type(std::string_view path)
 {

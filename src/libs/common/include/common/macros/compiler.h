@@ -81,17 +81,6 @@
 #define CPP_STD_20 0
 #endif
 
-// common模块导出宏
-#if OS_WINDOWS && COMPILER_MSVC
-#ifdef COMMON_BUILD_SHARED
-#define COMMON_API __declspec(dllexport)
-#else
-#define COMMON_API __declspec(dllimport)
-#endif
-#else
-#define COMMON_API __attribute__((visibility("default")))
-#endif
-
 // 链接库宏
 #ifdef _MSC_VER
 #define LINK_LIBRARY(name) __pragma(comment(lib, #name))

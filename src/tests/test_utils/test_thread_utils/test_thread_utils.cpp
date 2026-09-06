@@ -11,7 +11,7 @@
 
 #include "gtest/gtest.h"
 #include "utils/thread_utils.h"
-
+using namespace origin::thread;
 TEST(TestThreadUtils, ThreadId)
 {
     EXPECT_NE(get_curr_thread_id(), 0);

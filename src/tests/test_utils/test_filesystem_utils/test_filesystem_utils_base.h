@@ -18,6 +18,7 @@
 namespace test::test_utils::test_filesystem_utils {
 using namespace origin::filesystem;
 using namespace origin::process;
+using namespace origin::thread;
 class TestFilesystemUtilsBase : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}

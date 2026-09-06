@@ -34,6 +34,7 @@ namespace origin::filesystem {
 
 namespace fs = std::filesystem;
 using namespace origin::filesystem::internal;
+using namespace origin::thread;
 
 inline const char* recursive_mode_str(bool recursive)
 {

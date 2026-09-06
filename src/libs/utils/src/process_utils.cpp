@@ -29,6 +29,7 @@
 
 namespace origin::process {
 using namespace origin::filesystem;
+using namespace origin::thread;
 
 std::string get_proc_path()
 {

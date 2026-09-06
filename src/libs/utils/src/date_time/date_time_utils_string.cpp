@@ -83,8 +83,7 @@ const std::array<std::string_view, 12> MONTH_ABBR_NAMES = {
 }  // namespace
 
 namespace origin::date_time {
-
-using namespace ::origin::date_time;
+using namespace origin::thread;
 
 std::string_view get_month_full_name(uint32_t month)
 {

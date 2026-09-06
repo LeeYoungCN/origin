@@ -23,7 +23,7 @@
 #include "utils/utils_error_code.h"
 
 namespace {
-
+using namespace origin::thread;
 using namespace origin::date_time;
 #if OS_WINDOWS
 #endif  // OS_WINDOWS

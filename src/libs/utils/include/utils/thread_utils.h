@@ -16,9 +16,7 @@
 #include "common/types/error_code_types.h"
 #include "common/types/thread_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+namespace origin::thread {
 
 /**
  * @brief 获取当前内核态线程ID
@@ -45,8 +43,6 @@ void set_thread_last_err(ErrorCode errcode);
 ErrorCode get_thread_last_err();
 const char *get_thread_last_err_msg();
 
-#ifdef __cplusplus
-}
-#endif  // __cplusplus
+}  // namespace origin::thread
 
 #endif  // UTILS_THREAD_UTILS_H

@@ -20,6 +20,7 @@ struct LogLvlStrInfo {
 namespace origin::logging {
 using namespace origin::filesystem;
 using namespace origin::process;
+using namespace origin::thread;
 
 std::string get_default_log_file(std::string_view suffix)
 {

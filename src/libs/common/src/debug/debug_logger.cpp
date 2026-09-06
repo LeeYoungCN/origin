@@ -169,26 +169,30 @@ private:
     std::string format_log(OriginDbgLvl level, const std::string& message,
                            const char* file = nullptr, int line = 0, const char* func = nullptr)
     {
-        if (file != nullptr) {
-            return std::format("[{}][{}][Tid: {:#x}][{}:{}][{}]: {}",
-                               time_string(),
-                               get_debug_log_lvl_str(level),
-                               get_current_tid(),
-                               std::filesystem::path(file).filename().string(),
-                               line,
-                               func,
-                               message);
-        } else {
-            return std::format("[{}] [{}] [Tid: {:#x}]: {}",
-                               time_string(),
-                               get_debug_log_lvl_str(level),
-                               get_current_tid(),
-                               message);
-        }
+#ifdef DEBUG_MODE
+        return std::format("[{}][{}][Tid: {:#x}][{}:{}][{}]: {}",
+                           time_string(),
+                           get_debug_log_lvl_str(level),
+                           get_current_tid(),
+                           std::filesystem::path(file).filename().string(),
+                           line,
+                           func,
+                           message);
+#else
+        return std::format("[{}] [{}] [Tid: {:#x}]: {}",
+                           time_string(),
+                           get_debug_log_lvl_str(level),
+                           get_current_tid(),
+                           message);
+#endif
     }
 
 private:
-    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_INFO;
+#ifdef DEBUG_MODE
+    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_ERR;
+#else
+    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_OFF;
+#endif
     std::mutex _mtx;
 };
 

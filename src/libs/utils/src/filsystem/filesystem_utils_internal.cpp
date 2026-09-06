@@ -22,7 +22,7 @@
 #include "utils/utils_error_code.h"
 
 namespace origin::filesystem::internal {
-
+using namespace origin::thread;
 ErrorCode ConvertGenericCategory(const std::error_code& ec)
 {
     static const std::unordered_map<int, ErrorCode> ERR_MAP = {

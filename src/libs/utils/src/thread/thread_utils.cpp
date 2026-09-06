@@ -50,7 +50,7 @@ ThreadId GetCurrentThreadIdInternal()
 }
 }  // namespace
 
-extern "C" {
+namespace origin::thread {
 
 ThreadId get_curr_thread_id()
 {
@@ -83,4 +83,4 @@ const char *get_thread_last_err_msg()
     return get_utils_err_msg(g_lastError);
 }
 
-}  // namespace origin::common::utils::thread
+}  // namespace origin::thread

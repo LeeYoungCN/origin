@@ -20,6 +20,7 @@ constexpr uint32_t MAX_NUM = 2048;
 namespace test::test_container::test_concurrent_queue {
 using namespace origin::container;
 using namespace origin::date_time;
+using namespace origin::thread;
 
 struct TestEntry {
     uint32_t num;

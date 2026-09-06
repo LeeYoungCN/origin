@@ -17,7 +17,7 @@
 #include "utils/utils_error_code.h"
 
 namespace test::test_utils::test_filesystem_utils {
-
+using namespace origin::thread;
 using namespace origin::filesystem;
 
 class TestFilesystemUtilsFile : public TestFilesystemUtilsBase {

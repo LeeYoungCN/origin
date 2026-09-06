@@ -1,6 +1,8 @@
 #ifndef COMMON_DEBUG_DEBUG_LOGGER_H
 #define COMMON_DEBUG_DEBUG_LOGGER_H
 
+#include "common/common_api.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,20 +20,20 @@ typedef enum {
     ORG_DBG_LVL_OFF
 } OriginDbgLvl;
 
-void origin_set_debug_logger_level(OriginDbgLvl level);
+COMMON_API void origin_set_debug_logger_level(OriginDbgLvl level);
 
-bool origin_debug_logger_should_log(OriginDbgLvl level);
+COMMON_API bool origin_debug_logger_should_log(OriginDbgLvl level);
 
-void origin_debug_logger_c(const char* file, int line, const char* func, OriginDbgLvl level,
-                           const char* format, ...);
+COMMON_API void origin_debug_logger_c(const char* file, int line, const char* func,
+                                      OriginDbgLvl level, const char* format, ...);
 #ifdef __cplusplus
 }
 #endif
 
 #ifdef __cplusplus
 #include <format>
-void origin_debug_logger_log(const char* file, int line, const char* func, OriginDbgLvl level,
-                             const std::string& message);
+COMMON_API void origin_debug_logger_log(const char* file, int line, const char* func,
+                                        OriginDbgLvl level, const std::string& message);
 
 template <typename... Args>
 void origin_debug_logger_log(const char* file, int line, const char* func, OriginDbgLvl level,

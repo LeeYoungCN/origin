@@ -15,7 +15,7 @@
 namespace logging_test {
 
 using namespace origin::logging;
-
+using namespace origin::thread;
 using namespace origin::date_time;
 using namespace origin::process;
 using namespace origin::filesystem;

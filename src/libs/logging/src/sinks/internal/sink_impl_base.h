@@ -6,10 +6,10 @@
 #include <mutex>
 #include <string_view>
 
+#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
 #include "logging/sinks/sink.h"
 
 namespace origin::logging {
@@ -38,7 +38,7 @@ protected:
 protected:
     std::atomic<LogLevel> _level{LogLevel::INFO};
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
-    std::mutex _sinkMtx;
+    mutable std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};
 };
 }  // namespace origin::logging

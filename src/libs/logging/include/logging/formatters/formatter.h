@@ -2,12 +2,18 @@
 #define ORIGIN_LOGGING_FORMATTERS_FORMATTER_H
 
 #include <memory>
+#include <string>
 
-#include "logging/log_msg.h"
+#include "logging/logging_api.h"
+
+#if COMPILER_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace origin::logging {
-
-class Formatter {
+struct LogMsg;
+class LOGGING_API Formatter {
 public:
     Formatter() = default;
     virtual ~Formatter() = default;
@@ -17,5 +23,9 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Formatter> clone() const = 0;
 };
 }  // namespace origin::logging
+
+#if COMPILER_MSVC
+#pragma warning(pop)
+#endif
 
 #endif  // ORIGIN_LOGGING_FORMATTERS_FORMATTER_H

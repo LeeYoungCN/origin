@@ -26,7 +26,7 @@ RotatingFileSinkImplBase::RotatingFileSinkImplBase(std::string_view file, bool o
 {
 }
 
-std::vector<std::string> RotatingFileSinkImplBase::get_file_list()
+std::vector<std::string> RotatingFileSinkImplBase::get_file_list() const
 {
     std::lock_guard const lock(_sinkMtx);
     std::vector<std::string> rst;

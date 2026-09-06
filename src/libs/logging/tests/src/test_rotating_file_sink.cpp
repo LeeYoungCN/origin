@@ -7,6 +7,7 @@
 #include "common/constants/filesystem_constants.h"
 #include "detail/common.h"
 #include "gtest/gtest.h"
+#include "internal/log_msg.h"
 #include "logging/log_level.h"
 #include "logging/log_source.h"
 #include "logging/sinks/rotating_file_sink.h"

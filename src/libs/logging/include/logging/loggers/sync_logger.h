@@ -10,7 +10,7 @@
 #include "logging/sinks/sink.h"
 
 namespace origin::logging {
-class SyncLogger : public LoggerBase {
+class LOGGING_API SyncLogger : public LoggerBase {
 public:
     SyncLogger() = delete;
     ~SyncLogger() override = default;

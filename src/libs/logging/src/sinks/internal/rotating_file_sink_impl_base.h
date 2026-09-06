@@ -19,7 +19,7 @@ public:
                              std::string_view itemName, std::string_view paramStr);
     ~RotatingFileSinkImplBase() override = default;
 
-    [[nodiscard]] std::vector<std::string> get_file_list();
+    [[nodiscard]] std::vector<std::string> get_file_list() const;
 
 protected:
     virtual void init_file_queue() = 0;

@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 #include "sinks/internal/sink_impl_base.h"
 #include "utils/file_writer.h"
 

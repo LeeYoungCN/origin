@@ -9,7 +9,7 @@
  *
  */
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>

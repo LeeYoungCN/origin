@@ -3,9 +3,9 @@
 
 #include <memory>
 
+#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
-#include "logging/log_msg.h"
 
 namespace origin::logging {
 /**

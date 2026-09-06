@@ -8,7 +8,7 @@
 namespace origin::logging {
 class TaskPool;
 
-class AsyncLogger : public LoggerBase {
+class LOGGING_API AsyncLogger : public LoggerBase {
 public:
     AsyncLogger() = delete;
     ~AsyncLogger() override = default;

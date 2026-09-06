@@ -5,10 +5,11 @@
 #include <string_view>
 #include <vector>
 
+#include "logging/logging_api.h"
 #include "logging/sinks/sink_base.h"
 
 namespace origin::logging {
-class RotatingFileSink : public SinkBase {
+class LOGGING_API RotatingFileSink : public SinkBase {
 public:
     static constexpr uint32_t DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB;
     static constexpr uint32_t DEFAULT_MAX_FILES = 100;                   // 最大保留100个日志文件;

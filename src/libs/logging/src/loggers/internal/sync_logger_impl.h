@@ -6,8 +6,8 @@
 #include <string_view>
 #include <vector>
 
+#include "internal/log_msg.h"
 #include "loggers/internal/logger_impl_base.h"
-#include "logging/log_msg.h"
 #include "logging/sinks/sink.h"
 
 namespace origin::logging {

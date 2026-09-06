@@ -7,9 +7,9 @@
 #include <string_view>
 #include <vector>
 
+#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
 #include "logging/log_source.h"
 #include "logging/loggers/logger.h"
 #include "logging/sinks/sink.h"

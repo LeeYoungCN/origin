@@ -8,7 +8,7 @@
 #include "logging/sinks/sink_base.h"
 
 namespace origin::logging {
-class BasicFileSink : public SinkBase {
+class LOGGING_API BasicFileSink : public SinkBase {
 public:
     BasicFileSink();
     ~BasicFileSink() override = default;

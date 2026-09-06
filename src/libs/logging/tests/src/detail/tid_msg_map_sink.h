@@ -5,7 +5,7 @@
 
 #include "base_test_sink.h"
 #include "common/types/thread_types.h"
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 
 namespace logging_test {
 class TidMsgMapSink : public BaseTestSink {

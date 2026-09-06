@@ -20,9 +20,9 @@
 #endif
 
 #include "common/common_error_code.h"
-#include "common/compiler/macros.h"
 #include "common/constants/filesystem_constants.h"
 #include "common/debug/debug_logger.h"
+#include "common/macros/compiler.h"
 #include "common/types/process_types.h"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"

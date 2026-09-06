@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 #include "common/types/thread_types.h"
 
 #if OS_WINDOWS

@@ -1,4 +1,4 @@
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 #include "common/types/filesystem_types.h"
 #include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"

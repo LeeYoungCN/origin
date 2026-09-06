@@ -19,9 +19,9 @@ namespace origin::logging {
  * P: Process ID;
  * v: Log message;
  */
-class PatternFormatter : public FormatterBase {
+class LOGGING_API PatternFormatter : public FormatterBase {
 public:
-    static constexpr std::string_view DEFAULT_PATTERN = "[%d][%l][%s:%#]: %v";
+    static constexpr const char* DEFAULT_PATTERN = "[%d][%l][%s:%#]: %v";
 
 public:
     PatternFormatter();

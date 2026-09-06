@@ -3,11 +3,17 @@
 
 #include <memory>
 
+#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
-#include "logging/log_msg.h"
+#include "logging/logging_api.h"
+
+#if COMPILER_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace origin::logging {
-class FormatterBase : public Formatter {
+class LOGGING_API FormatterBase : public Formatter {
 public:
     FormatterBase() = delete;
     ~FormatterBase() override;
@@ -25,4 +31,7 @@ private:
 };
 }  // namespace origin::logging
 
+#if COMPILER_MSVC
+#pragma warning(pop)
+#endif
 #endif  // ORIGIN_LOGGING_FORMATTERS_FORMATTER_BASE_H

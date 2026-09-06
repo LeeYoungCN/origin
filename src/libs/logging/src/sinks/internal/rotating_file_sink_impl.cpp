@@ -13,7 +13,7 @@
 
 #include "common/debug/debug_logger.h"
 #include "internal/common.h"
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 #include "logging/sinks/rotating_file_sink.h"
 #include "utils/date_time_utils.h"
 #include "utils/file_writer.h"

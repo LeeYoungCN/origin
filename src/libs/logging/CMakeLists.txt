@@ -23,7 +23,6 @@ endif()
 set_target_properties(${LIB_NAME} PROPERTIES
     PREFIX "lib"          # 给输出文件名加前缀
     IMPORT_PREFIX "lib"   # 给导入库(.lib)加前缀
-    WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号
     DEBUG_POSTFIX "d"
 )
 

@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "internal/common.h"
+#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
 #include "logging/log_source.h"
 #include "logging/sinks/sink.h"
 

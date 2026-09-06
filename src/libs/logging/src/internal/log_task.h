@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 
 namespace origin::logging {
 class LoggerImplBase;

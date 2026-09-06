@@ -13,7 +13,7 @@
 #ifndef COMMON_TYPES_THREAD_TYPES_H
 #define COMMON_TYPES_THREAD_TYPES_H
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>

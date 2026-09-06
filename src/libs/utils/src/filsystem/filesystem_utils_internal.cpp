@@ -1,6 +1,6 @@
 #include "internal/utils/filesystem_utils_internal.h"
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 #include "common/types/error_code_types.h"
 #include "utils/utils_error_code.h"
 

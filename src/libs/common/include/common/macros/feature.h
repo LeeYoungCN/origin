@@ -1,7 +1,7 @@
 #ifndef COMMON_COMPILER_FEATURE_H
 #define COMMON_COMPILER_FEATURE_H
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 
 // 检测是否支持thread_local（C++11特性）
 #if CPP_STD_11 && (COMPILER_MSVC || COMPILER_GCC || COMPILER_CLANG)

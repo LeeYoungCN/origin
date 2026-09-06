@@ -39,7 +39,7 @@ std::vector<std::string> DailyFileSink::get_file_list() const
     return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->get_file_list();
 }
 
-void DailyFileSink::set_max_files(uint32_t maxFiles) const
+void DailyFileSink::set_max_files(uint32_t maxFiles)
 {
     throw_if_pimpl_null();
     return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->set_max_files(maxFiles);

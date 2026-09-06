@@ -4,10 +4,11 @@
 
 #include <cstdio>
 
+#include "logging/logging_api.h"
 #include "logging/sinks/sink_base.h"
 
 namespace origin::logging {
-class StdoutSink : public SinkBase {
+class LOGGING_API StdoutSink : public SinkBase {
 public:
     StdoutSink();
     ~StdoutSink() override = default;

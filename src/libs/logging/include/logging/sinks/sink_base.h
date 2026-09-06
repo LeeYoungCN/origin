@@ -5,13 +5,19 @@
 #include <memory>
 #include <string_view>
 
+#include "common/macros/compiler.h"
 #include "logging/formatters/formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
+#include "logging/logging_api.h"
 #include "logging/sinks/sink.h"
 
+#if COMPILER_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 namespace origin::logging {
-class SinkBase : public Sink {
+class LOGGING_API SinkBase : public Sink {
 public:
     SinkBase() = delete;
     ~SinkBase() override;
@@ -33,5 +39,9 @@ protected:
     std::unique_ptr<Sink> _pImpl;
 };
 }  // namespace origin::logging
+
+#if COMPILER_MSVC
+#pragma warning(pop)
+#endif
 
 #endif  // ORIGIN_LOGGING_SINKS_BASE_SINK_H

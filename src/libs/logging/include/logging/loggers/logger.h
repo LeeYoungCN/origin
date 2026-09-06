@@ -11,11 +11,12 @@
 #include "logging/formatters/formatter.h"
 #include "logging/log_level.h"
 #include "logging/log_source.h"
+#include "logging/logging_api.h"
 #include "logging/sinks/sink.h"
 #include "utils/string_utils.h"
 
 namespace origin::logging {
-class Logger {
+class LOGGING_API Logger {
 public:
     Logger() = default;
     virtual ~Logger() = default;

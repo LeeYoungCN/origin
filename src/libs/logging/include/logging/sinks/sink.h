@@ -7,10 +7,11 @@
 
 #include "logging/formatters/formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
+#include "logging/logging_api.h"
 
 namespace origin::logging {
-class Sink {
+struct LogMsg;
+class LOGGING_API Sink {
 public:
     Sink() = default;
     virtual ~Sink() = default;

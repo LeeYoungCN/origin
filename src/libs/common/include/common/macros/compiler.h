@@ -1,5 +1,5 @@
-#ifndef COMMON_COMPILER_MACROS_H
-#define COMMON_COMPILER_MACROS_H
+#ifndef COMMON_MACROS_COMPILER_H
+#define COMMON_MACROS_COMPILER_H
 
 // 平台区分宏
 #if defined(_WIN32) || defined(_WIN64)
@@ -99,4 +99,4 @@
 #define LINK_LIBRARY(name)
 #endif
 
-#endif  // COMMON_COMPILER_MACROS_H
+#endif  // COMMON_MACROS_COMPILER_H

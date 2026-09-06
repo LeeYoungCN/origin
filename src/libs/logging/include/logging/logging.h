@@ -11,6 +11,7 @@
 #include "logging/log_source.h"
 #include "logging/loggers/async_logger.h"
 #include "logging/loggers/logger.h"
+#include "logging/logging_api.h"
 #include "logging/sinks/sink.h"
 
 namespace origin::logging {
@@ -59,16 +60,16 @@ std::unique_ptr<Formatter> create_formatter(FormatterArgs&&... formatterArgs)
 std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt);
 
 #pragma region Root logger
-std::shared_ptr<Logger> root_logger();
-Logger* root_logger_raw();
-void set_root_logger(std::shared_ptr<Logger> logger);
+LOGGING_API std::shared_ptr<Logger> root_logger();
+LOGGING_API Logger* root_logger_raw();
+LOGGING_API void set_root_logger(std::shared_ptr<Logger> logger);
 
-bool should_log(LogLevel level);
-void set_level(LogLevel level);
-void flush_on(LogLevel level);
-void set_pattern(std::string_view pattern);
-void set_formatter(const std::unique_ptr<Formatter>& formatter);
-void flush();
+LOGGING_API bool should_log(LogLevel level);
+LOGGING_API void set_level(LogLevel level);
+LOGGING_API void flush_on(LogLevel level);
+LOGGING_API void set_pattern(std::string_view pattern);
+LOGGING_API void set_formatter(const std::unique_ptr<Formatter>& formatter);
+LOGGING_API void flush();
 
 template <typename... Args>
 void log(LogLevel level, std::format_string<Args...> format, Args&&... args)
@@ -253,24 +254,24 @@ void fatal(const LogSource& source, const T& message)
 #pragma endregion
 
 #pragma region logging manager
-void initialize_logger(const std::shared_ptr<Logger>& logger);
-void set_level_all(LogLevel level);
-void flush_on_all(LogLevel level);
-void set_pattern_all(std::string_view pattern);
-void set_formatter_all(std::unique_ptr<Formatter> formatter);
-void flush_all();
-void shutdown();
+LOGGING_API void initialize_logger(const std::shared_ptr<Logger>& logger);
+LOGGING_API void set_level_all(LogLevel level);
+LOGGING_API void flush_on_all(LogLevel level);
+LOGGING_API void set_pattern_all(std::string_view pattern);
+LOGGING_API void set_formatter_all(std::unique_ptr<Formatter> formatter);
+LOGGING_API void flush_all();
+LOGGING_API void shutdown();
 #pragma endregion
 
 #pragma region registry
-bool register_logger(std::shared_ptr<Logger> logger);
-void register_or_replace_logger(std::shared_ptr<Logger> logger);
-void remove_logger(std::string_view name);
-void remove_all();
-std::shared_ptr<Logger> get_logger(std::string_view name);
+LOGGING_API bool register_logger(std::shared_ptr<Logger> logger);
+LOGGING_API void register_or_replace_logger(std::shared_ptr<Logger> logger);
+LOGGING_API void remove_logger(std::string_view name);
+LOGGING_API void remove_all();
+LOGGING_API std::shared_ptr<Logger> get_logger(std::string_view name);
 
-void init_root_task_pool(uint32_t capacity, uint32_t threadCnt);
-std::shared_ptr<TaskPool> root_task_pool();
+LOGGING_API void init_root_task_pool(uint32_t capacity, uint32_t threadCnt);
+LOGGING_API std::shared_ptr<TaskPool> root_task_pool();
 #pragma endregion
 
 }  // namespace origin::logging

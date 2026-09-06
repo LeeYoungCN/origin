@@ -1,19 +1,6 @@
-/**
- * @file logging_types.h
- * @author LiYang
- * @brief 日志等级, 日志等级转字符串
- * @version 0.1
- * @date 2025-07-23
- *
- * @copyright Copyright (c) 2025
- *
- */
 #pragma once
-
 #ifndef ORIGIN_LOGGING_DETAILS_LOG_LEVEL_H
 #define ORIGIN_LOGGING_DETAILS_LOG_LEVEL_H
-
-#include <string_view>
 
 namespace origin::logging {
 /**
@@ -29,8 +16,6 @@ enum LogLevel {
     FATAL = 5,  ///< 致命错误（导致程序无法继续运行的严重异常，如核心资源初始化失败）
     OFF = 6     ///< 关闭日志功能
 };
-
-std::string_view log_level_to_string(LogLevel level, bool full = true);
 
 }  // namespace origin::logging
 

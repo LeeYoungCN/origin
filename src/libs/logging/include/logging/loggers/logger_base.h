@@ -10,8 +10,13 @@
 #include "logging/loggers/logger.h"
 #include "logging/sinks/sink.h"
 
+#if COMPILER_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 namespace origin::logging {
-class LoggerBase : public Logger {
+class LOGGING_API LoggerBase : public Logger {
 public:
     LoggerBase() = delete;
     explicit LoggerBase(std::shared_ptr<Logger> pImpl);
@@ -37,7 +42,12 @@ public:
 
 protected:
     void throw_if_pimpl_null() const;
+
     std::shared_ptr<Logger> _pImpl;
 };
 }  // namespace origin::logging
+
+#if COMPILER_MSVC
+#pragma warning(pop)
+#endif
 #endif  // ORIGIN_LOGGING_LOGGERS_LOGGER_BASE_H

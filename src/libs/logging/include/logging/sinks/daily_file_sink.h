@@ -6,13 +6,14 @@
 #include <string_view>
 #include <vector>
 
+#include "logging/logging_api.h"
 #include "logging/sinks/sink_base.h"
 
 namespace origin::logging {
 /**
  * @brief: 按照日期滚动日志。
  */
-class DailyFileSink : public SinkBase {
+class LOGGING_API DailyFileSink : public SinkBase {
 public:
     static constexpr uint32_t DEFAULT_ROTATION_HOUR = 0;
     static constexpr uint32_t DEFAULT_ROTATION_MINUTE = 0;
@@ -30,7 +31,7 @@ public:
     [[nodiscard]] std::string file() const;
     [[nodiscard]] std::vector<std::string> get_file_list() const;
 
-    void set_max_files(uint32_t maxFiles) const;
+    void set_max_files(uint32_t maxFiles);
     [[nodiscard]] uint32_t max_files() const;
 };
 

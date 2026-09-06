@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base_test_sink.h"
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 
 using namespace origin::logging;
 

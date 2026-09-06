@@ -1,7 +1,7 @@
 #ifndef COMMON_COMPILER_WARNINGS_H
 #define COMMON_COMPILER_WARNINGS_H
 
-#include "common/compiler/macros.h"
+#include "common/macros/compiler.h"
 
 // 通用警告设置：开启严格警告（工程推荐）
 #if COMPILER_MSVC

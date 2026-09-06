@@ -1,4 +1,4 @@
-#include "logging/log_msg.h"
+#include "internal/log_msg.h"
 
 #include <string>
 #include <string_view>
@@ -19,7 +19,7 @@ LogMsg::LogMsg(LogSource source, std::string_view loggerName, LogLevel level,
       source(std::move(source)),
       timestamp(origin::date_time::get_now_timestamp_ms()),
       threadId(get_curr_thread_id()),
-      procId(process::get_curr_proc_id())
+      procId(origin::process::get_curr_proc_id())
 {
 }
 }  // namespace origin::logging

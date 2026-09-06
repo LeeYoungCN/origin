@@ -3,9 +3,10 @@
 
 #include "detail/common.h"
 #include "gtest/gtest.h"
+#include "internal/common.h"
+#include "internal/log_msg.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
-#include "logging/log_msg.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"

@@ -14,7 +14,7 @@
 #include "gtest/gtest.h"
 #include "utils/date_time_utils.h"
 
-namespace test::test_utils::test_date_time_utils {
+namespace utils_test::date_time_test {
 
 using namespace origin::date_time;
 
@@ -90,4 +90,4 @@ void TestTimeString(const std::string_view& format, std::tm timeInfo, const Date
     }
 }
 
-}  // namespace test::test_utils::test_date_time_utils
+}  // namespace utils_test::date_time_test

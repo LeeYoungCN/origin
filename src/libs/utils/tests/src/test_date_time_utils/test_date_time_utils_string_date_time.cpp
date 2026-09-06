@@ -20,7 +20,7 @@ const std::vector<std::string_view> WEEKDAY_TEST_FORMAT = {
     "Y-%y-%m-%d-%H:%M %A", "Y-%y-%m-%d-%H:%M %a", "Y-%y-%m-%d-%H:%M %A %a"};
 }  // namespace
 
-namespace test::test_utils::test_date_time_utils {
+namespace utils_test::date_time_test {
 
 using TestBufferParam = std::tuple<std::string_view, uint32_t, uint32_t, uint32_t>;
 using TestStringParam = std::tuple<std::string_view, uint32_t, uint32_t>;
@@ -104,4 +104,4 @@ INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_WEEKDAY, TestDateTimeUtilsTimeCompStr,
                          testing::Combine(testing::ValuesIn(WEEKDAY_TEST_FORMAT),
                                           testing::Values(10U), testing::Range(0U, 10U)));
 #endif
-}  // namespace test::test_utils::test_date_time_utils
+}  // namespace utils_test::date_time_test

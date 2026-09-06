@@ -8,7 +8,7 @@
 
 #include "common/types/date_time_types.h"
 
-namespace test::test_utils::test_date_time_utils {
+namespace utils_test::date_time_test {
 
 std::tm TimestampToTimeInfo(TimestampMs ts);
 
@@ -20,5 +20,5 @@ void TestTimeBuffer(const std::string_view& format, uint32_t length, std::tm tim
 void TestTimeString(const std::string_view& format, TimestampMs timestamp);
 
 void TestTimeString(const std::string_view& format, std::tm timeInfo, const DateTimeSt& dateTime);
-}  // namespace test::test_utils::test_date_time_utils
+}  // namespace utils_test::date_time_test
 #endif  // TEST_UTILS_TEST_DATE_TIME_UTILS_COMMON_H

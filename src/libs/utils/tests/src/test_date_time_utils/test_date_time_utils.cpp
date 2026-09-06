@@ -9,7 +9,7 @@
 
 using namespace origin::date_time;
 
-namespace test::test_utils::test_date_time_utils {
+namespace utils_test::date_time_test {
 TEST(TestDateTimeUtilsMonthName, case)
 {
     for (uint32_t i = 0; i < 20; i++) {
@@ -50,4 +50,4 @@ TEST(TestTimestampAndDateTimeSt, case)
     }
 }
 
-}  // namespace test::test_utils::test_date_time_utils
+}  // namespace utils_test::date_time_test

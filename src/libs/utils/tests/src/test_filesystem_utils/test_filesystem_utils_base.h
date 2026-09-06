@@ -15,7 +15,7 @@
 #include "utils/process_utils.h"
 #include "utils/thread_utils.h"
 
-namespace test::test_utils::test_filesystem_utils {
+namespace utils_test::filesystem_test {
 using namespace origin::filesystem;
 using namespace origin::process;
 using namespace origin::thread;
@@ -40,4 +40,4 @@ protected:
     std::string m_workDir;
 };
 
-}  // namespace test::test_utils::test_filesystem_utils
+}  // namespace utils_test::filesystem_test

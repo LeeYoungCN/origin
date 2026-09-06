@@ -1,5 +1,5 @@
 /**
- * @file test_filesystem_utils.cpp
+ * @file filesystem_test.cpp
  * @author your name (you@domain.com)
  * @brief
  * @version 0.1
@@ -18,7 +18,7 @@
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 
-namespace test::test_utils::test_filesystem_utils {
+namespace utils_test::filesystem_test {
 
 using namespace origin::filesystem;
 
@@ -118,4 +118,4 @@ TEST_F(TestFilesystemUtilsPath, JoinPaths_Success)
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 
-}  // namespace test::test_utils::test_filesystem_utils
+}  // namespace utils_test::filesystem_test

@@ -16,7 +16,7 @@
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 
-namespace test::test_utils::test_filesystem_utils {
+namespace utils_test::filesystem_test {
 using namespace origin::thread;
 using namespace origin::filesystem;
 
@@ -380,4 +380,4 @@ TEST_F(TestFilesystemUtilsFile, rename_file_dest_invalid)
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_FILE) << get_thread_last_err_msg();
 }
 
-}  // namespace test::test_utils::test_filesystem_utils
+}  // namespace utils_test::filesystem_test

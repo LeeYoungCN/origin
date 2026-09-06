@@ -8,7 +8,7 @@
 #include "test_date_time_utils_common.h"
 #include "utils/date_time_utils.h"
 
-namespace test::test_utils::test_date_time_utils {
+namespace utils_test::date_time_test {
 
 using TestBufferParam = std::tuple<std::string_view, int32_t>;
 
@@ -73,4 +73,4 @@ INSTANTIATE_TEST_SUITE_P(FORMAT, TestDateTimeUtilsTimestampStr,
 #ifdef _MSVC
 INSTANTIATE_TEST_SUITE_P(Windows, TestFormatTimeString, testing::ValuesIn(TestMillisFormats));
 #endif
-}  // namespace test::test_utils::test_date_time_utils
+}  // namespace utils_test::date_time_test

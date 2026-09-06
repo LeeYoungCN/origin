@@ -11,7 +11,7 @@
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
 
-namespace test::test_utils::test_file_writer {
+namespace utils_test::test_file_writer {
 using namespace origin::filesystem;
 using namespace origin::process;
 
@@ -136,4 +136,4 @@ TEST_F(TestFileAppender, append_mode)
     EXPECT_EQ(m_appender->size(), get_file_size(m_testFile));
 }
 
-}  // namespace test::test_utils::test_file_writer
+}  // namespace utils_test::test_file_writer

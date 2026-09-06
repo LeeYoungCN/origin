@@ -17,7 +17,7 @@ target_include_directories(${LIB_NAME}
 )
 
 if (MINGW)
-    target_link_libraries(${LIB_NAME} PRIVATE pthread)
+    target_link_libraries(${LIB_NAME} PUBLIC pthread)
 endif()
 
 set_target_properties(${LIB_NAME} PROPERTIES
@@ -27,7 +27,7 @@ set_target_properties(${LIB_NAME} PROPERTIES
     DEBUG_POSTFIX "d"
 )
 
-target_link_libraries(${LIB_NAME} PRIVATE common)
+target_link_libraries(${LIB_NAME} PUBLIC common)
 
 install(DIRECTORY include/
         DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
@@ -35,3 +35,7 @@ install(DIRECTORY include/
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 install(TARGETS ${LIB_NAME} COMPONENT ${LIB_NAME})
+
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

@@ -136,6 +136,29 @@ std::string format_time_string(const DateTimeSt& dateTime, const std::string_vie
                                                                origin::date_time::DEFAULT_TIME_FMT);
 
 /**
+ * @brief 将时间戳按指定格式转换为字符串并追加到已有字符串中
+ * @details 适用于高频调用场景，避免频繁内存分配
+ * @param[in] timestamp 待格式化的毫秒级时间戳
+ * @param[in] format 格式字符串（支持占位符，如%Y表示4位年份）
+ *                   默认值：origin::constants::date_time::DEFAULT_TIME_FMT（"%Y-%m-%d
+ * %H:%M:%S"）
+ */
+void append_time_string(std::string& timeString, TimestampMs timestamp,
+                        const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
+                        TimeZone timeZone = TimeZone::LOCAL);
+
+/**
+ * @brief 将时间组件按指定格式转换为字符串并追加到已有字符串中
+ * @details 适用于高频调用场景，避免频繁内存分配
+ * @param[in] dateTime 待格式化的时间组件
+ * @param[in] format 格式字符串（支持占位符，如%Y表示4位年份）
+ *                   默认值：origin::constants::date_time::DEFAULT_TIME_FMT（"%Y-%m-%d
+ * %H:%M:%S"）
+ */
+void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+                        const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT);
+
+/**
  * @brief 将时间戳按指定格式写入字符缓冲区（高性能）
  * @details 直接写入用户提供的缓冲区，减少内存分配，适合高频调用场景
  * @param[out] buffer 目标缓冲区（需提前分配内存，不可为nullptr）

@@ -140,22 +140,102 @@ std::string_view get_weekday_abbr_name(uint32_t weekday)
 std::string format_time_string(TimestampMs timestamp, const std::string_view& format,
                                TimeZone timeZone)
 {
-    auto dateTime = timestamp_to_date_time(timestamp, timeZone);
-    return format_time_string(dateTime, format);
+    std::string timeString;
+    append_time_string(timeString, timestamp, format, timeZone);
+    return timeString;
 }
 
 std::string format_time_string(const DateTimeSt& dateTime, const std::string_view& format)
 {
-    std::string timeString(MAX_TIME_STR_LEN, '\0');
-    size_t len = format_time_buffer(timeString.data(), timeString.capacity(), dateTime, format);
-
-    if (len <= 0 || len > timeString.capacity()) {
-        ORIGIN_DEBUG_ERR("Time format failed or buffer overflow. len: {}.", len);
-        len = 0;
-    }
-    timeString.resize(len);  // resize仅修改字符串的size属性，不拷贝数据
-
+    std::string timeString;
+    append_time_string(timeString, dateTime, format);
     return timeString;
+}
+
+void append_time_string(std::string& timeString, TimestampMs timestamp,
+                        const std::string_view& format, TimeZone timeZone)
+{
+    auto dateTime = timestamp_to_date_time(timestamp, timeZone);
+    append_time_string(timeString, dateTime, format);
+}
+
+void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+                        const std::string_view& format)
+{
+    size_t formatIdx = 0;
+
+    auto insertString = [&](const std::string_view& name) -> void {
+        std::string_view insertName = name.empty() ? "?" : name;
+        std::format_to(std::back_inserter(timeString), "{}", insertName);
+    };
+
+    for (; formatIdx < format.length(); formatIdx++) {
+        if (format[formatIdx] != '%') {
+            timeString.append(std::string_view(format.data() + formatIdx, 1));
+            continue;
+        }
+        formatIdx++;
+        if (formatIdx >= format.length()) {
+            timeString.append("%");
+            break;
+        }
+        bool success = true;
+        switch (format[formatIdx]) {
+            case 'Y':
+                std::format_to(std::back_inserter(timeString), "{:04}", dateTime.year);
+                break;
+            case 'y':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.year % 100);
+                break;
+            case 'm':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.month);
+                break;
+            case 'd':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.day);
+                break;
+            case 'H':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.hour);
+                break;
+            case 'M':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.minute);
+                break;
+            case 'S':
+                std::format_to(std::back_inserter(timeString), "{:02}", dateTime.second);
+                break;
+            case 'B':  // 完整月份名称
+                insertString(get_month_full_name(dateTime.month));
+                break;
+            case 'b':  // 缩写月份名称
+            case 'h':  // 缩写月份名称
+                insertString(get_month_abbr_name(dateTime.month));
+                break;
+            case 'A':  // 完整星期名称
+                insertString(get_weekday_full_name(dateTime.wday));
+                break;
+            case 'a':  // 缩写星期名称
+                insertString(get_weekday_abbr_name(dateTime.wday));
+                break;
+            case '%':
+                timeString.append("%");
+                break;
+            case '3':
+                if (formatIdx + 1 < format.length() && format[formatIdx + 1] == 'f') {
+                    formatIdx++;
+                    std::format_to(std::back_inserter(timeString), "{:03}", dateTime.millis);
+                } else {
+                    timeString.append(std::string_view(format.data() + formatIdx - 1, 1));
+                }
+                break;
+            default:
+                timeString.append(std::string_view(format.data() + formatIdx - 1, 1));
+                break;
+        }
+        if (!success) {
+            break;
+        }
+    }
+
+    set_thread_last_err(ERR_COMM_SUCCESS);
 }
 
 size_t format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
@@ -289,4 +369,5 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
 
     return bufferIdx;
 }
+
 }  // namespace origin::date_time

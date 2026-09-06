@@ -1,15 +1,24 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "common/container/concurrent_blocking_queue.hpp"
-#include "common/types/thread_types.h"
+#include "container/blocking_queue.hpp"
 #include "gtest/gtest.h"
-#include "utils/thread_utils.h"
 
-namespace test::test_container::test_concurrent_queue {
+namespace test::test_container::test_blocking_queue {
 using namespace origin::container;
 
-class TestConcurrentBlockingQueueSt : public ::testing::Test {
+class TestEmplaceEntry {
+public:
+    TestEmplaceEntry() = default;
+    ~TestEmplaceEntry() = default;
+    explicit TestEmplaceEntry(int32_t n) : x(n) {}
+    [[nodiscard]] int32_t get() const { return x; };
+
+private:
+    int32_t x = -1;
+};
+
+class TestBlockingQueue : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
@@ -17,31 +26,31 @@ protected:
     void TearDown() override {};
 };
 
-TEST_F(TestConcurrentBlockingQueueSt, create_default)
+TEST_F(TestBlockingQueue, create_default)
 {
-    auto q = ConcurrentBlockingQueue<uint32_t>();
+    auto q = BlockingQueue<uint32_t>();
     EXPECT_EQ(q.size(), 0);
-    EXPECT_EQ(q.capacity(), CONCURRENT_BLOCKING_QUEUE_DEFAULT_CAPACITY);
+    EXPECT_EQ(q.capacity(), BLOCKING_QUEUE_DEFAULT_CAPACITY);
     EXPECT_TRUE(q.empty());
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, create_capacity)
+TEST_F(TestBlockingQueue, create_capacity)
 {
-    auto q = ConcurrentBlockingQueue<uint32_t>(1024);
+    auto q = BlockingQueue<uint32_t>(1024);
     EXPECT_EQ(q.size(), 0);
     EXPECT_EQ(q.capacity(), 1024);
     EXPECT_TRUE(q.empty());
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, create_capacity_invalid)
+TEST_F(TestBlockingQueue, create_capacity_invalid)
 {
-    EXPECT_THROW(ConcurrentBlockingQueue<uint32_t>(0), std::invalid_argument);
+    EXPECT_THROW(BlockingQueue<uint32_t>(0), std::invalid_argument);
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, out_of_range)
+TEST_F(TestBlockingQueue, out_of_range)
 {
     uint32_t capacity = 100;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    auto queue = BlockingQueue<uint32_t>(capacity);
     EXPECT_EQ(capacity, queue.capacity());
     EXPECT_TRUE(queue.empty());
 
@@ -52,10 +61,10 @@ TEST_F(TestConcurrentBlockingQueueSt, out_of_range)
     }
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, enqueue)
+TEST_F(TestBlockingQueue, enqueue)
 {
     uint32_t capacity = 100;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    auto queue = BlockingQueue<uint32_t>(capacity);
 
     EXPECT_EQ(capacity, queue.capacity());
     EXPECT_TRUE(queue.empty());
@@ -70,10 +79,48 @@ TEST_F(TestConcurrentBlockingQueueSt, enqueue)
     EXPECT_TRUE(queue.full());
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, enqueue_overrun)
+TEST_F(TestBlockingQueue, emplace_back)
 {
     uint32_t capacity = 100;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    auto queue = BlockingQueue<TestEmplaceEntry>(capacity);
+
+    EXPECT_EQ(capacity, queue.capacity());
+    EXPECT_TRUE(queue.empty());
+
+    for (uint32_t i = 0; i < capacity; i++) {
+        EXPECT_TRUE(queue.emplace_back(i)) << "i = " << i;
+        EXPECT_EQ(i + 1, queue.size());
+        EXPECT_EQ(queue[i].get(), i);
+    }
+
+    EXPECT_FALSE(queue.emplace_back(0));
+    EXPECT_TRUE(queue.full());
+}
+
+TEST_F(TestBlockingQueue, clear)
+{
+    uint32_t capacity = 100;
+    auto queue = BlockingQueue<uint32_t>(capacity);
+
+    EXPECT_EQ(capacity, queue.capacity());
+    EXPECT_TRUE(queue.empty());
+
+    for (uint32_t i = 0; i < capacity; i++) {
+        EXPECT_TRUE(queue.enqueue(i)) << "i = " << i;
+        EXPECT_EQ(i + 1, queue.size());
+        EXPECT_EQ(queue[i], i);
+    }
+
+    EXPECT_TRUE(queue.full());
+    queue.clear();
+    EXPECT_TRUE(queue.empty());
+    EXPECT_EQ(queue.size(), 0);
+}
+
+TEST_F(TestBlockingQueue, enqueue_overrun)
+{
+    uint32_t capacity = 100;
+    auto queue = BlockingQueue<uint32_t>(capacity);
 
     EXPECT_EQ(capacity, queue.capacity());
     EXPECT_TRUE(queue.empty());
@@ -93,31 +140,33 @@ TEST_F(TestConcurrentBlockingQueueSt, enqueue_overrun)
     }
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, enqueue_discard_counter)
+TEST_F(TestBlockingQueue, emplace_back_overrun)
 {
     uint32_t capacity = 100;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    auto queue = BlockingQueue<TestEmplaceEntry>(capacity);
 
     EXPECT_EQ(capacity, queue.capacity());
     EXPECT_TRUE(queue.empty());
 
     for (uint32_t i = 0; i < 2 * capacity; i++) {
-        auto rst = queue.enqueue(i);
+        queue.emplace_back_overrun(i);
         if (i < capacity) {
-            EXPECT_TRUE(rst);
             EXPECT_EQ(i + 1, queue.size());
         } else {
             EXPECT_EQ(capacity, queue.size());
-            EXPECT_FALSE(rst);
-            EXPECT_EQ(i - capacity + 1, queue.discard_counter());
+            EXPECT_EQ(queue[0].get(), i - capacity + 1);
         }
+    }
+
+    for (uint32_t i = 0; i < capacity; ++i) {
+        EXPECT_EQ(queue.at(i).get(), capacity + i);
     }
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, dequeue)
+TEST_F(TestBlockingQueue, dequeue)
 {
     uint32_t capacity = 100;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    auto queue = BlockingQueue<uint32_t>(capacity);
 
     for (uint32_t i = 0; i < capacity; i++) {
         queue.enqueue(i);
@@ -138,26 +187,27 @@ TEST_F(TestConcurrentBlockingQueueSt, dequeue)
     }
 }
 
-TEST_F(TestConcurrentBlockingQueueSt, queue_and_dequeue_wait_for)
+TEST_F(TestBlockingQueue, queue_and_dequeue)
 {
-    uint32_t capacity = CONCURRENT_BLOCKING_QUEUE_DEFAULT_CAPACITY;
-    auto queue = ConcurrentBlockingQueue<uint32_t>(capacity);
+    uint32_t capacity = 100;
+    auto queue = BlockingQueue<uint32_t>(capacity);
 
     for (uint32_t i = 0; i < capacity; i++) {
-        EXPECT_TRUE(queue.enqueue_wait_for(i));
+        EXPECT_TRUE(queue.enqueue(i));
     }
 
     uint32_t lastNum = 0;
     for (uint32_t i = 0; i < capacity / 2; i++) {
-        EXPECT_TRUE(queue.dequeue_wait_for(lastNum));
+        EXPECT_TRUE(queue.dequeue(lastNum));
     }
 
     for (uint32_t i = 0; i < capacity / 2; i++) {
-        EXPECT_TRUE(queue.enqueue_wait_for(capacity + i));
+        EXPECT_TRUE(queue.enqueue(capacity + i));
     }
 
     for (uint32_t i = 0; i < capacity; i++) {
         EXPECT_EQ(queue[i], capacity / 2 + i);
     }
 }
-}  // namespace test::test_container::test_concurrent_queue
+
+}  // namespace test::test_container::test_blocking_queue

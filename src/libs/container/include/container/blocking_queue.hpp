@@ -1,5 +1,5 @@
-#ifndef COMMON_CONTAINER_BLOCKING_QUEUE_HPP
-#define COMMON_CONTAINER_BLOCKING_QUEUE_HPP
+#ifndef ORIGIN_CONTAINER_BLOCKING_QUEUE_HPP
+#define ORIGIN_CONTAINER_BLOCKING_QUEUE_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -168,4 +168,4 @@ private:
 };
 }  // namespace origin::container
 
-#endif  // COMMON_CONTAINER_BLOCKING_QUEUE_HPP
+#endif  // ORIGIN_CONTAINER_BLOCKING_QUEUE_HPP

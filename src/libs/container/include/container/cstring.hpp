@@ -1,11 +1,11 @@
-#ifndef COMMON_CONTAINER_CSTRING_HPP
-#define COMMON_CONTAINER_CSTRING_HPP
+#ifndef ORIGIN_CONTAINER_CSTRING_HPP
+#define ORIGIN_CONTAINER_CSTRING_HPP
 #include <atomic>
 #include <cstdarg>
 #include <cstddef>
 #include <format>
 
-#include "common/common_error_code.h"
+#include "container/container_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/error_code_types.h"
 
@@ -26,7 +26,7 @@ public:
         if (m_lastErrcode != ERR_COMM_SUCCESS) {
             ORIGIN_DEBUG_ERR("Construct cstring failed. errcode: {:#x}, msg: {}.",
                              m_lastErrcode,
-                             get_comm_err_msg(m_lastErrcode));
+                             get_container_err_msg(m_lastErrcode));
         }
     }
 
@@ -75,7 +75,7 @@ private:
             m_length += fmtLen;
             m_lastErrcode = ERR_COMM_SUCCESS;
         } else {
-            m_lastErrcode = ERR_COMM_CTN_OVERFLOW;
+            m_lastErrcode = ERR_CONTAINER_OVERFLOW;
             ORIGIN_DEBUG_ERR("CString overflow. cap: {}, len: {}, errcode: {:#x}.",
                              m_capacity,
                              m_length + fmtLen,
@@ -90,4 +90,4 @@ private:
     std::atomic<size_t> m_length{0};
     const size_t m_capacity{size};
 };
-#endif  // COMMON_CONTAINER_CSTRING_HPP
+#endif  // ORIGIN_CONTAINER_CSTRING_HPP

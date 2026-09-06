@@ -26,7 +26,7 @@ set_target_properties(${LIB_NAME} PROPERTIES
     DEBUG_POSTFIX "d"
 )
 
-target_link_libraries(${LIB_NAME} PUBLIC common utils)
+target_link_libraries(${LIB_NAME} PUBLIC common container utils)
 
 install(DIRECTORY include/
         DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include

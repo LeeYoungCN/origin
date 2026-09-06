@@ -44,15 +44,6 @@ typedef enum {
 #define ERR_COMM_GENERIC_ERROR      MAKE_COMMON_ERROR(COMM_ERR_ID_GENERIC_ERROR)
 #define ERR_COMM_UNKNOWN_ERROR      MAKE_COMMON_ERROR(COMM_ERR_ID_UNKNOWN_ERROR)
 
-typedef enum {
-    CTN_ERR_ID_OVERFLOW = 1,  ///< 路径不存在
-} ContainerErrId;
-
-#define MAKE_CONTAINER_ERROR(errId) \
-    MAKE_ERROR(ERR_SEV_ERROR, COMMON_MODULE_ID, COMM_ERR_TYPE_CONTAINER, errId)
-
-#define ERR_COMM_CTN_OVERFLOW MAKE_CONTAINER_ERROR(CTN_ERR_ID_OVERFLOW)
-
 static inline const char *get_comm_err_msg(ErrorCode errCode)
 {
     switch (errCode) {
@@ -80,9 +71,6 @@ static inline const char *get_comm_err_msg(ErrorCode errCode)
             return "Generic error";
         case ERR_COMM_UNKNOWN_ERROR:
             return "Unkown error";
-        // Container error code.
-        case ERR_COMM_CTN_OVERFLOW:
-            return "Container overflow";
         // Unknown error code.
         default:
             return "Unknown error code";

@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-#include "common/container/concurrent_blocking_queue.hpp"
+#include "container/concurrent_blocking_queue.hpp"
 #include "internal/log_msg.h"
 #include "internal/log_task.h"
 

@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#include "common/container/concurrent_blocking_queue.hpp"
+#include "container/concurrent_blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
 #include "internal/log_msg.h"
 #include "internal/log_task.h"

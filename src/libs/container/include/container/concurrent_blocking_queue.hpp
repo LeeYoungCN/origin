@@ -1,5 +1,5 @@
-#ifndef COMMON_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
-#define COMMON_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
+#ifndef ORIGIN_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
+#define ORIGIN_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
 
 #include <chrono>
 #include <condition_variable>
@@ -7,7 +7,7 @@
 #include <mutex>
 #include <utility>
 
-#include "common/container/blocking_queue.hpp"
+#include "container/blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
 
 namespace origin::container {
@@ -289,4 +289,4 @@ private:
 };
 }  // namespace origin::container
 
-#endif  // COMMON_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
+#endif  // ORIGIN_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP

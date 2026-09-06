@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#include "common/container/concurrent_blocking_queue.hpp"
+#include "container/concurrent_blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
 #include "common/types/thread_types.h"
 #include "gtest/gtest.h"

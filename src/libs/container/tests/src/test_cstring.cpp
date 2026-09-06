@@ -1,5 +1,5 @@
 #include "common/common_error_code.h"
-#include "common/container/cstring.hpp"
+#include "container/cstring.hpp"
 #include "gtest/gtest.h"
 
 namespace test::test_container::test_CString {
@@ -49,7 +49,7 @@ TEST_F(TestCString, overflow)
     constexpr uint32_t capacity = 2;
     const std::string expectStr = "Hello world!";
     CString<capacity> testString = expectStr.c_str();
-    EXPECT_EQ(testString.last_error(), ERR_COMM_CTN_OVERFLOW);
+    EXPECT_EQ(testString.last_error(), ERR_CONTAINER_OVERFLOW);
     EXPECT_EQ(testString.capacity(), capacity);
     EXPECT_EQ(testString.length(), 0);
 }

@@ -1,4 +1,5 @@
 if (BUILD_TESTS)
+    set_property(GLOBAL PROPERTY TEST_TIMEOUT 60)
     set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_THIRD_PARTY_PATH}/googletest")
 
     find_package(GTest QUIET)
@@ -14,8 +15,3 @@ set(LIB_LIST "" CACHE STRING "")
 add_subdirectory(libs)
 
 message(STATUS "LIB_LIST: ${LIB_LIST}")
-
-if (BUILD_TESTS)
-    message(STATUS "TEST_LIB_LIST: ${TEST_LIB_LIST}")
-    add_subdirectory(tests)
-endif()

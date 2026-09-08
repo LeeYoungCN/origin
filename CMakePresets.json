@@ -507,11 +507,6 @@
     "testPresets": [
         {
             "name": "project_TEST_ALL_base",
-            "filter": {
-                "include": {
-                    "name": "^TEST_ALL$"
-                }
-            },
             "hidden": true,
             "output": {
                 "outputOnFailure": true,

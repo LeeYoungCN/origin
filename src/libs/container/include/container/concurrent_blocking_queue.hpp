@@ -7,8 +7,8 @@
 #include <mutex>
 #include <utility>
 
-#include "container/blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
+#include "container/blocking_queue.hpp"
 
 namespace origin::container {
 

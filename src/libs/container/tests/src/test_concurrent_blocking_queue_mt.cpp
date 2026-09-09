@@ -6,9 +6,9 @@
 #include <thread>
 #include <vector>
 
-#include "container/concurrent_blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
 #include "common/types/thread_types.h"
+#include "container/concurrent_blocking_queue.hpp"
 #include "gtest/gtest.h"
 #include "utils/date_time_utils.h"
 #include "utils/thread_utils.h"

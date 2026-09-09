@@ -1,8 +1,8 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "container/concurrent_blocking_queue.hpp"
 #include "common/types/thread_types.h"
+#include "container/concurrent_blocking_queue.hpp"
 #include "gtest/gtest.h"
 #include "utils/thread_utils.h"
 

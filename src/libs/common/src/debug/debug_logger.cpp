@@ -30,6 +30,8 @@
 #include <format>
 #include <iostream>
 
+#include "common/macros/warnings.h"
+
 namespace {
 int64_t get_now_timestamp_ms()
 {
@@ -179,6 +181,9 @@ private:
                            func,
                            message);
 #else
+        UNUSED(file);
+        UNUSED(line);
+        UNUSED(func);
         return std::format("[{}] [{}] [Tid: {:#x}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),

@@ -5,7 +5,7 @@ add_executable(${TEST_RUNTIME_NAME})
 file(GLOB_RECURSE SRC_LIST "*.cpp")
 target_sources(${TEST_RUNTIME_NAME} PRIVATE ${SRC_LIST})
 
-target_link_libraries(${TEST_RUNTIME_NAME} PUBLIC ${LIB_NAME} GTest::gtest GTest::gtest_main)
+target_link_libraries(${TEST_RUNTIME_NAME} PUBLIC ${LIB_NAME} GTest::gtest)
 
 if (MINGW)
     target_link_libraries(${TEST_RUNTIME_NAME} PUBLIC pthread)

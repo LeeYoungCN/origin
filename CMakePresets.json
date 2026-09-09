@@ -513,6 +513,10 @@
                 "outputLogFile": "${sourceDir}/out/Testing/${presetName}/Test_ALL.log",
                 "outputJUnitFile": "${sourceDir}/out/Testing/${presetName}/Test_ALL.xml",
                 "verbosity": "verbose"
+            },
+            "execution": {
+                "jobs": 4,
+                "noTestsAction": "error"
             }
         },
         {

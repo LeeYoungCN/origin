@@ -6,10 +6,10 @@
 #include <mutex>
 #include <string_view>
 
-#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
+#include "logging/log_msg.h"
 #include "logging/sinks/sink.h"
 
 namespace origin::logging {

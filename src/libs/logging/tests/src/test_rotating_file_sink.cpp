@@ -7,8 +7,8 @@
 #include "common/constants/filesystem_constants.h"
 #include "detail/common.h"
 #include "gtest/gtest.h"
-#include "internal/log_msg.h"
 #include "logging/log_level.h"
+#include "logging/log_msg.h"
 #include "logging/log_source.h"
 #include "logging/sinks/rotating_file_sink.h"
 #include "utils/date_time_utils.h"
@@ -99,7 +99,7 @@ void TestRotatingFileSink::InsertLogMsg(RotatingFileSink& sink, uint32_t maxFile
 
     size_t currSize = 0;
     while (currSize < rotateCount * maxFileSize) {
-        LogMsg logMsg(LOG_SRC_LOCAL, "noname", LogLevel::ERR, logContent);
+        LogMsg logMsg = create_log_msg(LOG_SRC_LOCAL, "noname", LogLevel::ERR, logContent);
         sink.log(logMsg);
         currSize += logMsgSize;
     }

@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "internal/common.h"
-#include "internal/log_msg.h"
 #include "logging/formatters/formatter.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
+#include "logging/log_msg.h"
 #include "logging/log_source.h"
 #include "logging/sinks/sink.h"
 
@@ -121,7 +121,7 @@ void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) 
 
 void LoggerImplBase::force_log(const LogSource& source, LogLevel level, std::string_view message)
 {
-    log_it(LogMsg(source, name(), level, message));
+    log_it(create_log_msg(source, name(), level, message));
 }
 
 void LoggerImplBase::flush()

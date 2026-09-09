@@ -6,11 +6,11 @@
 #include <thread>
 #include <vector>
 
-#include "container/concurrent_blocking_queue.hpp"
 #include "common/debug/debug_logger.h"
-#include "internal/log_msg.h"
+#include "container/concurrent_blocking_queue.hpp"
 #include "internal/log_task.h"
 #include "loggers/internal/logger_impl_base.h"
+#include "logging/log_msg.h"
 
 namespace origin::logging {
 using namespace origin::container;

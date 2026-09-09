@@ -3,10 +3,9 @@
 
 #include "detail/common.h"
 #include "gtest/gtest.h"
-#include "internal/common.h"
-#include "internal/log_msg.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"
+#include "logging/log_msg.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
@@ -173,7 +172,7 @@ TEST_F(TestPatternFormatter, percent)
 TEST_F(TestPatternFormatter, default_pattern)
 {
     PatternFormatter formatter;
-    LogMsg msg(LOG_SRC_LOCAL, test_info_->name(), LogLevel::ERR, "test message");
+    LogMsg msg = create_log_msg(LOG_SRC_LOCAL, test_info_->name(), LogLevel::ERR, "test message");
     std::string content;
     formatter.format(msg, content);
     // "[%d][%L][%s:%#]: %v"

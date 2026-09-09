@@ -57,7 +57,7 @@ std::unique_ptr<Formatter> create_formatter(FormatterArgs&&... formatterArgs)
     return std::make_unique<FormatterType>(std::forward<FormatterArgs>(formatterArgs)...);
 }
 
-std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt);
+LOGGING_API std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt);
 
 #pragma region Root logger
 LOGGING_API std::shared_ptr<Logger> root_logger();

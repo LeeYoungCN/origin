@@ -5,7 +5,6 @@
 #include <string>
 
 #include "common/debug/debug_logger.h"
-#include "logging/log_level.h"
 
 #define RETURN_IF_PTR_NULL(ptr)             \
     if (!(ptr)) {                           \
@@ -20,8 +19,6 @@
     }
 
 namespace origin::logging {
-std::string_view log_level_to_string(LogLevel level, bool full = true);
-
 std::string get_default_log_file(std::string_view suffix = "log");
 
 bool delete_file(std::string_view file, uint32_t maxRetry, uint32_t sleepMs);

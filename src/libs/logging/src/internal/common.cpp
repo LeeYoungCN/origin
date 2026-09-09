@@ -1,21 +1,12 @@
 #include "internal/common.h"
 
 #include <string_view>
-#include <unordered_map>
 
 #include "common/debug/debug_logger.h"
-#include "logging/log_level.h"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
 #include "utils/thread_utils.h"
-
-namespace {
-struct LogLvlStrInfo {
-    std::string_view full;
-    std::string_view abbr;
-};
-}  // namespace
 
 namespace origin::logging {
 using namespace origin::filesystem;
@@ -58,19 +49,5 @@ bool rename_file(std::string_view src, std::string_view dest, bool overwrite, ui
     ORIGIN_DEBUG_ERR(
         "Rename file failed. file: \"{}\", msg: \"{}\".", dest, get_thread_last_err_msg());
     return false;
-}
-
-std::string_view log_level_to_string(LogLevel level, bool full)
-{
-    static std::unordered_map<LogLevel, LogLvlStrInfo> LOG_STR_MAP = {
-        {LogLevel::TRACE, {"TRACE", "T"}},
-        {LogLevel::DEBUG, {"DEBUG", "D"}},
-        {LogLevel::INFO, {"INFO", "I"}},
-        {LogLevel::WARN, {"WARN", "W"}},
-        {LogLevel::ERR, {"ERROR", "E"}},
-        {LogLevel::FATAL, {"FATAL", "F"}},
-        {LogLevel::OFF, {"OFF", "O"}}};
-
-    return full ? LOG_STR_MAP[level].full : LOG_STR_MAP[level].abbr;
 }
 }  // namespace origin::logging

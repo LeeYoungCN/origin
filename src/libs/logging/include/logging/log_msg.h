@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ORIGIN_LOGGING_INTERNAL_LOG_MSG_H
-#define ORIGIN_LOGGING_INTERNAL_LOG_MSG_H
+#ifndef ORIGIN_LOGGING_LOG_MSG_H
+#define ORIGIN_LOGGING_LOG_MSG_H
 
 #include <string>
 #include <string_view>
@@ -10,6 +10,7 @@
 #include "common/types/thread_types.h"
 #include "logging/log_level.h"
 #include "logging/log_source.h"
+#include "logging/logging_api.h"
 
 namespace origin::logging {
 struct LogMsg {
@@ -20,10 +21,12 @@ struct LogMsg {
     TimestampMs timestamp{0};
     ThreadId threadId{0};
     ProcessId procId{0};
-
-    LogMsg() = default;
-    LogMsg(LogSource source, std::string_view loggerName, LogLevel level, std::string_view message);
 };
 
+LOGGING_API LogMsg create_log_msg(const LogSource& source, std::string_view loggerName,
+                                  LogLevel level, std::string_view message);
+
+LOGGING_API void init_log_msg(LogMsg& msg, const LogSource& source, std::string_view loggerName,
+                              LogLevel level, std::string_view message);
 }  // namespace origin::logging
-#endif  // ORIGIN_LOGGING_INTERNAL_LOG_MSG_H
+#endif  // ORIGIN_LOGGING_LOG_MSG_H

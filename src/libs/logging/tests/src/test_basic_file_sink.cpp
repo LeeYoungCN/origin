@@ -3,7 +3,7 @@
 #include "common/constants/filesystem_constants.h"
 #include "detail/common.h"
 #include "gtest/gtest.h"
-#include "internal/log_msg.h"
+#include "logging/log_msg.h"
 #include "logging/sinks/basic_file_sink.h"
 #include "utils/filesystem_utils.h"
 
@@ -80,7 +80,7 @@ TEST_F(TestBasicFileSink, sink_log_and_flush)
 
     FileSize messageSize = logContent.size() + LF_LENGTH;
 
-    LogMsg logMsg(LOG_SRC_LOCAL, "logger", LogLevel::INFO, message);
+    LogMsg logMsg = create_log_msg(LOG_SRC_LOCAL, "logger", LogLevel::INFO, message);
 
     for (int i = 0; i < 100; ++i) {
         sink.log(logMsg);

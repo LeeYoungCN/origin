@@ -172,7 +172,7 @@ private:
                            const char* file = nullptr, int line = 0, const char* func = nullptr)
     {
 #ifdef DEBUG_MODE
-        return std::format("[{}][{}][Tid: {:#x}][{}:{}][{}]: {}",
+        return std::format("[{}][{}][Tid: {}][{}:{}][{}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),
                            get_current_tid(),
@@ -184,7 +184,7 @@ private:
         UNUSED(file);
         UNUSED(line);
         UNUSED(func);
-        return std::format("[{}] [{}] [Tid: {:#x}]: {}",
+        return std::format("[{}][{}][Tid: {}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),
                            get_current_tid(),

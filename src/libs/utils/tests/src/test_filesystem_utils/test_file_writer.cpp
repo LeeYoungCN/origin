@@ -33,7 +33,7 @@ protected:
 void TestFileWriter::SetUp()
 {
     m_directory =
-        join_paths({get_proc_directory(), "file_writer", std::to_string(get_curr_proc_id())});
+        join_paths({get_proc_directory(), "test_file_writer_" + std::to_string(get_curr_proc_id())});
     m_testFile = join_paths({m_directory, m_filename + m_suffix});
 }
 

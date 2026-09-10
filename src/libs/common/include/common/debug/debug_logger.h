@@ -32,6 +32,9 @@ COMMON_API void origin_debug_logger_c(const char* file, int line, const char* fu
 
 #ifdef __cplusplus
 #include <format>
+COMMON_API void origin_debug_logger_force_log(const char* file, int line, const char* func,
+                                              OriginDbgLvl level, const std::string& message);
+
 COMMON_API void origin_debug_logger_log(const char* file, int line, const char* func,
                                         OriginDbgLvl level, const std::string& message);
 
@@ -40,7 +43,7 @@ void origin_debug_logger_log(const char* file, int line, const char* func, Origi
                              std::format_string<Args...> format, Args&&... args)
 {
     if (origin_debug_logger_should_log(level)) {
-        origin_debug_logger_log(
+        origin_debug_logger_force_log(
             file, line, func, level, std::move(std::format(format, std::forward<Args>(args)...)));
     }
 }

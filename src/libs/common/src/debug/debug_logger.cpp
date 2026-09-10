@@ -228,8 +228,16 @@ void origin_debug_logger_c(const char* file, int line, const char* func, OriginD
 }
 }
 
-void origin_debug_logger_log(const char* file, int line, const char* func, OriginDbgLvl level,
-                             const std::string& message)
+void origin_debug_logger_force_log(const char* file, int line, const char* func, OriginDbgLvl level,
+                                   const std::string& message)
 {
     DebugLoggerImpl::instance().log(file, line, func, level, message);
+}
+
+COMMON_API void origin_debug_logger_log(const char* file, int line, const char* func,
+                                        OriginDbgLvl level, const std::string& message)
+{
+    if (origin_debug_logger_should_log(level)) {
+        origin_debug_logger_force_log(file, line, func, level, message);
+    }
 }

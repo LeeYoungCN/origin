@@ -12,6 +12,12 @@ if (BUILD_TESTS)
 endif()
 
 set(LIB_LIST "" CACHE STRING "")
+set(TEST_OBJ_LIST "" CACHE STRING "")
 add_subdirectory(libs)
 
 message(STATUS "LIB_LIST: ${LIB_LIST}")
+
+if (BUILD_TESTS)
+    message(STATUS "TEST_OBJ_LIST: ${TEST_OBJ_LIST}")
+    add_subdirectory(tests)
+endif()

@@ -1,12 +1,7 @@
-set(TEST_RUNTIME_NAME origin_test)
-add_executable(${TEST_RUNTIME_NAME})
+set(TEST_RUNTIME origin_test)
 
-file(GLOB_RECURSE SRC_LIST "*.cpp")
+add_executable(${TEST_RUNTIME}
+    main.cpp
+    ${TEST_OBJ_LIST})
 
-target_sources(${TEST_RUNTIME_NAME} PRIVATE ${SRC_LIST})
-
-target_link_libraries(${TEST_RUNTIME_NAME} GTest::gtest ${LIB_LIST} container_test)
-
-# 添加ctest测试
-add_test(NAME TEST_ALL COMMAND ${TEST_RUNTIME_NAME})
-set_tests_properties(TEST_ALL PROPERTIES TIMEOUT 60)
+target_link_libraries(${TEST_RUNTIME} GTest::gtest ${LIB_LIST})

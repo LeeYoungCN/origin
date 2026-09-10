@@ -462,14 +462,9 @@ function run_gtest() {
 
 function run_ctest() {
     init_cmake_env
-    cmake_test_runtime="${cmake_binary_dir}/bin/${test_target}"
-    if [ ! -e "${cmake_test_runtime}" ]; then
-        print_log "Test runtime [${cmake_test_runtime}] not exist!" error
-        exit 1
-    fi
 
     if [ -z "${arg_ctest_case}" ]; then
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "TEST_ALL"
+        ctest --output-on-failure --test-dir "${cmake_binary_dir}"
         return 0
     fi
 
@@ -481,7 +476,7 @@ function run_ctest() {
         ctest --rerun-failed --output-on-failure --test-dir "${cmake_binary_dir}"
         ;;
     all)
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "TEST_ALL"
+        ctest --output-on-failure --test-dir "${cmake_binary_dir}"
         ;;
     *)
         ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "${arg_ctest_case}"

@@ -1,7 +1,7 @@
 #include <format>
 #include <string>
 
-#include "detail/common.h"
+#include "logging_test/common.h"
 #include "gtest/gtest.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/log_level.h"

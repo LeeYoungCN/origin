@@ -1,7 +1,7 @@
 #include <memory>
 
-#include "detail/common.h"
-#include "detail/log_content_buffer_sink.h"
+#include "logging_test/common.h"
+#include "logging_test/log_content_buffer_sink.h"
 #include "gtest/gtest.h"
 #include "logging/formatters/pattern_formatter.h"
 #include "logging/loggers/sync_logger.h"

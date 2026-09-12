@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "common/constants/filesystem_constants.h"
-#include "detail/common.h"
+#include "logging_test/common.h"
 #include "gtest/gtest.h"
 #include "logging/log_level.h"
 #include "logging/log_msg.h"

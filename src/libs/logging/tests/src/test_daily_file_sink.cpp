@@ -9,7 +9,7 @@
 
 #include "common/constants/date_time_constants.h"
 #include "common/types/date_time_types.h"
-#include "detail/common.h"
+#include "logging_test/common.h"
 #include "gtest/gtest.h"
 #include "logging/log_level.h"
 #include "logging/log_msg.h"

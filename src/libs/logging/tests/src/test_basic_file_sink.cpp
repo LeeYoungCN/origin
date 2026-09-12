@@ -1,7 +1,7 @@
 #include <string>
 
 #include "common/constants/filesystem_constants.h"
-#include "detail/common.h"
+#include "logging_test/common.h"
 #include "gtest/gtest.h"
 #include "logging/log_msg.h"
 #include "logging/sinks/basic_file_sink.h"

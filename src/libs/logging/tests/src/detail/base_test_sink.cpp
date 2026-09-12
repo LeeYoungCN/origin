@@ -1,4 +1,4 @@
-#include "base_test_sink.h"
+#include "logging_test/base_test_sink.h"
 
 #include <atomic>
 #include <mutex>

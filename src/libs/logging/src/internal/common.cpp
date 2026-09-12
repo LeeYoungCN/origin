@@ -1,4 +1,4 @@
-#include "internal/common.h"
+#include "internal/common.hpp"
 
 #include <string_view>
 

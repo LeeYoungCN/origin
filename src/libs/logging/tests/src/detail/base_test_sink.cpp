@@ -1,11 +1,11 @@
-#include "logging_test/base_test_sink.h"
+#include "logging_test/base_test_sink.hpp"
 
 #include <atomic>
 #include <mutex>
 #include <utility>
 
 #include "common/debug/debug_logger.h"
-#include "logging/formatters/pattern_formatter.h"
+#include "logging/formatters/pattern_formatter.hpp"
 
 namespace logging_test {
 using namespace origin::logging;

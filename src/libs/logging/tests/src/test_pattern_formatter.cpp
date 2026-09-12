@@ -1,11 +1,11 @@
 #include <format>
 #include <string>
 
-#include "logging_test/common.h"
 #include "gtest/gtest.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/log_level.h"
-#include "logging/log_msg.h"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/log_msg.hpp"
+#include "logging_test/common.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
@@ -70,7 +70,7 @@ TEST_F(TestPatternFormatter, abbr_log_level)
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
-        EXPECT_EQ(content, log_level_to_string(level, false));
+        EXPECT_EQ(content, log_level_string(level, false));
     }
 }
 
@@ -82,7 +82,7 @@ TEST_F(TestPatternFormatter, full_log_level)
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
-        EXPECT_EQ(content, log_level_to_string(level, true));
+        EXPECT_EQ(content, log_level_string(level, true));
     }
 }
 
@@ -179,7 +179,7 @@ TEST_F(TestPatternFormatter, default_pattern)
     std::string expect =
         std::format("[{}][{}][{}:{}]: {}",
                     format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN),
-                    log_level_to_string(msg.level, false),
+                    log_level_string(msg.level, false),
                     get_filename(msg.source.file),
                     msg.source.line,
                     msg.data);

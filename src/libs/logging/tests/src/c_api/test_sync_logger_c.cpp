@@ -4,14 +4,14 @@
 #include <string>
 #include <vector>
 
-#include "logging_test/common.h"
-#include "logging_test/log_content_buffer_sink.h"
 #include "gtest/gtest.h"
-#include "logging/formatters/formatter.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/log_level.h"
-#include "logging/log_source.h"
-#include "logging/loggers/sync_logger.h"
+#include "logging/formatters/formatter.hpp"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
+#include "logging/loggers/sync_logger.hpp"
+#include "logging_test/common.hpp"
+#include "logging_test/log_content_buffer_sink.hpp"
 
 using namespace logging_test;
 using namespace origin::logging;
@@ -105,8 +105,8 @@ TEST_F(TestSyncLoggerC, log_log)
             _logger->log(LOG_SRC_LOCAL, logLevel, "test");
         }
         if (filterLevel != LogLevel::OFF) {
-            EXPECT_EQ(_sink->buffer().size(), LogLevel::FATAL - _logger->level() + 1)
-                << log_level_to_string(filterLevel);
+            EXPECT_EQ(_sink->buffer().size(), diff_log_level(LogLevel::FATAL, _logger->level()) + 1)
+                << log_level_string(filterLevel);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }

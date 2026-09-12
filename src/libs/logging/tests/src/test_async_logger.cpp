@@ -4,15 +4,15 @@
 #include <string>
 #include <vector>
 
-#include "logging_test/common.h"
-#include "logging_test/log_content_buffer_sink.h"
 #include "gtest/gtest.h"
-#include "logging/formatters/formatter.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/log_level.h"
-#include "logging/log_source.h"
-#include "logging/loggers/async_logger.h"
-#include "logging/logging.h"
+#include "logging/formatters/formatter.hpp"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
+#include "logging/loggers/async_logger.hpp"
+#include "logging/logging.hpp"
+#include "logging_test/common.hpp"
+#include "logging_test/log_content_buffer_sink.hpp"
 #include "utils/date_time_utils.h"
 
 using namespace logging_test;
@@ -130,17 +130,18 @@ TEST_F(TestAsyncLogger, log_log)
             _logger->log(LOG_SRC_LOCAL,
                          logLevel,
                          "fileLevel: {}, logLevel: {}.",
-                         log_level_to_string(filterLevel),
-                         log_level_to_string(logLevel));
+                         log_level_string(filterLevel),
+                         log_level_string(logLevel));
             sleep_ms(1);
         }
 
         _logger->flush();
 
         if (filterLevel != LogLevel::OFF) {
-            wait_flush_complete(LogLevel::FATAL - filterLevel + 1);
-            EXPECT_EQ(_sink->disk().size(), LogLevel::FATAL - filterLevel + 1)
-                << log_level_to_string(filterLevel);
+            wait_flush_complete(
+                static_cast<uint32_t>(diff_log_level(LogLevel::FATAL, filterLevel)) + 1);
+            EXPECT_EQ(_sink->disk().size(), diff_log_level(LogLevel::FATAL, filterLevel) + 1)
+                << log_level_string(filterLevel);
         } else {
             EXPECT_EQ(_sink->disk().size(), 0);
         }

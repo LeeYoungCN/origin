@@ -1,4 +1,4 @@
-#include "internal/registry.h"
+#include "internal/registry.hpp"
 
 #include <memory>
 #include <mutex>
@@ -6,10 +6,10 @@
 #include <utility>
 
 #include "common/debug/debug_logger.h"
-#include "internal/common.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/loggers/sync_logger.h"
-#include "logging/sinks/stdout_sink.h"
+#include "internal/common.hpp"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/loggers/sync_logger.hpp"
+#include "logging/sinks/stdout_sink.hpp"
 
 namespace origin::logging {
 

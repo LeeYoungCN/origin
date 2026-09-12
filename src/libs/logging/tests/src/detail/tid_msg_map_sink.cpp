@@ -1,4 +1,4 @@
-#include "logging_test/tid_msg_map_sink.h"
+#include "logging_test/tid_msg_map_sink.hpp"
 
 #include <mutex>
 

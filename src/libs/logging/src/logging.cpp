@@ -1,9 +1,9 @@
-#include "logging/logging.h"
+#include "logging/logging.hpp"
 
 #include <utility>
 
-#include "internal/registry.h"
-#include "internal/task_pool.h"
+#include "internal/registry.hpp"
+#include "internal/task_pool.hpp"
 
 namespace origin::logging {
 std::shared_ptr<Logger> create_async_logger(std::string_view name,
@@ -18,6 +18,11 @@ std::shared_ptr<Logger> create_async_logger(std::string_view name,
                                             const std::weak_ptr<TaskPool>& pool)
 {
     return std::make_shared<AsyncLogger>(name, sinks, pool);
+}
+
+LOGGING_API std::shared_ptr<TaskPool> create_task_pool()
+{
+    return std::make_shared<TaskPool>();
 }
 
 std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt)

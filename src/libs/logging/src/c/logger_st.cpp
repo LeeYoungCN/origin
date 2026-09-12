@@ -2,12 +2,12 @@
 #include <cstdarg>
 #include <memory>
 
-#include "c/common_c.h"
+#include "c/internal/common_c.hpp"
 #include "common/debug/assert.h"
-#include "internal/common.h"
+#include "internal/common.hpp"
 #include "logging/c/logging_c.h"
-#include "logging/loggers/async_logger.h"
-#include "logging/loggers/sync_logger.h"
+#include "logging/loggers/async_logger.hpp"
+#include "logging/loggers/sync_logger.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c;

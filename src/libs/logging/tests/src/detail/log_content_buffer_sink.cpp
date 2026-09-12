@@ -1,4 +1,4 @@
-#include "logging_test/log_content_buffer_sink.h"
+#include "logging_test/log_content_buffer_sink.hpp"
 
 #include <mutex>
 

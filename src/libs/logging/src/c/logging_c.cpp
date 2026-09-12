@@ -2,9 +2,9 @@
 
 #include <cstdarg>
 
-#include "c/common_c.h"
-#include "internal/common.h"
-#include "internal/registry.h"
+#include "c/internal/common_c.hpp"
+#include "internal/common.hpp"
+#include "internal/registry.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c;

@@ -1,14 +1,14 @@
-#include "logging/loggers/logger_base.h"
+#include "logging/loggers/logger_base.hpp"
 
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "common/debug/debug_logger.h"
-#include "logging/formatters/formatter.h"
-#include "logging/log_level.h"
-#include "logging/log_source.h"
-#include "logging/sinks/sink.h"
+#include "logging/formatters/formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 LoggerBase::LoggerBase(std::shared_ptr<Logger> pImpl) : _pImpl(std::move(pImpl))

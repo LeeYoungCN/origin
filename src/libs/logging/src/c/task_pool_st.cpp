@@ -1,8 +1,8 @@
 #include <memory>
 
-#include "c/common_c.h"
+#include "c/internal/common_c.hpp"
 #include "common/debug/debug_logger.h"
-#include "internal/task_pool.h"
+#include "internal/task_pool.hpp"
 #include "logging/c/logging_c.h"
 
 using namespace origin::logging;

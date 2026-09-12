@@ -1,11 +1,11 @@
 #include <memory>
 
-#include "logging_test/common.h"
-#include "logging_test/log_content_buffer_sink.h"
 #include "gtest/gtest.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/loggers/sync_logger.h"
-#include "logging/logging.h"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/loggers/sync_logger.hpp"
+#include "logging/logging.hpp"
+#include "logging_test/common.hpp"
+#include "logging_test/log_content_buffer_sink.hpp"
 
 using namespace logging_test;
 using namespace origin::logging;

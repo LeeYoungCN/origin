@@ -1,9 +1,9 @@
-#include "logging/formatters/formatter_base.h"
+#include "logging/formatters/formatter_base.hpp"
 
 #include <memory>
 #include <stdexcept>
 
-#include "logging/formatters/formatter.h"
+#include "logging/formatters/formatter.hpp"
 
 namespace origin::logging {
 FormatterBase::~FormatterBase() = default;

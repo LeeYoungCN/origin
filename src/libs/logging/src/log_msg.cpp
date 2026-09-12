@@ -1,10 +1,10 @@
-#include "logging/log_msg.h"
+#include "logging/log_msg.hpp"
 
 #include <string>
 #include <string_view>
 
-#include "logging/log_level.h"
-#include "logging/log_source.h"
+#include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/process_utils.h"
 #include "utils/thread_utils.h"

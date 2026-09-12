@@ -1,4 +1,4 @@
-#include "formatters/internal/pattern_formatter_impl.h"
+#include "formatters/internal/pattern_formatter_impl.hpp"
 
 #include <format>
 #include <iterator>
@@ -6,8 +6,7 @@
 #include <string>
 
 #include "common/types/date_time_types.h"
-#include "internal/common.h"
-#include "logging/formatters/formatter.h"
+#include "logging/formatters/formatter.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 
@@ -65,10 +64,10 @@ void PatternFormatterImpl::log_msg_to_content(char symbol, const LogMsg& logMsg,
             logContent.append(logMsg.loggerName);
             break;
         case 'l':  // lower level string
-            logContent.append(log_level_to_string(logMsg.level, false));
+            logContent.append(log_level_string(logMsg.level, false));
             break;
         case 'L':  // upper level string
-            logContent.append(log_level_to_string(logMsg.level));
+            logContent.append(log_level_string(logMsg.level));
             break;
         case 's':  // file name
             logContent.append(

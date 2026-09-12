@@ -1,10 +1,10 @@
-#include "logging/loggers/sync_logger.h"
+#include "logging/loggers/sync_logger.hpp"
 
 #include <memory>
 #include <vector>
 
-#include "loggers/internal/sync_logger_impl.h"
-#include "logging/loggers/logger_base.h"
+#include "loggers/internal/sync_logger_impl.hpp"
+#include "logging/loggers/logger_base.hpp"
 
 namespace origin::logging {
 SyncLogger::SyncLogger(std::string_view name) : LoggerBase(std::make_shared<SyncLoggerImpl>(name))

@@ -1,11 +1,11 @@
-#include "logging/loggers/async_logger.h"
+#include "logging/loggers/async_logger.hpp"
 
 #include <memory>
 #include <vector>
 
-#include "internal/task_pool.h"
-#include "loggers/internal/async_logger_impl.h"
-#include "logging/loggers/logger_base.h"
+#include "internal/task_pool.hpp"
+#include "loggers/internal/async_logger_impl.hpp"
+#include "logging/loggers/logger_base.hpp"
 
 namespace origin::logging {
 

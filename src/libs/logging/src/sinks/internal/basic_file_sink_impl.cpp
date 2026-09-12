@@ -1,10 +1,10 @@
-#include "sinks/internal/basic_file_sink_impl.h"
+#include "sinks/internal/basic_file_sink_impl.hpp"
 
 #include <format>
 #include <stdexcept>
 
 #include "common/debug/debug_logger.h"
-#include "internal/common.h"
+#include "internal/common.hpp"
 #include "utils/file_writer.h"
 #include "utils/filesystem_utils.h"
 #include "utils/utils_error_code.h"

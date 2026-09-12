@@ -1,22 +1,10 @@
-#include "sinks/internal/stdout_sink_impl.h"
+#include "sinks/internal/stdout_sink_impl.hpp"
 
 #include <cstdio>
 #include <string>
 
 namespace origin::logging {
-StdoutSinkImpl::StdoutSinkImpl() : StdoutSinkImpl(stdout) {}
-
-StdoutSinkImpl::StdoutSinkImpl(FILE *file) : m_stream(file == nullptr ? stdout : file)
-{
-    if (m_stream == stdout) {
-        _paramStr = std::string("StdoutSinkImpl, stream: stdout.");
-    } else if (m_stream == stderr) {
-        _paramStr = std::string("StdoutSinkImpl, stream: stderr.");
-    } else {
-        _paramStr = std::string("StdoutSinkImpl, stream: " +
-                                std::to_string(reinterpret_cast<std::uintptr_t>(m_stream)) + ".");
-    }
-}
+StdoutSinkImpl::StdoutSinkImpl() : SinkImplBase("StdoutSinkImpl.") {}
 
 void StdoutSinkImpl::log_it(const LogMsg &logMsg)
 {

@@ -32,8 +32,7 @@ bool safe_localtime(time_t timer, tm& timeInfo)
 {
 #if OS_WINDOWS
     // Windows 使用 localtime_s
-    auto err = localtime_s(&timeInfo, &timer);
-    if (err != 0) {
+    if (auto err = localtime_s(&timeInfo, &timer); err != 0) {
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
         // 特别处理负数时间戳的错误提示
         if (timer < 0) {
@@ -60,8 +59,7 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
 {
 #if OS_WINDOWS
     // Windows下使用gmtime_s，增加负数时间戳检查
-    errno_t err = gmtime_s(&timeInfo, &timer);
-    if (err != 0) {
+    if (errno_t err = gmtime_s(&timeInfo, &timer); err != 0) {
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
         // 针对负数时间戳的错误做特殊提示
         if (timer < 0) {
@@ -75,7 +73,7 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
     // Linux/macOS使用gmtime_r（对负数时间戳支持更完善）
     if (gmtime_r(&timer, &timeInfo) == nullptr) {
         set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
-        ORIGIN_DEBUG_ERR("Gmtime_r time failed. {}, errno: {}.", timer, errno);
+        ORIGIN_DEBUG_ERR("gmtime_r time failed. {}, errno: {}.", timer, errno);
         return false;
     }
 #endif
@@ -122,7 +120,7 @@ TimestampMs get_now_timestamp_ms()
 
     // 将FILETIME的高低位 DWORD 合并为64位无符号整数，得到完整的100纳秒单位时间戳
     constexpr int FILETIME_HIGH_SHIFT_BITS = 32;  // FILETIME高32位左移位数
-    int64_t file_time =
+    int64_t const file_time =
         (static_cast<int64_t>(ft.dwHighDateTime) << FILETIME_HIGH_SHIFT_BITS) | ft.dwLowDateTime;
 
     // 转换为Unix时间戳（毫秒级）：
@@ -155,8 +153,8 @@ DateTimeSt utc_date_time(TimestampMs timestamp)
 
 DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone)
 {
-    auto timer = static_cast<std::time_t>(timestamp / MILLIS_PER_SEC);
-    auto millis = static_cast<int32_t>(timestamp % MILLIS_PER_SEC);
+    const auto timer = static_cast<std::time_t>(timestamp / MILLIS_PER_SEC);
+    const auto millis = static_cast<int32_t>(timestamp % MILLIS_PER_SEC);
 
     std::tm timeInfo{};
     DateTimeSt dateTime{};

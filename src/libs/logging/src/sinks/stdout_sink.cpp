@@ -1,13 +1,11 @@
-#include "logging/sinks/stdout_sink.h"
+#include "logging/sinks/stdout_sink.hpp"
 
 #include <memory>
 
-#include "logging/sinks/sink_base.h"
-#include "sinks/internal/stdout_sink_impl.h"
+#include "logging/sinks/sink_base.hpp"
+#include "sinks/internal/stdout_sink_impl.hpp"
 
 namespace origin::logging {
 StdoutSink::StdoutSink() : SinkBase(std::make_unique<StdoutSinkImpl>()) {}
-
-StdoutSink::StdoutSink(FILE *file) : SinkBase(std::make_unique<StdoutSinkImpl>(file)) {}
 
 }  // namespace origin::logging

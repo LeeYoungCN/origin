@@ -1,4 +1,4 @@
-#include "internal/task_pool.h"
+#include "internal/task_pool.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -8,9 +8,9 @@
 
 #include "common/debug/debug_logger.h"
 #include "container/concurrent_blocking_queue.hpp"
-#include "internal/log_task.h"
-#include "loggers/internal/logger_impl_base.h"
-#include "logging/log_msg.h"
+#include "internal/log_task.hpp"
+#include "loggers/internal/logger_impl_base.hpp"
+#include "logging/log_msg.hpp"
 
 namespace origin::logging {
 using namespace origin::container;

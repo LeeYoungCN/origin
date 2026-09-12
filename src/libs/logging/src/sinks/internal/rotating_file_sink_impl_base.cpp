@@ -1,4 +1,4 @@
-#include "sinks/internal/rotating_file_sink_impl_base.h"
+#include "sinks/internal/rotating_file_sink_impl_base.hpp"
 
 #include <atomic>
 #include <cstdint>
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "common/debug/debug_logger.h"
-#include "internal/common.h"
+#include "internal/common.hpp"
 
 namespace origin::logging {
 using namespace origin::filesystem;

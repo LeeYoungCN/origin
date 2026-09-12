@@ -1,4 +1,4 @@
-#include "logging_test/common.h"
+#include "logging_test/common.hpp"
 
 #include <format>
 #include <string>

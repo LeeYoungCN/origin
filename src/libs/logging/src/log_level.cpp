@@ -1,28 +1,33 @@
-#include "logging/log_level.h"
+#include "logging/log_level.hpp"
 
-#include <string_view>
+#include <cstdint>
 #include <unordered_map>
 
 namespace {
 struct LogLvlStrInfo {
-    std::string_view full;
-    std::string_view abbr;
+    const char* full;
+    const char* abbr;
 };
 }  // namespace
 
 namespace origin::logging {
 
-std::string_view log_level_to_string(LogLevel level, bool full)
+const char* log_level_string(LogLevel level, bool full)
 {
     static std::unordered_map<LogLevel, LogLvlStrInfo> LOG_STR_MAP = {
-        {LogLevel::TRACE, {"TRACE", "T"}},
-        {LogLevel::DEBUG, {"DEBUG", "D"}},
-        {LogLevel::INFO, {"INFO", "I"}},
-        {LogLevel::WARN, {"WARN", "W"}},
-        {LogLevel::ERR, {"ERROR", "E"}},
-        {LogLevel::FATAL, {"FATAL", "F"}},
-        {LogLevel::OFF, {"OFF", "O"}}};
+        {LogLevel::TRACE, {.full = "TRACE", .abbr = "T"}},
+        {LogLevel::DEBUG, {.full = "DEBUG", .abbr = "D"}},
+        {LogLevel::INFO, {.full = "INFO", .abbr = "I"}},
+        {LogLevel::WARN, {.full = "WARN", .abbr = "W"}},
+        {LogLevel::ERR, {.full = "ERROR", .abbr = "E"}},
+        {LogLevel::FATAL, {.full = "FATAL", .abbr = "F"}},
+        {LogLevel::OFF, {.full = "OFF", .abbr = "O"}}};
 
     return full ? LOG_STR_MAP[level].full : LOG_STR_MAP[level].abbr;
+}
+
+LOGGING_API int32_t diff_log_level(LogLevel a, LogLevel b)
+{
+    return static_cast<int32_t>(a) - static_cast<int32_t>(b);
 }
 }  // namespace origin::logging

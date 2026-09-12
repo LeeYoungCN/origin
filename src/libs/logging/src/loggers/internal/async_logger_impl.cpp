@@ -1,15 +1,15 @@
-#include "loggers/internal/async_logger_impl.h"
+#include "loggers/internal/async_logger_impl.hpp"
 
 #include <initializer_list>
 #include <memory>
 #include <string_view>
 #include <vector>
 
-#include "internal/registry.h"
-#include "internal/task_pool.h"
-#include "loggers/internal/logger_impl_base.h"
-#include "logging/log_msg.h"
-#include "logging/sinks/sink.h"
+#include "internal/registry.hpp"
+#include "internal/task_pool.hpp"
+#include "loggers/internal/logger_impl_base.hpp"
+#include "logging/log_msg.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 

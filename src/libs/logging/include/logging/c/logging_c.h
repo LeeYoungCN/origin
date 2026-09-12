@@ -1,13 +1,11 @@
-#ifndef ORIGIN_LOGGING_C_LOGGING_C_H
-#define ORIGIN_LOGGING_C_LOGGING_C_H
+#ifndef ORIGIN_LOGGING_LOGGING_C_H
+#define ORIGIN_LOGGING_LOGGING_C_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
 
-#include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #include "logging/logging_api.h"
 
@@ -15,11 +13,6 @@ typedef struct LoggerSt LoggerSt;
 typedef struct SinkSt SinkSt;
 typedef struct FormatterSt FormatterSt;
 typedef struct TaskPoolSt TaskPoolSt;
-
-#define ORIGIN_LOGGER_ROOT_NAME               "__root_logger__"
-#define ORIGIN_FORMATTER_DEFAULT_PATTERN      "[%d][%L][%s:%#]: %v"
-#define ORIGIN_THREAD_POOL_DEFAULT_CAPACITY   (4096)
-#define ORIGIN_THREAD_POOL_DEFAULT_THREAD_CNT (1)
 
 typedef enum {
     ORIGIN_LOG_LEVEL_TRACE = 0,
@@ -61,7 +54,7 @@ LOGGING_API void origin_logger_log(const LoggerSt *logger, const char *file, int
 #pragma endregion
 
 #pragma region Sink
-LOGGING_API SinkSt *origin_create_stdout_sink(FILE *file);
+LOGGING_API SinkSt *origin_create_stdout_sink();
 LOGGING_API SinkSt *origin_create_basic_file_sink(const char *file, bool overwrite);
 LOGGING_API SinkSt *origin_create_daily_file_sink(const char *file, uint32_t hour, uint32_t minute,
                                                   uint32_t maxFiles, bool overwrite);
@@ -156,4 +149,4 @@ LOGGING_API void origin_shutdown();
     origin_log(                    \
         __FILE__, __LINE__, __FUNCTION__, ORIGIN_LOG_LEVEL_FATAL, fmt __VA_OPT__(, ) __VA_ARGS__);
 
-#endif  // ORIGIN_LOGGING_C_LOGGING_C_H
+#endif  // ORIGIN_LOGGING_LOGGING_C_H

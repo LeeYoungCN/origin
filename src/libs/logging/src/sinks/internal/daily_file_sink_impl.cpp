@@ -1,4 +1,4 @@
-#include "sinks/internal/daily_file_sink_impl.h"
+#include "sinks/internal/daily_file_sink_impl.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -13,9 +13,9 @@
 #include "common/constants/date_time_constants.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/date_time_types.h"
-#include "internal/common.h"
-#include "logging/sinks/daily_file_sink.h"
-#include "sinks/internal/rotating_file_sink_impl_base.h"
+#include "internal/common.hpp"
+#include "logging/sinks/daily_file_sink.hpp"
+#include "sinks/internal/rotating_file_sink_impl_base.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/file_writer.h"
 #include "utils/filesystem_utils.h"

@@ -1,4 +1,4 @@
-#include "loggers/internal/logger_impl_base.h"
+#include "loggers/internal/logger_impl_base.hpp"
 
 #include <atomic>
 #include <initializer_list>
@@ -7,13 +7,13 @@
 #include <string_view>
 #include <vector>
 
-#include "internal/common.h"
-#include "logging/formatters/formatter.h"
-#include "logging/formatters/pattern_formatter.h"
-#include "logging/log_level.h"
-#include "logging/log_msg.h"
-#include "logging/log_source.h"
-#include "logging/sinks/sink.h"
+#include "internal/common.hpp"
+#include "logging/formatters/formatter.hpp"
+#include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/log_msg.hpp"
+#include "logging/log_source.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 

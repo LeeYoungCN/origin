@@ -1,8 +1,8 @@
-#include "logging/formatters/pattern_formatter.h"
+#include "logging/formatters/pattern_formatter.hpp"
 
 #include <memory>
 
-#include "formatters/internal/pattern_formatter_impl.h"
+#include "formatters/internal/pattern_formatter_impl.hpp"
 
 namespace origin::logging {
 

@@ -1,4 +1,4 @@
-#include "logging/sinks/sink_base.h"
+#include "logging/sinks/sink_base.hpp"
 
 #include <stdexcept>
 #include <utility>

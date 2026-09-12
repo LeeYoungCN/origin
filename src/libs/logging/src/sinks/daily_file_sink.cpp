@@ -1,10 +1,10 @@
-#include "logging/sinks/daily_file_sink.h"
+#include "logging/sinks/daily_file_sink.hpp"
 
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "sinks/internal/daily_file_sink_impl.h"
+#include "sinks/internal/daily_file_sink_impl.hpp"
 
 namespace origin::logging {
 

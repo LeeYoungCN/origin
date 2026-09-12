@@ -5,12 +5,12 @@
 #include <vector>
 
 #include "common/constants/filesystem_constants.h"
-#include "logging_test/common.h"
 #include "gtest/gtest.h"
-#include "logging/log_level.h"
-#include "logging/log_msg.h"
-#include "logging/log_source.h"
-#include "logging/sinks/rotating_file_sink.h"
+#include "logging/log_level.hpp"
+#include "logging/log_msg.hpp"
+#include "logging/log_source.hpp"
+#include "logging/sinks/rotating_file_sink.hpp"
+#include "logging_test/common.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 

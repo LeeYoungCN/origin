@@ -1,11 +1,11 @@
-#include "logging/sinks/rotating_file_sink.h"
+#include "logging/sinks/rotating_file_sink.hpp"
 
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "sinks/internal/rotating_file_sink_impl.h"
+#include "sinks/internal/rotating_file_sink_impl.hpp"
 
 namespace origin::logging {
 using namespace origin::filesystem;

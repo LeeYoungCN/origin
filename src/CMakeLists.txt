@@ -8,11 +8,10 @@ if (BUILD_TESTS)
         message(STATUS "GTest not found, fetching with FetchContent")
         include(${CMAKE_SOURCE_DIR}/cmake/fetch_content.cmake)
     endif()
-    set(TEST_LIB_LIST "" CACHE STRING "")
 endif()
 
-set(LIB_LIST "" CACHE STRING "")
-set(TEST_OBJ_LIST "" CACHE STRING "")
+set(LIB_LIST "" CACHE STRING "Origin lib list" FORCE)
+set(TEST_OBJ_LIST "" CACHE STRING "Test objects list" FORCE)
 add_subdirectory(libs)
 
 message(STATUS "LIB_LIST: ${LIB_LIST}")

@@ -3,8 +3,8 @@
 
 #include <map>
 
-#include "base_test_sink.hpp"
 #include "common/types/thread_types.h"
+#include "detail/mock_sinks/base_test_sink.hpp"
 #include "logging/log_msg.hpp"
 
 namespace logging_test {

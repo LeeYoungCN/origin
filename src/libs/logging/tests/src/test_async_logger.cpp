@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "detail/common.hpp"
+#include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
@@ -11,8 +13,6 @@
 #include "logging/log_source.hpp"
 #include "logging/loggers/async_logger.hpp"
 #include "logging/logging.hpp"
-#include "logging_test/common.hpp"
-#include "logging_test/log_content_buffer_sink.hpp"
 #include "utils/date_time_utils.h"
 
 using namespace logging_test;

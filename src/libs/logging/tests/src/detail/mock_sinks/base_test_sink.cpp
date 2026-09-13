@@ -1,4 +1,4 @@
-#include "logging_test/base_test_sink.hpp"
+#include "detail/mock_sinks/base_test_sink.hpp"
 
 #include <atomic>
 #include <mutex>

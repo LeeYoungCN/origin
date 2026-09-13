@@ -9,12 +9,12 @@
 
 #include "common/constants/date_time_constants.h"
 #include "common/types/date_time_types.h"
+#include "detail/common.hpp"
 #include "gtest/gtest.h"
 #include "logging/log_level.hpp"
 #include "logging/log_msg.hpp"
 #include "logging/log_source.hpp"
 #include "logging/sinks/daily_file_sink.hpp"
-#include "logging_test/common.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 

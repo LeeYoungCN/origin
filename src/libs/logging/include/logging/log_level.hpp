@@ -22,7 +22,6 @@ enum class LogLevel : uint32_t {
 };
 
 LOGGING_API const char* log_level_string(LogLevel level, bool full = true);
-LOGGING_API int32_t diff_log_level(LogLevel a, LogLevel b);
 
 }  // namespace origin::logging
 

@@ -16,13 +16,8 @@ namespace origin::logging {
 class LoggerImplBase;
 class TaskPool {
 public:
-    static constexpr uint32_t DEFAULT_CAPACITY = 1024;  // 任务池默认容量1024
-    static constexpr uint32_t DEFAULT_THREAD_CNT = 3;   // 任务池默认线程数量3
-
-public:
-    TaskPool();
+    TaskPool() = delete;
     ~TaskPool();
-    explicit TaskPool(uint32_t capacity);
     TaskPool(uint32_t capacity, uint32_t threadCnt);
 
     void log(const std::shared_ptr<LoggerImplBase>& logger, const LogMsg& logMsg);

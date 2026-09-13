@@ -1,11 +1,11 @@
 #include <format>
 #include <string>
 
+#include "detail/common.hpp"
 #include "gtest/gtest.h"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
 #include "logging/log_msg.hpp"
-#include "logging_test/common.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"

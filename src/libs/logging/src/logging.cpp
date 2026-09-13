@@ -20,11 +20,6 @@ std::shared_ptr<Logger> create_async_logger(std::string_view name,
     return std::make_shared<AsyncLogger>(name, sinks, pool);
 }
 
-LOGGING_API std::shared_ptr<TaskPool> create_task_pool()
-{
-    return std::make_shared<TaskPool>();
-}
-
 std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt)
 {
     return std::make_shared<TaskPool>(capacity, threadCnt);

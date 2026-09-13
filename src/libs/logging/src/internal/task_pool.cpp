@@ -15,10 +15,6 @@
 namespace origin::logging {
 using namespace origin::container;
 
-TaskPool::TaskPool() : TaskPool(TaskPool::DEFAULT_CAPACITY, TaskPool::DEFAULT_THREAD_CNT) {}
-
-TaskPool::TaskPool(uint32_t capacity) : TaskPool(capacity, TaskPool::DEFAULT_THREAD_CNT) {}
-
 TaskPool::TaskPool(uint32_t capacity, uint32_t threadCnt)
     : _buffer(ConcurrentBlockingQueue<LogTask>(capacity)),
       _threadCnt(threadCnt),

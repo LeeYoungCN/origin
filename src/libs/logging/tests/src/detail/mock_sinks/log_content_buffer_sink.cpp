@@ -1,6 +1,8 @@
-#include "logging_test/log_content_buffer_sink.hpp"
+#include "detail/mock_sinks/log_content_buffer_sink.hpp"
 
+#include <iostream>
 #include <mutex>
+#include <ostream>
 
 namespace logging_test {
 LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
@@ -11,6 +13,11 @@ LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
 LogContentBufferSink::LogContentBufferSink(uint32_t capacity) : _capacity(capacity)
 {
     _buffer.reserve(_capacity);
+}
+
+void LogContentBufferSink::enable_print_log(bool enable)
+{
+    _printfLog = enable;
 }
 
 uint32_t LogContentBufferSink::capacity() const
@@ -26,7 +33,7 @@ const std::vector<std::string>& LogContentBufferSink::buffer()
 
 const std::vector<std::string>& LogContentBufferSink::disk()
 {
-    std::lock_guard<std::mutex> lock(_sinkMtx);
+    std::lock_guard<std::mutex> const lock(_sinkMtx);
     return _disk;
 }
 
@@ -45,6 +52,9 @@ void LogContentBufferSink::log_it(const LogMsg& logMsg)
 
 void LogContentBufferSink::sink_it(std::string_view message)
 {
+    if (_printfLog) {
+        std::cout << message << std::endl;
+    }
     _buffer.emplace_back(message);
     if (_buffer.size() >= _capacity) {
         flush_it();

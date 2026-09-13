@@ -8,7 +8,7 @@ add_executable(${TEST_RUNTIME} main.cpp $<TARGET_OBJECTS:${TEST_OBJECT}>)
 
 target_include_directories(${TEST_OBJECT}
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include  # 编译时路径
+        ${CMAKE_CURRENT_SOURCE_DIR}/src  # 编译时路径
 )
 
 target_link_libraries(${TEST_OBJECT} PUBLIC ${LIB_NAME} GTest::gtest)

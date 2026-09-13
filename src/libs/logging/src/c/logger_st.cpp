@@ -4,6 +4,7 @@
 
 #include "c/internal/common_c.hpp"
 #include "common/debug/assert.h"
+#include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
 #include "logging/c/logging_c.h"
 #include "logging/loggers/async_logger.hpp"
@@ -17,7 +18,7 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
 {
     ORIGIN_ASSERT(name != nullptr);
     ORIGIN_ASSERT(sinks != nullptr);
-    ORIGIN_ASSERT(count == 0);
+    ORIGIN_ASSERT(count > 0);
 
     return new struct LoggerSt(std::make_shared<SyncLogger>(name, sink_ptr_vector(sinks, count)));
 }
@@ -122,7 +123,7 @@ void origin_logger_log(const LoggerSt *logger, const char *file, int line, const
     RETURN_IF_PTR_NULL(logger);
     va_list args;
     va_start(args, format);
-    origin_force_log_it(logger->ptr, file, line, func, c_to_cpp_log_level(level), format, args);
+    origin_log_it(logger->ptr, file, line, func, c_to_cpp_log_level(level), format, args);
     va_end(args);
 }
 }

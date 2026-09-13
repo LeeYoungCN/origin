@@ -1,12 +1,10 @@
 #ifndef LOGGING_TEST_LOG_CONTENT_BUFFER_SINK_HPP
 #define LOGGING_TEST_LOG_CONTENT_BUFFER_SINK_HPP
 
-#include <sys/types.h>
-
 #include <cstdint>
 #include <vector>
 
-#include "base_test_sink.hpp"
+#include "detail/mock_sinks/base_test_sink.hpp"
 #include "logging/log_msg.hpp"
 
 using namespace origin::logging;
@@ -18,6 +16,7 @@ public:
     ~LogContentBufferSink() override = default;
     explicit LogContentBufferSink(uint32_t capacity);
 
+    void enable_print_log(bool enable);
     [[nodiscard]] uint32_t capacity() const;
     const std::vector<std::string>& buffer();
     const std::vector<std::string>& disk();
@@ -33,6 +32,7 @@ private:
     uint32_t _capacity;
     std::vector<std::string> _buffer;
     std::vector<std::string> _disk;
+    bool _printfLog{false};
 };
 }  // namespace logging_test
 

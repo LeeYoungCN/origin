@@ -8,14 +8,6 @@
 #include "logging/c/logging_c.h"
 #include "logging/log_level.hpp"
 
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::TRACE) == ORIGIN_LOG_LEVEL_TRACE);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::DEBUG) == ORIGIN_LOG_LEVEL_DEBUG);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::INFO) == ORIGIN_LOG_LEVEL_INFO);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::WARN) == ORIGIN_LOG_LEVEL_WARN);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::ERR) == ORIGIN_LOG_LEVEL_ERROR);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::FATAL) == ORIGIN_LOG_LEVEL_FATAL);
-static_assert(static_cast<uint32_t>(origin::logging::LogLevel::OFF) == ORIGIN_LOG_LEVEL_OFF);
-
 namespace origin::logging::c {
 LogLevel c_to_cpp_log_level(OriginLogLevel level)
 {

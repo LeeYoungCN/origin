@@ -1,10 +1,10 @@
 #include <string>
 
 #include "common/constants/filesystem_constants.h"
+#include "detail/common.hpp"
 #include "gtest/gtest.h"
 #include "logging/log_msg.hpp"
 #include "logging/sinks/basic_file_sink.hpp"
-#include "logging_test/common.hpp"
 #include "utils/filesystem_utils.h"
 
 using namespace origin::logging;

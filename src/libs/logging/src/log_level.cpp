@@ -1,6 +1,5 @@
 #include "logging/log_level.hpp"
 
-#include <cstdint>
 #include <unordered_map>
 
 namespace {
@@ -24,10 +23,5 @@ const char* log_level_string(LogLevel level, bool full)
         {LogLevel::OFF, {.full = "OFF", .abbr = "O"}}};
 
     return full ? LOG_STR_MAP[level].full : LOG_STR_MAP[level].abbr;
-}
-
-LOGGING_API int32_t diff_log_level(LogLevel a, LogLevel b)
-{
-    return static_cast<int32_t>(a) - static_cast<int32_t>(b);
 }
 }  // namespace origin::logging

@@ -24,32 +24,32 @@ void origin_set_root_logger(const LoggerSt *logger)
     REGISTRY.set_root_logger(logger->ptr);
 }
 
-void origin_set_level(OriginLogLevel level)
+void origin_set_level(LogLevelC level)
 {
     ROOT_LOGGER->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_should_log(OriginLogLevel level)
+bool origin_should_log(LogLevelC level)
 {
     return ROOT_LOGGER->should_log(c_to_cpp_log_level(level));
 }
 
-OriginLogLevel origin_level()
+LogLevelC origin_level()
 {
     return cpp_to_c_log_level(ROOT_LOGGER->level());
 }
 
-void origin_flush_on(OriginLogLevel level)
+void origin_flush_on(LogLevelC level)
 {
     ROOT_LOGGER->flush_on(c_to_cpp_log_level(level));
 }
 
-bool origin_should_flush(OriginLogLevel level)
+bool origin_should_flush(LogLevelC level)
 {
     return ROOT_LOGGER->should_flush(c_to_cpp_log_level(level));
 }
 
-OriginLogLevel origin_flush_level()
+LogLevelC origin_flush_level()
 {
     return cpp_to_c_log_level(ROOT_LOGGER->flush_level());
 }
@@ -72,7 +72,7 @@ void origin_flush()
     ROOT_LOGGER->flush();
 }
 
-void origin_force_log(const char *file, int line, const char *func, OriginLogLevel level,
+void origin_force_log(const char *file, int line, const char *func, LogLevelC level,
                       const char *format, ...)
 {
     va_list args;
@@ -81,8 +81,8 @@ void origin_force_log(const char *file, int line, const char *func, OriginLogLev
     va_end(args);
 }
 
-void origin_log(const char *file, int line, const char *func, OriginLogLevel level,
-                const char *format, ...)
+void origin_log(const char *file, int line, const char *func, LogLevelC level, const char *format,
+                ...)
 {
     va_list args;
     va_start(args, format);
@@ -145,12 +145,12 @@ void origin_initialize_logger(LoggerSt const *logger, bool autoRegister)
     REGISTRY.initialize_logger(logger->ptr, autoRegister);
 }
 
-void origin_set_level_all(OriginLogLevel level)
+void origin_set_level_all(LogLevelC level)
 {
     REGISTRY.set_level_all(c_to_cpp_log_level(level));
 }
 
-void origin_flush_on_all(OriginLogLevel level)
+void origin_flush_on_all(LogLevelC level)
 {
     REGISTRY.flush_on_all(c_to_cpp_log_level(level));
 }

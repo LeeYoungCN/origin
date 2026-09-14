@@ -67,7 +67,7 @@ TEST_F(TestSyncLoggerSt, log_level)
     SinkSt const *sinks[] = {_sinkSt};
     _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
 
-    for (const OriginLogLevel level : C_LOG_LEVELS) {
+    for (const LogLevelC level : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, level);
         EXPECT_EQ(origin_logger_level(_loggerSt), level);
         if (level != ORIGIN_LOG_LEVEL_OFF) {
@@ -84,7 +84,7 @@ TEST_F(TestSyncLoggerSt, flush_level)
     SinkSt const *sinks[] = {_sinkSt};
     _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
 
-    for (const OriginLogLevel level : C_LOG_LEVELS) {
+    for (const LogLevelC level : C_LOG_LEVELS) {
         origin_logger_flush_on(_loggerSt, level);
         EXPECT_EQ(origin_logger_flush_level(_loggerSt), level);
         if (level != ORIGIN_LOG_LEVEL_OFF) {
@@ -101,9 +101,9 @@ TEST_F(TestSyncLoggerSt, log_log)
     SinkSt const *sinks[] = {_sinkSt};
     _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
 
-    for (const OriginLogLevel filterLevel : C_LOG_LEVELS) {
+    for (const LogLevelC filterLevel : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, filterLevel);
-        for (const OriginLogLevel logLevel : C_LOG_LEVELS) {
+        for (const LogLevelC logLevel : C_LOG_LEVELS) {
             ORIGIN_LOGGER_LOG(
                 _loggerSt, logLevel, "Level: [%s].", origin_log_level_full_string(logLevel));
         }
@@ -142,11 +142,11 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
-    for (OriginLogLevel const flushLevel : C_LOG_LEVELS) {
+    for (LogLevelC const flushLevel : C_LOG_LEVELS) {
         // 设置刷新等级
         origin_logger_flush_on(_loggerSt, flushLevel);
         for (uint32_t i = 0; i < C_LOG_LEVELS.size(); ++i) {
-            OriginLogLevel const level = C_LOG_LEVELS[i];
+            LogLevelC const level = C_LOG_LEVELS[i];
             if (level == ORIGIN_LOG_LEVEL_OFF) {
                 break;
             }

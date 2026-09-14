@@ -58,37 +58,37 @@ const char *origin_logger_name(const LoggerSt *logger)
     return logger->ptr->name().data();
 }
 
-void origin_logger_set_level(LoggerSt const *logger, OriginLogLevel level)
+void origin_logger_set_level(LoggerSt const *logger, LogLevelC level)
 {
     RETURN_IF_PTR_NULL(logger);
     logger->ptr->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_log(LoggerSt const *logger, OriginLogLevel level)
+bool origin_logger_should_log(LoggerSt const *logger, LogLevelC level)
 {
     RETURN_VALUE_IF_PTR_NULL(logger, false);
     return logger->ptr->should_log(c_to_cpp_log_level(level));
 }
 
-OriginLogLevel origin_logger_level(LoggerSt const *logger)
+LogLevelC origin_logger_level(LoggerSt const *logger)
 {
     RETURN_VALUE_IF_PTR_NULL(logger, ORIGIN_LOG_LEVEL_OFF);
     return cpp_to_c_log_level(logger->ptr->level());
 }
 
-void origin_logger_flush_on(LoggerSt const *logger, OriginLogLevel level)
+void origin_logger_flush_on(LoggerSt const *logger, LogLevelC level)
 {
     RETURN_IF_PTR_NULL(logger);
     logger->ptr->flush_on(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_flush(LoggerSt const *logger, OriginLogLevel level)
+bool origin_logger_should_flush(LoggerSt const *logger, LogLevelC level)
 {
     RETURN_VALUE_IF_PTR_NULL(logger, false);
     return logger->ptr->should_flush(c_to_cpp_log_level(level));
 }
 
-OriginLogLevel origin_logger_flush_level(LoggerSt const *logger)
+LogLevelC origin_logger_flush_level(LoggerSt const *logger)
 {
     RETURN_VALUE_IF_PTR_NULL(logger, ORIGIN_LOG_LEVEL_OFF);
     return cpp_to_c_log_level(logger->ptr->flush_level());
@@ -118,7 +118,7 @@ void origin_logger_flush(const LoggerSt *logger)
 }
 
 void origin_logger_log(const LoggerSt *logger, const char *file, int line, const char *func,
-                       OriginLogLevel level, const char *format, ...)
+                       LogLevelC level, const char *format, ...)
 {
     RETURN_IF_PTR_NULL(logger);
     va_list args;

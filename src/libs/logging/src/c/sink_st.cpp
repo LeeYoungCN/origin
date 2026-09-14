@@ -51,19 +51,19 @@ void origin_detroy_sink(SinkSt *sink)
     }
 }
 
-void origin_sink_set_level(const SinkSt *sink, OriginLogLevel level)
+void origin_sink_set_level(const SinkSt *sink, LogLevelC level)
 {
     RETURN_IF_PTR_NULL(sink);
     sink->ptr->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_sink_should_log(const SinkSt *sink, OriginLogLevel level)
+bool origin_sink_should_log(const SinkSt *sink, LogLevelC level)
 {
     RETURN_VALUE_IF_PTR_NULL(sink, false);
     return sink->ptr->should_log(c_to_cpp_log_level(level));
 }
 
-OriginLogLevel origin_sink_level(const SinkSt *sink)
+LogLevelC origin_sink_level(const SinkSt *sink)
 {
     RETURN_VALUE_IF_PTR_NULL(sink, ORIGIN_LOG_LEVEL_OFF);
     return cpp_to_c_log_level(sink->ptr->level());

@@ -22,10 +22,10 @@ typedef enum {
     ORIGIN_LOG_LEVEL_ERROR,
     ORIGIN_LOG_LEVEL_FATAL,
     ORIGIN_LOG_LEVEL_OFF
-} OriginLogLevel;
+} LogLevelC;
 
-LOGGING_API const char *origin_log_level_full_string(OriginLogLevel level);
-LOGGING_API const char *origin_log_level_abbr_string(OriginLogLevel level);
+LOGGING_API const char *origin_log_level_full_string(LogLevelC level);
+LOGGING_API const char *origin_log_level_abbr_string(LogLevelC level);
 
 #pragma region Logger
 LOGGING_API LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],
@@ -39,13 +39,13 @@ LOGGING_API void origin_destroy_logger(LoggerSt *logger);
 
 LOGGING_API const char *origin_logger_name(const LoggerSt *logger);
 
-LOGGING_API void origin_logger_set_level(LoggerSt const *logger, OriginLogLevel level);
-LOGGING_API bool origin_logger_should_log(LoggerSt const *logger, OriginLogLevel level);
-LOGGING_API OriginLogLevel origin_logger_level(LoggerSt const *logger);
+LOGGING_API void origin_logger_set_level(LoggerSt const *logger, LogLevelC level);
+LOGGING_API bool origin_logger_should_log(LoggerSt const *logger, LogLevelC level);
+LOGGING_API LogLevelC origin_logger_level(LoggerSt const *logger);
 
-LOGGING_API void origin_logger_flush_on(LoggerSt const *logger, OriginLogLevel level);
-LOGGING_API bool origin_logger_should_flush(LoggerSt const *logger, OriginLogLevel level);
-LOGGING_API OriginLogLevel origin_logger_flush_level(LoggerSt const *logger);
+LOGGING_API void origin_logger_flush_on(LoggerSt const *logger, LogLevelC level);
+LOGGING_API bool origin_logger_should_flush(LoggerSt const *logger, LogLevelC level);
+LOGGING_API LogLevelC origin_logger_flush_level(LoggerSt const *logger);
 
 LOGGING_API void origin_logger_set_pattern(const LoggerSt *logger, const char *pattern);
 LOGGING_API void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *formatter);
@@ -53,7 +53,7 @@ LOGGING_API void origin_logger_set_formatter(const LoggerSt *logger, const Forma
 LOGGING_API void origin_logger_flush(const LoggerSt *logger);
 
 LOGGING_API void origin_logger_log(const LoggerSt *logger, const char *file, int line,
-                                   const char *func, OriginLogLevel level, const char *format, ...);
+                                   const char *func, LogLevelC level, const char *format, ...);
 #pragma endregion
 
 #pragma region Sink
@@ -66,9 +66,9 @@ LOGGING_API SinkSt *origin_create_rotating_file_sink(const char *file, uint32_t 
 
 LOGGING_API void origin_destroy_sink(SinkSt *sink);
 
-LOGGING_API void origin_sink_set_level(const SinkSt *sink, OriginLogLevel level);
-LOGGING_API bool origin_sink_should_log(const SinkSt *sink, OriginLogLevel level);
-LOGGING_API OriginLogLevel origin_sink_level(const SinkSt *sink);
+LOGGING_API void origin_sink_set_level(const SinkSt *sink, LogLevelC level);
+LOGGING_API bool origin_sink_should_log(const SinkSt *sink, LogLevelC level);
+LOGGING_API LogLevelC origin_sink_level(const SinkSt *sink);
 
 LOGGING_API void origin_sink_set_pattern(const SinkSt *sink, const char *pattern);
 LOGGING_API void origin_sink_set_formatter(const SinkSt *sink, const FormatterSt *formatter);
@@ -88,23 +88,23 @@ LOGGING_API void origin_destroy_task_pool(TaskPoolSt *taskPool);
 LOGGING_API LoggerSt *origin_root_logger();
 LOGGING_API void origin_set_root_logger(const LoggerSt *logger);
 
-LOGGING_API void origin_set_level(OriginLogLevel level);
-LOGGING_API bool origin_should_log(OriginLogLevel level);
-LOGGING_API OriginLogLevel origin_level();
+LOGGING_API void origin_set_level(LogLevelC level);
+LOGGING_API bool origin_should_log(LogLevelC level);
+LOGGING_API LogLevelC origin_level();
 
-LOGGING_API void origin_flush_on(OriginLogLevel level);
-LOGGING_API bool origin_should_flush(OriginLogLevel level);
-LOGGING_API OriginLogLevel origin_flush_level();
+LOGGING_API void origin_flush_on(LogLevelC level);
+LOGGING_API bool origin_should_flush(LogLevelC level);
+LOGGING_API LogLevelC origin_flush_level();
 
 LOGGING_API void origin_set_pattern(const char *pattern);
 LOGGING_API void origin_set_formatter(const FormatterSt *formatter);
 
 LOGGING_API void origin_flush();
 
-LOGGING_API void origin_force_log(const char *file, int line, const char *func,
-                                  OriginLogLevel level, const char *format, ...);
+LOGGING_API void origin_force_log(const char *file, int line, const char *func, LogLevelC level,
+                                  const char *format, ...);
 
-LOGGING_API void origin_log(const char *file, int line, const char *func, OriginLogLevel level,
+LOGGING_API void origin_log(const char *file, int line, const char *func, LogLevelC level,
                             const char *format, ...);
 #pragma endregion
 
@@ -121,8 +121,8 @@ LOGGING_API TaskPoolSt *origin_root_task_pool();
 
 #pragma region Logging manager
 LOGGING_API void origin_initialize_logger(LoggerSt const *logger, bool autoRegister);
-LOGGING_API void origin_set_level_all(OriginLogLevel level);
-LOGGING_API void origin_flush_on_all(OriginLogLevel level);
+LOGGING_API void origin_set_level_all(LogLevelC level);
+LOGGING_API void origin_flush_on_all(LogLevelC level);
 LOGGING_API void origin_set_pattern_all(const char *pattern);
 LOGGING_API void origin_set_formatter_all(FormatterSt const *formatter);
 LOGGING_API void origin_flush_all();

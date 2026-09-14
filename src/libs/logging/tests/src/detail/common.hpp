@@ -26,13 +26,13 @@ const std::vector<origin::logging::LogLevel> LOG_LEVELS = {origin::logging::LogL
                                                            origin::logging::LogLevel::FATAL,
                                                            origin::logging::LogLevel::OFF};
 
-const std::vector<OriginLogLevel> C_LOG_LEVELS = {ORIGIN_LOG_LEVEL_TRACE,
-                                                  ORIGIN_LOG_LEVEL_DEBUG,
-                                                  ORIGIN_LOG_LEVEL_INFO,
-                                                  ORIGIN_LOG_LEVEL_WARN,
-                                                  ORIGIN_LOG_LEVEL_ERROR,
-                                                  ORIGIN_LOG_LEVEL_FATAL,
-                                                  ORIGIN_LOG_LEVEL_OFF};
+const std::vector<LogLevelC> C_LOG_LEVELS = {ORIGIN_LOG_LEVEL_TRACE,
+                                             ORIGIN_LOG_LEVEL_DEBUG,
+                                             ORIGIN_LOG_LEVEL_INFO,
+                                             ORIGIN_LOG_LEVEL_WARN,
+                                             ORIGIN_LOG_LEVEL_ERROR,
+                                             ORIGIN_LOG_LEVEL_FATAL,
+                                             ORIGIN_LOG_LEVEL_OFF};
 
 int32_t diff_log_level(origin::logging::LogLevel a, origin::logging::LogLevel b);
 std::string get_logger_name(const testing::TestInfo *test_info);

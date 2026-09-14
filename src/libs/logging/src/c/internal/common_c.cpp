@@ -9,7 +9,7 @@
 #include "logging/log_level.hpp"
 
 namespace origin::logging::c {
-LogLevel c_to_cpp_log_level(OriginLogLevel level)
+LogLevel c_to_cpp_log_level(LogLevelC level)
 {
     switch (level) {
         case ORIGIN_LOG_LEVEL_TRACE:
@@ -27,11 +27,11 @@ LogLevel c_to_cpp_log_level(OriginLogLevel level)
         case ORIGIN_LOG_LEVEL_OFF:
             return LogLevel::OFF;
         default:
-            throw std::invalid_argument("OriginLogLevel invalid");
+            throw std::invalid_argument("LogLevelC invalid");
     }
 }
 
-OriginLogLevel cpp_to_c_log_level(LogLevel level)
+LogLevelC cpp_to_c_log_level(LogLevel level)
 {
     switch (level) {
         case LogLevel::TRACE:

@@ -47,8 +47,8 @@ struct TaskPoolSt {
 };
 
 namespace origin::logging::c {
-LogLevel c_to_cpp_log_level(OriginLogLevel level);
-OriginLogLevel cpp_to_c_log_level(LogLevel level);
+LogLevel c_to_cpp_log_level(LogLevelC level);
+LogLevelC cpp_to_c_log_level(LogLevel level);
 std::vector<std::shared_ptr<origin::logging::Sink>> sink_ptr_vector(const SinkSt *const sinks[],
                                                                     uint32_t sinkCnt);
 

@@ -175,7 +175,7 @@ TEST_F(TestLoggerStPublicApi, set_pattern_failed_when_pattern_empty)
 {
     origin_logger_set_pattern(_loggerSt, "");
     ORIGIN_LOGGER_ERROR(_loggerSt, "test");
-    EXPECT_NE("test", _sink->buffer()[1]);
+    EXPECT_NE("test", _sink->buffer()[0]);
 }
 
 TEST_F(TestLoggerStPublicApi, set_formatter)

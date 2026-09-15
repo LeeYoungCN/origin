@@ -19,8 +19,7 @@ LoggerSt *origin_root_logger()
 
 void origin_set_root_logger(const LoggerSt *logger)
 {
-    RETURN_IF_PTR_NULL(logger);
-    RETURN_IF_PTR_NULL(logger->ptr);
+    RETURN_AND_LOG_IF_PTR_NULL(logger, "Set root logger failed.");
     REGISTRY.set_root_logger(logger->ptr);
 }
 
@@ -56,14 +55,13 @@ LogLevelC origin_flush_level()
 
 void origin_set_pattern(const char *pattern)
 {
-    RETURN_IF_PTR_NULL(pattern);
+    RETURN_AND_LOG_IF_PTR_NULL(pattern, "Root logger set pattern failed.");
     return ROOT_LOGGER->set_pattern(pattern);
 }
 
 void origin_set_formatter(const FormatterSt *formatter)
 {
-    RETURN_IF_PTR_NULL(formatter);
-    RETURN_IF_PTR_NULL(formatter->ptr);
+    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Root logger set formatter failed.");
     return ROOT_LOGGER->set_formatter(formatter->ptr);
 }
 
@@ -99,7 +97,7 @@ bool origin_register_logger(const LoggerSt *logger)
 
 void origin_register_or_replace_logger(const LoggerSt *logger)
 {
-    RETURN_IF_PTR_NULL(logger);
+    RETURN_AND_LOG_IF_PTR_NULL(logger, "Register or replace logger failed");
 
     REGISTRY.register_or_replace_logger(logger->ptr);
 }
@@ -129,6 +127,12 @@ void origin_init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
     REGISTRY.init_root_task_pool(capacity, threadCnt);
 }
 
+LOGGING_API void origin_set_root_task_pool(const TaskPoolSt *taskPool)
+{
+    RETURN_AND_LOG_IF_PTR_NULL(taskPool, "Set task pool failed.");
+    REGISTRY.set_root_task_pool(taskPool->ptr);
+}
+
 TaskPoolSt *origin_root_task_pool()
 {
     auto taskPool = REGISTRY.root_task_pool();
@@ -141,7 +145,7 @@ TaskPoolSt *origin_root_task_pool()
 
 void origin_initialize_logger(LoggerSt const *logger, bool autoRegister)
 {
-    RETURN_IF_PTR_NULL(logger);
+    RETURN_AND_LOG_IF_PTR_NULL(logger, "Initialize logger failed.");
     REGISTRY.initialize_logger(logger->ptr, autoRegister);
 }
 
@@ -157,14 +161,14 @@ void origin_flush_on_all(LogLevelC level)
 
 void origin_set_pattern_all(const char *pattern)
 {
-    RETURN_IF_PTR_NULL(pattern);
+    RETURN_AND_LOG_IF_PTR_NULL(pattern, "Set pattern all failed.");
     REGISTRY.set_pattern_all(pattern);
 }
 
 void origin_set_formatter_all(FormatterSt const *formatter)
 {
-    RETURN_IF_PTR_NULL(formatter);
-    RETURN_IF_PTR_NULL(formatter->ptr);
+    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Set formatter all failed.");
+    RETURN_AND_LOG_IF_PTR_NULL(formatter->ptr, "Set formatter all failed.");
     REGISTRY.set_formatter_all(formatter->ptr->clone());
 }
 

@@ -43,11 +43,55 @@ void destroy_mock_sink_st(SinkSt* sink)
     auto mockSink = reinterpret_cast<MockSinkSt*>(sink);
 
     if (mockSink->ptr != nullptr) {
-        ORIGIN_DEBUG_DBG("Release SinkSt. UseCnt: {}. {}",
+        ORIGIN_DEBUG_DBG("Release MockSinkSt. UseCnt: {}. {}.",
                          mockSink->ptr.use_count(),
                          mockSink->ptr->param_str());
         mockSink->ptr.reset();
     }
     delete mockSink;
 }
+
+LoggerSt* create_mock_logger_st(std::shared_ptr<origin::logging::Logger> logger)
+{
+    auto mockLogger = new MockLoggerSt(std::move(logger));
+    return reinterpret_cast<LoggerSt*>(mockLogger);
+}
+
+void destroy_mock_logger_st(LoggerSt* logger)
+{
+    if (logger == nullptr) {
+        return;
+    }
+
+    auto mockLogger = reinterpret_cast<MockLoggerSt*>(logger);
+
+    if (mockLogger->ptr != nullptr) {
+        ORIGIN_DEBUG_DBG("Release MockLoggerSt. UseCnt: {}. Name: {}.",
+                         mockLogger->ptr.use_count(),
+                         mockLogger->ptr->name());
+        mockLogger->ptr.reset();
+    }
+    delete mockLogger;
+}
+
+FormatterSt* create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter)
+{
+    auto mockLogger = new MockFormatterSt(std::move(formatter));
+    return reinterpret_cast<FormatterSt*>(mockLogger);
+}
+void destroy_mock_formatter_st(FormatterSt* formatter)
+{
+    if (formatter == nullptr) {
+        return;
+    }
+
+    auto mockFormatter = reinterpret_cast<MockFormatterSt*>(formatter);
+
+    if (mockFormatter->ptr != nullptr) {
+        ORIGIN_DEBUG_DBG("Release MockFormatterSt.");
+        mockFormatter->ptr.reset();
+    }
+    delete mockFormatter;
+}
+
 }  // namespace logging_test

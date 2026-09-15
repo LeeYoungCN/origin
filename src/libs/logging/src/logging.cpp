@@ -141,6 +141,11 @@ void init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
     REGISTRY.init_root_task_pool(capacity, threadCnt);
 }
 
+void set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
+{
+    REGISTRY.set_root_task_pool(std::move(taskPool));
+}
+
 std::shared_ptr<TaskPool> root_task_pool()
 {
     return REGISTRY.root_task_pool();

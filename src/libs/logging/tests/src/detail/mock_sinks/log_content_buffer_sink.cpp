@@ -4,6 +4,8 @@
 #include <mutex>
 #include <ostream>
 
+#include "common/debug/debug_logger.h"
+
 namespace logging_test {
 LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
 {
@@ -15,9 +17,9 @@ LogContentBufferSink::LogContentBufferSink(uint32_t capacity) : _capacity(capaci
     _buffer.reserve(_capacity);
 }
 
-void LogContentBufferSink::enable_print_log(bool enable)
+void LogContentBufferSink::enable_debug_info(bool enable)
 {
-    _printfLog = enable;
+    _enanleDebugInfo = enable;
 }
 
 uint32_t LogContentBufferSink::capacity() const
@@ -39,6 +41,11 @@ const std::vector<std::string>& LogContentBufferSink::disk()
 
 void LogContentBufferSink::clear()
 {
+    std::lock_guard<std::mutex> const lock(_sinkMtx);
+    if (_enanleDebugInfo) {
+        ORIGIN_DEBUG_INFO(
+            "LogContentBufferSink clear. disk: {}, buffer: {}.", _disk.size(), _buffer.size());
+    }
     _buffer.clear();
     _disk.clear();
 }
@@ -52,8 +59,8 @@ void LogContentBufferSink::log_it(const LogMsg& logMsg)
 
 void LogContentBufferSink::sink_it(std::string_view message)
 {
-    if (_printfLog) {
-        std::cout << message << std::endl;
+    if (_enanleDebugInfo) {
+        ORIGIN_DEBUG_INFO("{}", message);
     }
     _buffer.emplace_back(message);
     if (_buffer.size() >= _capacity) {
@@ -63,6 +70,10 @@ void LogContentBufferSink::sink_it(std::string_view message)
 
 void LogContentBufferSink::flush_it()
 {
+    if (_enanleDebugInfo) {
+        ORIGIN_DEBUG_INFO(
+            "LogContentBufferSink flush. disk: {}, buffer: {}.", _disk.size(), _buffer.size());
+    }
     _disk.reserve(_disk.size() + _buffer.size());
     _disk.insert(_disk.end(), _buffer.begin(), _buffer.end());
     _buffer.clear();

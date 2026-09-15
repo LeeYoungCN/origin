@@ -76,7 +76,7 @@ void TaskPool::shutdown()
 
 void TaskPool::worker_loop(uint32_t idx)
 {
-    ORIGIN_DEBUG_DBG("Log thread pool worker loop start. [{}/{}]", idx, _threadCnt);
+    ORIGIN_DEBUG_DBG("Log task pool worker loop start. [{}/{}]", idx, _threadCnt);
     bool isRunning = true;
     while (isRunning) {
         LogTask task;

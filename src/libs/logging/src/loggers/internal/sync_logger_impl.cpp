@@ -32,10 +32,6 @@ SyncLoggerImpl::SyncLoggerImpl(std::string_view name,
 void SyncLoggerImpl::log_it(const LogMsg& logMsg)
 {
     backend_log(logMsg);
-
-    if (should_flush(logMsg.level)) {
-        backend_flush();
-    }
 }
 
 void SyncLoggerImpl::flush_it()

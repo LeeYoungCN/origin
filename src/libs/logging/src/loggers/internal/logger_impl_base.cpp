@@ -1,6 +1,7 @@
 #include "loggers/internal/logger_impl_base.hpp"
 
 #include <atomic>
+#include <exception>
 #include <initializer_list>
 #include <memory>
 #include <stdexcept>
@@ -44,6 +45,10 @@ LoggerImplBase::LoggerImplBase(std::string_view name,
         throw std::invalid_argument("Logger name cannot be empty.");
     }
 
+    if (sinks.empty()) {
+        throw std::invalid_argument("Sinks empty.");
+    }
+
     for (const auto& sink : sinks) {
         if (sink == nullptr) {
             throw std::invalid_argument("Sink cannot be null.");
@@ -57,6 +62,10 @@ LoggerImplBase::LoggerImplBase(std::string_view name,
 {
     if (name.empty()) {
         throw std::invalid_argument("Logger name cannot be empty.");
+    }
+
+    if (sinks.size() == 0) {
+        throw std::invalid_argument("Sinks empty.");
     }
 
     for (const auto& sink : sinks) {
@@ -108,12 +117,18 @@ bool LoggerImplBase::should_flush(LogLevel level) const
 
 void LoggerImplBase::set_pattern(std::string_view pattern) const
 {
-    set_formatter(std::make_unique<PatternFormatter>(pattern));
+    try {
+        set_formatter(std::make_unique<PatternFormatter>(pattern));
+    } catch (std::exception& e) {
+        ORIGIN_DEBUG_ERR("Logger set pattertn failed. Name: [{}]. {}", _name, e.what());
+    }
 }
 
 void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) const
 {
-    RETURN_IF_PTR_NULL(formatter);
+    if (formatter == nullptr) {
+        ORIGIN_DEBUG_ERR("Logger set formatter failed. Name: [{}]. formatter nullptr.", _name);
+    }
     for (auto& sink : _sinks) {
         sink->set_formatter(formatter->clone());
     }
@@ -135,6 +150,9 @@ void LoggerImplBase::backend_log(const LogMsg& logMsg) const
         if (sink->should_log(logMsg.level)) {
             sink->log(logMsg);
         }
+    }
+    if (should_flush(logMsg.level)) {
+        backend_flush();
     }
 }
 

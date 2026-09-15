@@ -53,7 +53,7 @@ void origin_detroy_sink(SinkSt *sink)
 
 void origin_sink_set_level(const SinkSt *sink, LogLevelC level)
 {
-    RETURN_IF_PTR_NULL(sink);
+    RETURN_AND_LOG_IF_PTR_NULL(sink, "sink set level.");
     sink->ptr->set_level(c_to_cpp_log_level(level));
 }
 
@@ -71,16 +71,16 @@ LogLevelC origin_sink_level(const SinkSt *sink)
 
 void origin_sink_set_pattern(const SinkSt *sink, const char *pattern)
 {
-    RETURN_IF_PTR_NULL(sink);
-    RETURN_IF_PTR_NULL(pattern);
+    RETURN_AND_LOG_IF_PTR_NULL(sink, "sink set pattern.");
+    RETURN_AND_LOG_IF_PTR_NULL(pattern, "sink set pattern.");
     sink->ptr->set_pattern(pattern);
 }
 
 void origin_sink_set_formatter(const SinkSt *sink, const FormatterSt *formatter)
 {
-    RETURN_IF_PTR_NULL(sink);
-    RETURN_IF_PTR_NULL(formatter);
-    RETURN_IF_PTR_NULL(formatter->ptr);
+    RETURN_AND_LOG_IF_PTR_NULL(sink, "Sink set formatter failed.");
+    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Sink set formatter failed.");
+    RETURN_AND_LOG_IF_PTR_NULL(formatter->ptr, "Sink set formatter failed.");
     sink->ptr->set_formatter(formatter->ptr->clone());
 }
 }

@@ -271,6 +271,7 @@ LOGGING_API void remove_all();
 LOGGING_API std::shared_ptr<Logger> get_logger(std::string_view name);
 
 LOGGING_API void init_root_task_pool(uint32_t capacity, uint32_t threadCnt);
+LOGGING_API void set_root_task_pool(std::shared_ptr<TaskPool> taskPool);
 LOGGING_API std::shared_ptr<TaskPool> root_task_pool();
 #pragma endregion
 

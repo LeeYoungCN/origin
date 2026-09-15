@@ -1,5 +1,5 @@
-#ifndef TEST_LOGGING_TEST_UTILS_COMMON_H
-#define TEST_LOGGING_TEST_UTILS_COMMON_H
+#ifndef TEST_LOGGING_DETAIL_COMMON_H
+#define TEST_LOGGING_DETAIL_COMMON_H
 
 #include <memory>
 #include <string>
@@ -8,13 +8,34 @@
 
 #include "gtest/gtest.h"
 #include "logging/c/logging_c.h"
+#include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
+#include "logging/loggers/logger.hpp"
 #include "logging/sinks/sink.hpp"
+
+constexpr LogLevelC INVALID_LEVEL_C = static_cast<LogLevelC>(ORIGIN_LOG_LEVEL_OFF + 1);
+
+struct MockLoggerSt {
+    std::shared_ptr<origin::logging::Logger> ptr;
+    MockLoggerSt() = default;
+    explicit MockLoggerSt(std::shared_ptr<origin::logging::Logger> ptr) : ptr(std::move(ptr)) {}
+};
 
 struct MockSinkSt {
     std::shared_ptr<origin::logging::Sink> ptr;
     MockSinkSt() = default;
     explicit MockSinkSt(std::shared_ptr<origin::logging::Sink> ptr) : ptr(std::move(ptr)) {}
+};
+
+struct MockFormatterSt {
+    std::unique_ptr<origin::logging::Formatter> ptr;
+
+    MockFormatterSt() = default;
+    explicit MockFormatterSt(std::unique_ptr<origin::logging::Formatter> formatter)
+        : ptr(std::move(formatter))
+    {
+    }
+    explicit MockFormatterSt(origin::logging::Formatter *formatter) : ptr(formatter) {}
 };
 
 namespace logging_test {
@@ -41,5 +62,12 @@ std::string get_log_dir();
 
 SinkSt *create_mock_sink_st(std::shared_ptr<origin::logging::Sink> sink);
 void destroy_mock_sink_st(SinkSt *sink);
+
+LoggerSt *create_mock_logger_st(std::shared_ptr<origin::logging::Logger> logger);
+void destroy_mock_logger_st(LoggerSt *logger);
+
+FormatterSt *create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter);
+void destroy_mock_formatter_st(FormatterSt *formatter);
+
 }  // namespace logging_test
-#endif  // TEST_LOGGING_TEST_UTILS_COMMON_H
+#endif  // TEST_LOGGING_DETAIL_COMMON_H

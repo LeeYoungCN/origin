@@ -84,7 +84,7 @@ TEST_F(TestAsyncLogger, create_vector)
     EXPECT_EQ(_sink.use_count(), 2 * sinks.size() + 1);
 }
 
-TEST_F(TestAsyncLogger, log_level)
+TEST_F(TestAsyncLogger, set_level)
 {
     const std::string name = get_logger_name(test_info_);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
@@ -116,7 +116,7 @@ TEST_F(TestAsyncLogger, flush_level)
     }
 }
 
-TEST_F(TestAsyncLogger, log_log)
+TEST_F(TestAsyncLogger, log_filter)
 {
     const std::string name = get_logger_name(test_info_);
     _sink->set_level(LogLevel::TRACE);

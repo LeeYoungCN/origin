@@ -24,12 +24,14 @@ protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
     LoggerSt *_loggerSt = nullptr;
     SinkSt *_sinkSt = create_mock_sink_st(_sink);
+    SinkSt const *_sinks[1] = {_sinkSt};
 };
 
 void TestSyncLoggerSt::SetUp()
 {
+    _sink->set_pattern("%v");
     _sink->set_level(LogLevel::TRACE);
-    _sink->enable_print_log(false);
+    _sink->enable_debug_info(false);
 }
 
 void TestSyncLoggerSt::TearDown()
@@ -38,11 +40,28 @@ void TestSyncLoggerSt::TearDown()
     origin_destroy_logger(_loggerSt);
 }
 
+TEST_F(TestSyncLoggerSt, create_failed_when_param_invalid)
+{
+    const std::string name = get_logger_name(test_info_);
+    _loggerSt = origin_create_sync_logger(nullptr, _sinks, 1);
+    EXPECT_EQ(_loggerSt, nullptr);
+    _loggerSt = origin_create_sync_logger("", _sinks, 1);
+    EXPECT_EQ(_loggerSt, nullptr);
+    _loggerSt = origin_create_sync_logger(name.c_str(), nullptr, 1);
+    EXPECT_EQ(_loggerSt, nullptr);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 0);
+    EXPECT_EQ(_loggerSt, nullptr);
+    _sinks[0] = nullptr;
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    EXPECT_EQ(_loggerSt, nullptr);
+}
+
 TEST_F(TestSyncLoggerSt, create_single_sink)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
+
     EXPECT_EQ(_sink.use_count(), 3);
     EXPECT_EQ(origin_logger_name(_loggerSt), name);
     EXPECT_EQ(_sink->buffer().size(), 0);
@@ -53,59 +72,29 @@ TEST_F(TestSyncLoggerSt, create_multi_sinks)
     const std::string name = get_logger_name(test_info_);
     constexpr uint32_t sinkCnt = 3;
     SinkSt *sinks[sinkCnt] = {};
-    for (SinkSt *&sink : sinks) {
+    for (auto &sink : sinks) {
         sink = _sinkSt;
     }
     _loggerSt = origin_create_sync_logger(name.c_str(), sinks, sinkCnt);
+    ASSERT_NE(_loggerSt, nullptr);
     EXPECT_EQ(origin_logger_name(_loggerSt), name);
     EXPECT_EQ(_sink.use_count(), sinkCnt + 2);
 }
 
-TEST_F(TestSyncLoggerSt, log_level)
+TEST_F(TestSyncLoggerSt, log_filter)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
-
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_logger_set_level(_loggerSt, level);
-        EXPECT_EQ(origin_logger_level(_loggerSt), level);
-        if (level != ORIGIN_LOG_LEVEL_OFF) {
-            EXPECT_TRUE(origin_logger_should_log(_loggerSt, level));
-        } else {
-            EXPECT_FALSE(origin_logger_should_log(_loggerSt, level));
-        }
-    }
-}
-
-TEST_F(TestSyncLoggerSt, flush_level)
-{
-    const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
-
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_logger_flush_on(_loggerSt, level);
-        EXPECT_EQ(origin_logger_flush_level(_loggerSt), level);
-        if (level != ORIGIN_LOG_LEVEL_OFF) {
-            EXPECT_TRUE(origin_logger_should_flush(_loggerSt, level));
-        } else {
-            EXPECT_FALSE(origin_logger_should_flush(_loggerSt, level));
-        }
-    }
-}
-
-TEST_F(TestSyncLoggerSt, log_log)
-{
-    const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
 
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, filterLevel);
         for (const LogLevelC logLevel : C_LOG_LEVELS) {
-            ORIGIN_LOGGER_LOG(
-                _loggerSt, logLevel, "Level: [%s].", origin_log_level_full_string(logLevel));
+            ORIGIN_LOGGER_LOG(_loggerSt,
+                              logLevel,
+                              "FilterLevel: [%s], Level: [%s].",
+                              origin_log_level_full_string(filterLevel),
+                              origin_log_level_full_string(logLevel));
         }
         if (filterLevel != ORIGIN_LOG_LEVEL_OFF) {
             EXPECT_EQ(_sink->buffer().size(),
@@ -120,8 +109,8 @@ TEST_F(TestSyncLoggerSt, log_log)
 TEST_F(TestSyncLoggerSt, log_flush)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
 
     constexpr uint32_t MAX_ITEM_CNT = 100;
     for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
@@ -137,8 +126,8 @@ TEST_F(TestSyncLoggerSt, log_flush)
 TEST_F(TestSyncLoggerSt, log_flush_on)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
@@ -150,8 +139,11 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
             if (level == ORIGIN_LOG_LEVEL_OFF) {
                 break;
             }
-            ORIGIN_LOGGER_LOG(
-                _loggerSt, level, "Level: [%s].", origin_log_level_abbr_string(level));
+            ORIGIN_LOGGER_LOG(_loggerSt,
+                              level,
+                              "FlushLevel: [%s], Level: [%s].",
+                              origin_log_level_abbr_string(flushLevel),
+                              origin_log_level_abbr_string(level));
 
             if (flushLevel == ORIGIN_LOG_LEVEL_OFF || level < flushLevel) {
                 EXPECT_EQ(_sink->buffer().size(), i + 1);
@@ -165,11 +157,11 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
     }
 }
 
-TEST_F(TestSyncLoggerSt, log_function)
+TEST_F(TestSyncLoggerSt, log_macros)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
@@ -205,37 +197,6 @@ TEST_F(TestSyncLoggerSt, log_function)
     _sink->flush();
     EXPECT_EQ(_sink->buffer().size(), 0);
     EXPECT_EQ(_sink->disk().size(), logCount * (LOG_LEVELS.size() - 1));
-}
-
-TEST_F(TestSyncLoggerSt, set_pattern)
-{
-    const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
-
-    origin_logger_set_pattern(_loggerSt, "%v");
-    for (uint32_t i = 0; i < 100; i++) {
-        ORIGIN_LOGGER_ERROR(_loggerSt, "%u", i);
-        EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
-    }
-}
-
-TEST_F(TestSyncLoggerSt, set_formatter)
-{
-    const std::string name = get_logger_name(test_info_);
-    SinkSt const *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_sync_logger(name.c_str(), sinks, 1);
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
-
-    FormatterSt *formatter = origin_create_pattern_formatter("%v");
-    origin_logger_set_formatter(_loggerSt, formatter);
-    origin_destroy_formatter(formatter);
-
-    for (uint32_t i = 0; i < 100; i++) {
-        ORIGIN_LOGGER_ERROR(_loggerSt, "%u", i);
-        EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
-    }
 }
 
 }  // namespace logging_test

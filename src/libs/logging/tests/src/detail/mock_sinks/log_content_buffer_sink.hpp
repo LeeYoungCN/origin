@@ -16,7 +16,7 @@ public:
     ~LogContentBufferSink() override = default;
     explicit LogContentBufferSink(uint32_t capacity);
 
-    void enable_print_log(bool enable);
+    void enable_debug_info(bool enable);
     [[nodiscard]] uint32_t capacity() const;
     const std::vector<std::string>& buffer();
     const std::vector<std::string>& disk();
@@ -32,7 +32,7 @@ private:
     uint32_t _capacity;
     std::vector<std::string> _buffer;
     std::vector<std::string> _disk;
-    bool _printfLog{false};
+    bool _enanleDebugInfo{false};
 };
 }  // namespace logging_test
 

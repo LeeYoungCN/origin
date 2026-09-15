@@ -9,6 +9,11 @@
 #include "logging/log_level.hpp"
 
 namespace origin::logging::c {
+bool log_level_c_invalid(LogLevelC level)
+{
+    return (level > ORIGIN_LOG_LEVEL_OFF || level < ORIGIN_LOG_LEVEL_TRACE);
+}
+
 LogLevel c_to_cpp_log_level(LogLevelC level)
 {
     switch (level) {
@@ -27,7 +32,7 @@ LogLevel c_to_cpp_log_level(LogLevelC level)
         case ORIGIN_LOG_LEVEL_OFF:
             return LogLevel::OFF;
         default:
-            throw std::invalid_argument("LogLevelC invalid");
+            throw std::invalid_argument(LOG_LEVEL_C_INVALID.data());
     }
 }
 
@@ -49,16 +54,22 @@ LogLevelC cpp_to_c_log_level(LogLevel level)
         case LogLevel::OFF:
             return ORIGIN_LOG_LEVEL_OFF;
         default:
-            throw std::invalid_argument("LogLevel invalid");
+            throw std::invalid_argument("LogLevel invalid.");
     }
 }
 
 std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[], uint32_t sinkCnt)
 {
     std::vector<std::shared_ptr<Sink>> sinkPtrs;
-    sinkPtrs.reserve(sinkCnt);
-    for (uint32_t i = 0; i < sinkCnt; ++i) {
-        sinkPtrs.emplace_back(sinks[i]->ptr);
+    if (sinks != nullptr && sinkCnt > 0) {
+        sinkPtrs.reserve(sinkCnt);
+        for (uint32_t i = 0; i < sinkCnt; ++i) {
+            if (sinks[i] != nullptr) {
+                sinkPtrs.emplace_back(sinks[i]->ptr);
+            } else {
+                sinkPtrs.emplace_back(nullptr);
+            }
+        }
     }
     return sinkPtrs;
 }

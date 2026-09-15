@@ -1,6 +1,7 @@
 #include "sinks/internal/sink_impl_base.hpp"
 
 #include <atomic>
+#include <exception>
 #include <mutex>
 #include <utility>
 
@@ -54,12 +55,16 @@ LogLevel SinkImplBase::level() const
 
 void SinkImplBase::set_pattern(std::string_view pattern)
 {
-    set_formatter(std::make_unique<PatternFormatter>(pattern));
+    try {
+        set_formatter(std::make_unique<PatternFormatter>(pattern));
+    } catch (std::exception& e) {
+        ORIGIN_DEBUG_ERR("Sink set pattern failed. [Exception]: {}", e.what());
+    }
 }
 
 void SinkImplBase::set_formatter(std::unique_ptr<Formatter> formatter)
 {
-    RETURN_IF_PTR_NULL(formatter);
+    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Sink set formatter failed.");
     std::lock_guard const lock(_sinkMtx);
     _formatter = std::move(formatter);
 }

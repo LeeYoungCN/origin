@@ -46,7 +46,14 @@ struct TaskPoolSt {
     explicit TaskPoolSt(origin::logging::TaskPool *taskPool) : ptr(taskPool) {}
 };
 
+#define PTR_INVALID(stPtr) ((stPtr) == nullptr || (stPtr)->ptr == nullptr)
+
+constexpr std::string_view LOGGER_NULL_LOG = "logger nullptr or logger->ptr nullptr.";
+constexpr std::string_view FORMATTER_NULL_LOG = "formatter nullptr or formatter->ptr nullptr.";
+constexpr std::string_view LOG_LEVEL_C_INVALID = "level invalid.";
+
 namespace origin::logging::c {
+bool log_level_c_invalid(LogLevelC level);
 LogLevel c_to_cpp_log_level(LogLevelC level);
 LogLevelC cpp_to_c_log_level(LogLevel level);
 std::vector<std::shared_ptr<origin::logging::Sink>> sink_ptr_vector(const SinkSt *const sinks[],

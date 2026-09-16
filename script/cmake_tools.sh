@@ -32,7 +32,7 @@ cd "${ROOT_DIR}" || exit 1
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
 readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchain_files"
-test_target="origin_test"
+test_target="test_origin"
 
 
 arg_enable_clean=1

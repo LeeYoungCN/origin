@@ -25,11 +25,17 @@ void origin_set_root_logger(const LoggerSt *logger)
 
 void origin_set_level(LogLevelC level)
 {
+    RETURN_AND_ERROR_IF_TRUE(
+        log_level_c_invalid(level), "Root logger set level failed. {}", LOG_LEVEL_C_INVALID);
     ROOT_LOGGER->set_level(c_to_cpp_log_level(level));
 }
 
 bool origin_should_log(const LogLevelC level)
 {
+    RETURN_VALUE_AND_WARN_IF_TRUE(log_level_c_invalid(level),
+                                  false,
+                                  "Root logger should log failed. {}",
+                                  LOG_LEVEL_C_INVALID);
     return ROOT_LOGGER->should_log(c_to_cpp_log_level(level));
 }
 
@@ -40,11 +46,17 @@ LogLevelC origin_level()
 
 void origin_flush_on(const LogLevelC level)
 {
+    RETURN_AND_ERROR_IF_TRUE(
+        log_level_c_invalid(level), "Root logger flush on failed. {}", LOG_LEVEL_C_INVALID)
     ROOT_LOGGER->flush_on(c_to_cpp_log_level(level));
 }
 
 bool origin_should_flush(const LogLevelC level)
 {
+    RETURN_VALUE_AND_WARN_IF_TRUE(log_level_c_invalid(level),
+                                  false,
+                                  "Root logger should flush failed. {}",
+                                  LOG_LEVEL_C_INVALID);
     return ROOT_LOGGER->should_flush(c_to_cpp_log_level(level));
 }
 
@@ -55,13 +67,14 @@ LogLevelC origin_flush_level()
 
 void origin_set_pattern(const char *pattern)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(pattern, "Root logger set pattern failed.");
+    RETURN_AND_ERROR_IF_TRUE(pattern == nullptr,
+                             "Root logger set pattern failed. pattern nullptr.");
     return ROOT_LOGGER->set_pattern(pattern);
 }
 
 void origin_set_formatter(const FormatterSt *formatter)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Root logger set formatter failed.");
+    RETURN_AND_ERROR_IF_TRUE(formatter == nullptr, "Root logger set formatter failed.");
     return ROOT_LOGGER->set_formatter(formatter->ptr);
 }
 
@@ -70,18 +83,12 @@ void origin_flush()
     ROOT_LOGGER->flush();
 }
 
-void origin_force_log(const char *file, int line, const char *func, LogLevelC level,
-                      const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    origin_force_log_it(ROOT_LOGGER, file, line, func, c_to_cpp_log_level(level), format, args);
-    va_end(args);
-}
-
 void origin_log(const char *file, int line, const char *func, LogLevelC level, const char *format,
                 ...)
 {
+    RETURN_AND_WARN_IF_TRUE(
+        log_level_c_invalid(level), "Root logger log failed. {}", LOG_LEVEL_C_INVALID);
+    RETURN_AND_WARN_IF_TRUE(format == nullptr, "Root logger log failed. format nullptr.");
     va_list args;
     va_start(args, format);
     origin_log_it(ROOT_LOGGER, file, line, func, c_to_cpp_log_level(level), format, args);

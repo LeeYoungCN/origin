@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-    origin_set_debug_logger_level(ORG_DBG_LVL_DEBUG);
+    origin_set_debug_logger_level(ORG_DBG_LVL_INFO);
     ORIGIN_DEBUG_INFO("Running main() from {}", __FILE__);
 
     origin_show_working_env();

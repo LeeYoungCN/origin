@@ -100,10 +100,6 @@ LOGGING_API void origin_set_pattern(const char *pattern);
 LOGGING_API void origin_set_formatter(const FormatterSt *formatter);
 
 LOGGING_API void origin_flush();
-
-LOGGING_API void origin_force_log(const char *file, int line, const char *func, LogLevelC level,
-                                  const char *format, ...);
-
 LOGGING_API void origin_log(const char *file, int line, const char *func, LogLevelC level,
                             const char *format, ...);
 #pragma endregion

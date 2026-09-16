@@ -97,7 +97,6 @@ TEST_F(TestLoggerStPublicApi, should_log_false_when_logger_nullptr)
 TEST_F(TestLoggerStPublicApi, should_log_false_when_level_invalid)
 {
     EXPECT_FALSE(origin_logger_should_log(_loggerSt, INVALID_LEVEL_C));
-    EXPECT_FALSE(origin_logger_should_log(_loggerSt, INVALID_LEVEL_C));
 }
 
 TEST_F(TestLoggerStPublicApi, flush_on)
@@ -142,7 +141,6 @@ TEST_F(TestLoggerStPublicApi, should_flush_false_when_logger_nullptr)
 
 TEST_F(TestLoggerStPublicApi, should_flush_false_when_level_invalid)
 {
-    EXPECT_FALSE(origin_logger_should_flush(_loggerSt, INVALID_LEVEL_C));
     EXPECT_FALSE(origin_logger_should_flush(_loggerSt, INVALID_LEVEL_C));
 }
 

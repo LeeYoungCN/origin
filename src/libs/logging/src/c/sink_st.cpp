@@ -13,30 +13,24 @@ using namespace origin::logging::c;
 extern "C" {
 SinkSt *origin_create_stdout_sink()
 {
-    return new struct SinkSt(std::make_shared<StdoutSink>());
+    return new SinkSt(std::make_shared<StdoutSink>());
 }
 
 SinkSt *origin_create_basic_file_sink(const char *file, bool overwrite)
 {
-    return new struct SinkSt(std::make_shared<BasicFileSink>(file, overwrite));
+    return new SinkSt(std::make_shared<BasicFileSink>(file, overwrite));
 }
 
 SinkSt *origin_create_daily_file_sink(const char *file, uint32_t hour, uint32_t minute,
                                       uint32_t maxFiles, bool overwrite)
 {
-    return new struct SinkSt(
-        std::make_shared<DailyFileSink>(file, hour, minute, maxFiles, overwrite));
+    return new SinkSt(std::make_shared<DailyFileSink>(file, hour, minute, maxFiles, overwrite));
 }
 
 SinkSt *origin_create_rotating_file_sink(const char *file, uint32_t maxFileSize, uint32_t maxFiles,
                                          bool rotateOnOpen)
 {
-    if (file == nullptr) {
-        return new struct SinkSt(std::make_shared<RotatingFileSink>());
-    } else {
-        return new struct SinkSt(
-            std::make_shared<DailyFileSink>(file, maxFileSize, maxFiles, rotateOnOpen));
-    }
+    return new SinkSt(std::make_shared<DailyFileSink>(file, maxFileSize, maxFiles, rotateOnOpen));
 }
 
 void origin_detroy_sink(SinkSt *sink)

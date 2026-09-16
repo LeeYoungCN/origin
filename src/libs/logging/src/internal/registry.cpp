@@ -36,7 +36,7 @@ Logger* Registry::root_logger_raw()
 void Registry::set_root_logger(std::shared_ptr<Logger> newLogger)
 {
     RETURN_AND_LOG_IF_PTR_NULL(newLogger, "Set root logger failed.");
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     register_or_replace_logger_it(newLogger);
     _rootLogger = std::move(newLogger);
 }

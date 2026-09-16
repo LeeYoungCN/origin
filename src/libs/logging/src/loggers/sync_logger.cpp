@@ -23,7 +23,7 @@ SyncLogger::SyncLogger(std::string_view name, const std::vector<std::shared_ptr<
 
 SyncLogger::SyncLogger(std::string_view name,
                        const std::initializer_list<std::shared_ptr<Sink>>& sinks)
-    : LoggerBase(std::make_shared<SyncLoggerImpl>(name, std::vector<std::shared_ptr<Sink>>(sinks)))
+    : LoggerBase(std::make_shared<SyncLoggerImpl>(name, std::vector(sinks)))
 {
 }
 

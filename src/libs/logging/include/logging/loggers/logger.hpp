@@ -41,7 +41,7 @@ public:
 #pragma region log function
     template <class T,
               std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-    void log(const LogSource& source, LogLevel level, const T& message)
+    void log(const LogSource& source, const LogLevel level, const T& message)
     {
         if (should_log(level)) {
             force_log(source, level, origin::string::type_to_string(message));
@@ -49,7 +49,7 @@ public:
     }
 
     template <typename... Args>
-    void log(const LogSource& source, LogLevel level, std::format_string<Args...> format,
+    void log(const LogSource& source, const LogLevel level, std::format_string<Args...> format,
              Args&&... args)
     {
         if (should_log(level)) {

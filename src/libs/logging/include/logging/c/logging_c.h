@@ -24,8 +24,8 @@ typedef enum {
     ORIGIN_LOG_LEVEL_OFF
 } LogLevelC;
 
-LOGGING_API const char *origin_log_level_full_string(LogLevelC level);
-LOGGING_API const char *origin_log_level_abbr_string(LogLevelC level);
+LOGGING_API const char *origin_log_level_full_name(LogLevelC level);
+LOGGING_API const char *origin_log_level_abbr_name(LogLevelC level);
 
 #pragma region Logger
 LOGGING_API LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],

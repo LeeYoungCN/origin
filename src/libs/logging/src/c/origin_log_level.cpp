@@ -12,12 +12,12 @@ static_assert(static_cast<uint32_t>(origin::logging::LogLevel::FATAL) == ORIGIN_
 static_assert(static_cast<uint32_t>(origin::logging::LogLevel::OFF) == ORIGIN_LOG_LEVEL_OFF);
 
 extern "C" {
-const char* origin_log_level_full_string(LogLevelC level)
+const char* origin_log_level_full_name(LogLevelC level)
 {
     return origin::logging::log_level_string(c::c_to_cpp_log_level(level), true);
 }
 
-const char* origin_log_level_abbr_string(LogLevelC level)
+const char* origin_log_level_abbr_name(LogLevelC level)
 {
     return origin::logging::log_level_string(c::c_to_cpp_log_level(level), false);
 }

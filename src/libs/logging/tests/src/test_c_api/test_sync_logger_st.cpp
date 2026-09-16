@@ -20,7 +20,6 @@ protected:
     void SetUp() override;
     void TearDown() override;
 
-protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
     LoggerSt *_loggerSt = nullptr;
     SinkSt *_sinkSt = create_mock_sink_st(_sink);
@@ -93,8 +92,8 @@ TEST_F(TestSyncLoggerSt, log_filter)
             ORIGIN_LOGGER_LOG(_loggerSt,
                               logLevel,
                               "FilterLevel: [%s], Level: [%s].",
-                              origin_log_level_full_string(filterLevel),
-                              origin_log_level_full_string(logLevel));
+                              origin_log_level_full_name(filterLevel),
+                              origin_log_level_full_name(logLevel));
         }
         if (filterLevel != ORIGIN_LOG_LEVEL_OFF) {
             EXPECT_EQ(_sink->buffer().size(),
@@ -142,8 +141,8 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
             ORIGIN_LOGGER_LOG(_loggerSt,
                               level,
                               "FlushLevel: [%s], Level: [%s].",
-                              origin_log_level_abbr_string(flushLevel),
-                              origin_log_level_abbr_string(level));
+                              origin_log_level_abbr_name(flushLevel),
+                              origin_log_level_abbr_name(level));
 
             if (flushLevel == ORIGIN_LOG_LEVEL_OFF || level < flushLevel) {
                 EXPECT_EQ(_sink->buffer().size(), i + 1);
@@ -169,28 +168,28 @@ TEST_F(TestSyncLoggerSt, log_macros)
     for (uint32_t i = 0; i < logCount; ++i) {
         ORIGIN_LOGGER_TRACE(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_TRACE),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_TRACE),
                             i);
         ORIGIN_LOGGER_DEBUG(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_DEBUG),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_DEBUG),
                             i);
         ORIGIN_LOGGER_INFO(_loggerSt,
                            "Level: [%s], idx: %u",
-                           origin_log_level_full_string(ORIGIN_LOG_LEVEL_INFO),
+                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_INFO),
                            i);
         ORIGIN_LOGGER_WARN(_loggerSt,
                            "Level: [%s], idx: %u",
-                           origin_log_level_full_string(ORIGIN_LOG_LEVEL_WARN),
+                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_WARN),
                            i);
         ORIGIN_LOGGER_ERROR(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_ERROR),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_ERROR),
                             i);
 
         ORIGIN_LOGGER_FATAL(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_FATAL),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_FATAL),
                             i);
     }
 

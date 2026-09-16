@@ -21,7 +21,6 @@ protected:
     void SetUp() override;
     void TearDown() override;
 
-protected:
     std::string_view _loggerName = "TestLoggerStPublicApi";
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
     SinkSt *_sinkSt = create_mock_sink_st(_sink);

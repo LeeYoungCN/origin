@@ -8,10 +8,9 @@ extern "C" {
 FormatterSt *origin_create_pattern_formatter(const char *pattern)
 {
     if (pattern == nullptr) {
-        return new struct FormatterSt(new PatternFormatter());
-    } else {
-        return new struct FormatterSt(new PatternFormatter(pattern));
+        return new FormatterSt(new PatternFormatter());
     }
+    return new FormatterSt(new PatternFormatter(pattern));
 }
 
 void origin_destroy_formatter(FormatterSt *formatter)

@@ -13,7 +13,7 @@
 #include "logging/loggers/logger.hpp"
 #include "logging/sinks/sink.hpp"
 
-constexpr LogLevelC INVALID_LEVEL_C = static_cast<LogLevelC>(ORIGIN_LOG_LEVEL_OFF + 1);
+constexpr auto INVALID_LEVEL_C = static_cast<LogLevelC>(ORIGIN_LOG_LEVEL_OFF + 1);
 
 struct MockLoggerSt {
     std::shared_ptr<origin::logging::Logger> ptr;

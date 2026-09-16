@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cstdarg>
-#include <cstring>
 #include <exception>
 #include <memory>
 #include <string_view>
@@ -28,7 +27,7 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
                                    "Create sync logger failed. sinks nullptr or count is 0.");
 
     try {
-        return new struct LoggerSt(
+        return new LoggerSt(
             std::make_shared<SyncLogger>(name, sink_ptr_vector(sinks, count)));
     } catch (const std::exception &e) {
         ORIGIN_DEBUG_ERR("Create sync logger failed. Name: [{}]. Exception: {}", name, e.what());
@@ -49,12 +48,11 @@ LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks
 
     try {
         if (taskPool) {
-            return new struct LoggerSt(
+            return new LoggerSt(
                 std::make_shared<AsyncLogger>(name, sink_ptr_vector(sinks, count), taskPool->ptr));
-        } else {
-            return new struct LoggerSt(
-                std::make_shared<AsyncLogger>(name, sink_ptr_vector(sinks, count)));
         }
+        return new struct LoggerSt(
+            std::make_shared<AsyncLogger>(name, sink_ptr_vector(sinks, count)));
     } catch (const std::exception &e) {
         ORIGIN_DEBUG_ERR("Create async logger failed. Name: [{}]. Exception: {}", name, e.what());
         return nullptr;

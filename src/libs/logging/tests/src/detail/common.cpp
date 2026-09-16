@@ -63,7 +63,7 @@ void destroy_mock_logger_st(LoggerSt* logger)
         return;
     }
 
-    auto mockLogger = reinterpret_cast<MockLoggerSt*>(logger);
+    const auto mockLogger = reinterpret_cast<MockLoggerSt*>(logger);
 
     if (mockLogger->ptr != nullptr) {
         ORIGIN_DEBUG_DBG("Release MockLoggerSt. UseCnt: {}. Name: {}.",
@@ -76,7 +76,7 @@ void destroy_mock_logger_st(LoggerSt* logger)
 
 FormatterSt* create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter)
 {
-    auto mockLogger = new MockFormatterSt(std::move(formatter));
+    const auto mockLogger = new MockFormatterSt(std::move(formatter));
     return reinterpret_cast<FormatterSt*>(mockLogger);
 }
 void destroy_mock_formatter_st(FormatterSt* formatter)
@@ -85,7 +85,7 @@ void destroy_mock_formatter_st(FormatterSt* formatter)
         return;
     }
 
-    auto mockFormatter = reinterpret_cast<MockFormatterSt*>(formatter);
+    const auto mockFormatter = reinterpret_cast<MockFormatterSt*>(formatter);
 
     if (mockFormatter->ptr != nullptr) {
         ORIGIN_DEBUG_DBG("Release MockFormatterSt.");

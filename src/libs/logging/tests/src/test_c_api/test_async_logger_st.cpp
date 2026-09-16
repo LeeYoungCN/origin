@@ -24,8 +24,8 @@ protected:
     static void TearDownTestSuite() {}
     void SetUp() override;
     void TearDown() override;
-    void wait_flush_complete(uint32_t expectedCount);
-    void wait_log_complete(uint32_t expectedCount);
+    void wait_flush_complete(uint32_t expectedCount) const;
+    void wait_log_complete(uint32_t expectedCount) const;
 
 protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
@@ -49,15 +49,14 @@ void TestAsyncLoggerSt::TearDown()
     origin_destroy_task_pool(_taskPoolSt);
 }
 
-void TestAsyncLoggerSt::wait_log_complete(uint32_t expectedCount)
+void TestAsyncLoggerSt::wait_log_complete(uint32_t expectedCount) const
 {
-    constexpr uint32_t maxWaitTimeMs = 5000;
     uint32_t waitedTimeMs = 0;
-    uint32_t interval = 10;
     while (_sink->buffer().size() < expectedCount) {
+        constexpr uint32_t interval = 10;
         sleep_ms(1);
         waitedTimeMs += interval;
-        if (waitedTimeMs >= maxWaitTimeMs) {
+        if (constexpr uint32_t maxWaitTimeMs = 5000; waitedTimeMs >= maxWaitTimeMs) {
             ORIGIN_DEBUG_ERR("Wait log finish. Timeout: {}, expected: {}, disk: {}, buffer: {}.",
                              waitedTimeMs,
                              expectedCount,
@@ -68,15 +67,14 @@ void TestAsyncLoggerSt::wait_log_complete(uint32_t expectedCount)
     }
 }
 
-void TestAsyncLoggerSt::wait_flush_complete(uint32_t expectedCount)
+void TestAsyncLoggerSt::wait_flush_complete(uint32_t expectedCount) const
 {
-    constexpr uint32_t maxWaitTimeMs = 5000;
     uint32_t waitedTimeMs = 0;
-    uint32_t interval = 10;
     while (_sink->disk().size() < expectedCount) {
+        constexpr uint32_t interval = 10;
         sleep_ms(interval);
         waitedTimeMs += interval;
-        if (waitedTimeMs >= maxWaitTimeMs) {
+        if (constexpr uint32_t maxWaitTimeMs = 5000; waitedTimeMs >= maxWaitTimeMs) {
             ORIGIN_DEBUG_ERR("Wait flush finish. Timeout: {}, expected: {}, disk: {}, buffer: {}.",
                              waitedTimeMs,
                              expectedCount,
@@ -144,8 +142,7 @@ TEST_F(TestAsyncLoggerSt, create_by_root_task_pool)
 TEST_F(TestAsyncLoggerSt, log_filter)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_async_logger(name.c_str(), sinks, 1, _taskPoolSt);
+    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
     ASSERT_NE(_loggerSt, nullptr);
 
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
@@ -156,16 +153,16 @@ TEST_F(TestAsyncLoggerSt, log_filter)
             ORIGIN_LOGGER_LOG(_loggerSt,
                               logLevel,
                               "FilterLevel: [%s], Level: [%s].",
-                              origin_log_level_full_string(filterLevel),
-                              origin_log_level_full_string(logLevel));
+                              origin_log_level_full_name(filterLevel),
+                              origin_log_level_full_name(logLevel));
             sleep_ms(1);
         }
 
         if (filterLevel != ORIGIN_LOG_LEVEL_OFF) {
-            uint32_t expectSize = ORIGIN_LOG_LEVEL_FATAL - filterLevel + 1;
+            uint32_t const expectSize = ORIGIN_LOG_LEVEL_FATAL - filterLevel + 1;
             wait_log_complete(expectSize);
             EXPECT_EQ(_sink->buffer().size(), expectSize)
-                << origin_log_level_full_string(filterLevel);
+                << origin_log_level_full_name(filterLevel);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }
@@ -175,8 +172,7 @@ TEST_F(TestAsyncLoggerSt, log_filter)
 TEST_F(TestAsyncLoggerSt, log_flush)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_async_logger(name.c_str(), sinks, 1, _taskPoolSt);
+    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
     ASSERT_NE(_loggerSt, nullptr);
 
     constexpr uint32_t logCount = 100;
@@ -192,8 +188,7 @@ TEST_F(TestAsyncLoggerSt, log_flush)
 TEST_F(TestAsyncLoggerSt, log_flush_on)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_async_logger(name.c_str(), sinks, 1, _taskPoolSt);
+    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
     ASSERT_NE(_loggerSt, nullptr);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
@@ -206,9 +201,9 @@ TEST_F(TestAsyncLoggerSt, log_flush_on)
             if (level == ORIGIN_LOG_LEVEL_OFF) {
                 break;
             }
-            std::string logContent = std::format("FlushLevel: [{}], Level: [{}].",
-                                                 origin_log_level_full_string(flushLevel),
-                                                 origin_log_level_full_string(level));
+            std::string const logContent = std::format("FlushLevel: [{}], Level: [{}].",
+                                                 origin_log_level_full_name(flushLevel),
+                                                 origin_log_level_full_name(level));
             ORIGIN_LOGGER_LOG(_loggerSt, level, "%s", logContent.c_str());
 
             if (!origin_logger_should_flush(_loggerSt, level)) {
@@ -228,8 +223,7 @@ TEST_F(TestAsyncLoggerSt, log_flush_on)
 TEST_F(TestAsyncLoggerSt, log_macros)
 {
     const std::string name = get_logger_name(test_info_);
-    SinkSt *sinks[] = {_sinkSt};
-    _loggerSt = origin_create_async_logger(name.c_str(), sinks, 1, _taskPoolSt);
+    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
     ASSERT_NE(_loggerSt, nullptr);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
@@ -238,32 +232,32 @@ TEST_F(TestAsyncLoggerSt, log_macros)
     for (uint32_t i = 0; i < logCount; ++i) {
         ORIGIN_LOGGER_TRACE(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_TRACE),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_TRACE),
                             i);
         ORIGIN_LOGGER_DEBUG(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_DEBUG),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_DEBUG),
                             i);
         ORIGIN_LOGGER_INFO(_loggerSt,
                            "Level: [%s], idx: %u",
-                           origin_log_level_full_string(ORIGIN_LOG_LEVEL_INFO),
+                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_INFO),
                            i);
         ORIGIN_LOGGER_WARN(_loggerSt,
                            "Level: [%s], idx: %u",
-                           origin_log_level_full_string(ORIGIN_LOG_LEVEL_WARN),
+                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_WARN),
                            i);
         ORIGIN_LOGGER_ERROR(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_ERROR),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_ERROR),
                             i);
 
         ORIGIN_LOGGER_FATAL(_loggerSt,
                             "Level: [%s], idx: %u",
-                            origin_log_level_full_string(ORIGIN_LOG_LEVEL_FATAL),
+                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_FATAL),
                             i);
     }
 
-    auto expectCnt = logCount * (ORIGIN_LOG_LEVEL_FATAL - ORIGIN_LOG_LEVEL_TRACE + 1);
+    constexpr auto expectCnt = logCount * (ORIGIN_LOG_LEVEL_FATAL - ORIGIN_LOG_LEVEL_TRACE + 1);
     wait_log_complete(expectCnt);
     EXPECT_EQ(_sink->buffer().size(), expectCnt);
     EXPECT_EQ(_sink->disk().size(), 0);

@@ -29,7 +29,7 @@ uint32_t LogContentBufferSink::capacity() const
 
 const std::vector<std::string>& LogContentBufferSink::buffer()
 {
-    std::lock_guard<std::mutex> lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     return _buffer;
 }
 

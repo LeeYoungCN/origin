@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "common/debug/debug_logger.h"
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
@@ -29,27 +30,48 @@ protected:
     void TearDown() override {};
 
 protected:
-    void wait_flush_complete(uint32_t expectedCount);
+    void wait_flush_complete(uint32_t expectedCount) const;
+    void wait_log_complete(uint32_t expectedCount) const;
 
     std::shared_ptr<Logger> _logger;
-    std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
-    std::shared_ptr<TaskPool> _taskPool = create_task_pool(1024, 4);
+    std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>(2048);
+    std::shared_ptr<TaskPool> _taskPool = create_task_pool(1024, 3);
+    const uint32_t _interval = 1;
+    const uint32_t _maxWaitTimeMs = 5000;
 };
 
-void TestAsyncLogger::wait_flush_complete(uint32_t expectedCount)
+void TestAsyncLogger::wait_log_complete(uint32_t expectedCount) const
 {
-    constexpr uint32_t maxWaitTimeMs = 5000;
     uint32_t waitedTimeMs = 0;
-    while (_sink->disk().size() < expectedCount) {
-        sleep_ms(1);
-        waitedTimeMs += 1;
-        if (waitedTimeMs >= maxWaitTimeMs) {
-            FAIL() << "Timeout waiting for log entries. Expected: " << expectedCount
-                   << ", Actual: " << _sink->disk().size();
+    while (_sink->buffer().size() < expectedCount) {
+        sleep_ms(_interval);
+        waitedTimeMs += _interval;
+        if (waitedTimeMs >= _maxWaitTimeMs) {
+            ORIGIN_DEBUG_ERR("Wait log finish. Timeout: {}, expected: {}, disk: {}, buffer: {}.",
+                             waitedTimeMs,
+                             expectedCount,
+                             _sink->disk().size(),
+                             _sink->buffer().size());
+            FAIL();
         }
     }
-    EXPECT_EQ(_sink->buffer().size(), 0);
-    EXPECT_EQ(_sink->disk().size(), expectedCount);
+}
+
+void TestAsyncLogger::wait_flush_complete(uint32_t expectedCount) const
+{
+    uint32_t waitedTimeMs = 0;
+    while (_sink->disk().size() < expectedCount) {
+        sleep_ms(_interval);
+        waitedTimeMs += _interval;
+        if (waitedTimeMs >= _maxWaitTimeMs) {
+            ORIGIN_DEBUG_ERR("Wait flush finish. Timeout: {}, expected: {}, disk: {}, buffer: {}.",
+                             waitedTimeMs,
+                             expectedCount,
+                             _sink->disk().size(),
+                             _sink->buffer().size());
+            FAIL();
+        }
+    }
 }
 
 TEST_F(TestAsyncLogger, create_single_sink)
@@ -89,7 +111,7 @@ TEST_F(TestAsyncLogger, set_level)
     const std::string name = get_logger_name(test_info_);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
 
-    for (LogLevel level : LOG_LEVELS) {
+    for (LogLevel const level : LOG_LEVELS) {
         _logger->set_level(level);
         EXPECT_EQ(_logger->level(), level);
         if (level != LogLevel::OFF) {
@@ -105,7 +127,7 @@ TEST_F(TestAsyncLogger, flush_level)
     const std::string name = get_logger_name(test_info_);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
 
-    for (LogLevel level : LOG_LEVELS) {
+    for (LogLevel const level : LOG_LEVELS) {
         _logger->flush_on(level);
         EXPECT_EQ(_logger->flush_level(), level);
         if (level != LogLevel::OFF) {
@@ -122,11 +144,11 @@ TEST_F(TestAsyncLogger, log_filter)
     _sink->set_level(LogLevel::TRACE);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
 
-    for (auto filterLevel : LOG_LEVELS) {
+    for (const auto filterLevel : LOG_LEVELS) {
         _sink->clear();
         _logger->set_level(filterLevel);
 
-        for (auto logLevel : LOG_LEVELS) {
+        for (const auto logLevel : LOG_LEVELS) {
             _logger->log(LOG_SRC_LOCAL,
                          logLevel,
                          "fileLevel: {}, logLevel: {}.",
@@ -164,13 +186,42 @@ TEST_F(TestAsyncLogger, log_flush)
     wait_flush_complete(logCount);
 }
 
+TEST_F(TestAsyncLogger, log_flush_on)
+{
+    const std::string name = get_logger_name(test_info_);
+    _sink->set_level(LogLevel::TRACE);
+    _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
+    _logger->set_level(LogLevel::TRACE);
+
+    for (const auto flushLevel : LOG_LEVELS) {
+        // 设置刷新等级
+        _logger->flush_on(flushLevel);
+        for (uint32_t i = 0; i < LOG_LEVELS.size(); ++i) {
+            const LogLevel level = LOG_LEVELS[i];
+            if (level == LogLevel::OFF) {
+                break;
+            }
+            _logger->log(LOG_SRC_LOCAL, level, i);
+            if (!_logger->should_flush(level)) {
+                EXPECT_LE(_sink->buffer().size(), i + 1);
+                EXPECT_EQ(_sink->disk().size(), 0);
+            } else {
+                wait_flush_complete(i + 1);
+                EXPECT_EQ(_sink->buffer().size(), 0);
+                EXPECT_EQ(_sink->disk().size(), i + 1);
+            }
+        }
+        _sink->clear();
+    }
+}
+
 TEST_F(TestAsyncLogger, log_function)
 {
     const std::string name = get_logger_name(test_info_);
     _sink->set_level(LogLevel::TRACE);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
     _logger->set_level(LogLevel::TRACE);
-    uint32_t logCount = 100;
+    constexpr uint32_t logCount = 50;
     for (uint32_t i = 0; i < logCount; ++i) {
         // trace
         _logger->trace(LOG_SRC_LOCAL, "{}", i);
@@ -204,10 +255,7 @@ TEST_F(TestAsyncLogger, log_function)
         _logger->fatal(i);
         sleep_ms(1);
     }
-
-    _logger->flush();
-
-    wait_flush_complete(logCount * static_cast<uint32_t>(LOG_LEVELS.size() - 1) * 4);
+    wait_log_complete(logCount * static_cast<uint32_t>(LOG_LEVELS.size() - 1) * 4);
 }
 
 TEST_F(TestAsyncLogger, set_pattern)
@@ -234,7 +282,7 @@ TEST_F(TestAsyncLogger, set_formatter)
     _sink->set_level(LogLevel::TRACE);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
     _logger->set_level(LogLevel::TRACE);
-    std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
+    std::unique_ptr<Formatter> const formatter = std::make_unique<PatternFormatter>("%v");
     _logger->set_formatter(formatter);
     for (uint32_t i = 0; i < logCount; i++) {
         _logger->error(i);

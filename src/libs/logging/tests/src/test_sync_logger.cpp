@@ -67,7 +67,7 @@ TEST_F(TestSyncLogger, log_level)
     const std::string name = get_logger_name(test_info_);
     _logger = std::make_shared<SyncLogger>(name, _sink);
 
-    for (LogLevel level : LOG_LEVELS) {
+    for (LogLevel const level : LOG_LEVELS) {
         _logger->set_level(level);
         EXPECT_EQ(_logger->level(), level);
         if (level != LogLevel::OFF) {
@@ -83,7 +83,7 @@ TEST_F(TestSyncLogger, flush_level)
     const std::string name = get_logger_name(test_info_);
     _logger = std::make_shared<SyncLogger>(name, _sink);
 
-    for (LogLevel level : LOG_LEVELS) {
+    for (LogLevel const level : LOG_LEVELS) {
         _logger->flush_on(level);
         EXPECT_EQ(_logger->flush_level(), level);
         if (level != LogLevel::OFF) {
@@ -99,9 +99,9 @@ TEST_F(TestSyncLogger, log_log)
     const std::string name = get_logger_name(test_info_);
     _sink->set_level(LOG_LEVELS.at(0));
     _logger = std::make_shared<SyncLogger>(name, _sink);
-    for (auto filterLevel : LOG_LEVELS) {
+    for (const auto filterLevel : LOG_LEVELS) {
         _logger->set_level(filterLevel);
-        for (auto logLevel : LOG_LEVELS) {
+        for (const auto logLevel : LOG_LEVELS) {
             _logger->log(LOG_SRC_LOCAL, logLevel, "test");
         }
         if (filterLevel != LogLevel::OFF) {
@@ -133,20 +133,20 @@ TEST_F(TestSyncLogger, log_flush)
 TEST_F(TestSyncLogger, log_flush_on)
 {
     const std::string name = get_logger_name(test_info_);
-    _sink->set_level(LOG_LEVELS.at(0));
+    _sink->set_level(LogLevel::TRACE);
     _logger = std::make_shared<SyncLogger>(name, _sink);
-    _logger->set_level(LOG_LEVELS.at(0));
+    _logger->set_level(LogLevel::TRACE);
 
-    for (auto flushLevel : LOG_LEVELS) {
+    for (const auto flushLevel : LOG_LEVELS) {
         // 设置刷新等级
         _logger->flush_on(flushLevel);
         for (uint32_t i = 0; i < LOG_LEVELS.size(); ++i) {
-            LogLevel level = LOG_LEVELS[i];
+            const LogLevel level = LOG_LEVELS[i];
             if (level == LogLevel::OFF) {
                 break;
             }
             _logger->log(LOG_SRC_LOCAL, level, i);
-            if (_logger->flush_level() == LogLevel::OFF || level < _logger->flush_level()) {
+            if (!_logger->should_flush(level)) {
                 EXPECT_EQ(_sink->buffer().size(), i + 1);
                 EXPECT_EQ(_sink->disk().size(), 0);
             } else {
@@ -164,7 +164,7 @@ TEST_F(TestSyncLogger, log_function)
     _sink->set_level(LOG_LEVELS.at(0));
     _logger = std::make_shared<SyncLogger>(name, _sink);
     _logger->set_level(LOG_LEVELS.at(0));
-    uint32_t logCount = 100;
+    constexpr uint32_t logCount = 100;
     for (uint32_t i = 0; i < logCount; ++i) {
         // trace
         _logger->trace(LOG_SRC_LOCAL, "{}", i);
@@ -220,7 +220,7 @@ TEST_F(TestSyncLogger, set_formatter)
     _sink->set_level(LOG_LEVELS.at(0));
     _logger = std::make_shared<SyncLogger>(name, _sink);
     _logger->set_level(LOG_LEVELS.at(0));
-    std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
+    const std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
     _logger->set_formatter(formatter);
     for (uint32_t i = 0; i < 100; i++) {
         _logger->error(i);

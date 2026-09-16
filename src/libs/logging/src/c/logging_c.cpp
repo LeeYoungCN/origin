@@ -28,7 +28,7 @@ void origin_set_level(LogLevelC level)
     ROOT_LOGGER->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_should_log(LogLevelC level)
+bool origin_should_log(const LogLevelC level)
 {
     return ROOT_LOGGER->should_log(c_to_cpp_log_level(level));
 }
@@ -38,12 +38,12 @@ LogLevelC origin_level()
     return cpp_to_c_log_level(ROOT_LOGGER->level());
 }
 
-void origin_flush_on(LogLevelC level)
+void origin_flush_on(const LogLevelC level)
 {
     ROOT_LOGGER->flush_on(c_to_cpp_log_level(level));
 }
 
-bool origin_should_flush(LogLevelC level)
+bool origin_should_flush(const LogLevelC level)
 {
     return ROOT_LOGGER->should_flush(c_to_cpp_log_level(level));
 }
@@ -114,12 +114,11 @@ void origin_remove_all()
 
 LoggerSt *origin_get_logger(const char *name)
 {
-    auto logger = REGISTRY.get_logger(name);
+    const auto logger = REGISTRY.get_logger(name);
     if (logger == nullptr) {
         return nullptr;
-    } else {
-        return new struct LoggerSt(logger);
     }
+    return new LoggerSt(logger);
 }
 
 void origin_init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
@@ -135,7 +134,7 @@ LOGGING_API void origin_set_root_task_pool(const TaskPoolSt *taskPool)
 
 TaskPoolSt *origin_root_task_pool()
 {
-    auto taskPool = REGISTRY.root_task_pool();
+    const auto taskPool = REGISTRY.root_task_pool();
     if (taskPool == nullptr) {
         return nullptr;
     } else {

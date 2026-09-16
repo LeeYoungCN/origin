@@ -1,10 +1,12 @@
+#include <string>
+
 #include "common/macros/compiler.h"
-#include "common/types/filesystem_types.h"
 #include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
+
 
 namespace utils_test::filesystem_test {
 using namespace origin::thread;
@@ -24,8 +26,8 @@ void TestFilesystemUtilsDir::SetUp()
 {
     TestFilesystemUtilsBase::SetUp();
 
-    m_testDir1 = to_absolute_path("./test_dir1", m_processDir);
-    m_testDir2 = to_absolute_path("./test_dir2", m_testDir1);
+    m_testDir1 = to_absolute_path("./test_dir1_" + std::to_string(m_pid), m_processDir);
+    m_testDir2 = to_absolute_path("./test_dir2_" + std::to_string(m_pid), m_testDir1);
     EXPECT_TRUE(delete_dir(m_testDir1, true));
     EXPECT_FALSE(dir_exists(m_testDir1));
 }

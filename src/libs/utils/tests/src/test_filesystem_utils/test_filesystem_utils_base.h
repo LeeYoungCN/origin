@@ -31,6 +31,8 @@ protected:
         EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
         m_workDir = get_curr_working_dir();
         EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
+        m_pid = get_curr_proc_id();
+        EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     };
     void TearDown() override {};
 
@@ -38,6 +40,7 @@ protected:
     std::string m_process;
     std::string m_processDir;
     std::string m_workDir;
+    ProcessId m_pid;
 };
 
 }  // namespace utils_test::filesystem_test

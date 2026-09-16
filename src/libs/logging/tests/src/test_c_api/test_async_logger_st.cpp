@@ -26,6 +26,7 @@ protected:
     void TearDown() override;
     void wait_flush_complete(uint32_t expectedCount) const;
     void wait_log_complete(uint32_t expectedCount) const;
+    void init_logger(const testing::TestInfo *test_info);
 
 protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
@@ -47,6 +48,13 @@ void TestAsyncLoggerSt::TearDown()
     destroy_mock_sink_st(_sinkSt);
     origin_destroy_logger(_loggerSt);
     origin_destroy_task_pool(_taskPoolSt);
+}
+
+void TestAsyncLoggerSt::init_logger(const testing::TestInfo *test_info)
+{
+    const std::string name = get_logger_name(test_info);
+    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
+    ASSERT_NE(_loggerSt, nullptr);
 }
 
 void TestAsyncLoggerSt::wait_log_complete(uint32_t expectedCount) const
@@ -141,9 +149,7 @@ TEST_F(TestAsyncLoggerSt, create_by_root_task_pool)
 
 TEST_F(TestAsyncLoggerSt, log_filter)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
         _sink->clear();
@@ -171,9 +177,7 @@ TEST_F(TestAsyncLoggerSt, log_filter)
 
 TEST_F(TestAsyncLoggerSt, log_flush)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     constexpr uint32_t logCount = 100;
     for (uint32_t i = 0; i < logCount; ++i) {
@@ -187,10 +191,7 @@ TEST_F(TestAsyncLoggerSt, log_flush)
 
 TEST_F(TestAsyncLoggerSt, log_flush_on)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
-    ASSERT_NE(_loggerSt, nullptr);
-
+    init_logger(test_info_);
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
     for (LogLevelC const flushLevel : C_LOG_LEVELS) {
@@ -222,9 +223,7 @@ TEST_F(TestAsyncLoggerSt, log_flush_on)
 
 TEST_F(TestAsyncLoggerSt, log_macros)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 

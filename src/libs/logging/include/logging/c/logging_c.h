@@ -134,7 +134,7 @@ LOGGING_API void origin_shutdown();
 }
 #endif  // __cplusplus
 
-#define ORIGIN_LOGGING_LOG(fmt, level, ...) \
+#define ORIGIN_LOGGING_LOG(level, fmt, ...) \
     origin_log(__FILE__, __LINE__, __FUNCTION__, level, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_TRACE(fmt, ...) \

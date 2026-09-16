@@ -19,6 +19,7 @@ protected:
     static void TearDownTestSuite() {}
     void SetUp() override;
     void TearDown() override;
+    void init_logger(const testing::TestInfo *test_info);
 
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
     LoggerSt *_loggerSt = nullptr;
@@ -37,6 +38,13 @@ void TestSyncLoggerSt::TearDown()
 {
     destroy_mock_sink_st(_sinkSt);
     origin_destroy_logger(_loggerSt);
+}
+
+void TestSyncLoggerSt::init_logger(const testing::TestInfo *test_info)
+{
+    const std::string name = get_logger_name(test_info);
+    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
+    ASSERT_NE(_loggerSt, nullptr);
 }
 
 TEST_F(TestSyncLoggerSt, create_failed_when_param_invalid)
@@ -82,10 +90,7 @@ TEST_F(TestSyncLoggerSt, create_multi_sinks)
 
 TEST_F(TestSyncLoggerSt, log_filter)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
-    ASSERT_NE(_loggerSt, nullptr);
-
+    init_logger(test_info_);
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, filterLevel);
         for (const LogLevelC logLevel : C_LOG_LEVELS) {
@@ -107,9 +112,7 @@ TEST_F(TestSyncLoggerSt, log_filter)
 
 TEST_F(TestSyncLoggerSt, log_flush)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     constexpr uint32_t MAX_ITEM_CNT = 100;
     for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
@@ -124,9 +127,7 @@ TEST_F(TestSyncLoggerSt, log_flush)
 
 TEST_F(TestSyncLoggerSt, log_flush_on)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
@@ -158,9 +159,7 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
 
 TEST_F(TestSyncLoggerSt, log_macros)
 {
-    const std::string name = get_logger_name(test_info_);
-    _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
-    ASSERT_NE(_loggerSt, nullptr);
+    init_logger(test_info_);
 
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 

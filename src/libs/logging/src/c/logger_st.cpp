@@ -27,8 +27,7 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
                                    "Create sync logger failed. sinks nullptr or count is 0.");
 
     try {
-        return new LoggerSt(
-            std::make_shared<SyncLogger>(name, sink_ptr_vector(sinks, count)));
+        return new LoggerSt(std::make_shared<SyncLogger>(name, sink_ptr_vector(sinks, count)));
     } catch (const std::exception &e) {
         ORIGIN_DEBUG_ERR("Create sync logger failed. Name: [{}]. Exception: {}", name, e.what());
         return nullptr;
@@ -38,9 +37,8 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
 LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks[], uint32_t count,
                                      const TaskPoolSt *taskPool)
 {
-    RETURN_VALUE_AND_ERROR_IF_TRUE(string_is_null_or_empty(name),
-                                   nullptr,
-                                   "Create sync logger failed. name nullptr or empty.");
+    RETURN_VALUE_AND_ERROR_IF_TRUE(
+        name == nullptr, nullptr, "Create sync logger failed. name nullptr or empty.");
 
     RETURN_VALUE_AND_ERROR_IF_TRUE((sinks == nullptr || count == 0),
                                    nullptr,
@@ -141,8 +139,8 @@ LogLevelC origin_logger_flush_level(LoggerSt const *logger)
 void origin_logger_set_pattern(const LoggerSt *logger, const char *pattern)
 {
     RETURN_AND_ERROR_IF_TRUE(PTR_INVALID(logger), "Logger set pattern failed. {}", LOGGER_NULL_LOG);
-    RETURN_AND_ERROR_IF_TRUE(string_is_null_or_empty(pattern),
-                             "Logger set pattern failed. Name: [{}]. pattern nullptr or empty.",
+    RETURN_AND_ERROR_IF_TRUE(pattern == nullptr,
+                             "Logger set pattern failed. Name: [{}]. pattern nullptr.",
                              logger->ptr->name());
 
     logger->ptr->set_pattern(pattern);
@@ -152,12 +150,12 @@ void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *form
 {
     RETURN_AND_ERROR_IF_TRUE(
         PTR_INVALID(logger), "Logger set farmatter failed. {}", LOGGER_NULL_LOG);
-    RETURN_AND_ERROR_IF_TRUE(PTR_INVALID(formatter),
+    RETURN_AND_ERROR_IF_TRUE(formatter == nullptr,
                              "Logger set farmatter failed. Name: [{}]. {}",
                              logger->ptr->name(),
                              FORMATTER_NULL_LOG);
 
-    logger->ptr->set_formatter(formatter->ptr->clone());
+    logger->ptr->set_formatter(formatter->ptr);
 }
 
 void origin_logger_flush(const LoggerSt *logger)

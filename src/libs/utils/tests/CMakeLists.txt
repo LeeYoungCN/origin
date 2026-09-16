@@ -1,5 +1,5 @@
-set(TEST_RUNTIME ${LIB_NAME}_test)
-set(TEST_OBJECT  ${LIB_NAME}_test_obj)
+set(TEST_RUNTIME test_${LIB_NAME})
+set(TEST_OBJECT  test_${LIB_NAME}_obj)
 
 file(GLOB_RECURSE SRC_LIST "src/*.cpp")
 

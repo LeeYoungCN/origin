@@ -202,8 +202,8 @@ TEST_F(TestAsyncLoggerSt, log_flush_on)
                 break;
             }
             std::string const logContent = std::format("FlushLevel: [{}], Level: [{}].",
-                                                 origin_log_level_full_name(flushLevel),
-                                                 origin_log_level_full_name(level));
+                                                       origin_log_level_full_name(flushLevel),
+                                                       origin_log_level_full_name(level));
             ORIGIN_LOGGER_LOG(_loggerSt, level, "%s", logContent.c_str());
 
             if (!origin_logger_should_flush(_loggerSt, level)) {

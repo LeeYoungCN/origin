@@ -66,13 +66,13 @@ LogLevel LoggerBase::flush_level() const
     return _pImpl->flush_level();
 }
 
-bool LoggerBase::should_flush(LogLevel level) const
+bool LoggerBase::should_flush(const LogLevel level) const
 {
     throw_if_pimpl_null();
     return _pImpl->should_flush(level);
 }
 
-void LoggerBase::set_pattern(std::string_view pattern) const
+void LoggerBase::set_pattern(const std::string_view pattern) const
 {
     throw_if_pimpl_null();
     _pImpl->set_pattern(pattern);
@@ -90,7 +90,8 @@ void LoggerBase::flush()
     _pImpl->flush();
 }
 
-void LoggerBase::force_log(const LogSource& source, LogLevel level, std::string_view message)
+void LoggerBase::force_log(const LogSource& source, const LogLevel level,
+                           const std::string_view message)
 {
     throw_if_pimpl_null();
     _pImpl->force_log(source, level, message);

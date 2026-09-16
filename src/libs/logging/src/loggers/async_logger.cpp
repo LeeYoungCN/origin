@@ -15,13 +15,13 @@ AsyncLogger::AsyncLogger(std::string_view name, const std::shared_ptr<Sink>& sin
 }
 
 AsyncLogger::AsyncLogger(std::string_view name, const std::vector<std::shared_ptr<Sink>>& sinks)
-    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks))
+    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks.begin(), sinks.end()))
 {
 }
 
 AsyncLogger::AsyncLogger(std::string_view name,
                          const std::initializer_list<std::shared_ptr<Sink>>& sinks)
-    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks))
+    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks.begin(), sinks.end()))
 {
 }
 
@@ -33,14 +33,14 @@ AsyncLogger::AsyncLogger(std::string_view name, const std::shared_ptr<Sink>& sin
 
 AsyncLogger::AsyncLogger(std::string_view name, const std::vector<std::shared_ptr<Sink>>& sinks,
                          const std::weak_ptr<TaskPool>& pool)
-    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks, pool))
+    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks.begin(), sinks.end(), pool))
 {
 }
 
 AsyncLogger::AsyncLogger(std::string_view name,
                          const std::initializer_list<std::shared_ptr<Sink>>& sinks,
                          const std::weak_ptr<TaskPool>& pool)
-    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks, pool))
+    : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sinks.begin(), sinks.end(), pool))
 {
 }
 

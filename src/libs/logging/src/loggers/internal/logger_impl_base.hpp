@@ -2,14 +2,12 @@
 #define ORIGIN_LOGGING_LOGGERS_INTERNAL_LOGGER_IMPL_BASE_HPP
 
 #include <atomic>
-#include <initializer_list>
 #include <memory>
 #include <string_view>
 #include <vector>
 
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
-#include "logging/log_msg.hpp"
 #include "logging/log_source.hpp"
 #include "logging/loggers/logger.hpp"
 #include "logging/sinks/sink.hpp"
@@ -20,14 +18,13 @@ public:
     LoggerImplBase() = delete;
     ~LoggerImplBase() override = default;
 
-    explicit LoggerImplBase(std::string_view name);
-
     LoggerImplBase(std::string_view name, const std::shared_ptr<Sink>& sink);
 
-    LoggerImplBase(std::string_view name, const std::vector<std::shared_ptr<Sink>>& sinks);
-
-    LoggerImplBase(std::string_view name,
-                   const std::initializer_list<std::shared_ptr<Sink>>& sinks);
+    template <typename It>
+    LoggerImplBase(std::string_view name, It begin, It end) : _name(name), _sinks(begin, end)
+    {
+        throw_if_param_invalid();
+    }
 
     [[nodiscard]] std::string_view name() const override;
     [[nodiscard]] const std::vector<std::shared_ptr<Sink>>& sinks() const override;
@@ -52,6 +49,7 @@ public:
 protected:
     virtual void log_it(const LogMsg& logMsg) = 0;
     virtual void flush_it() = 0;
+    void throw_if_param_invalid();
 
 protected:
     std::string _name;

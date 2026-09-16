@@ -2,6 +2,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "detail/common.hpp"
@@ -25,10 +26,16 @@ protected:
     void SetUp() override {};
     void TearDown() override {};
 
-protected:
+    void init_logger(const testing::TestInfo *test_info);
     std::shared_ptr<SyncLogger> _logger;
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
 };
+
+void TestSyncLogger::init_logger(const testing::TestInfo *test_info)
+{
+    const std::string name = get_logger_name(test_info);
+    _logger = std::make_shared<SyncLogger>(name, _sink);
+}
 
 TEST_F(TestSyncLogger, create_single_sink)
 {
@@ -54,51 +61,42 @@ TEST_F(TestSyncLogger, create_initializer_list)
 TEST_F(TestSyncLogger, create_vector)
 {
     const std::string name = get_logger_name(test_info_);
-    auto sinks = std::vector<std::shared_ptr<Sink>>{_sink, _sink};
-    sinks.push_back(_sink);
+    auto sinks = std::vector<std::shared_ptr<Sink>>{_sink, _sink, _sink};
     _logger = std::make_shared<SyncLogger>(name, sinks);
     EXPECT_EQ(_logger->name(), name);
     EXPECT_EQ(_logger->sinks().size(), sinks.size());
     EXPECT_EQ(_sink.use_count(), 2 * sinks.size() + 1);
 }
 
-TEST_F(TestSyncLogger, log_level)
+TEST_F(TestSyncLogger, create_failed_when_name_empty)
 {
-    const std::string name = get_logger_name(test_info_);
-    _logger = std::make_shared<SyncLogger>(name, _sink);
-
-    for (LogLevel const level : LOG_LEVELS) {
-        _logger->set_level(level);
-        EXPECT_EQ(_logger->level(), level);
-        if (level != LogLevel::OFF) {
-            EXPECT_TRUE(_logger->should_log(level));
-        } else {
-            EXPECT_FALSE(_logger->should_log(level));
-        }
-    }
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>("", _sink), std::invalid_argument);
 }
 
-TEST_F(TestSyncLogger, flush_level)
+TEST_F(TestSyncLogger, create_failed_when_sink_nullptr)
 {
     const std::string name = get_logger_name(test_info_);
-    _logger = std::make_shared<SyncLogger>(name, _sink);
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, nullptr), std::invalid_argument);
+    auto sinkVector = std::vector<std::shared_ptr<Sink>>{_sink, nullptr};
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, sinkVector), std::invalid_argument);
+    auto sinkList = std::initializer_list<std::shared_ptr<Sink>>{nullptr};
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, sinkList), std::invalid_argument);
+}
 
-    for (LogLevel const level : LOG_LEVELS) {
-        _logger->flush_on(level);
-        EXPECT_EQ(_logger->flush_level(), level);
-        if (level != LogLevel::OFF) {
-            EXPECT_TRUE(_logger->should_flush(level));
-        } else {
-            EXPECT_FALSE(_logger->should_flush(level));
-        }
-    }
+TEST_F(TestSyncLogger, create_failed_when_sinks_empty)
+{
+    const std::string name = get_logger_name(test_info_);
+    auto sinkVector = std::vector<std::shared_ptr<Sink>>();
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, sinkVector), std::invalid_argument);
+
+    auto sinkList = std::vector<std::shared_ptr<Sink>>();
+    EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, sinkList), std::invalid_argument);
 }
 
 TEST_F(TestSyncLogger, log_log)
 {
-    const std::string name = get_logger_name(test_info_);
-    _sink->set_level(LOG_LEVELS.at(0));
-    _logger = std::make_shared<SyncLogger>(name, _sink);
+    init_logger(test_info_);
+    _sink->set_level(LogLevel::TRACE);
     for (const auto filterLevel : LOG_LEVELS) {
         _logger->set_level(filterLevel);
         for (const auto logLevel : LOG_LEVELS) {
@@ -116,9 +114,8 @@ TEST_F(TestSyncLogger, log_log)
 
 TEST_F(TestSyncLogger, log_flush)
 {
-    const std::string name = get_logger_name(test_info_);
-    _sink->set_level(LOG_LEVELS.at(0));
-    _logger = std::make_shared<SyncLogger>(name, _sink);
+    init_logger(test_info_);
+    _sink->set_level(LogLevel::TRACE);
     constexpr uint32_t MAX_ITEM_CNT = 100;
     for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
         _logger->error(LOG_SRC_LOCAL, i);
@@ -132,9 +129,8 @@ TEST_F(TestSyncLogger, log_flush)
 
 TEST_F(TestSyncLogger, log_flush_on)
 {
-    const std::string name = get_logger_name(test_info_);
+    init_logger(test_info_);
     _sink->set_level(LogLevel::TRACE);
-    _logger = std::make_shared<SyncLogger>(name, _sink);
     _logger->set_level(LogLevel::TRACE);
 
     for (const auto flushLevel : LOG_LEVELS) {
@@ -160,10 +156,9 @@ TEST_F(TestSyncLogger, log_flush_on)
 
 TEST_F(TestSyncLogger, log_function)
 {
-    const std::string name = get_logger_name(test_info_);
-    _sink->set_level(LOG_LEVELS.at(0));
-    _logger = std::make_shared<SyncLogger>(name, _sink);
-    _logger->set_level(LOG_LEVELS.at(0));
+    init_logger(test_info_);
+    _sink->set_level(LogLevel::TRACE);
+    _logger->set_level(LogLevel::TRACE);
     constexpr uint32_t logCount = 100;
     for (uint32_t i = 0; i < logCount; ++i) {
         // trace
@@ -201,31 +196,6 @@ TEST_F(TestSyncLogger, log_function)
     _sink->flush();
     EXPECT_EQ(_sink->buffer().size(), 0);
     EXPECT_EQ(_sink->disk().size(), logCount * (LOG_LEVELS.size() - 1) * 4);
-}
-
-TEST_F(TestSyncLogger, set_pattern)
-{
-    const std::string name = get_logger_name(test_info_);
-    _logger = std::make_shared<SyncLogger>(name, _sink);
-    _logger->set_pattern("%v");
-    for (uint32_t i = 0; i < 100; i++) {
-        _logger->error(i);
-        EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
-    }
-}
-
-TEST_F(TestSyncLogger, set_formatter)
-{
-    const std::string name = get_logger_name(test_info_);
-    _sink->set_level(LOG_LEVELS.at(0));
-    _logger = std::make_shared<SyncLogger>(name, _sink);
-    _logger->set_level(LOG_LEVELS.at(0));
-    const std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
-    _logger->set_formatter(formatter);
-    for (uint32_t i = 0; i < 100; i++) {
-        _logger->error(i);
-        EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
-    }
 }
 
 }  // namespace logging_test

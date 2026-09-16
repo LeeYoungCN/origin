@@ -16,7 +16,7 @@ add_subdirectory(libs)
 
 message(STATUS "LIB_LIST: ${LIB_LIST}")
 
-if (BUILD_TEST_ORIGIN)
+if (BUILD_TESTS)
     message(STATUS "TEST_OBJ_LIST: ${TEST_OBJ_LIST}")
     add_subdirectory(tests)
 endif()

@@ -13,7 +13,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(BUILD_TESTS "Build and run tests."   ON)
 option(ENABLE_ASAN "Enable asan."           OFF)
-option(BUILD_TEST_ORIGIN "Build and run tests."   OFF)
 
 if (MSVC)
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")

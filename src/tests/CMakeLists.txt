@@ -1,4 +1,4 @@
-set(TEST_RUNTIME origin_test)
+set(TEST_RUNTIME test_origin)
 
 add_executable(${TEST_RUNTIME}
     main.cpp

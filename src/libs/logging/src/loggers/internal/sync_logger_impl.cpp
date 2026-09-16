@@ -1,31 +1,15 @@
 #include "loggers/internal/sync_logger_impl.hpp"
 
-#include <initializer_list>
 #include <memory>
 #include <string_view>
-#include <vector>
 
 #include "loggers/internal/logger_impl_base.hpp"
-#include "logging/log_msg.hpp"
 #include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 
-SyncLoggerImpl::SyncLoggerImpl(std::string_view name) : LoggerImplBase(name) {}
-
-SyncLoggerImpl::SyncLoggerImpl(std::string_view name, const std::shared_ptr<Sink>& sink)
+SyncLoggerImpl::SyncLoggerImpl(const std::string_view name, const std::shared_ptr<Sink>& sink)
     : LoggerImplBase(name, sink)
-{
-}
-
-SyncLoggerImpl::SyncLoggerImpl(std::string_view name,
-                               const std::vector<std::shared_ptr<Sink>>& sinks)
-    : LoggerImplBase(name, sinks)
-{
-}
-SyncLoggerImpl::SyncLoggerImpl(std::string_view name,
-                               const std::initializer_list<std::shared_ptr<Sink>>& sinks)
-    : LoggerImplBase(name, sinks)
 {
 }
 

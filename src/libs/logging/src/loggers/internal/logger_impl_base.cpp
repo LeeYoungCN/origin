@@ -2,13 +2,13 @@
 
 #include <atomic>
 #include <exception>
-#include <initializer_list>
+// #include <initializer_list>
 #include <memory>
 #include <stdexcept>
 #include <string_view>
 #include <vector>
 
-#include "internal/common.hpp"
+#include "common/debug/debug_logger.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
@@ -17,60 +17,31 @@
 #include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
-
-LoggerImplBase::LoggerImplBase(std::string_view name) : _name(name)
+LoggerImplBase::LoggerImplBase(const std::string_view name, const std::shared_ptr<Sink>& sink)
+    : _name(name), _sinks({sink})
 {
-    if (name.empty()) {
-        throw std::invalid_argument("Logger name cannot be empty.");
-    }
+    throw_if_param_invalid();
 }
 
-LoggerImplBase::LoggerImplBase(std::string_view name, const std::shared_ptr<Sink>& sink)
-    : _name(name), _sinks{sink}
+void LoggerImplBase::throw_if_param_invalid()
 {
-    if (name.empty()) {
-        throw std::invalid_argument("Logger name cannot be empty.");
+    if (_name.empty()) {
+        constexpr auto LOGGER_NAME_EMPTY = "Name cannot be empty.";
+        ORIGIN_DEBUG_ERR("Create logger failed. {}.", LOGGER_NAME_EMPTY);
+        throw std::invalid_argument(LOGGER_NAME_EMPTY);
     }
 
-    if (sink == nullptr) {
-        throw std::invalid_argument("Sink cannot be null.");
-    }
-}
-
-LoggerImplBase::LoggerImplBase(std::string_view name,
-                               const std::vector<std::shared_ptr<Sink>>& sinks)
-    : _name(name), _sinks(sinks)
-{
-    if (name.empty()) {
-        throw std::invalid_argument("Logger name cannot be empty.");
+    if (_sinks.empty()) {
+        constexpr auto SINKS_EMPTY = "Sinks cannot be empty.";
+        ORIGIN_DEBUG_ERR("Create logger failed. Name: [{}]. {}", _name, SINKS_EMPTY);
+        throw std::invalid_argument(SINKS_EMPTY);
     }
 
-    if (sinks.empty()) {
-        throw std::invalid_argument("Sinks empty.");
-    }
-
-    for (const auto& sink : sinks) {
+    for (const auto& sink : _sinks) {
         if (sink == nullptr) {
-            throw std::invalid_argument("Sink cannot be null.");
-        }
-    }
-}
-
-LoggerImplBase::LoggerImplBase(std::string_view name,
-                               const std::initializer_list<std::shared_ptr<Sink>>& sinks)
-    : _name(name), _sinks(sinks)
-{
-    if (name.empty()) {
-        throw std::invalid_argument("Logger name cannot be empty.");
-    }
-
-    if (sinks.size() == 0) {
-        throw std::invalid_argument("Sinks empty.");
-    }
-
-    for (const auto& sink : sinks) {
-        if (sink == nullptr) {
-            throw std::invalid_argument("Sink cannot be null.");
+            constexpr auto SINK_NULL = "Sink cannot be nullptr.";
+            ORIGIN_DEBUG_ERR("Create logger failed. Name: [{}]. {}", _name, SINK_NULL);
+            throw std::invalid_argument(SINK_NULL);
         }
     }
 }
@@ -95,12 +66,12 @@ LogLevel LoggerImplBase::level() const
     return _level.load(std::memory_order_relaxed);
 }
 
-bool LoggerImplBase::should_log(LogLevel level) const
+bool LoggerImplBase::should_log(const LogLevel level) const
 {
     return (level != LogLevel::OFF && level >= this->level());
 }
 
-void LoggerImplBase::flush_on(LogLevel level)
+void LoggerImplBase::flush_on(const LogLevel level)
 {
     _flushLevel.store(level, std::memory_order_relaxed);
 }
@@ -110,7 +81,7 @@ LogLevel LoggerImplBase::flush_level() const
     return _flushLevel.load(std::memory_order_relaxed);
 }
 
-bool LoggerImplBase::should_flush(LogLevel level) const
+bool LoggerImplBase::should_flush(const LogLevel level) const
 {
     return (level != LogLevel::OFF && level >= this->flush_level());
 }
@@ -120,7 +91,7 @@ void LoggerImplBase::set_pattern(std::string_view pattern) const
     try {
         set_formatter(std::make_unique<PatternFormatter>(pattern));
     } catch (std::exception& e) {
-        ORIGIN_DEBUG_ERR("Logger set pattertn failed. Name: [{}]. {}", _name, e.what());
+        ORIGIN_DEBUG_ERR("Logger set pattern failed. Name: [{}]. {}", _name, e.what());
     }
 }
 
@@ -128,6 +99,7 @@ void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) 
 {
     if (formatter == nullptr) {
         ORIGIN_DEBUG_ERR("Logger set formatter failed. Name: [{}]. formatter nullptr.", _name);
+        return;
     }
     for (auto& sink : _sinks) {
         sink->set_formatter(formatter->clone());

@@ -171,8 +171,8 @@ TEST_F(TestAsyncLogger, log_filter)
             _logger->log(LOG_SRC_LOCAL,
                          logLevel,
                          "fileLevel: {}, logLevel: {}.",
-                         log_level_string(filterLevel),
-                         log_level_string(logLevel));
+                         log_level_full_name(filterLevel),
+                         log_level_full_name(logLevel));
             sleep_ms(1);
         }
 
@@ -180,7 +180,7 @@ TEST_F(TestAsyncLogger, log_filter)
             wait_log_complete(static_cast<uint32_t>(diff_log_level(LogLevel::FATAL, filterLevel)) +
                               1);
             EXPECT_EQ(_sink->buffer().size(), diff_log_level(LogLevel::FATAL, filterLevel) + 1)
-                << log_level_string(filterLevel);
+                << log_level_full_name(filterLevel);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }
@@ -217,8 +217,8 @@ TEST_F(TestAsyncLogger, log_flush_on)
                 break;
             }
             std::string const logMsg = std::format("FlushLevel: {}, Level: {}.",
-                                                   log_level_string(flushLevel),
-                                                   log_level_string(level));
+                                                   log_level_full_name(flushLevel),
+                                                   log_level_full_name(level));
             _logger->log(LOG_SRC_LOCAL, level, logMsg);
             if (!_logger->should_flush(level)) {
                 EXPECT_LE(_sink->buffer().size(), i + 1);

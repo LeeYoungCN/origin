@@ -70,7 +70,7 @@ TEST_F(TestPatternFormatter, abbr_log_level)
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
-        EXPECT_EQ(content, log_level_string(level, false));
+        EXPECT_EQ(content, log_level_abbr_name(level));
     }
 }
 
@@ -82,7 +82,7 @@ TEST_F(TestPatternFormatter, full_log_level)
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
-        EXPECT_EQ(content, log_level_string(level, true));
+        EXPECT_EQ(content, log_level_full_name(level));
     }
 }
 
@@ -179,7 +179,7 @@ TEST_F(TestPatternFormatter, default_pattern)
     std::string expect =
         std::format("[{}][{}][{}:{}]: {}",
                     format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN),
-                    log_level_string(msg.level, false),
+                    log_level_abbr_name(msg.level),
                     get_filename(msg.source.file),
                     msg.source.line,
                     msg.data);

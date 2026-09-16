@@ -63,11 +63,11 @@ void PatternFormatterImpl::log_msg_to_content(char symbol, const LogMsg& logMsg,
         case 'n':  // logger name
             logContent.append(logMsg.loggerName);
             break;
-        case 'l':  // lower level string
-            logContent.append(log_level_string(logMsg.level, false));
+        case 'l':  // lower level abbr name
+            logContent.append(log_level_abbr_name(logMsg.level));
             break;
-        case 'L':  // upper level string
-            logContent.append(log_level_string(logMsg.level));
+        case 'L':  // upper level full name
+            logContent.append(log_level_full_name(logMsg.level));
             break;
         case 's':  // file name
             logContent.append(

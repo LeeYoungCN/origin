@@ -21,8 +21,8 @@ enum class LogLevel : uint32_t {
     OFF         // 关闭日志功能
 };
 
-LOGGING_API const char* log_level_string(LogLevel level, bool full = true);
-
+LOGGING_API const char* log_level_full_name(LogLevel level);
+LOGGING_API const char* log_level_abbr_name(LogLevel level);
 }  // namespace origin::logging
 
 #endif  // ORIGIN_LOGGING_LOG_LEVEL_HPP

@@ -14,11 +14,11 @@ static_assert(static_cast<uint32_t>(origin::logging::LogLevel::OFF) == ORIGIN_LO
 extern "C" {
 const char* origin_log_level_full_name(LogLevelC level)
 {
-    return origin::logging::log_level_string(c::c_to_cpp_log_level(level), true);
+    return origin::logging::log_level_full_name(c::c_to_cpp_log_level(level));
 }
 
 const char* origin_log_level_abbr_name(LogLevelC level)
 {
-    return origin::logging::log_level_string(c::c_to_cpp_log_level(level), false);
+    return origin::logging::log_level_abbr_name(c::c_to_cpp_log_level(level));
 }
 }

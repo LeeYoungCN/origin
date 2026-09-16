@@ -104,7 +104,7 @@ TEST_F(TestSyncLogger, log_log)
         }
         if (filterLevel != LogLevel::OFF) {
             EXPECT_EQ(_sink->buffer().size(), diff_log_level(LogLevel::FATAL, _logger->level()) + 1)
-                << log_level_string(filterLevel);
+                << log_level_full_name(filterLevel);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }

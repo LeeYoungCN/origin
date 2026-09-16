@@ -32,14 +32,14 @@ cd "${ROOT_DIR}" || exit 1
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
 readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchain_files"
-test_target="test_origin"
+gtest_target="test_origin"
 
 
 arg_enable_clean=1
 arg_clean_type="all"
 
 arg_enable_build=1
-arg_target="all"
+arg_build_target="all"
 
 arg_enable_configure=1
 arg_preset=""
@@ -393,7 +393,7 @@ function cmake_configure() {
 function cmake_build() {
     init_cmake_env
 
-    readonly cmake_build_target="${arg_target}"
+    readonly cmake_build_target="${arg_build_target}"
     case "${cmake_build_target}" in
     list)
         cmake --build "${cmake_binary_dir}" --target "help"
@@ -441,7 +441,7 @@ function cmake_install() {
 
 function run_gtest() {
     init_cmake_env
-    cmake_test_runtime="${cmake_binary_dir}/bin/${test_target}"
+    cmake_test_runtime="${cmake_binary_dir}/bin/${gtest_target}"
     if [ ! -e "${cmake_test_runtime}" ]; then
         print_log "Test runtime [${cmake_test_runtime}] not exist!" error
         exit 1
@@ -487,7 +487,7 @@ function run_ctest() {
 function main() {
     if ! ARGS=$(
         getopt -o c::p:s: \
-            --long clean::,install::,preset:,configure,build::,gtest::,ctest::,help,list,asan \
+            --long clean::,install::,preset:,configure,build::,gtest::,ctest::,help,list,asan,gtest_target:: \
             -n "$0" -- "$@"
     ); then
         print_log "getopt failed." error
@@ -520,7 +520,7 @@ function main() {
         --build)
             arg_enable_build=0
             if [ -n "${2}" ]; then
-                arg_target="${2}"
+                arg_build_target="${2}"
             fi
             shift 2
             ;;
@@ -528,6 +528,13 @@ function main() {
             arg_enable_install=0
             if [ -n "${2}" ]; then
                 arg_component="${2}"
+            fi
+            shift 2
+            ;;
+        --gtest_target)
+            arg_enable_gtest=0
+            if [ -n "${2}" ]; then
+                gtest_target="${2}"
             fi
             shift 2
             ;;
@@ -571,7 +578,7 @@ function main() {
     readonly arg_preset
 
     readonly arg_enable_build
-    readonly arg_target
+    readonly arg_build_target
 
     readonly arg_enable_install
     readonly arg_component

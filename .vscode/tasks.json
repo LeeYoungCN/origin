@@ -42,7 +42,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Run gtest",
+            "label": "Run gtest all",
             "detail": "运行gtest测试用例",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -50,6 +50,22 @@
             "command": "./cmake_tools.sh",
             "args": [
                 "--build",
+                "--gtest"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Run gtest logging",
+            "detail": "运行gtest测试用例",
+            "options": {
+                "cwd": "${workspaceFolder}/script"
+            },
+            "command": "./cmake_tools.sh",
+            "args": [
+                "--build",
+                "--gtest_target=test_logging",
                 "--gtest"
             ],
             "problemMatcher": [

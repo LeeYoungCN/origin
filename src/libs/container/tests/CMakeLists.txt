@@ -17,5 +17,8 @@ endif()
 list(APPEND TEST_OBJ_LIST $<TARGET_OBJECTS:${TEST_OBJECT}>)
 set(TEST_OBJ_LIST "${TEST_OBJ_LIST}" CACHE STRING "" FORCE)
 
-include(GoogleTest)
-gtest_discover_tests(${TEST_RUNTIME})
+# include(GoogleTest)
+# gtest_discover_tests(${TEST_RUNTIME})
+
+add_test(NAME ${TEST_RUNTIME} COMMAND ${TEST_RUNTIME})
+set_tests_properties(${TEST_RUNTIME} PROPERTIES TIMEOUT 60)

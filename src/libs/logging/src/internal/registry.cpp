@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "common/debug/debug_logger.h"
-#include "internal/common.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/loggers/sync_logger.hpp"
 #include "logging/sinks/stdout_sink.hpp"
@@ -35,7 +34,10 @@ Logger* Registry::root_logger_raw()
 
 void Registry::set_root_logger(std::shared_ptr<Logger> newLogger)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(newLogger, "Set root logger failed.");
+    if (newLogger == nullptr) {
+        ORIGIN_DEBUG_ERR("Set root logger failed. newLogger nullptr.");
+        return;
+    }
     std::lock_guard const lock(_loggerMapMtx);
     register_or_replace_logger_it(newLogger);
     _rootLogger = std::move(newLogger);
@@ -45,7 +47,10 @@ void Registry::set_root_logger(std::shared_ptr<Logger> newLogger)
 #pragma region logging manager
 void Registry::initialize_logger(const std::shared_ptr<Logger>& logger, bool autoRegister)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(logger, "Initialize logger failed.");
+    if (logger == nullptr) {
+        ORIGIN_DEBUG_ERR("Initialize logger failed. logger nullptr.");
+        return;
+    }
     std::lock_guard<std::mutex> const lock(_loggerMapMtx);
     logger->set_formatter(_globalFormatter->clone());
     logger->set_level(_globalLevel);
@@ -87,7 +92,10 @@ void Registry::set_pattern_all(std::string_view pattern)
 
 void Registry::set_formatter_all(std::unique_ptr<Formatter> formatter)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Set formatter failed.");
+    if (formatter == nullptr) {
+        ORIGIN_DEBUG_ERR("Set formatter failed. formatter nullptr");
+        return;
+    }
     std::lock_guard<std::mutex> const lock(_loggerMapMtx);
     _globalFormatter = std::move(formatter);
     for (const auto& logger : _loggers | std::views::values) {
@@ -129,7 +137,10 @@ bool Registry::register_logger(std::shared_ptr<Logger> logger)
 
 void Registry::register_or_replace_logger(std::shared_ptr<Logger> logger)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(logger, "Register or replace logger failed");
+    if (logger == nullptr) {
+        ORIGIN_DEBUG_ERR("Register or replace logger failed. logger nullptr.");
+        return;
+    }
     std::lock_guard<std::mutex> const lock(_loggerMapMtx);
     register_or_replace_logger_it(std::move(logger));
 }
@@ -181,7 +192,10 @@ void Registry::init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
 
 void Registry::set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(taskPool, "Set root task pool failed");
+    if (taskPool == nullptr) {
+        ORIGIN_DEBUG_ERR("Set root task pool failed. taskPool nullptr.");
+        return;
+    }
     std::lock_guard<std::recursive_mutex> const lock(_taskPoolMtx);
     if (_rootTaskPool != nullptr) {
         ORIGIN_DEBUG_ERR("Task pool already initialized.");

@@ -27,7 +27,7 @@ void LoggerImplBase::throw_if_param_invalid()
 {
     if (_name.empty()) {
         constexpr auto LOGGER_NAME_EMPTY = "Name cannot be empty.";
-        ORIGIN_DEBUG_ERR("Create logger failed. {}.", LOGGER_NAME_EMPTY);
+        ORIGIN_DEBUG_ERR("Create logger failed. {}", LOGGER_NAME_EMPTY);
         throw std::invalid_argument(LOGGER_NAME_EMPTY);
     }
 

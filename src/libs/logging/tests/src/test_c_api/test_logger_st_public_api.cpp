@@ -209,7 +209,7 @@ TEST_F(TestLoggerStPublicApi, log_failed_when_logger_nullptr)
     ORIGIN_LOGGER_LOG(_nullLogger, ORIGIN_LOG_LEVEL_ERROR, "Test LoggerSt public api.");
 }
 
-TEST_F(TestLoggerStPublicApi, log_failed_when_level_invlid)
+TEST_F(TestLoggerStPublicApi, log_failed_when_level_invalid)
 {
     ORIGIN_LOGGER_LOG(_loggerSt, INVALID_LEVEL_C, "Test LoggerSt public api.");
     EXPECT_EQ(_sink->buffer().size(), 0);

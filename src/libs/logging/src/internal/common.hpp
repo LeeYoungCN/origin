@@ -6,51 +6,66 @@
 
 #include "common/debug/debug_logger.h"
 
-#define RETURN_AND_LOG_IF_PTR_NULL(ptr, log)        \
-    if (!(ptr)) {                                   \
-        ORIGIN_DEBUG_ERR(log " " #ptr " nullptr."); \
-        return;                                     \
-    }
+#define RETURN_AND_LOG_IF_PTR_NULL(ptr, log)            \
+    do {                                                \
+        if (!((ptr))) {                                 \
+            ORIGIN_DEBUG_ERR(log " " #ptr " nullptr."); \
+            return;                                     \
+        }                                               \
+    } while (0)
 
 #define RETURN_VALUE_IF_PTR_NULL(ptr, value) \
-    if (!(ptr)) {                            \
-        ORIGIN_DEBUG_ERR(#ptr " nullptr.");  \
-        return value;                        \
-    }
+    do {                                     \
+        if (!((ptr))) {                      \
+            return (value);                  \
+        }                                    \
+    } while (0)
 
 #define RETURN_IF_TRUE(condition) \
-    if ((condition)) {            \
-        return;                   \
-    }
+    do {                          \
+        if ((condition)) {        \
+            return;               \
+        }                         \
+    } while (0)
 
-#define RETURN_AND_ERROR_IF_TRUE(condition, format, ...)     \
-    if ((condition)) {                                       \
-        ORIGIN_DEBUG_ERR(format __VA_OPT__(, ) __VA_ARGS__); \
-        return;                                              \
-    }
+#define RETURN_AND_ERROR_IF_TRUE(condition, format, ...)         \
+    do {                                                         \
+        if ((condition)) {                                       \
+            ORIGIN_DEBUG_ERR(format __VA_OPT__(, ) __VA_ARGS__); \
+            return;                                              \
+        }                                                        \
+    } while (0)
 
-#define RETURN_AND_WARN_IF_TRUE(condition, format, ...)       \
-    if ((condition)) {                                        \
-        ORIGIN_DEBUG_WARN(format __VA_OPT__(, ) __VA_ARGS__); \
-        return;                                               \
-    }
+#define RETURN_AND_WARN_IF_TRUE(condition, format, ...)           \
+    do {                                                          \
+        if ((condition)) {                                        \
+            ORIGIN_DEBUG_WARN(format __VA_OPT__(, ) __VA_ARGS__); \
+            return;                                               \
+        }                                                         \
+    } while (0)
 
 #define RETURN_VALUE_IF_TRUE(condition, value) \
-    if ((condition)) {                         \
-        return value;                          \
-    }
+    do {                                       \
+        if ((condition)) {                     \
+            return (value);                    \
+        }                                      \
+    } while (0)
 
 #define RETURN_VALUE_AND_WARN_IF_TRUE(condition, value, format, ...) \
-    if ((condition)) {                                               \
-        ORIGIN_DEBUG_WARN(format __VA_OPT__(, ) __VA_ARGS__);        \
-        return value;                                                \
-    }
+    do {                                                             \
+        if ((condition)) {                                           \
+            ORIGIN_DEBUG_WARN(format __VA_OPT__(, ) __VA_ARGS__);    \
+            return (value);                                          \
+        }                                                            \
+    } while (0)
 
 #define RETURN_VALUE_AND_ERROR_IF_TRUE(condition, value, format, ...) \
-    if ((condition)) {                                                \
-        ORIGIN_DEBUG_ERR(format __VA_OPT__(, ) __VA_ARGS__);          \
-        return value;                                                 \
-    }
+    do {                                                              \
+        if ((condition)) {                                            \
+            ORIGIN_DEBUG_ERR(format __VA_OPT__(, ) __VA_ARGS__);      \
+            return (value);                                           \
+        }                                                             \
+    } while (0)
 
 namespace origin::logging {
 std::string get_default_log_file(std::string_view suffix = "log");

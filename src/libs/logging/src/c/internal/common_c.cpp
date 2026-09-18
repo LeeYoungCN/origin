@@ -32,7 +32,7 @@ LogLevel c_to_cpp_log_level(LogLevelC level)
         case ORIGIN_LOG_LEVEL_OFF:
             return LogLevel::OFF;
         default:
-            throw std::invalid_argument(LOG_LEVEL_C_INVALID.data());
+            throw std::invalid_argument(LOG_LEVEL_C_INVALID_LOG.data());
     }
 }
 

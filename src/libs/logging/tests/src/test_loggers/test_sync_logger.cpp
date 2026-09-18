@@ -2,14 +2,11 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
 #include "logging/log_source.hpp"
 #include "logging/loggers/sync_logger.hpp"
@@ -93,13 +90,13 @@ TEST_F(TestSyncLogger, create_failed_when_sinks_empty)
     EXPECT_THROW(_logger = std::make_shared<SyncLogger>(name, sinkList), std::invalid_argument);
 }
 
-TEST_F(TestSyncLogger, log_log)
+TEST_F(TestSyncLogger, log_level_filter)
 {
     init_logger(test_info_);
     _sink->set_level(LogLevel::TRACE);
-    for (const auto filterLevel : LOG_LEVELS) {
+    for (const LogLevel filterLevel : LOG_LEVELS) {
         _logger->set_level(filterLevel);
-        for (const auto logLevel : LOG_LEVELS) {
+        for (const LogLevel logLevel : LOG_LEVELS) {
             _logger->log(LOG_SRC_LOCAL, logLevel, "test");
         }
         if (filterLevel != LogLevel::OFF) {
@@ -112,28 +109,13 @@ TEST_F(TestSyncLogger, log_log)
     }
 }
 
-TEST_F(TestSyncLogger, log_flush)
-{
-    init_logger(test_info_);
-    _sink->set_level(LogLevel::TRACE);
-    constexpr uint32_t MAX_ITEM_CNT = 100;
-    for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
-        _logger->error(LOG_SRC_LOCAL, i);
-        EXPECT_EQ(_sink->buffer().size(), i + 1);
-        EXPECT_EQ(_sink->disk().size(), 0);
-    }
-    _logger->flush();
-    EXPECT_EQ(_sink->buffer().size(), 0);
-    EXPECT_EQ(_sink->disk().size(), MAX_ITEM_CNT);
-}
-
-TEST_F(TestSyncLogger, log_flush_on)
+TEST_F(TestSyncLogger, flush_level_filter)
 {
     init_logger(test_info_);
     _sink->set_level(LogLevel::TRACE);
     _logger->set_level(LogLevel::TRACE);
 
-    for (const auto flushLevel : LOG_LEVELS) {
+    for (const LogLevel flushLevel : LOG_LEVELS) {
         // 设置刷新等级
         _logger->flush_on(flushLevel);
         for (uint32_t i = 0; i < LOG_LEVELS.size(); ++i) {
@@ -152,6 +134,21 @@ TEST_F(TestSyncLogger, log_flush_on)
         }
         _sink->clear();
     }
+}
+
+TEST_F(TestSyncLogger, log_flush)
+{
+    init_logger(test_info_);
+    _sink->set_level(LogLevel::TRACE);
+    constexpr uint32_t MAX_ITEM_CNT = 100;
+    for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
+        _logger->error(LOG_SRC_LOCAL, i);
+        EXPECT_EQ(_sink->buffer().size(), i + 1);
+        EXPECT_EQ(_sink->disk().size(), 0);
+    }
+    _logger->flush();
+    EXPECT_EQ(_sink->buffer().size(), 0);
+    EXPECT_EQ(_sink->disk().size(), MAX_ITEM_CNT);
 }
 
 TEST_F(TestSyncLogger, log_function)

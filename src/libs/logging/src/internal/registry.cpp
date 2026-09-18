@@ -29,6 +29,9 @@ std::shared_ptr<Logger> Registry::root_logger()
 Logger* Registry::root_logger_raw()
 {
     std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    if (_rootLogger == nullptr) {
+        return nullptr;
+    }
     return _rootLogger.get();
 }
 

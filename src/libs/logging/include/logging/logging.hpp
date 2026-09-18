@@ -64,9 +64,14 @@ LOGGING_API std::shared_ptr<Logger> root_logger();
 LOGGING_API Logger* root_logger_raw();
 LOGGING_API void set_root_logger(std::shared_ptr<Logger> logger);
 
-LOGGING_API bool should_log(LogLevel level);
 LOGGING_API void set_level(LogLevel level);
+LOGGING_API LogLevel level();
+LOGGING_API bool should_log(LogLevel level);
+
 LOGGING_API void flush_on(LogLevel level);
+LOGGING_API LogLevel flush_level();
+LOGGING_API bool should_flush(LogLevel level);
+
 LOGGING_API void set_pattern(std::string_view pattern);
 LOGGING_API void set_formatter(const std::unique_ptr<Formatter>& formatter);
 LOGGING_API void flush();

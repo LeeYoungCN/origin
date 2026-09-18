@@ -84,10 +84,7 @@ void origin_debug_logger_log(const char* file, int line, const char* func, Origi
 #define ORIGIN_DEBUG_ERR(format, ...) \
     ORIGIN_DEBUG_LOGGER(ORG_DBG_LVL_ERR, format __VA_OPT__(, ) __VA_ARGS__);
 
-#define ORIGIN_DEBUG_FATAL(format, ...)                                            \
-    do {                                                                           \
-        ORIGIN_DEBUG_LOGGER(ORG_DBG_LVL_FATAL, format __VA_OPT__(, ) __VA_ARGS__); \
-        std::abort();                                                              \
-    } while (0)
+#define ORIGIN_DEBUG_FATAL(format, ...) \
+    ORIGIN_DEBUG_LOGGER(ORG_DBG_LVL_FATAL, format __VA_OPT__(, ) __VA_ARGS__);
 
 #endif  // COMMON_DEBUG_DEBUG_LOG_HPP

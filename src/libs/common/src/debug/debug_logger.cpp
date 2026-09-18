@@ -1,6 +1,7 @@
 #include "common/debug/debug_logger.h"
 
 #include <cstdarg>
+#include <cstdlib>
 #include <mutex>
 #include <string>
 
@@ -29,8 +30,6 @@
 #include <filesystem>
 #include <format>
 #include <iostream>
-
-#include "common/macros/warnings.h"
 
 namespace {
 int64_t get_now_timestamp_ms()
@@ -161,6 +160,11 @@ public:
         auto logmsg = format_log(level, message, file, line, func);
         std::lock_guard lock(_mtx);
         std::cout << logmsg << std::endl;
+#ifdef DEBUG_MODE
+        if (level == ORG_DBG_LVL_FATAL) {
+            abort();
+        }
+#endif
     }
 
 private:
@@ -169,7 +173,9 @@ private:
 
 private:
     std::string format_log(OriginDbgLvl level, const std::string& message,
-                           const char* file = nullptr, int line = 0, const char* func = nullptr)
+                           [[maybe_unused]] const char* file = nullptr,
+                           [[maybe_unused]] int line = 0,
+                           [[maybe_unused]] const char* func = nullptr)
     {
 #ifdef DEBUG_MODE
         return std::format("[{}][{}][Tid: {}][{}:{}][{}]: {}",
@@ -181,9 +187,6 @@ private:
                            func,
                            message);
 #else
-        UNUSED(file);
-        UNUSED(line);
-        UNUSED(func);
         return std::format("[{}][{}][Tid: {}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),

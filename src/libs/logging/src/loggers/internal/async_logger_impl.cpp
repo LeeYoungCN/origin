@@ -1,6 +1,7 @@
 #include "loggers/internal/async_logger_impl.hpp"
 
 #include <memory>
+#include <stdexcept>
 #include <string_view>
 
 #include "common/debug/debug_logger.h"

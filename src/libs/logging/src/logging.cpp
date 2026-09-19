@@ -1,12 +1,21 @@
 #include "logging/logging.hpp"
 
+#include <cstdint>
+#include <initializer_list>
+#include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <utility>
 
 #include "c/internal/common_c.hpp"
 #include "common/debug/debug_logger.h"
 #include "internal/registry.hpp"
 #include "internal/task_pool.hpp"
+#include "logging/formatters/formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/loggers/async_logger.hpp"
+#include "logging/loggers/logger.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 std::shared_ptr<Logger> create_async_logger(std::string_view name,

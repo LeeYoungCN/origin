@@ -53,7 +53,7 @@ constexpr std::string_view ROOT_LOGGER_NULL_LOG = "root logger nullptr.";
 constexpr std::string_view FORMATTER_NULL_LOG = "formatter nullptr or formatter->ptr nullptr.";
 constexpr std::string_view LOG_LEVEL_C_INVALID_LOG = "level invalid.";
 
-namespace origin::logging::c {
+namespace origin::logging::c_api {
 bool log_level_c_invalid(LogLevelC level);
 LogLevel c_to_cpp_log_level(LogLevelC level);
 LogLevelC cpp_to_c_log_level(LogLevel level);

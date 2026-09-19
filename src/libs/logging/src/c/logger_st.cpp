@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdarg>
+#include <cstdint>
 #include <exception>
 #include <memory>
 #include <string_view>
@@ -11,18 +12,18 @@
 #include "logging/loggers/sync_logger.hpp"
 
 using namespace origin::logging;
-using namespace origin::logging::c;
-using namespace origin::string;
+using namespace origin::logging::c_api;
 
 extern "C" {
-LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[], uint32_t count)
+LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],
+                                    const uint32_t count)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Create sync logger failed. name nullptr.")
         return nullptr;
     }
 
-    if ((sinks == nullptr || count == 0)) {
+    if (sinks == nullptr || count == 0) {
         ORIGIN_DEBUG_ERR("Create sync logger failed. sinks nullptr or count is 0.")
         return nullptr;
     }
@@ -34,15 +35,15 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
     }
 }
 
-LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks[], uint32_t count,
-                                     const TaskPoolSt *taskPool)
+LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks[],
+                                     const uint32_t count, const TaskPoolSt *taskPool)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Create async logger failed. name nullptr.")
         return nullptr;
     }
 
-    if ((sinks == nullptr || count == 0)) {
+    if (sinks == nullptr || count == 0) {
         ORIGIN_DEBUG_ERR("Create async logger failed. sinks nullptr or count is 0.")
         return nullptr;
     }
@@ -82,7 +83,7 @@ const char *origin_logger_name(const LoggerSt *logger)
     return logger->ptr->name().data();
 }
 
-void origin_logger_set_level(LoggerSt const *logger, LogLevelC level)
+void origin_logger_set_level(const LoggerSt *logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger set level failed. {}", LOGGER_NULL_LOG);
@@ -98,7 +99,7 @@ void origin_logger_set_level(LoggerSt const *logger, LogLevelC level)
     logger->ptr->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_log(LoggerSt const *logger, LogLevelC level)
+bool origin_logger_should_log(const LoggerSt *logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger should log failed. {}", LOGGER_NULL_LOG);
@@ -114,7 +115,7 @@ bool origin_logger_should_log(LoggerSt const *logger, LogLevelC level)
     return logger->ptr->should_log(c_to_cpp_log_level(level));
 }
 
-LogLevelC origin_logger_level(LoggerSt const *logger)
+LogLevelC origin_logger_level(const LoggerSt *logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get level failed. {}", LOGGER_NULL_LOG);
@@ -123,7 +124,7 @@ LogLevelC origin_logger_level(LoggerSt const *logger)
     return cpp_to_c_log_level(logger->ptr->level());
 }
 
-void origin_logger_flush_on(LoggerSt const *logger, LogLevelC level)
+void origin_logger_flush_on(const LoggerSt *logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger flush on failed. {}", LOGGER_NULL_LOG);
@@ -139,7 +140,7 @@ void origin_logger_flush_on(LoggerSt const *logger, LogLevelC level)
     logger->ptr->flush_on(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_flush(LoggerSt const *logger, LogLevelC level)
+bool origin_logger_should_flush(const LoggerSt *logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger should flush failed. {}", LOGGER_NULL_LOG);
@@ -155,7 +156,7 @@ bool origin_logger_should_flush(LoggerSt const *logger, LogLevelC level)
     return logger->ptr->should_flush(c_to_cpp_log_level(level));
 }
 
-LogLevelC origin_logger_flush_level(LoggerSt const *logger)
+LogLevelC origin_logger_flush_level(const LoggerSt *logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get flush level. {}", LOGGER_NULL_LOG);
@@ -204,8 +205,8 @@ void origin_logger_flush(const LoggerSt *logger)
     logger->ptr->flush();
 }
 
-void origin_logger_log(const LoggerSt *logger, const char *file, int line, const char *func,
-                       LogLevelC level, const char *format, ...)
+void origin_logger_log(const LoggerSt *logger, const char *file, const int line, const char *func,
+                       const LogLevelC level, const char *format, ...)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger log failed. {}", LOGGER_NULL_LOG);

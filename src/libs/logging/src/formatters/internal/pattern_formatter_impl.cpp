@@ -1,12 +1,16 @@
 #include "formatters/internal/pattern_formatter_impl.hpp"
 
+#include <cstdint>
 #include <format>
 #include <iterator>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <string_view>
 
 #include "common/types/date_time_types.h"
 #include "logging/formatters/formatter.hpp"
+#include "logging/log_level.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 

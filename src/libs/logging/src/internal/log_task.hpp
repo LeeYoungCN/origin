@@ -21,14 +21,14 @@ struct LogTask {
     std::shared_ptr<LoggerImplBase> logger;
 
     LogTask() = default;
-    explicit LogTask(TaskType type) : type(type) {}
+    explicit LogTask(const TaskType type) : type(type) {}
 
-    LogTask(TaskType type, const std::shared_ptr<LoggerImplBase>& logger)
+    LogTask(const TaskType type, const std::shared_ptr<LoggerImplBase>& logger)
         : type(type), logger(logger)
     {
     }
 
-    LogTask(TaskType type, const std::shared_ptr<LoggerImplBase>& logger, LogMsg logMsg)
+    LogTask(const TaskType type, const std::shared_ptr<LoggerImplBase>& logger, LogMsg logMsg)
         : type(type), logMsg(std::move(logMsg)), logger(logger)
     {
     }

@@ -1,9 +1,14 @@
 #include "logging/sinks/sink_base.hpp"
 
+#include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <utility>
 
 #include "common/debug/debug_logger.h"
+#include "logging/formatters/formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 SinkBase::~SinkBase()

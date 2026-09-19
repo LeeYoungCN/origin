@@ -22,13 +22,13 @@ Registry::Registry() : _globalFormatter(new PatternFormatter())
 #pragma region root logger
 std::shared_ptr<Logger> Registry::root_logger()
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     return _rootLogger;
 }
 
 Logger* Registry::root_logger_raw()
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     if (_rootLogger == nullptr) {
         return nullptr;
     }
@@ -48,13 +48,13 @@ void Registry::set_root_logger(std::shared_ptr<Logger> newLogger)
 #pragma endregion
 
 #pragma region logging manager
-void Registry::initialize_logger(const std::shared_ptr<Logger>& logger, bool autoRegister)
+void Registry::initialize_logger(const std::shared_ptr<Logger>& logger, const bool autoRegister)
 {
     if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Initialize logger failed. logger nullptr.");
         return;
     }
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     logger->set_formatter(_globalFormatter->clone());
     logger->set_level(_globalLevel);
     logger->flush_on(_globalFlushLevel);
@@ -64,9 +64,9 @@ void Registry::initialize_logger(const std::shared_ptr<Logger>& logger, bool aut
     }
 }
 
-void Registry::set_level_all(LogLevel level)
+void Registry::set_level_all(const LogLevel level)
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     _globalLevel = level;
 
     for (const auto& logger : _loggers | std::views::values) {
@@ -74,9 +74,9 @@ void Registry::set_level_all(LogLevel level)
     }
 }
 
-void Registry::flush_on_all(LogLevel level)
+void Registry::flush_on_all(const LogLevel level)
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     _globalFlushLevel = level;
 
     for (const auto& logger : _loggers | std::views::values) {
@@ -99,7 +99,7 @@ void Registry::set_formatter_all(std::unique_ptr<Formatter> formatter)
         ORIGIN_DEBUG_ERR("Set formatter failed. formatter nullptr");
         return;
     }
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     _globalFormatter = std::move(formatter);
     for (const auto& logger : _loggers | std::views::values) {
         logger->set_formatter(_globalFormatter->clone());
@@ -108,7 +108,7 @@ void Registry::set_formatter_all(std::unique_ptr<Formatter> formatter)
 
 void Registry::flush_all()
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     for (const auto& logger : _loggers | std::views::values) {
         logger->flush();
     }
@@ -134,7 +134,7 @@ bool Registry::register_logger(std::shared_ptr<Logger> logger)
         ORIGIN_DEBUG_ERR("Register logger failed. logger nullptr.");
         return false;
     }
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     return register_logger_it(std::move(logger));
 }
 
@@ -144,13 +144,13 @@ void Registry::register_or_replace_logger(std::shared_ptr<Logger> logger)
         ORIGIN_DEBUG_ERR("Register or replace logger failed. logger nullptr.");
         return;
     }
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     register_or_replace_logger_it(std::move(logger));
 }
 
-void Registry::remove_logger(std::string_view name)
+void Registry::remove_logger(const std::string_view name)
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     const bool isDefaultLogger = _rootLogger != nullptr && _rootLogger->name() == name;
     _loggers.erase(name);
     if (isDefaultLogger) {
@@ -161,7 +161,7 @@ void Registry::remove_logger(std::string_view name)
 void Registry::remove_all()
 {
     {
-        std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+        std::lock_guard const lock(_loggerMapMtx);
         if (_rootLogger != nullptr) {
             _rootLogger.reset();
         }
@@ -170,16 +170,16 @@ void Registry::remove_all()
     ORIGIN_DEBUG_DBG("Remove all loggers.");
 }
 
-std::shared_ptr<Logger> Registry::get_logger(std::string_view name)
+std::shared_ptr<Logger> Registry::get_logger(const std::string_view name)
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
-    auto it = _loggers.find(name);
+    std::lock_guard const lock(_loggerMapMtx);
+    const auto it = _loggers.find(name);
     return it == _loggers.end() ? nullptr : it->second;
 }
 
-bool Registry::exist(std::string_view name)
+bool Registry::exist(const std::string_view name)
 {
-    std::lock_guard<std::mutex> const lock(_loggerMapMtx);
+    std::lock_guard const lock(_loggerMapMtx);
     return exist_it(name);
 }
 
@@ -209,7 +209,7 @@ void Registry::set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
 
 std::shared_ptr<TaskPool> Registry::root_task_pool()
 {
-    std::lock_guard<std::recursive_mutex> const lock(_taskPoolMtx);
+    std::lock_guard const lock(_taskPoolMtx);
     return _rootTaskPool;
 }
 #pragma endregion

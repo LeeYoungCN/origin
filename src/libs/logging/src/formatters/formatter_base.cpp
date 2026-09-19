@@ -2,13 +2,15 @@
 
 #include <memory>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 #include "logging/formatters/formatter.hpp"
 
 namespace origin::logging {
 FormatterBase::~FormatterBase() = default;
 
-FormatterBase::FormatterBase(std::unique_ptr<Formatter> pImpl) : _pImpl(std::move(pImpl))
+FormatterBase::FormatterBase(std::unique_ptr<Formatter> pimpl) : _pImpl(std::move(pimpl))
 {
     throw_if_pimpl_null();
 }

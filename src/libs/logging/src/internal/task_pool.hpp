@@ -22,7 +22,7 @@ public:
 
     void log(const std::shared_ptr<LoggerImplBase>& logger, const LogMsg& logMsg);
     void flush(const std::shared_ptr<LoggerImplBase>& logger);
-    std::string_view param_str();
+    std::string_view param_string();
 
 private:
     void start();

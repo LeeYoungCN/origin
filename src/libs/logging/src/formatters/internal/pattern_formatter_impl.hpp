@@ -2,6 +2,8 @@
 #define ORIGIN_LOGGING_FORMATTERS_INTERNAL_PATTERN_FORMATTER_IMPL_HPP
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"

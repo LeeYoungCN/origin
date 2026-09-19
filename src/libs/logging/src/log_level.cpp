@@ -21,12 +21,12 @@ const std::unordered_map<origin::logging::LogLevel, LogLvlStrInfo> LOG_STR_MAP =
 
 namespace origin::logging {
 
-const char* log_level_full_name(LogLevel level)
+const char* log_level_full_name(const LogLevel level)
 {
     return LOG_STR_MAP.at(level).full;
 }
 
-const char* log_level_abbr_name(LogLevel level)
+const char* log_level_abbr_name(const LogLevel level)
 {
     return LOG_STR_MAP.at(level).abbr;
 }

@@ -57,7 +57,7 @@ void RotatingFileSinkImplBase::rotate(std::string_view newFile)
 {
     _fileWriter.close();
 
-    if (rename_file(file(), newFile, true, RENAME_FILE_RETRY, RENAME_FILE_SLEEP_MS)) {
+    if (rename_file_retry(file(), newFile, true, RENAME_FILE_RETRY, RENAME_FILE_SLEEP_MS)) {
         _fileWriter.reopen(true);
         push_back_file(newFile);
         ORIGIN_DEBUG_DBG("Rotate log file success. {}", newFile);
@@ -73,7 +73,7 @@ void RotatingFileSinkImplBase::delete_overflow_file()
     // 保证剩余文件不超过最大文件数量，直到把能删除的都删了。
     while (_fileQue.size() > _maxFiles.load()) {
         auto file = _fileQue.front();
-        if (!delete_file(file, DELETE_FILE_RETRY, DELETE_FILE_SLEEP_MS)) {
+        if (!delete_file_retry(file, DELETE_FILE_RETRY, DELETE_FILE_SLEEP_MS)) {
             ORIGIN_DEBUG_ERR("Delete {} failed. {}", _itemName, file);
         } else {
             ORIGIN_DEBUG_DBG("Delete {} success. {}", _itemName, file);

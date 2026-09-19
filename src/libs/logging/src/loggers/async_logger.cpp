@@ -1,6 +1,8 @@
 #include "logging/loggers/async_logger.hpp"
 
+#include <initializer_list>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "internal/task_pool.hpp"

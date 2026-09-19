@@ -1,6 +1,5 @@
 #include "c/internal/common_c.hpp"
 
-#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -8,13 +7,13 @@
 #include "logging/c/logging_c.h"
 #include "logging/log_level.hpp"
 
-namespace origin::logging::c {
-bool log_level_c_invalid(LogLevelC level)
+namespace origin::logging::c_api {
+bool log_level_c_invalid(const LogLevelC level)
 {
     return (level > ORIGIN_LOG_LEVEL_OFF || level < ORIGIN_LOG_LEVEL_TRACE);
 }
 
-LogLevel c_to_cpp_log_level(LogLevelC level)
+LogLevel c_to_cpp_log_level(const LogLevelC level)
 {
     switch (level) {
         case ORIGIN_LOG_LEVEL_TRACE:
@@ -36,7 +35,7 @@ LogLevel c_to_cpp_log_level(LogLevelC level)
     }
 }
 
-LogLevelC cpp_to_c_log_level(LogLevel level)
+LogLevelC cpp_to_c_log_level(const LogLevel level)
 {
     switch (level) {
         case LogLevel::TRACE:
@@ -58,7 +57,8 @@ LogLevelC cpp_to_c_log_level(LogLevel level)
     }
 }
 
-std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[], uint32_t sinkCnt)
+std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[],
+                                                   const uint32_t sinkCnt)
 {
     std::vector<std::shared_ptr<Sink>> sinkPtrs;
     if (sinks != nullptr && sinkCnt > 0) {
@@ -74,15 +74,15 @@ std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[], 
     return sinkPtrs;
 }
 
-void origin_force_log_it(const std::shared_ptr<Logger> &logger, const char *file, int line,
-                         const char *func, LogLevel level, const char *format, va_list args)
+void origin_force_log_it(const std::shared_ptr<Logger> &logger, const char *file, const int line,
+                         const char *func, const LogLevel level, const char *format, va_list args)
 {
     logger->force_log(
         LogSource(file, line, func), level, origin::string::va_list_to_string(format, args));
 }
 
-void origin_log_it(const std::shared_ptr<Logger> &logger, const char *file, int line,
-                   const char *func, LogLevel level, const char *format, va_list args)
+void origin_log_it(const std::shared_ptr<Logger> &logger, const char *file, const int line,
+                   const char *func, const LogLevel level, const char *format, va_list args)
 {
     if (logger->should_log(level)) {
         origin_force_log_it(logger, file, line, func, level, format, args);

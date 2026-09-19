@@ -1,15 +1,17 @@
+#include <cstdint>
+#include <memory>
+
 #include "c/internal/common_c.hpp"
 #include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
 #include "logging/c/logging_c.h"
 #include "logging/sinks/basic_file_sink.hpp"
 #include "logging/sinks/daily_file_sink.hpp"
-#include "logging/sinks/rotating_file_sink.hpp"
 #include "logging/sinks/stderr_sink.hpp"
 #include "logging/sinks/stdout_sink.hpp"
 
 using namespace origin::logging;
-using namespace origin::logging::c;
+using namespace origin::logging::c_api;
 
 extern "C" {
 SinkSt *origin_create_stdout_sink()
@@ -51,13 +53,13 @@ void origin_detroy_sink(SinkSt *sink)
     }
 }
 
-void origin_sink_set_level(const SinkSt *sink, LogLevelC level)
+void origin_sink_set_level(const SinkSt *sink, const LogLevelC level)
 {
     RETURN_AND_LOG_IF_PTR_NULL(sink, "sink set level.");
     sink->ptr->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_sink_should_log(const SinkSt *sink, LogLevelC level)
+bool origin_sink_should_log(const SinkSt *sink, const LogLevelC level)
 {
     RETURN_VALUE_IF_PTR_NULL(sink, false);
     return sink->ptr->should_log(c_to_cpp_log_level(level));

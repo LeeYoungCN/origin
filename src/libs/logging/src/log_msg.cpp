@@ -18,15 +18,15 @@ LogMsg create_log_msg(const LogSource& source, std::string_view loggerName, LogL
     return msg;
 }
 
-void init_log_msg(LogMsg& msg, const LogSource& source, std::string_view loggerName, LogLevel level,
-                  std::string_view message)
+void init_log_msg(LogMsg& msg, const LogSource& source, const std::string_view loggerName, const LogLevel level,
+                  const std::string_view message)
 {
     msg.loggerName = loggerName;
     msg.level = level;
     msg.data = message;
     msg.source = source;
-    msg.timestamp = origin::date_time::get_now_timestamp_ms();
-    msg.threadId = origin::thread::get_curr_thread_id();
-    msg.procId = origin::process::get_curr_proc_id();
+    msg.timestamp = date_time::get_now_timestamp_ms();
+    msg.threadId = thread::get_curr_thread_id();
+    msg.procId = process::get_curr_proc_id();
 }
 }  // namespace origin::logging

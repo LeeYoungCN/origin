@@ -2,7 +2,7 @@
 
 #include <atomic>
 #include <exception>
-// #include <initializer_list>
+#include <initializer_list>
 #include <memory>
 #include <stdexcept>
 #include <string_view>
@@ -86,7 +86,7 @@ bool LoggerImplBase::should_flush(const LogLevel level) const
     return (level != LogLevel::OFF && level >= this->flush_level());
 }
 
-void LoggerImplBase::set_pattern(std::string_view pattern) const
+void LoggerImplBase::set_pattern(const std::string_view pattern) const
 {
     try {
         set_formatter(std::make_unique<PatternFormatter>(pattern));
@@ -106,7 +106,8 @@ void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) 
     }
 }
 
-void LoggerImplBase::force_log(const LogSource& source, LogLevel level, std::string_view message)
+void LoggerImplBase::force_log(const LogSource& source, const LogLevel level,
+                               const std::string_view message)
 {
     log_it(create_log_msg(source, name(), level, message));
 }

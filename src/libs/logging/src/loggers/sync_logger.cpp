@@ -1,10 +1,13 @@
 #include "logging/loggers/sync_logger.hpp"
 
+#include <initializer_list>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "loggers/internal/sync_logger_impl.hpp"
 #include "logging/loggers/logger_base.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 SyncLogger::SyncLogger(std::string_view name, const std::shared_ptr<Sink>& sink)

@@ -1,9 +1,12 @@
 #include "logging/sinks/daily_file_sink.hpp"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "logging/sinks/sink_base.hpp"
 #include "sinks/internal/daily_file_sink_impl.hpp"
 
 namespace origin::logging {

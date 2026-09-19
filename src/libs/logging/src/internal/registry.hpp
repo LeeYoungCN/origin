@@ -45,8 +45,8 @@ public:
     void register_or_replace_logger(std::shared_ptr<Logger> logger);
     void remove_logger(std::string_view name);
     void remove_all();
-    std::shared_ptr<Logger> get_logger(std::string_view loggerName);
-    bool exist(std::string_view loggerName);
+    std::shared_ptr<Logger> get_logger(std::string_view name);
+    bool exist(std::string_view name);
 
     void init_root_task_pool(uint32_t capacity, uint32_t threadCnt);
     void set_root_task_pool(std::shared_ptr<TaskPool> taskPool);

@@ -15,7 +15,7 @@
 namespace origin::logging {
 using namespace origin::container;
 
-TaskPool::TaskPool(uint32_t capacity, uint32_t threadCnt)
+TaskPool::TaskPool(const uint32_t capacity, const uint32_t threadCnt)
     : _buffer(ConcurrentBlockingQueue<LogTask>(capacity)),
       _threadCnt(threadCnt),
       _paramStr(std::format("Capacity: {}, Thread count: {}.", capacity, threadCnt))
@@ -74,7 +74,7 @@ void TaskPool::shutdown()
     ORIGIN_DEBUG_TRACE("Task pool shutdown.");
 }
 
-void TaskPool::worker_loop(uint32_t idx)
+void TaskPool::worker_loop(const uint32_t idx)
 {
     ORIGIN_DEBUG_DBG("Log task pool worker loop start. [{}/{}]", idx, _threadCnt);
     bool isRunning = true;
@@ -98,7 +98,7 @@ void TaskPool::worker_loop(uint32_t idx)
     ORIGIN_DEBUG_DBG("Log task pool worker loop shutdown. [{}/{}]", idx, _threadCnt);
 }
 
-std::string_view TaskPool::param_str()
+std::string_view TaskPool::param_string()
 {
     return _paramStr;
 }

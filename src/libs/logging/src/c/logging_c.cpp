@@ -1,13 +1,16 @@
 #include "logging/c/logging_c.h"
 
 #include <cstdarg>
+#include <cstdint>
 
 #include "c/internal/common_c.hpp"
+#include "common/base/singleton.h"
+#include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
 #include "internal/registry.hpp"
 
 using namespace origin::logging;
-using namespace origin::logging::c;
+using namespace origin::logging::c_api;
 
 #define ROOT_LOGGER (INST(Registry).root_logger())
 
@@ -137,7 +140,7 @@ void origin_flush()
     ROOT_LOGGER->flush();
 }
 
-void origin_log(const char *file, int line, const char *func, LogLevelC level, const char *format,
+void origin_log(const char *file, const int line, const char *func, LogLevelC level, const char *format,
                 ...)
 {
     if (log_level_c_invalid(level)) {
@@ -212,7 +215,7 @@ void origin_init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
     REGISTRY.init_root_task_pool(capacity, threadCnt);
 }
 
-LOGGING_API void origin_set_root_task_pool(const TaskPoolSt *taskPool)
+void origin_set_root_task_pool(const TaskPoolSt *taskPool)
 {
     if (taskPool == nullptr) {
         ORIGIN_DEBUG_ERR("Set root task pool failed. taskPool nullptr.");
@@ -244,7 +247,7 @@ void origin_set_level_all(LogLevelC level)
     REGISTRY.set_level_all(c_to_cpp_log_level(level));
 }
 
-void origin_flush_on_all(LogLevelC level)
+void origin_flush_on_all(const LogLevelC level)
 {
     REGISTRY.flush_on_all(c_to_cpp_log_level(level));
 }
@@ -255,7 +258,7 @@ void origin_set_pattern_all(const char *pattern)
     REGISTRY.set_pattern_all(pattern);
 }
 
-void origin_set_formatter_all(FormatterSt const *formatter)
+void origin_set_formatter_all(const FormatterSt *formatter)
 {
     RETURN_AND_LOG_IF_PTR_NULL(formatter, "Set formatter all failed.");
     RETURN_AND_LOG_IF_PTR_NULL(formatter->ptr, "Set formatter all failed.");

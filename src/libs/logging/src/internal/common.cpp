@@ -12,22 +12,23 @@ namespace origin::logging {
 using namespace origin::filesystem;
 using namespace origin::process;
 using namespace origin::thread;
+using namespace origin::date_time;
 
-std::string get_default_log_file(std::string_view suffix)
+std::string get_default_log_file(const std::string_view suffix)
 {
-    std::string process = get_proc_path();
+    const std::string process = get_proc_path();
     return join_paths(
         {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
 }
 
-bool delete_file(std::string_view file, uint32_t maxRetry, uint32_t sleepMs)
+bool delete_file_retry(std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
-        if (filesystem::delete_file(file)) {
+        if (delete_file(file)) {
             ORIGIN_DEBUG_TRACE("Delete file success. file: \"{}\".", file);
             return true;
         }
-        origin::date_time::sleep_ms(sleepMs);
+        sleep_ms(sleepMs);
     }
 
     ORIGIN_DEBUG_ERR(
@@ -35,15 +36,15 @@ bool delete_file(std::string_view file, uint32_t maxRetry, uint32_t sleepMs)
     return false;
 }
 
-bool rename_file(std::string_view src, std::string_view dest, bool overwrite, uint32_t maxRetry,
-                 uint32_t sleepMs)
+bool rename_file_retry(const std::string_view src, std::string_view dest, const bool overwrite,
+                       const uint32_t maxRetry, const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
-        if (filesystem::rename_file(src, dest, overwrite)) {
+        if (rename_file(src, dest, overwrite)) {
             ORIGIN_DEBUG_TRACE("Rename file success. file: \"{}\".", dest);
             return true;
         }
-        origin::date_time::sleep_ms(sleepMs);
+        sleep_ms(sleepMs);
     }
 
     ORIGIN_DEBUG_ERR(

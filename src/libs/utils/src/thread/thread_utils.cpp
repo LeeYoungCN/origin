@@ -54,7 +54,7 @@ namespace origin::thread {
 
 ThreadId get_curr_thread_id()
 {
-    static thread_local ThreadId tid = GetCurrentThreadIdInternal();
+    thread_local ThreadId const tid = GetCurrentThreadIdInternal();
     return tid;
 }
 
@@ -68,7 +68,7 @@ const char *get_curr_thread_name()
     return g_threadName.c_str();
 }
 
-void set_thread_last_err(ErrorCode errcode)
+void set_thread_last_err(const ErrorCode errcode)
 {
     g_lastError = errcode;
 }

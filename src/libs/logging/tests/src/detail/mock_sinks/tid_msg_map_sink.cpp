@@ -1,6 +1,8 @@
 #include "detail/mock_sinks/tid_msg_map_sink.hpp"
 
 #include <mutex>
+#include "common/types/thread_types.h"
+#include "logging/log_msg.hpp"
 
 using namespace origin::logging;
 
@@ -12,7 +14,7 @@ void TidMsgMapSink::log_it(const LogMsg& logMsg)
 
 const std::map<ThreadId, LogMsg>& TidMsgMapSink::buffer()
 {
-    std::lock_guard<std::mutex> lock(_sinkMtx);
+    std::lock_guard<std::mutex> const lock(_sinkMtx);
     return _buffer;
 }
 }  // namespace logging_test

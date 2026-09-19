@@ -1,10 +1,18 @@
 #include "detail/common.hpp"
+#include <gtest/gtest.h>
 
+#include <cstdint>
 #include <format>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "common/debug/debug_logger.h"
+#include "logging/c/logging_c.h"
+#include "logging/formatters/formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/loggers/logger.hpp"
+#include "logging/sinks/sink.hpp"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"
 

@@ -14,13 +14,13 @@ using namespace origin::filesystem;
 
 RotatingFileSink::RotatingFileSink() : SinkBase(std::make_unique<RotatingFileSinkImpl>()) {}
 
-RotatingFileSink::RotatingFileSink(std::string_view file, bool rotateOnOpen)
+RotatingFileSink::RotatingFileSink(const std::string_view file, bool rotateOnOpen)
     : SinkBase(std::make_unique<RotatingFileSinkImpl>(file, rotateOnOpen))
 {
 }
 
-RotatingFileSink::RotatingFileSink(std::string_view file, uint32_t maxFileSize, uint32_t maxFiles,
-                                   bool rotateOnOpen)
+RotatingFileSink::RotatingFileSink(const std::string_view file, uint32_t maxFileSize,
+                                   uint32_t maxFiles, bool rotateOnOpen)
     : SinkBase(std::make_unique<RotatingFileSinkImpl>(file, maxFileSize, maxFiles, rotateOnOpen))
 {
 }
@@ -49,7 +49,7 @@ uint32_t RotatingFileSink::max_file_size() const
     return dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->max_file_size();
 }
 
-void RotatingFileSink::set_max_files(uint32_t maxFiles) const
+void RotatingFileSink::set_max_files(const uint32_t maxFiles) const
 {
     throw_if_pimpl_null();
     return dynamic_cast<RotatingFileSinkImpl *>(_pImpl.get())->set_max_files(maxFiles);

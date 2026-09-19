@@ -18,21 +18,21 @@
 #include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
-std::shared_ptr<Logger> create_async_logger(std::string_view name,
+std::shared_ptr<Logger> create_async_logger(const std::string_view name,
                                             const std::shared_ptr<Sink>& sink,
                                             const std::weak_ptr<TaskPool>& pool)
 {
     return std::make_shared<AsyncLogger>(name, sink, pool);
 }
 
-std::shared_ptr<Logger> create_async_logger(std::string_view name,
-                                            std::initializer_list<std::shared_ptr<Sink>> sinks,
+std::shared_ptr<Logger> create_async_logger(const std::string_view name,
+                                            const std::initializer_list<std::shared_ptr<Sink>> sinks,
                                             const std::weak_ptr<TaskPool>& pool)
 {
     return std::make_shared<AsyncLogger>(name, sinks, pool);
 }
 
-std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32_t threadCnt)
+std::shared_ptr<TaskPool> create_task_pool(const uint32_t capacity, const uint32_t threadCnt)
 {
     return std::make_shared<TaskPool>(capacity, threadCnt);
 }
@@ -193,7 +193,7 @@ void register_or_replace_logger(std::shared_ptr<Logger> logger)
     REGISTRY.register_or_replace_logger(std::move(logger));
 }
 
-void remove_logger(std::string_view name)
+void remove_logger(const std::string_view name)
 {
     REGISTRY.remove_logger(name);
 }
@@ -203,7 +203,7 @@ void remove_all()
     REGISTRY.remove_all();
 }
 
-std::shared_ptr<Logger> get_logger(std::string_view name)
+std::shared_ptr<Logger> get_logger(const std::string_view name)
 {
     return REGISTRY.get_logger(name);
 }

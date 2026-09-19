@@ -9,11 +9,13 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "common/constants/date_time_constants.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/date_time_types.h"
 #include "internal/common.hpp"
+#include "logging/log_msg.hpp"
 #include "logging/sinks/daily_file_sink.hpp"
 #include "sinks/internal/rotating_file_sink_impl_base.hpp"
 #include "utils/date_time_utils.h"
@@ -33,21 +35,22 @@ DailyFileSinkImpl::DailyFileSinkImpl()
 {
 }
 
-DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, bool overwrite)
+DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const bool overwrite)
     : DailyFileSinkImpl(file, DailyFileSink::DEFAULT_ROTATION_HOUR,
                         DailyFileSink::DEFAULT_ROTATION_MINUTE, DailyFileSink::DEFAULT_MAX_FILES,
                         overwrite)
 {
 }
 
-DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, uint32_t hour, uint32_t minute,
-                                     bool overwrite)
+DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const uint32_t hour,
+                                     const uint32_t minute, const bool overwrite)
     : DailyFileSinkImpl(file, hour, minute, DailyFileSink::DEFAULT_MAX_FILES, overwrite)
 {
 }
 
-DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, uint32_t hour, uint32_t minute,
-                                     uint32_t maxFiles, bool overwrite)
+DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const uint32_t hour,
+                                     const uint32_t minute, const uint32_t maxFiles,
+                                     const bool overwrite)
     : RotatingFileSinkImplBase(
           file, overwrite, maxFiles, "daliy log file",
           std::format("DailyFileSinkImpl. file: \"{}\", hour: {}, minute: {}, maxFiles: {}.", file,
@@ -75,7 +78,7 @@ DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, uint32_t hour, uint3
         throw std::out_of_range("maxFiles out of range.");
     }
 
-    TimestampMs now = get_now_timestamp_ms();
+    TimestampMs const now = get_now_timestamp_ms();
     DateTimeSt dateTime = timestamp_to_date_time(now);
     dateTime.hour = _hour;
     dateTime.minute = _minute;
@@ -91,7 +94,7 @@ DailyFileSinkImpl::DailyFileSinkImpl(std::string_view file, uint32_t hour, uint3
     init_file_queue();
 }
 
-void DailyFileSinkImpl::set_max_files(uint32_t maxFiles)
+void DailyFileSinkImpl::set_max_files(const uint32_t maxFiles)
 {
     if (maxFiles <= DailyFileSink::MAX_FILES) {
         set_max_files_it(maxFiles);
@@ -110,7 +113,7 @@ void DailyFileSinkImpl::log_it(const LogMsg& logMsg)
 {
     if (logMsg.timestamp > _rotateTime) {
         if (_fileWriter.size() > 0) {
-            std::string newFile = calc_log_file(_fileTime);
+            std::string const newFile = calc_log_file(_fileTime);
             rotate(newFile);
         }
         while (_rotateTime < logMsg.timestamp) {
@@ -124,7 +127,7 @@ void DailyFileSinkImpl::log_it(const LogMsg& logMsg)
     sink_it(content);
 }
 
-TimestampMs DailyFileSinkImpl::parse_log_timestamp(std::string_view filename)
+TimestampMs DailyFileSinkImpl::parse_log_timestamp(const std::string_view filename)
 {
     constexpr uint32_t TIME_STR_LEN = 9;
     if (filename.size() != _filename.size() + TIME_STR_LEN) {
@@ -149,7 +152,7 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(std::string_view filename)
     DateTimeSt dateTime;
     auto parse_number = [&](uint32_t len, uint32_t& number) -> bool {
         for (uint32_t i = 0; i < len; ++i) {
-            char c = filename[idx++];
+            char const c = filename[idx++];
             if (c < '0' || c > '9') {
                 return false;
             }
@@ -188,12 +191,12 @@ void DailyFileSinkImpl::init_file_queue()
             continue;
         }
 
-        TimestampMs timestamp = parse_log_timestamp(entry.path().filename().string());
+        TimestampMs const timestamp = parse_log_timestamp(entry.path().filename().string());
         if (timestamp > _fileTime) {
             continue;
         }
 
-        std::string file = entry.path().string();
+        std::string const file = entry.path().string();
         if (calc_log_file(timestamp) == file) {
             logList.emplace_back(timestamp, file);
         }

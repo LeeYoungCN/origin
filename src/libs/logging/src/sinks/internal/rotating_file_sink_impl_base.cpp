@@ -11,6 +11,7 @@
 
 #include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
+#include "sinks/internal/basic_file_sink_impl.hpp"
 
 namespace origin::logging {
 using namespace origin::filesystem;
@@ -19,9 +20,10 @@ constexpr uint32_t DELETE_FILE_SLEEP_MS = 10;
 constexpr uint32_t RENAME_FILE_RETRY = 3;
 constexpr uint32_t RENAME_FILE_SLEEP_MS = 10;
 
-RotatingFileSinkImplBase::RotatingFileSinkImplBase(std::string_view file, bool overwrite,
-                                                   uint32_t maxFiles, std::string_view itemName,
-                                                   std::string_view paramStr)
+RotatingFileSinkImplBase::RotatingFileSinkImplBase(const std::string_view file,
+                                                   const bool overwrite, const uint32_t maxFiles,
+                                                   const std::string_view itemName,
+                                                   const std::string_view paramStr)
     : BasicFileSinkImpl(file, overwrite, paramStr), _maxFiles(maxFiles), _itemName(itemName)
 {
 }
@@ -37,7 +39,7 @@ std::vector<std::string> RotatingFileSinkImplBase::get_file_list() const
     return rst;
 }
 
-void RotatingFileSinkImplBase::set_max_files_it(uint32_t maxFiles)
+void RotatingFileSinkImplBase::set_max_files_it(const uint32_t maxFiles)
 {
     _maxFiles.store(maxFiles);
 }
@@ -47,13 +49,13 @@ uint32_t RotatingFileSinkImplBase::max_files_it() const
     return _maxFiles.load();
 }
 
-void RotatingFileSinkImplBase::push_back_file(std::string_view file)
+void RotatingFileSinkImplBase::push_back_file(const std::string_view file)
 {
     _fileQue.emplace_back(file);
     ORIGIN_DEBUG_TRACE("Enqueue {}. {}", _itemName, file);
 }
 
-void RotatingFileSinkImplBase::rotate(std::string_view newFile)
+void RotatingFileSinkImplBase::rotate(const std::string_view newFile)
 {
     _fileWriter.close();
 

@@ -4,6 +4,10 @@
 
 #if OS_WINDOWS
 #include <windows.h>
+#include <corecrt.h>
+#include <minwindef.h>
+#include <synchapi.h>
+#include <sysinfoapi.h>
 
 #include "common/constants/date_time_constants.h"
 
@@ -16,6 +20,7 @@
 #include <cstdint>
 #include <ctime>
 
+#include "common/common_error_code.h"
 #include "common/constants/date_time_constants.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/date_time_types.h"
@@ -183,7 +188,7 @@ TimestampMs date_time_to_timestamp(const DateTimeSt& dateTime)
 {
     std::tm tm{};
     date_time_st_to_std_tm(dateTime, tm);
-    std::time_t secStamp = std::mktime(&tm);
+    std::time_t const secStamp = std::mktime(&tm);
     if (secStamp == -1) {
         return -1;
     }

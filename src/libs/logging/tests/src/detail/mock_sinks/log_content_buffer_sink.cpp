@@ -1,10 +1,13 @@
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 
-#include <iostream>
+#include <cstdint>
 #include <mutex>
-#include <ostream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "common/debug/debug_logger.h"
+#include "logging/log_msg.hpp"
 
 namespace logging_test {
 LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
@@ -57,7 +60,7 @@ void LogContentBufferSink::log_it(const LogMsg& logMsg)
     sink_it(content);
 }
 
-void LogContentBufferSink::sink_it(std::string_view message)
+void LogContentBufferSink::sink_it(const std::string_view message)
 {
     if (_enanleDebugInfo) {
         ORIGIN_DEBUG_INFO("{}", message);

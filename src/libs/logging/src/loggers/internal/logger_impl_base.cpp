@@ -56,7 +56,7 @@ const std::vector<std::shared_ptr<Sink>>& LoggerImplBase::sinks() const
     return _sinks;
 }
 
-void LoggerImplBase::set_level(LogLevel level)
+void LoggerImplBase::set_level(const LogLevel level)
 {
     _level.store(level, std::memory_order_relaxed);
 }

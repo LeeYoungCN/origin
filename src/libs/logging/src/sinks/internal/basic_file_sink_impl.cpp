@@ -2,9 +2,14 @@
 
 #include <format>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
+#include "logging/log_msg.hpp"
+#include "sinks/internal/sink_impl_base.hpp"
 #include "utils/file_writer.h"
 #include "utils/filesystem_utils.h"
 #include "utils/utils_error_code.h"
@@ -14,14 +19,14 @@ using namespace origin::filesystem;
 
 BasicFileSinkImpl::BasicFileSinkImpl() : BasicFileSinkImpl(get_default_log_file("log"), true) {}
 
-BasicFileSinkImpl::BasicFileSinkImpl(std::string_view file, bool overwrite)
+BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, bool overwrite)
     : BasicFileSinkImpl(file, overwrite,
                         std::format("BasicFileSinkImpl. file: \"{}\", mode: {}.", file,
                                     get_file_mode_str(overwrite)))
 {
 }
 
-BasicFileSinkImpl::BasicFileSinkImpl(std::string_view file, bool overwrite,
+BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, bool overwrite,
                                      std::string_view paramStr)
     : SinkImplBase(paramStr),
       _file(to_absolute_path(file)),
@@ -59,7 +64,7 @@ void BasicFileSinkImpl::log_it(const LogMsg& logMsg)
     sink_it(content);
 }
 
-void BasicFileSinkImpl::sink_it(std::string_view message)
+void BasicFileSinkImpl::sink_it(const std::string_view message)
 {
     _fileWriter.write_line(message);
 }

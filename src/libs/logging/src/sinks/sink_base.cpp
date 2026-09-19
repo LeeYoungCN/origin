@@ -38,7 +38,7 @@ void SinkBase::flush()
     _pImpl->flush();
 }
 
-void SinkBase::set_pattern(std::string_view pattern)
+void SinkBase::set_pattern(const std::string_view pattern)
 {
     throw_if_pimpl_null();
     _pImpl->set_pattern(pattern);
@@ -50,13 +50,13 @@ void SinkBase::set_formatter(std::unique_ptr<Formatter> formatter)
     _pImpl->set_formatter(std::move(formatter));
 }
 
-bool SinkBase::should_log(LogLevel level) const
+bool SinkBase::should_log(const LogLevel level) const
 {
     throw_if_pimpl_null();
     return _pImpl->should_log(level);
 }
 
-void SinkBase::set_level(LogLevel level)
+void SinkBase::set_level(const LogLevel level)
 {
     throw_if_pimpl_null();
     return _pImpl->set_level(level);

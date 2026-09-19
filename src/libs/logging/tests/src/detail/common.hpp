@@ -1,6 +1,7 @@
 #ifndef TEST_LOGGING_DETAIL_COMMON_H
 #define TEST_LOGGING_DETAIL_COMMON_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>

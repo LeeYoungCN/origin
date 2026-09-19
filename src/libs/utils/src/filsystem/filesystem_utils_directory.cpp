@@ -9,6 +9,8 @@
  *
  */
 
+#include <string_view>
+
 #include "common/macros/compiler.h"
 #include "utils/filesystem_utils.h"
 

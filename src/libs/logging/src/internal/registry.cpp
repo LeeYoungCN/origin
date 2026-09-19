@@ -1,13 +1,19 @@
 #include "internal/registry.hpp"
 
+#include <cstdint>
 #include <exception>
 #include <memory>
 #include <mutex>
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include "common/debug/debug_logger.h"
+#include "internal/task_pool.hpp"
+#include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
+#include "logging/loggers/logger.hpp"
 #include "logging/loggers/sync_logger.hpp"
 #include "logging/sinks/stdout_sink.hpp"
 
@@ -84,7 +90,7 @@ void Registry::flush_on_all(const LogLevel level)
     }
 }
 
-void Registry::set_pattern_all(std::string_view pattern)
+void Registry::set_pattern_all(const std::string_view pattern)
 {
     try {
         set_formatter_all(std::make_unique<PatternFormatter>(pattern));
@@ -183,9 +189,9 @@ bool Registry::exist(const std::string_view name)
     return exist_it(name);
 }
 
-void Registry::init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
+void Registry::init_root_task_pool(const uint32_t capacity, const uint32_t threadCnt)
 {
-    std::lock_guard<std::recursive_mutex> const lock(_taskPoolMtx);
+    std::lock_guard const lock(_taskPoolMtx);
     if (_rootTaskPool != nullptr) {
         ORIGIN_DEBUG_ERR("Task pool already initialized.");
         return;
@@ -230,7 +236,7 @@ void Registry::register_or_replace_logger_it(std::shared_ptr<Logger> logger)
     _loggers[logger->name()] = std::move(logger);
 }
 
-bool Registry::exist_it(std::string_view name) const
+bool Registry::exist_it(const std::string_view name) const
 {
     return (_loggers.contains(name));
 }

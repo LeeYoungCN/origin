@@ -3,6 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "common/debug/debug_logger.h"
@@ -39,7 +40,7 @@ const std::vector<std::shared_ptr<Sink>>& LoggerBase::sinks() const
     return _pImpl->sinks();
 }
 
-void LoggerBase::set_level(LogLevel level)
+void LoggerBase::set_level(const LogLevel level)
 {
     throw_if_pimpl_null();
     _pImpl->set_level(level);
@@ -50,13 +51,13 @@ LogLevel LoggerBase::level() const
     throw_if_pimpl_null();
     return _pImpl->level();
 }
-bool LoggerBase::should_log(LogLevel level) const
+bool LoggerBase::should_log(const LogLevel level) const
 {
     throw_if_pimpl_null();
     return _pImpl->should_log(level);
 }
 
-void LoggerBase::flush_on(LogLevel level)
+void LoggerBase::flush_on(const LogLevel level)
 {
     throw_if_pimpl_null();
     _pImpl->flush_on(level);

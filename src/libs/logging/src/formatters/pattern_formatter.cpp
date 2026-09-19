@@ -10,7 +10,7 @@ namespace origin::logging {
 
 PatternFormatter::PatternFormatter() : FormatterBase(std::make_unique<PatternFormatterImpl>()) {}
 
-PatternFormatter::PatternFormatter(std::string_view pattern)
+PatternFormatter::PatternFormatter(const std::string_view pattern)
     : FormatterBase(std::make_unique<PatternFormatterImpl>(pattern))
 {
 }

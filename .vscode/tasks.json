@@ -64,9 +64,8 @@
             },
             "command": "./cmake_tools.sh",
             "args": [
-                "--build",
-                "--gtest_target=test_logging",
-                "--gtest"
+                "--build=test_logging",
+                "--gtest_target=test_logging"
             ],
             "problemMatcher": [
                 "$gcc"

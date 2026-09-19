@@ -1,9 +1,14 @@
+#include <stdexcept>
 #include <string>
+#include <string_view>
 
 #include "common/constants/filesystem_constants.h"
+#include "common/types/filesystem_types.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
+#include "logging/log_level.hpp"
 #include "logging/log_msg.hpp"
+#include "logging/log_source.hpp"
 #include "logging/sinks/basic_file_sink.hpp"
 #include "utils/filesystem_utils.h"
 

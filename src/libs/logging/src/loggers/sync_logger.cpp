@@ -10,17 +10,17 @@
 #include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
-SyncLogger::SyncLogger(std::string_view name, const std::shared_ptr<Sink>& sink)
+SyncLogger::SyncLogger(const std::string_view name, const std::shared_ptr<Sink>& sink)
     : LoggerBase(std::make_shared<SyncLoggerImpl>(name, sink))
 {
 }
 
-SyncLogger::SyncLogger(std::string_view name, const std::vector<std::shared_ptr<Sink>>& sinks)
+SyncLogger::SyncLogger(const std::string_view name, const std::vector<std::shared_ptr<Sink>>& sinks)
     : LoggerBase(std::make_shared<SyncLoggerImpl>(name, sinks.begin(), sinks.end()))
 {
 }
 
-SyncLogger::SyncLogger(std::string_view name,
+SyncLogger::SyncLogger(const std::string_view name,
                        const std::initializer_list<std::shared_ptr<Sink>>& sinks)
     : LoggerBase(std::make_shared<SyncLoggerImpl>(name, sinks.begin(), sinks.end()))
 {

@@ -1,5 +1,6 @@
 #include <format>
 #include <string>
+#include <string_view>
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
@@ -66,7 +67,7 @@ TEST_F(TestPatternFormatter, abbr_log_level)
 {
     PatternFormatter formatter("%l");
     LogMsg msg;
-    for (LogLevel level : LOG_LEVELS) {
+    for (const LogLevel level : LOG_LEVELS) {
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
@@ -78,7 +79,7 @@ TEST_F(TestPatternFormatter, full_log_level)
 {
     PatternFormatter formatter("%L");
     LogMsg msg;
-    for (LogLevel level : LOG_LEVELS) {
+    for (const LogLevel level : LOG_LEVELS) {
         msg.level = level;
         std::string content;
         formatter.format(msg, content);
@@ -162,7 +163,7 @@ TEST_F(TestPatternFormatter, log_message)
 TEST_F(TestPatternFormatter, percent)
 {
     PatternFormatter formatter("%%");
-    LogMsg msg;
+    const LogMsg msg;
 
     std::string content;
     formatter.format(msg, content);
@@ -176,7 +177,7 @@ TEST_F(TestPatternFormatter, default_pattern)
     std::string content;
     formatter.format(msg, content);
     // "[%d][%L][%s:%#]: %v"
-    std::string expect =
+    const std::string expect =
         std::format("[{}][{}][{}:{}]: {}",
                     format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN),
                     log_level_abbr_name(msg.level),

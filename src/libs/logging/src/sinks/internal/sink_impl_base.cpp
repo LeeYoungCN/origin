@@ -2,16 +2,20 @@
 
 #include <atomic>
 #include <exception>
+#include <memory>
 #include <mutex>
+#include <string_view>
 #include <utility>
 
 #include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
+#include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
+#include "logging/log_level.hpp"
 
 namespace origin::logging {
 
-SinkImplBase::SinkImplBase(std::string_view paramString) : _paramStr(paramString) {}
+SinkImplBase::SinkImplBase(const std::string_view paramString) : _paramStr(paramString) {}
 
 void SinkImplBase::log(const LogMsg& logMsg)
 {
@@ -35,7 +39,7 @@ void SinkImplBase::flush()
     }
 }
 
-bool SinkImplBase::should_log(LogLevel level) const
+bool SinkImplBase::should_log(const LogLevel level) const
 {
     if (level == LogLevel::OFF) {
         return false;
@@ -43,7 +47,7 @@ bool SinkImplBase::should_log(LogLevel level) const
     return level >= _level.load(std::memory_order_relaxed);
 }
 
-void SinkImplBase::set_level(LogLevel level)
+void SinkImplBase::set_level(const LogLevel level)
 {
     _level.store(level, std::memory_order_relaxed);
 };
@@ -53,7 +57,7 @@ LogLevel SinkImplBase::level() const
     return _level.load(std::memory_order_relaxed);
 }
 
-void SinkImplBase::set_pattern(std::string_view pattern)
+void SinkImplBase::set_pattern(const std::string_view pattern)
 {
     try {
         set_formatter(std::make_unique<PatternFormatter>(pattern));

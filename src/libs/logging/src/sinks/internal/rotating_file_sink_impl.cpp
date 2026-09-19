@@ -47,13 +47,13 @@ struct LogFileInfo {
 
 RotatingFileSinkImpl::RotatingFileSinkImpl() : RotatingFileSinkImpl(get_default_log_file("log")) {}
 
-RotatingFileSinkImpl::RotatingFileSinkImpl(std::string_view file, bool rotateOnOpen)
+RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, bool rotateOnOpen)
     : RotatingFileSinkImpl(file, RotatingFileSink::DEFAULT_MAX_FILE_SIZE,
                            RotatingFileSink::DEFAULT_MAX_FILES, rotateOnOpen)
 {
 }
 
-RotatingFileSinkImpl::RotatingFileSinkImpl(std::string_view file, uint32_t maxFileSize,
+RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, uint32_t maxFileSize,
                                            uint32_t maxFiles, bool rotateOnOpen)
     : RotatingFileSinkImplBase(
           file, false, maxFiles, "rotating log file",
@@ -93,7 +93,7 @@ uint32_t RotatingFileSinkImpl::max_file_size() const
     return _maxFileSize.load();
 }
 
-void RotatingFileSinkImpl::set_max_files(uint32_t maxFiles)
+void RotatingFileSinkImpl::set_max_files(const uint32_t maxFiles)
 {
     if (maxFiles <= RotatingFileSink::MAX_FILES) {
         set_max_files_it(maxFiles);
@@ -178,7 +178,7 @@ uint32_t RotatingFileSinkImpl::get_next_idx()
     return idx;
 }
 
-uint32_t RotatingFileSinkImpl::parse_log_index(std::string_view filename) const
+uint32_t RotatingFileSinkImpl::parse_log_index(const std::string_view filename) const
 {
     constexpr uint32_t MIN_SUFFIX_LEN = 2;  // .1
     constexpr uint32_t MAX_SUFFIX_LEN = 6;  // .20000

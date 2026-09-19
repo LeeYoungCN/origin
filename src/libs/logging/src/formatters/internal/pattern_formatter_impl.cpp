@@ -19,7 +19,7 @@ using namespace origin::filesystem;
 
 namespace origin::logging {
 
-PatternFormatterImpl::PatternFormatterImpl(std::string_view pattern) : _pattern(pattern)
+PatternFormatterImpl::PatternFormatterImpl(const std::string_view pattern) : _pattern(pattern)
 {
     if (_pattern.empty()) {
         throw std::invalid_argument("pattern is empty.");

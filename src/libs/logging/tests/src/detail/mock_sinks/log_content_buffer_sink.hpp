@@ -2,6 +2,8 @@
 #define LOGGING_TEST_LOG_CONTENT_BUFFER_SINK_HPP
 
 #include <cstdint>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "detail/mock_sinks/base_test_sink.hpp"

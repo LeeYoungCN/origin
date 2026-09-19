@@ -1,5 +1,7 @@
 #include "internal/common.hpp"
 
+#include <cstdint>
+#include <string>
 #include <string_view>
 
 #include "common/debug/debug_logger.h"
@@ -21,7 +23,7 @@ std::string get_default_log_file(const std::string_view suffix)
         {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
 }
 
-bool delete_file_retry(std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)
+bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
         if (delete_file(file)) {

@@ -24,19 +24,19 @@ SinkSt *origin_create_stderr_sink()
     return new SinkSt(std::make_shared<StderrSink>());
 }
 
-SinkSt *origin_create_basic_file_sink(const char *file, bool overwrite)
+SinkSt *origin_create_basic_file_sink(const char *file, const bool overwrite)
 {
     return new SinkSt(std::make_shared<BasicFileSink>(file, overwrite));
 }
 
-SinkSt *origin_create_daily_file_sink(const char *file, uint32_t hour, uint32_t minute,
-                                      uint32_t maxFiles, bool overwrite)
+SinkSt *origin_create_daily_file_sink(const char *file, const uint32_t hour, const uint32_t minute,
+                                      const uint32_t maxFiles, const bool overwrite)
 {
     return new SinkSt(std::make_shared<DailyFileSink>(file, hour, minute, maxFiles, overwrite));
 }
 
-SinkSt *origin_create_rotating_file_sink(const char *file, uint32_t maxFileSize, uint32_t maxFiles,
-                                         bool rotateOnOpen)
+SinkSt *origin_create_rotating_file_sink(const char *file, const uint32_t maxFileSize,
+                                         const uint32_t maxFiles, const bool rotateOnOpen)
 {
     return new SinkSt(std::make_shared<DailyFileSink>(file, maxFileSize, maxFiles, rotateOnOpen));
 }

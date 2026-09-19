@@ -31,7 +31,7 @@ protected:
     void TearDown() override;
 
 protected:
-    std::string calc_log_file(std::string_view baseFile, TimestampMs time);
+    std::string calc_log_file(const std::string_view baseFile, TimestampMs time);
     void TestRotate(const testing::TestInfo* testInfo, uint32_t hour, uint32_t minute,
                     uint32_t rotationDays, uint32_t dayInterVal = 1);
     void TestRotateAndDelete(const testing::TestInfo* testInfo, uint32_t maxFiles,
@@ -52,7 +52,7 @@ void TestDailyFileSink::TearDown()
     delete_dir(_dir);
 }
 
-std::string TestDailyFileSink::calc_log_file(std::string_view baseFile, TimestampMs time)
+std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, TimestampMs time)
 {
     std::string filenameStem = get_filename_stem(baseFile);
     std::string extension = get_extension(baseFile);

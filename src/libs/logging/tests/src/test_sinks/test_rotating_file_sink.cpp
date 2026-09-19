@@ -39,8 +39,8 @@ protected:
     void InsertLogMsg(RotatingFileSink& sink, uint32_t maxFileSize, uint32_t rotateCount) const;
     void TestRotate(const testing::TestInfo* test_info, uint32_t startIdx, uint32_t existFileCount,
                     uint32_t rotateCount);
-    void TestRotateAndDelete(const testing::TestInfo* test_info, uint32_t maxFiles, uint32_t startIdx,
-                             uint32_t existFileCount, uint32_t rotateCount);
+    void TestRotateAndDelete(const testing::TestInfo* test_info, uint32_t maxFiles,
+                             uint32_t startIdx, uint32_t existFileCount, uint32_t rotateCount);
 
     std::string _dir = get_log_dir();
 };
@@ -56,8 +56,7 @@ void TestRotatingFileSink::TearDown()
 }
 
 void TestRotatingFileSink::InitLogFileList(std::vector<std::uint32_t>& existFileIdx,
-                                           const uint32_t startIdx,
-                                           const uint32_t existFileCount)
+                                           const uint32_t startIdx, const uint32_t existFileCount)
 {
     for (uint32_t i = 0; i < existFileCount; ++i) {
         uint32_t nextIdx = startIdx + i;

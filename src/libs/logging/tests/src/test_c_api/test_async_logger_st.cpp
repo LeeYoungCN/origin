@@ -193,11 +193,11 @@ TEST_F(TestAsyncLoggerSt, log_flush_on)
     init_logger(test_info_);
     origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
 
-    for (const LogLevelC  flushLevel : C_LOG_LEVELS) {
+    for (const LogLevelC flushLevel : C_LOG_LEVELS) {
         // 设置刷新等级
         origin_logger_flush_on(_loggerSt, flushLevel);
         for (uint32_t i = 0; i < C_LOG_LEVELS.size(); ++i) {
-            const LogLevelC  level = C_LOG_LEVELS[i];
+            const LogLevelC level = C_LOG_LEVELS[i];
             if (level == ORIGIN_LOG_LEVEL_OFF) {
                 break;
             }

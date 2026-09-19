@@ -9,7 +9,7 @@
 using namespace origin::logging;
 
 extern "C" {
-TaskPoolSt *origin_create_task_pool(uint32_t capacity, uint32_t threadCnt)
+TaskPoolSt *origin_create_task_pool(const uint32_t capacity, const uint32_t threadCnt)
 {
     return new TaskPoolSt(std::make_shared<TaskPool>(capacity, threadCnt));
 }

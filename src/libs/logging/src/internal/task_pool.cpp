@@ -1,8 +1,10 @@
 #include "internal/task_pool.hpp"
 
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <thread>
 #include <vector>
 

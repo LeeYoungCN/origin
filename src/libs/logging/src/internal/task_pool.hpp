@@ -1,9 +1,9 @@
 #pragma once
 #ifndef ORIGIN_LOGGING_INTERNAL_TASK_POOL_HPP
 #define ORIGIN_LOGGING_INTERNAL_TASK_POOL_HPP
-
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <thread>
 #include <vector>

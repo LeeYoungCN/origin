@@ -140,8 +140,8 @@ void origin_flush()
     ROOT_LOGGER->flush();
 }
 
-void origin_log(const char *file, const int line, const char *func, LogLevelC level, const char *format,
-                ...)
+void origin_log(const char *file, const int line, const char *func, LogLevelC level,
+                const char *format, ...)
 {
     if (log_level_c_invalid(level)) {
         ORIGIN_DEBUG_WARN("Root logger log failed. {}", LOG_LEVEL_C_INVALID_LOG);

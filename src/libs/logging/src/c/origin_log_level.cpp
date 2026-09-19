@@ -1,4 +1,5 @@
 #include <cstdint>
+
 #include "internal/common_c.hpp"
 #include "logging/c/logging_c.h"
 #include "logging/log_level.hpp"

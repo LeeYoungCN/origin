@@ -221,8 +221,7 @@ bool origin_debug_logger_should_log(const OriginDbgLvl level)
 }
 
 void origin_debug_logger_c(const char* file, const int line, const char* func,
-                           const OriginDbgLvl level,
-                           const char* format, ...)
+                           const OriginDbgLvl level, const char* format, ...)
 {
     if (!DebugLoggerImpl::instance().should_log(level)) {
         return;

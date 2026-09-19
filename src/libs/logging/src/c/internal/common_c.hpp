@@ -66,5 +66,5 @@ void origin_force_log_it(const std::shared_ptr<origin::logging::Logger> &logger,
 
 void origin_log_it(const std::shared_ptr<origin::logging::Logger> &logger, const char *file,
                    int line, const char *func, LogLevel level, const char *format, va_list args);
-}  // namespace origin::logging::c
+}  // namespace origin::logging::c_api
 #endif  // ORIGIN_LOGGING_C_INTERNAL_COMMON_C_HPP

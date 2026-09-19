@@ -88,4 +88,4 @@ void origin_log_it(const std::shared_ptr<Logger> &logger, const char *file, cons
         origin_force_log_it(logger, file, line, func, level, format, args);
     }
 }
-}  // namespace origin::logging::c
+}  // namespace origin::logging::c_api

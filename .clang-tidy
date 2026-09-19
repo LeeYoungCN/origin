@@ -1,6 +1,6 @@
 ---
 Checks: >
-  -*,
+  -* ,
   bugprone-argument-comment,
   bugprone-assert-side-effect,
   bugprone-bad-signal-to-kill-thread,
@@ -60,6 +60,7 @@ Checks: >
   cert-msc50-cpp,
   cert-msc51-cpp,
   cert-str34-c,
+  clang-diagnostic-unused-include,
   cppcoreguidelines-avoid-nested-locks,
   cppcoreguidelines-holding-a-lock,
   cppcoreguidelines-interfaces-global-init,
@@ -127,8 +128,9 @@ Checks: >
   performance-unnecessary-copy-initialization,
   performance-unnecessary-value-param,
   portability-simd-intrinsics,
-  readability-avoid-const-params-in-decls,
+  -readability-avoid-const-params-in-decls,
   readability-const-return-type,
+  readability-braces-around-statements,
   readability-container-size-empty,
   readability-delete-null-pointer,
   readability-deleted-default,
@@ -150,23 +152,24 @@ Checks: >
   readability-string-compare,
   readability-uniqueptr-delete-release,
   readability-use-anyofallof,
-  thread-safety-lock
+
 WarningsAsErrors: ''
 HeaderFileExtensions:
-  - ''
-  - h
-  - hh
-  - hpp
-  - hxx
+
+- ''
+- h
+- hh
+- hpp
+- hxx
 ImplementationFileExtensions:
-  - c
-  - cc
-  - cpp
-  - cxx
+- c
+- cc
+- cpp
+- cxx
 HeaderFilterRegex: ''
 ExcludeHeaderFilterRegex: ''
-FormatStyle:     none
-User:            a1175
+FormatStyle: file
+User: a1175
 CheckOptions:
   bugprone-argument-comment.CommentBoolLiterals: '0'
   bugprone-argument-comment.CommentCharacterLiterals: '0'
@@ -242,6 +245,7 @@ CheckOptions:
   llvm-qualified-auto.AddConstToQualified: 'false'
   misc-const-correctness.AnalyzeReferences: 'true'
   misc-const-correctness.AnalyzeValues: 'true'
+  misc-const-correctness.AnalyzeValueParameters: 'true'
   misc-const-correctness.TransformPointersAsValues: 'false'
   misc-const-correctness.TransformReferences: 'true'
   misc-const-correctness.TransformValues: 'true'
@@ -270,12 +274,14 @@ CheckOptions:
   modernize-make-unique.MakeSmartPtrFunction: 'std::make_unique'
   modernize-make-unique.MakeSmartPtrFunctionHeader: '<memory>'
   modernize-pass-by-value.IncludeStyle: llvm
-  modernize-pass-by-value.ValuesOnly: 'false'
   modernize-raw-string-literal.DelimiterStem: lit
   modernize-raw-string-literal.ReplaceShorterLiterals: 'false'
   modernize-replace-auto-ptr.IncludeStyle: llvm
   modernize-replace-disallow-copy-and-assign-macro.MacroName: DISALLOW_COPY_AND_ASSIGN
   modernize-replace-random-shuffle.IncludeStyle: llvm
+  modernize-return-braced-init-list.IncludeStyle: llvm
+  modernize-shrink-to-fit.IncludeStyle: llvm
+  modernize-unary-static-assert.IncludeStyle: llvm
   modernize-use-auto.MinTypeNameLength: '5'
   modernize-use-auto.RemoveStars: 'false'
   modernize-use-bool-literals.IgnoreMacros: 'true'
@@ -336,7 +342,5 @@ CheckOptions:
   readability-string-compare.StringLikeClasses: '::std::basic_string;::std::basic_string_view'
   readability-uniqueptr-delete-release.PreferResetCall: 'false'
   readability-identifier-length.IgnoredVariableNames: '^(i|j|k|s|it|err|tmp|id|ok|fd|res|dp)$'
-  readability-identifier-naming.GlobalConstantCase: 'UPPER_CAS'
-SystemHeaders:   false
-...
-
+  readability-identifier-naming.GlobalConstantCase: 'UPPER_CASE'
+SystemHeaders: false

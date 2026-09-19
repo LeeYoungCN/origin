@@ -1,4 +1,4 @@
-#include "logging/sinks/stdout_sink.hpp"
+#include "logging/sinks/stderr_sink.hpp"
 
 #include <memory>
 
@@ -6,6 +6,6 @@
 #include "sinks/internal/stream_sink_impl.hpp"
 
 namespace origin::logging {
-StdoutSink::StdoutSink() : SinkBase(std::make_unique<StreamSinkImpl>(StreamType::STDOUT)) {}
+StderrSink::StderrSink() : SinkBase(std::make_unique<StreamSinkImpl>(StreamType::STDERR)) {}
 
 }  // namespace origin::logging

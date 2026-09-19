@@ -45,7 +45,7 @@ void destroy_mock_sink_st(SinkSt* sink)
     if (mockSink->ptr != nullptr) {
         ORIGIN_DEBUG_DBG("Release MockSinkSt. UseCnt: {}. {}.",
                          mockSink->ptr.use_count(),
-                         mockSink->ptr->param_str());
+                         mockSink->ptr->param_string());
         mockSink->ptr.reset();
     }
     delete mockSink;

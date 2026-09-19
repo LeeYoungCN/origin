@@ -5,6 +5,7 @@
 #include "logging/sinks/basic_file_sink.hpp"
 #include "logging/sinks/daily_file_sink.hpp"
 #include "logging/sinks/rotating_file_sink.hpp"
+#include "logging/sinks/stderr_sink.hpp"
 #include "logging/sinks/stdout_sink.hpp"
 
 using namespace origin::logging;
@@ -14,6 +15,11 @@ extern "C" {
 SinkSt *origin_create_stdout_sink()
 {
     return new SinkSt(std::make_shared<StdoutSink>());
+}
+
+SinkSt *origin_create_stderr_sink()
+{
+    return new SinkSt(std::make_shared<StderrSink>());
 }
 
 SinkSt *origin_create_basic_file_sink(const char *file, bool overwrite)
@@ -38,7 +44,7 @@ void origin_detroy_sink(SinkSt *sink)
     if (sink != nullptr) {
         if (sink->ptr != nullptr) {
             ORIGIN_DEBUG_DBG(
-                "Release SinkSt. UseCnt: {}. {}", sink->ptr.use_count(), sink->ptr->param_str());
+                "Release SinkSt. UseCnt: {}. {}", sink->ptr.use_count(), sink->ptr->param_string());
             sink->ptr.reset();
         }
         delete sink;

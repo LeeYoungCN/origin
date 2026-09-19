@@ -41,7 +41,7 @@ int64_t get_now_timestamp_ms()
 
     // 将FILETIME的高低位 DWORD 合并为64位无符号整数，得到完整的100纳秒单位时间戳
     constexpr int FILETIME_HIGH_SHIFT_BITS = 32;  // FILETIME高32位左移位数
-    uint64_t file_time =
+    const uint64_t file_time =
         (static_cast<uint64_t>(ft.dwHighDateTime) << FILETIME_HIGH_SHIFT_BITS) | ft.dwLowDateTime;
 
     // 转换为Unix时间戳（毫秒级）：
@@ -63,9 +63,9 @@ std::string time_string()
 {
     constexpr int64_t MILLIS_PER_SECOND = 1000;
 
-    auto timestamp = get_now_timestamp_ms();
+    const auto timestamp = get_now_timestamp_ms();
     auto timer = static_cast<std::time_t>(timestamp / MILLIS_PER_SECOND);
-    auto millis = static_cast<int32_t>(timestamp % MILLIS_PER_SECOND);
+    const auto millis = static_cast<int32_t>(timestamp % MILLIS_PER_SECOND);
 
     std::tm ltm{};
 #if OS_WINDOWS
@@ -86,7 +86,7 @@ std::string time_string()
 size_t get_current_tid()
 {
 #if OS_WINDOWS
-    return static_cast<size_t>(GetCurrentThreadId());
+    return GetCurrentThreadId();
 #elif OS_LINUX
     return static_cast<size_t>(syscall(SYS_gettid));
 #elif OS_MACOS
@@ -103,7 +103,7 @@ std::string va_list_to_string(const char* format, va_list args)
     va_list argsCopy;
 
     va_copy(argsCopy, args);
-    int len = vsnprintf(nullptr, 0, format, argsCopy);
+    const int len = vsnprintf(nullptr, 0, format, argsCopy);
     va_end(argsCopy);
 
     if (len < 0) {
@@ -138,28 +138,32 @@ const char* get_debug_log_lvl_str(OriginDbgLvl level)
 }
 
 class DebugLoggerImpl : public origin::common::base::SingletonBase<DebugLoggerImpl> {
-    friend class origin::common::base::SingletonBase<DebugLoggerImpl>;
+    friend class SingletonBase;
 
 public:
-    void set_debug_log_level(OriginDbgLvl level) { _logLevel = level; }
+    void set_debug_log_level(const OriginDbgLvl level) { _logLevel = level; }
 
-    bool should_log(OriginDbgLvl level)
+    [[nodiscard]] bool should_log(const OriginDbgLvl level) const
     {
         return (_logLevel != OriginDbgLvl::ORG_DBG_LVL_OFF && level >= _logLevel);
     }
 
-    void log_va(const char* file, int line, const char* func, OriginDbgLvl level,
+    void log_va(const char* file, const int line, const char* func, const OriginDbgLvl level,
                 const char* format, va_list args)
     {
         log(file, line, func, level, va_list_to_string(format, args));
     }
 
-    void log(const char* file, int line, const char* func, OriginDbgLvl level,
+    void log(const char* file, const int line, const char* func, const OriginDbgLvl level,
              const std::string& message)
     {
-        auto logmsg = format_log(level, message, file, line, func);
-        std::lock_guard lock(_mtx);
-        std::cout << logmsg << std::endl;
+        const auto logMsg = format_log(level, message, file, line, func);
+        std::lock_guard const lock(_mtx);
+        if (level > ORG_DBG_LVL_INFO) {
+            std::cerr << logMsg << std::endl;
+        } else {
+            std::cout << logMsg << std::endl;
+        }
 #ifdef DEBUG_MODE
         if (level == ORG_DBG_LVL_FATAL) {
             abort();
@@ -171,11 +175,10 @@ private:
     DebugLoggerImpl() = default;
     ~DebugLoggerImpl() override = default;
 
-private:
-    std::string format_log(OriginDbgLvl level, const std::string& message,
-                           [[maybe_unused]] const char* file = nullptr,
-                           [[maybe_unused]] int line = 0,
-                           [[maybe_unused]] const char* func = nullptr)
+    static std::string format_log(const OriginDbgLvl level, const std::string& message,
+                                  [[maybe_unused]] const char* file = nullptr,
+                                  [[maybe_unused]] int line = 0,
+                                  [[maybe_unused]] const char* func = nullptr)
     {
 #ifdef DEBUG_MODE
         return std::format("[{}][{}][Tid: {}][{}:{}][{}]: {}",
@@ -207,17 +210,18 @@ private:
 }  // namespace
 
 extern "C" {
-void origin_set_debug_logger_level(OriginDbgLvl level)
+void origin_set_debug_logger_level(const OriginDbgLvl level)
 {
     DebugLoggerImpl::instance().set_debug_log_level(level);
 }
 
-bool origin_debug_logger_should_log(OriginDbgLvl level)
+bool origin_debug_logger_should_log(const OriginDbgLvl level)
 {
     return DebugLoggerImpl::instance().should_log(level);
 }
 
-void origin_debug_logger_c(const char* file, int line, const char* func, OriginDbgLvl level,
+void origin_debug_logger_c(const char* file, const int line, const char* func,
+                           const OriginDbgLvl level,
                            const char* format, ...)
 {
     if (!DebugLoggerImpl::instance().should_log(level)) {
@@ -231,14 +235,14 @@ void origin_debug_logger_c(const char* file, int line, const char* func, OriginD
 }
 }
 
-void origin_debug_logger_force_log(const char* file, int line, const char* func, OriginDbgLvl level,
-                                   const std::string& message)
+void origin_debug_logger_force_log(const char* file, const int line, const char* func,
+                                   const OriginDbgLvl level, const std::string& message)
 {
     DebugLoggerImpl::instance().log(file, line, func, level, message);
 }
 
-COMMON_API void origin_debug_logger_log(const char* file, int line, const char* func,
-                                        OriginDbgLvl level, const std::string& message)
+COMMON_API void origin_debug_logger_log(const char* file, const int line, const char* func,
+                                        const OriginDbgLvl level, const std::string& message)
 {
     if (origin_debug_logger_should_log(level)) {
         origin_debug_logger_force_log(file, line, func, level, message);

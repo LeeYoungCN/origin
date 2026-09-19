@@ -30,7 +30,7 @@ public:
     [[nodiscard]] bool should_log(LogLevel level) const override;
     void set_level(LogLevel level) override;
     [[nodiscard]] LogLevel level() const override;
-    [[nodiscard]] std::string_view param_str() const override;
+    [[nodiscard]] std::string_view param_string() const override;
 
 protected:
     explicit BaseTestSink(std::string_view parameter);

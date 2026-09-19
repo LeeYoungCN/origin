@@ -58,6 +58,7 @@ LOGGING_API void origin_logger_log(const LoggerSt *logger, const char *file, int
 
 #pragma region Sink
 LOGGING_API SinkSt *origin_create_stdout_sink();
+LOGGING_API SinkSt *origin_create_stderr_sink();
 LOGGING_API SinkSt *origin_create_basic_file_sink(const char *file, bool overwrite);
 LOGGING_API SinkSt *origin_create_daily_file_sink(const char *file, uint32_t hour, uint32_t minute,
                                                   uint32_t maxFiles, bool overwrite);

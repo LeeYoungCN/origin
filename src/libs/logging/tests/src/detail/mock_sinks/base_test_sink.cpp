@@ -58,7 +58,7 @@ void BaseTestSink::set_formatter(std::unique_ptr<Formatter> formatter)
     _formatter = std::move(formatter);
 }
 
-std::string_view BaseTestSink::param_str() const
+std::string_view BaseTestSink::param_string() const
 {
     return _paramStr;
 }

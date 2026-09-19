@@ -55,23 +55,23 @@ void TestDailyFileSink::TearDown()
 std::string TestDailyFileSink::calc_log_file(std::string_view baseFile, TimestampMs time)
 {
     std::string filenameStem = get_filename_stem(baseFile);
-    std::string extention = get_extension(baseFile);
-    std::string filename =
-        std::format("{}.{}{}", filenameStem, format_time_string(time, "%Y%m%d"), extention);
+    std::string extension = get_extension(baseFile);
+    std::string const filename =
+        std::format("{}.{}{}", filenameStem, format_time_string(time, "%Y%m%d"), extension);
     return join_paths({_dir, filename});
 }
 
 void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t hour,
                                    uint32_t minute, uint32_t rotationDays, uint32_t dayInterval)
 {
-    TimestampMs now = get_now_timestamp_ms();
-    DateTimeSt nowDateTime = timestamp_to_date_time(now);
+    TimestampMs const now = get_now_timestamp_ms();
+    DateTimeSt const nowDateTime = timestamp_to_date_time(now);
     DateTimeSt rotationDateTime = nowDateTime;
     rotationDateTime.hour = hour;
     rotationDateTime.minute = minute;
-    bool isAfterNow(diff_date_time(rotationDateTime, nowDateTime) > 0);
+    bool const isAfterNow(diff_date_time(rotationDateTime, nowDateTime) > 0);
 
-    std::string baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
+    std::string const baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
     DailyFileSink sink(baseFile, hour, minute);
     sink.set_pattern("[%d][%l][%n]: %v");
     sink.set_level(LogLevel::TRACE);
@@ -101,13 +101,13 @@ void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t h
 void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo, uint32_t maxFiles,
                                             uint32_t existFiles, uint32_t rotationDays)
 {
-    TimestampMs now = get_now_timestamp_ms();
-    std::string baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
+    TimestampMs const now = get_now_timestamp_ms();
+    std::string const baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
 
     std::vector<std::string> allFilesList;
     for (uint32_t i = 0; i < existFiles; i++) {
         auto timeStamp = now - (i + 1) * MILLIS_PER_DAY;
-        std::string file = calc_log_file(baseFile, timeStamp);
+        std::string const file = calc_log_file(baseFile, timeStamp);
         create_file(file);
         allFilesList.push_back(file);
         sleep_ms(10);
@@ -144,15 +144,15 @@ void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo, u
 
 TEST_F(TestDailyFileSink, create_normal)
 {
-    std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
-    DailyFileSink sink(logFile);
+    std::string const logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    DailyFileSink const sink(logFile);
     EXPECT_TRUE(file_exists(sink.file()));
     EXPECT_EQ(sink.file(), logFile);
 }
 
 TEST_F(TestDailyFileSink, create_when_param_invalid)
 {
-    std::string baseFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    std::string const baseFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     EXPECT_THROW(DailyFileSink(""), std::invalid_argument);
 
     EXPECT_THROW(DailyFileSink(baseFile, MAX_HOUR + 1, 0, DailyFileSink::DEFAULT_MAX_FILES),
@@ -166,13 +166,13 @@ TEST_F(TestDailyFileSink, create_when_param_invalid)
 
 TEST_F(TestDailyFileSink, init_with_existing_files)
 {
-    std::string filenameStem = get_logger_name(test_info_);
-    std::string baseFile = join_paths({_dir, filenameStem + ".log"});
-    TimestampMs now = get_now_timestamp_ms();
+    const std::string filenameStem = get_logger_name(test_info_);
+    const std::string baseFile = join_paths({_dir, filenameStem + ".log"});
+    const TimestampMs now = get_now_timestamp_ms();
     std::vector<std::string> validFiles;
     for (int32_t i = 10; i >= 0; --i) {
-        auto timeStamp = now - i * MILLIS_PER_DAY;
-        std::string file = calc_log_file(baseFile, timeStamp);
+        const auto timeStamp = now - i * MILLIS_PER_DAY;
+        const std::string file = calc_log_file(baseFile, timeStamp);
         create_file(file);
         validFiles.push_back(file);
         sleep_ms(10);
@@ -186,8 +186,8 @@ TEST_F(TestDailyFileSink, init_with_existing_files)
     create_file(join_paths({_dir, filenameStem + ".00000000.log"}));
     create_file(join_paths({_dir, filenameStem + ".test.log"}));
 
-    DailyFileSink sink(baseFile);
-    auto fileList = sink.get_file_list();
+    const DailyFileSink sink(baseFile);
+    const auto fileList = sink.get_file_list();
     ASSERT_EQ(fileList.size(), validFiles.size());
     for (uint32_t i = 0; i < validFiles.size(); ++i) {
         EXPECT_EQ(validFiles[i], fileList[i]);
@@ -196,55 +196,55 @@ TEST_F(TestDailyFileSink, init_with_existing_files)
 
 TEST_F(TestDailyFileSink, rotate_normal)
 {
-    const uint32_t rotationHour = 0;
-    const uint32_t rotationMinute = 0;
-    const uint32_t days = 10;
+    constexpr uint32_t rotationHour = 0;
+    constexpr uint32_t rotationMinute = 0;
+    constexpr uint32_t days = 10;
 
     TestRotate(test_info_, rotationHour, rotationMinute, days);
 }
 
 TEST_F(TestDailyFileSink, rotate_day_interval)
 {
-    const uint32_t rotationHour = 0;
-    const uint32_t rotationMinute = 0;
-    const uint32_t days = 10;
-    const uint32_t interval = 2;
+    constexpr uint32_t rotationHour = 0;
+    constexpr uint32_t rotationMinute = 0;
+    constexpr uint32_t days = 10;
+    constexpr uint32_t interval = 2;
 
     TestRotate(test_info_, rotationHour, rotationMinute, days, interval);
 }
 
 TEST_F(TestDailyFileSink, rotate_when_rotating_after_now)
 {
-    const uint32_t rotationHour = MAX_HOUR;
-    const uint32_t rotationMinute = MAX_MINUTE;
-    const uint32_t days = 10;
+    constexpr uint32_t rotationHour = MAX_HOUR;
+    constexpr uint32_t rotationMinute = MAX_MINUTE;
+    constexpr uint32_t days = 10;
 
     TestRotate(test_info_, rotationHour, rotationMinute, days);
 }
 
 TEST_F(TestDailyFileSink, rotate_when_existing_files)
 {
-    const uint32_t rotationHour = MAX_HOUR;
-    const uint32_t rotationMinute = MAX_MINUTE;
-    const uint32_t days = 10;
+    constexpr uint32_t rotationHour = MAX_HOUR;
+    constexpr uint32_t rotationMinute = MAX_MINUTE;
+    constexpr uint32_t days = 10;
 
     TestRotate(test_info_, rotationHour, rotationMinute, days);
 }
 
 TEST_F(TestDailyFileSink, delete_when_no_existing_files)
 {
-    const uint32_t maxFiles = 5;
-    const uint32_t existFiles = 0;
-    const uint32_t rotationDays = 10;
+    constexpr uint32_t maxFiles = 5;
+    constexpr uint32_t existFiles = 0;
+    constexpr uint32_t rotationDays = 10;
 
     TestRotateAndDelete(test_info_, maxFiles, existFiles, rotationDays);
 }
 
 TEST_F(TestDailyFileSink, delete_when_existing_files)
 {
-    const uint32_t maxFiles = 5;
-    const uint32_t existFiles = 5;
-    const uint32_t rotationDays = 10;
+    constexpr uint32_t maxFiles = 5;
+    constexpr uint32_t existFiles = 5;
+    constexpr uint32_t rotationDays = 10;
 
     TestRotateAndDelete(test_info_, maxFiles, existFiles, rotationDays);
 }

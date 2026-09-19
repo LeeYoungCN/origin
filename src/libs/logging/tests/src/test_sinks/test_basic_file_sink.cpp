@@ -29,38 +29,38 @@ void TestBasicFileSink::TearDown()
 
 TEST_F(TestBasicFileSink, create_file_empty)
 {
-    EXPECT_THROW(BasicFileSink sink(""), std::invalid_argument);
+    EXPECT_THROW(const BasicFileSink sink(""), std::invalid_argument);
 }
 
 TEST_F(TestBasicFileSink, create_file_invalid_path)
 {
     create_dir(_dir);
-    EXPECT_THROW(BasicFileSink sink(_dir), std::runtime_error);
+    EXPECT_THROW(const BasicFileSink sink(_dir), std::runtime_error);
 }
 
 TEST_F(TestBasicFileSink, create_file_success)
 {
-    std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
-    BasicFileSink sink(logFile);
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    const BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
 }
 
 TEST_F(TestBasicFileSink, sink_log_level)
 {
-    std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
 
-    for (LogLevel level : LOG_LEVELS) {
+    for (const LogLevel level : LOG_LEVELS) {
         sink.set_level(level);
         EXPECT_EQ(sink.level(), level);
-        for (LogLevel level : LOG_LEVELS) {
-            if (level == LogLevel::OFF) {
-                EXPECT_FALSE(sink.should_log(level));
-            } else if (level >= sink.level()) {
-                EXPECT_TRUE(sink.should_log(level));
+        for (const LogLevel log_level : LOG_LEVELS) {
+            if (log_level == LogLevel::OFF) {
+                EXPECT_FALSE(sink.should_log(log_level));
+            } else if (log_level >= sink.level()) {
+                EXPECT_TRUE(sink.should_log(log_level));
             } else {
-                EXPECT_FALSE(sink.should_log(level));
+                EXPECT_FALSE(sink.should_log(log_level));
             }
         }
     }
@@ -68,19 +68,19 @@ TEST_F(TestBasicFileSink, sink_log_level)
 
 TEST_F(TestBasicFileSink, sink_log_and_flush)
 {
-    std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
     auto fileSizeBefore = get_file_size(logFile);
 
     sink.set_pattern("[%d][%l]: %v");
 
-    std::string_view message = "Test log message.";
-    std::string logContent = "[2024-01-01 12:00:00.000][E]: " + std::string(message);
+    constexpr std::string_view message = "Test log message.";
+    const std::string logContent = "[2024-01-01 12:00:00.000][E]: " + std::string(message);
 
-    FileSize messageSize = logContent.size() + LF_LENGTH;
+    const FileSize messageSize = logContent.size() + LF_LENGTH;
 
-    LogMsg logMsg = create_log_msg(LOG_SRC_LOCAL, "logger", LogLevel::INFO, message);
+    const LogMsg logMsg = create_log_msg(LOG_SRC_LOCAL, "logger", LogLevel::INFO, message);
 
     for (int i = 0; i < 100; ++i) {
         sink.log(logMsg);

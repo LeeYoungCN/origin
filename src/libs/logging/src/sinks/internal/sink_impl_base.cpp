@@ -11,11 +11,11 @@
 
 namespace origin::logging {
 
-SinkImplBase::SinkImplBase(std::string_view parameter) : _paramStr(parameter) {}
+SinkImplBase::SinkImplBase(std::string_view paramString) : _paramStr(paramString) {}
 
 void SinkImplBase::log(const LogMsg& logMsg)
 {
-    std::lock_guard lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     try {
         log_it(logMsg);
     } catch (std::exception& ex) {
@@ -26,7 +26,7 @@ void SinkImplBase::log(const LogMsg& logMsg)
 
 void SinkImplBase::flush()
 {
-    std::lock_guard lock(_sinkMtx);
+    std::lock_guard const lock(_sinkMtx);
     try {
         flush_it();
     } catch (std::exception& ex) {
@@ -69,9 +69,14 @@ void SinkImplBase::set_formatter(std::unique_ptr<Formatter> formatter)
     _formatter = std::move(formatter);
 }
 
-std::string_view SinkImplBase::param_str() const
+std::string_view SinkImplBase::param_string() const
 {
     return _paramStr;
+}
+
+void SinkImplBase::set_param_string(const std::string_view param)
+{
+    _paramStr = param;
 }
 
 }  // namespace origin::logging

@@ -25,7 +25,7 @@ public:
     [[nodiscard]] virtual bool should_log(LogLevel level) const = 0;
     virtual void set_level(LogLevel level) = 0;
     [[nodiscard]] virtual LogLevel level() const = 0;
-    [[nodiscard]] virtual std::string_view param_str() const = 0;
+    [[nodiscard]] virtual std::string_view param_string() const = 0;
 };
 }  // namespace origin::logging
 

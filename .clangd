@@ -19,3 +19,28 @@ InlayHints:
   DeducedTypes: true        # 自动推断的类型提示（如 auto x /* = int */ = 5
   DefaultArguments: true
   TypeNameLimit: 24
+
+Diagnostics:
+  ClangTidy:
+    FastCheckFilter: None
+    Add:
+      - performance-unnecessary-value-param
+      - readability-braces-around-statements
+      - bugprone-use-after-move
+      - bugprone-unused-raii
+      - bugprone-macro-parentheses
+      - modernize-use-override
+      - modernize-use-nullptr
+      - modernize-use-equals-default
+      - readability-const-return-type
+    Remove:
+      - readability-avoid-const-params-in-decls
+      # 如果你不想某些规则报警，可以继续在这里减
+
+  # 提示级别
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+Hover:
+  ShowAKA: true
+  ShowDocumentation: true

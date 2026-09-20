@@ -1,8 +1,12 @@
 #include "common/debug/debug_logger.h"
 
 #include <cstdarg>
+#include <cstdint>
 #include <cstdlib>
+#include <iomanip>
 #include <mutex>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include "common/base/singleton.h"
@@ -10,6 +14,12 @@
 
 #if OS_WINDOWS
 #include <windows.h>
+
+#include <corecrt_terminate.h>
+#include <minwindef.h>
+#include <processthreadsapi.h>
+#include <sysinfoapi.h>
+
 #elif OS_LINUX
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -240,8 +250,8 @@ void origin_debug_logger_force_log(const char* file, const int line, const char*
     DebugLoggerImpl::instance().log(file, line, func, level, message);
 }
 
-COMMON_API void origin_debug_logger_log(const char* file, const int line, const char* func,
-                                        const OriginDbgLvl level, const std::string& message)
+void origin_debug_logger_log(const char* file, const int line, const char* func,
+                             const OriginDbgLvl level, const std::string& message)
 {
     if (origin_debug_logger_should_log(level)) {
         origin_debug_logger_force_log(file, line, func, level, message);

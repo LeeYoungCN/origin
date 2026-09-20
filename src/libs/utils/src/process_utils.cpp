@@ -18,6 +18,7 @@
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #include <unistd.h>
 #endif
+#include <string>
 
 #include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"

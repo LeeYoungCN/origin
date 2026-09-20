@@ -1,25 +1,11 @@
 #include "common/debug/debug_logger.h"
 
-#include <cstdarg>
-#include <cstdint>
-#include <cstdlib>
-#include <iomanip>
-#include <mutex>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-
-#include "common/base/singleton.h"
-#include "common/macros/compiler.h"
-
 #if OS_WINDOWS
 #include <windows.h>
 
-#include <corecrt_terminate.h>
 #include <minwindef.h>
 #include <processthreadsapi.h>
 #include <sysinfoapi.h>
-
 #elif OS_LINUX
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -35,11 +21,21 @@
 
 #include <cstdarg>
 #include <cstddef>
+#include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
 #include <filesystem>
 #include <format>
+#include <iomanip>
 #include <iostream>
+#include <mutex>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
+#include "common/base/singleton.h"
+#include "common/macros/compiler.h"
 
 namespace {
 int64_t get_now_timestamp_ms()
@@ -63,7 +59,7 @@ int64_t get_now_timestamp_ms()
                                 - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS                   // 校正到Unix纪元
     );
 #else
-    std::chrono::time_point now = std::chrono::system_clock::now();
+    std::chrono::time_point const now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
     return static_cast<int64_t>(ms.count());
 #endif
@@ -176,7 +172,7 @@ public:
         }
 #ifdef DEBUG_MODE
         if (level == ORG_DBG_LVL_FATAL) {
-            abort();
+            std::abort();
         }
 #endif
     }

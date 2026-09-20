@@ -7,9 +7,10 @@
  * @date 2025-07-27
  * @copyright Copyright (c) 2025
  */
-#pragma once
-#ifndef UTILS_DATE_TIME_UTILS_H
-#define UTILS_DATE_TIME_UTILS_H
+#ifndef ORIGIN_UTILS_DATE_TIME_UTILS_H
+#define ORIGIN_UTILS_DATE_TIME_UTILS_H
+
+#include <cstdint>
 #include <ctime>
 #include <string>
 #include <string_view>
@@ -198,4 +199,4 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
 void sleep_ms(DurationMs ms);
 
 }  // namespace origin::date_time
-#endif  // UTILS_DATE_TIME_UTILS_H
+#endif  // ORIGIN_UTILS_DATE_TIME_UTILS_H

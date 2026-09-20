@@ -1,8 +1,4 @@
-#include "internal/utils/filesystem_utils_internal.h"
-
-#include "common/macros/compiler.h"
-#include "common/types/error_code_types.h"
-#include "utils/utils_error_code.h"
+#include "filesystem/internal/common.hpp"
 
 #if COMPILER_MSVC
 #include <windows.h>
@@ -15,13 +11,15 @@
 #include <system_error>
 #include <unordered_map>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
+#include "common/macros/compiler.h"
 #include "common/types/error_code_types.h"
-#include "internal/utils/filesystem_utils_internal.h"
+#include "filesystem/internal/common.hpp"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 
-namespace origin::filesystem::internal {
+namespace origin::filesystem {
 using namespace origin::thread;
 ErrorCode ConvertGenericCategory(const std::error_code& ec)
 {
@@ -96,4 +94,4 @@ ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
     }
 }
 
-}  // namespace origin::filesystem::internal
+}  // namespace origin::filesystem

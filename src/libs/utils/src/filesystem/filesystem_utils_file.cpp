@@ -19,18 +19,24 @@
 #include <chrono>
 #endif
 
+#include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <ios>
+#include <iterator>
 #include <string>
+#include <string_view>
 #include <system_error>
+#include <vector>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/date_time_types.h"
 #include "common/types/filesystem_types.h"
-#include "internal/utils/filesystem_utils_internal.h"
+#include "filesystem/internal/common.hpp"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
@@ -43,7 +49,6 @@
 namespace {
 namespace fs = std::filesystem;
 using namespace origin::filesystem;
-using namespace origin::filesystem::internal;
 using namespace origin::thread;
 #if OS_WINDOWS
 using namespace origin::date_time;
@@ -52,7 +57,7 @@ using namespace origin::date_time;
 bool delete_file_it(std::string_view path)
 {
     try {
-        bool result = fs::remove(path);
+        bool const result = fs::remove(path);
         set_thread_last_err(result ? ERR_COMM_SUCCESS : ERR_UTILS_NOT_FOUND);
         ORIGIN_DEBUG_TRACE(
             "Delete file success. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
@@ -72,7 +77,6 @@ bool delete_file_it(std::string_view path)
 namespace origin::filesystem {
 
 namespace fs = std::filesystem;
-using namespace origin::filesystem::internal;
 
 bool file_exists(std::string_view path)
 {
@@ -95,7 +99,7 @@ bool file_exists(std::string_view path)
 
 bool create_file(std::string_view path)
 {
-    EntryType type = get_entry_type(path);
+    EntryType const type = get_entry_type(path);
     if (type == EntryType::FILE) {
         set_thread_last_err(ERR_UTILS_ALREADY_EXISTS);
         ORIGIN_DEBUG_TRACE("File already exist: {}", path);
@@ -113,7 +117,7 @@ bool create_file(std::string_view path)
         set_thread_last_err(ERR_COMM_SUCCESS);
         return true;
     }
-    std::error_code ec(errno, std::generic_category());
+    std::error_code const ec(errno, std::generic_category());
     set_thread_last_err(ConvertSysEcToErrorCode(ec));
     ORIGIN_DEBUG_ERR(
         "Create file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
@@ -123,7 +127,7 @@ bool create_file(std::string_view path)
 bool delete_file(std::string_view path)
 {
     if (!file_exists(path)) {
-        bool rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
+        bool const rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
         if (get_thread_last_err() == ERR_UTILS_NOT_FOUND) {
             ORIGIN_DEBUG_TRACE(
                 "Delete file success. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
@@ -155,7 +159,7 @@ bool copy_file(std::string_view src, std::string_view dest, bool overwrite)
         set_thread_last_err(ERR_UTILS_NOT_FILE);
         return false;
     }
-    fs::copy_options option =
+    fs::copy_options const option =
         (overwrite ? fs::copy_options::overwrite_existing : fs::copy_options::none);
     try {
         fs::copy_file(src, dest, option);
@@ -180,7 +184,7 @@ bool rename_file(std::string_view src, std::string_view dest, bool overwrite)
         return false;
     }
 
-    EntryType type = get_entry_type(dest);
+    EntryType const type = get_entry_type(dest);
     // 类型错误
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
         set_thread_last_err(ERR_UTILS_NOT_FILE);
@@ -224,7 +228,7 @@ std::string read_text_file(std::string_view path)
 
     std::ifstream file(path.data(), std::ios::in);
     if (!file.is_open()) {
-        std::error_code ec(errno, std::generic_category());
+        std::error_code const ec(errno, std::generic_category());
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
             "Read file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
@@ -243,13 +247,13 @@ std::vector<uint8_t> read_binary_file(std::string_view path)
 
     std::ifstream file(path.data(), std::ios::in);
     if (!file.is_open()) {
-        std::error_code ec(errno, std::generic_category());
+        std::error_code const ec(errno, std::generic_category());
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
             "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
         return {};
     }
-    FileSize fileSize = fs::file_size(path);
+    FileSize const fileSize = fs::file_size(path);
     std::vector<uint8_t> buffer(fileSize);
     file.read(reinterpret_cast<char*>(buffer.data()), static_cast<int64_t>(fileSize));
     if (static_cast<size_t>(file.gcount()) != fileSize) {
@@ -275,7 +279,7 @@ bool write_text_file(std::string_view path, std::string_view content, bool overw
     }
     std::ofstream file(path.data(), mode);
     if (!file.is_open()) {
-        std::error_code ec(errno, std::generic_category());
+        std::error_code const ec(errno, std::generic_category());
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR("Write to text file failed. file: \"{}\". msg: \"{}\".",
                          path,
@@ -293,7 +297,7 @@ bool write_text_file(std::string_view path, std::string_view content, bool overw
         return true;
     }
 
-    std::error_code ec(errno, std::system_category());
+    std::error_code const ec(errno, std::system_category());
     set_thread_last_err(ConvertSysEcToErrorCode(ec));
 
     ORIGIN_DEBUG_ERR("Write text failed. file {}: {}, msg: \"{}\".",
@@ -344,7 +348,7 @@ TimestampMs get_file_modify_time(std::string_view path)
     int64_t totalMs = static_cast<int64_t>(ul.QuadPart) / HUNDRED_NANOSECONDS_PER_MILLISECOND;
     return totalMs - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS;
 #else
-    fs::file_time_type fileTime = fs::last_write_time(path);
+    fs::file_time_type const fileTime = fs::last_write_time(path);
     auto sysTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
         fileTime - std::filesystem::file_time_type::clock::now() +
         std::chrono::system_clock::now());

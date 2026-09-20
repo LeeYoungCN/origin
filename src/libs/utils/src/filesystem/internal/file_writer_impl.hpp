@@ -1,6 +1,7 @@
-#ifndef UTILS_IMPL_FILE_WRITER_IMPL_H
-#define UTILS_IMPL_FILE_WRITER_IMPL_H
+#ifndef ORIGIN_UTILS_FILSYSTEM_INTERNAL_FILE_WRITER_IMPL_H
+#define ORIGIN_UTILS_FILSYSTEM_INTERNAL_FILE_WRITER_IMPL_H
 #include <fstream>
+#include <ios>
 #include <string>
 #include <string_view>
 
@@ -43,4 +44,4 @@ private:
     FileSize _currSize{0};
 };
 }  // namespace origin::filesystem
-#endif  // UTILS_IMPL_FILE_WRITER_IMPL_H
+#endif  // ORIGIN_UTILS_FILSYSTEM_INTERNAL_FILE_WRITER_IMPL_H

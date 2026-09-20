@@ -1,5 +1,5 @@
-#ifndef UTILS_ERROR_CODE_H
-#define UTILS_ERROR_CODE_H
+#ifndef ORIGIN_UTILS_ERROR_CODE_H
+#define ORIGIN_UTILS_ERROR_CODE_H
 
 #include "common/common_error_code.h"
 #include "common/types/error_code_types.h"
@@ -98,4 +98,4 @@ static inline const char *get_utils_err_msg(ErrorCode errCode)
     };
 }
 
-#endif  // UTILS_ERROR_CODE_H
+#endif  // ORIGIN_UTILS_ERROR_CODE_H

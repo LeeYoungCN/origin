@@ -8,10 +8,8 @@
  * @copyright Copyright (c) 2025
  *
  */
-#pragma once
-
-#ifndef UTILS_THREAD_UTILS_H
-#define UTILS_THREAD_UTILS_H
+#ifndef ORIGIN_UTILS_THREAD_UTILS_H
+#define ORIGIN_UTILS_THREAD_UTILS_H
 
 #include "common/types/error_code_types.h"
 #include "common/types/thread_types.h"
@@ -45,4 +43,4 @@ const char *get_thread_last_err_msg();
 
 }  // namespace origin::thread
 
-#endif  // UTILS_THREAD_UTILS_H
+#endif  // ORIGIN_UTILS_THREAD_UTILS_H

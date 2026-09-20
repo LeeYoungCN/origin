@@ -11,11 +11,6 @@
 
 #include "utils/thread_utils.h"
 
-#include <string>
-
-#include "common/macros/compiler.h"
-#include "common/types/thread_types.h"
-
 #if OS_WINDOWS
 #include <windows.h>
 #elif OS_LINUX
@@ -27,6 +22,12 @@
 #error "Unsupport system"
 #endif
 
+#include <string>
+
+#include "common/common_error_code.h"
+#include "common/macros/compiler.h"
+#include "common/types/error_code_types.h"
+#include "common/types/thread_types.h"
 #include "utils/utils_error_code.h"
 
 namespace {

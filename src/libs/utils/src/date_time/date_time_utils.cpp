@@ -136,7 +136,7 @@ TimestampMs get_now_timestamp_ms()
            - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS;                // 校正到Unix纪元
 
 #else
-    std::chrono::time_point now = std::chrono::system_clock::now();
+    std::chrono::time_point const now = std::chrono::system_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
     return static_cast<TimestampMs>(ms.count());
 #endif

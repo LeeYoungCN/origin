@@ -1,5 +1,5 @@
-#ifndef UTILS_FILE_WRITER_H
-#define UTILS_FILE_WRITER_H
+#ifndef ORIGIN_UTILS_FILE_WRITER_H
+#define ORIGIN_UTILS_FILE_WRITER_H
 
 #include <memory>
 #include <string>
@@ -37,4 +37,4 @@ private:
 
 }  // namespace origin::filesystem
 
-#endif  // UTILS_FILE_WRITER_H
+#endif  // ORIGIN_UTILS_FILE_WRITER_H

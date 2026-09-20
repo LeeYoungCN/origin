@@ -1,13 +1,20 @@
-#include "file_writer_impl.h"
+#include "filesystem/internal/file_writer_impl.hpp"
 
+#include <cerrno>
 #include <fstream>
+#include <ios>
 #include <stdexcept>
+#include <string>
 #include <string_view>
+#include <system_error>
 
 #include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"
 #include "common/debug/debug_logger.h"
-#include "internal/utils/filesystem_utils_internal.h"
+#include "common/macros/compiler.h"
+#include "common/types/error_code_types.h"
+#include "common/types/filesystem_types.h"
+#include "filesystem/internal/common.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
@@ -16,7 +23,6 @@
 #define MODE_STR(mode) ((mode) ? "overwrite" : "append")
 
 namespace origin::filesystem {
-using namespace origin::filesystem::internal;
 using namespace origin::thread;
 
 FileWriterImpl::FileWriterImpl(std::string_view file) : _file(to_absolute_path(file))
@@ -43,7 +49,7 @@ ErrorCode FileWriterImpl::open_it(bool overwrite)
     date_time::sleep_ms(origin::filesystem::FILE_OPEN_INTERVAL_MS);
 
     if (!_stream.is_open()) {
-        std::error_code ec(errno, std::generic_category());
+        std::error_code const ec(errno, std::generic_category());
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR("Open file failed. file: \"{}\", mode: {}, msg: {}",
                          _file.data(),

@@ -1,8 +1,12 @@
 #include "utils/file_writer.h"
 
+#include <memory>
+#include <string>
 #include <string_view>
 
-#include "file_writer_impl.h"
+#include "common/types/error_code_types.h"
+#include "common/types/filesystem_types.h"
+#include "filesystem/internal/file_writer_impl.hpp"
 
 #define MODE_STR(mode) ((mode) ? "overwrite" : "append")
 
@@ -48,7 +52,7 @@ void FileWriter::flush()
     _pimpl->flush();
 }
 
-size_t FileWriter::size() const
+FileSize FileWriter::size() const
 {
     return _pimpl->size();
 }

@@ -9,10 +9,7 @@
  *
  */
 
-#include <string_view>
-
 #include "common/macros/compiler.h"
-#include "utils/filesystem_utils.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -21,13 +18,14 @@
 #elif OS_MACOS
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #endif
-
 #include <exception>
 #include <filesystem>
+#include <string_view>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/filesystem_types.h"
-#include "internal/utils/filesystem_utils_internal.h"
+#include "filesystem/internal/common.hpp"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
@@ -35,7 +33,6 @@
 namespace origin::filesystem {
 
 namespace fs = std::filesystem;
-using namespace origin::filesystem::internal;
 using namespace origin::thread;
 
 inline const char* recursive_mode_str(bool recursive)
@@ -45,7 +42,7 @@ inline const char* recursive_mode_str(bool recursive)
 
 bool dir_exists(std::string_view path)
 {
-    EntryType type = get_entry_type(path);
+    EntryType const type = get_entry_type(path);
     bool result = false;
     switch (type) {
         case EntryType::DIRECTORY:
@@ -111,7 +108,7 @@ bool create_dir(std::string_view path, bool recursive)
 bool delete_dir(std::string_view path, bool recursive)
 {
     if (!dir_exists(path)) {
-        bool rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
+        bool const rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
         if (!rst) {
             ORIGIN_DEBUG_ERR("Delete dir {} failed. dir: \"{}\". msg: \"{}\".",
                              recursive ? "recursive" : "not recursive",

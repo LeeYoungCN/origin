@@ -10,7 +10,6 @@
  */
 
 #include "common/macros/compiler.h"
-#include "utils/filesystem_utils.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -24,18 +23,19 @@
 #include <exception>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"
 #include "common/debug/debug_logger.h"
-#include "internal/utils/filesystem_utils_internal.h"
+#include "filesystem/internal/common.hpp"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 
 namespace origin::filesystem {
 namespace fs = std::filesystem;
-using namespace origin::filesystem::internal;
 using namespace origin::filesystem;
 using namespace origin::thread;
 
@@ -102,9 +102,9 @@ std::string to_absolute_path(std::string_view relPath, std::string_view baseDir)
     if (relPath.empty()) {
         return "";
     }
-    fs::path base = fs::path(baseDir.empty() ? get_curr_working_dir() : baseDir);
-    fs::path relative(relPath);
-    fs::path combined = base / relative;
+    fs::path const base = fs::path(baseDir.empty() ? get_curr_working_dir() : baseDir);
+    fs::path const relative(relPath);
+    fs::path const combined = base / relative;
 
     try {
         auto absPath = fs::absolute(combined).lexically_normal();
@@ -129,35 +129,35 @@ std::string to_absolute_path(std::string_view relPath, std::string_view baseDir)
 
 std::string get_directory(std::string_view path)
 {
-    fs::path proc(path);
+    fs::path const proc(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
     return proc.parent_path().string();
 }
 
 std::string get_filename(std::string_view path)
 {
-    fs::path p(path);
+    fs::path const p(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
     return p.filename().string();
 }
 
 std::string get_filename_stem(std::string_view path)
 {
-    fs::path p(path);
+    fs::path const p(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
     return p.stem().string();
 }
 
 std::string get_extension(std::string_view path)
 {
-    fs::path p(path);
+    fs::path const p(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
     return p.extension().string();
 }
 
 bool is_absolute_path(std::string_view path)
 {
-    bool result = fs::path(path).is_absolute();
+    bool const result = fs::path(path).is_absolute();
     set_thread_last_err(ERR_COMM_SUCCESS);
     return result;
 }

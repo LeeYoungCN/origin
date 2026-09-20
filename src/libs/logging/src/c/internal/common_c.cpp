@@ -1,11 +1,17 @@
 #include "c/internal/common_c.hpp"
 
+#include <cstdarg>
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <vector>
 
 #include "logging/c/logging_c.h"
 #include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
+#include "logging/loggers/logger.hpp"
+#include "logging/sinks/sink.hpp"
+#include "utils/string_utils.h"
 
 namespace origin::logging::c_api {
 bool log_level_c_invalid(const LogLevelC level)

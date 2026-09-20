@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2025
  *
  */
-#include "utils/filesystem_utils.h"
 
 #include "common/macros/compiler.h"
 
@@ -19,10 +18,11 @@
 #elif OS_MACOS
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #endif
-
 #include <filesystem>
+#include <string_view>
 #include <system_error>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/filesystem_types.h"
 #include "utils/filesystem_utils.h"
@@ -41,7 +41,7 @@ EntryType get_entry_type(std::string_view path)
     }
     // 获取文件状态（使用symlink_status而非status，保留符号链接本身的类型）
     std::error_code ec;  // 用于非抛出式错误处理
-    fs::file_status status = fs::symlink_status(path, ec);
+    fs::file_status const status = fs::symlink_status(path, ec);
     if (ec) {
         ORIGIN_DEBUG_ERR("Failed to get symlink status. errCode: {}", ec.value());
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);

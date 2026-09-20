@@ -1,6 +1,8 @@
 #include "utils/string_utils.h"
 
+#include <cstdarg>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -17,7 +19,7 @@ std::string va_list_to_string(const char *format, va_list args)
     va_list argsCopy;
 
     va_copy(argsCopy, args);
-    int len = vsnprintf(nullptr, 0, format, argsCopy);
+    int const len = vsnprintf(nullptr, 0, format, argsCopy);
     va_end(argsCopy);
 
     if (len < 0) {

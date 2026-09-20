@@ -1,9 +1,9 @@
-#pragma once
-#ifndef UTILS_STRING_UTILS_H
-#define UTILS_STRING_UTILS_H
+#ifndef ORIGIN_UTILS_STRING_UTILS_H
+#define ORIGIN_UTILS_STRING_UTILS_H
 
 #include <cstdarg>
 #include <string>
+#include <type_traits>
 
 #include "common/types/type_traits.h"
 
@@ -25,4 +25,4 @@ std::string type_to_string(const T& type)
 
 }  // namespace origin::string
 
-#endif  // UTILS_STRING_UTILS_H
+#endif  // ORIGIN_UTILS_STRING_UTILS_H

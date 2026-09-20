@@ -8,12 +8,15 @@
  * @copyright Copyright (c) 2025
  *
  */
-#pragma once
-#ifndef UTILS_FILESYSTEM_UTILS_H
-#define UTILS_FILESYSTEM_UTILS_H
+#ifndef ORIGIN_UTILS_FILESYSTEM_UTILS_H
+#define ORIGIN_UTILS_FILESYSTEM_UTILS_H
 
+#include <cstdint>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "common/types/date_time_types.h"
 #include "common/types/filesystem_types.h"
 
 namespace origin::filesystem {
@@ -224,4 +227,4 @@ bool create_dir(std::string_view path, bool recursive = true);
 bool delete_dir(std::string_view path, bool recursive = true);
 
 }  // namespace origin::filesystem
-#endif  // UTILS_FILESYSTEM_UTILS_H
+#endif  // ORIGIN_UTILS_FILESYSTEM_UTILS_H

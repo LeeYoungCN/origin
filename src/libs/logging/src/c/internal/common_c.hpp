@@ -2,7 +2,11 @@
 #ifndef ORIGIN_LOGGING_C_INTERNAL_COMMON_C_HPP
 #define ORIGIN_LOGGING_C_INTERNAL_COMMON_C_HPP
 
+#include <cstdarg>
+#include <cstdint>
 #include <memory>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "internal/task_pool.hpp"

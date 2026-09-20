@@ -1,6 +1,7 @@
 #include "detail/mock_sinks/tid_msg_map_sink.hpp"
 
 #include <mutex>
+
 #include "common/types/thread_types.h"
 #include "logging/log_msg.hpp"
 

@@ -4,6 +4,7 @@
 
 #if OS_WINDOWS
 #include <windows.h>
+
 #include <corecrt.h>
 #include <minwindef.h>
 #include <synchapi.h>

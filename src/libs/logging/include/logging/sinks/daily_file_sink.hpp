@@ -1,4 +1,3 @@
-#pragma once
 #ifndef ORIGIN_LOGGING_SINKS_DAILY_FILE_SINK_HPP
 #define ORIGIN_LOGGING_SINKS_DAILY_FILE_SINK_HPP
 #include <cstdint>

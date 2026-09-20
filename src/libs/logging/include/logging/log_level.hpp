@@ -1,4 +1,3 @@
-#pragma once
 #ifndef ORIGIN_LOGGING_LOG_LEVEL_HPP
 #define ORIGIN_LOGGING_LOG_LEVEL_HPP
 

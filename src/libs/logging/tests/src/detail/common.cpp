@@ -1,4 +1,5 @@
 #include "detail/common.hpp"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>

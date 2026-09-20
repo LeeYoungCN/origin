@@ -25,9 +25,9 @@ std::shared_ptr<Logger> create_async_logger(const std::string_view name,
     return std::make_shared<AsyncLogger>(name, sink, pool);
 }
 
-std::shared_ptr<Logger> create_async_logger(const std::string_view name,
-                                            const std::initializer_list<std::shared_ptr<Sink>> sinks,
-                                            const std::weak_ptr<TaskPool>& pool)
+std::shared_ptr<Logger> create_async_logger(
+    const std::string_view name, const std::initializer_list<std::shared_ptr<Sink>> sinks,
+    const std::weak_ptr<TaskPool>& pool)
 {
     return std::make_shared<AsyncLogger>(name, sinks, pool);
 }

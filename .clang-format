@@ -158,22 +158,19 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^<ext/.*\.h>'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '^<.*\.h>'
-    Priority:        1
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '^<.*'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
-  - Regex:           '.*'
-    Priority:        3
-    SortPriority:    0
-    CaseSensitive:   false
+  # 1. windows.h 最高优先级，负数，放在最前面
+  - Regex: '^<windows\.h>$'
+    Priority: -1
+    CaseSensitive: false
+  # 2. 其它系统头文件（C标准库、其它win sdk头 winuser.h等）
+  - Regex: '^<.+\.h>$'
+    Priority: 2
+  # 3. C++标准库头文件 <string> <iostream>
+  - Regex: '^<.+>$'
+    Priority: 3
+  # 4. 项目本地头文件 "xxx.h"
+  - Regex: '^".+"$'
+    Priority: 4
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex: ''
 # 缩进访问控制

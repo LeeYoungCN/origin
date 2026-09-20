@@ -1,23 +1,18 @@
 #include "sinks/internal/stream_sink_impl.hpp"
 
-#include <cstdio>
+#include <iostream>
 #include <string>
 #include <string_view>
+
 #include "logging/log_msg.hpp"
 #include "sinks/internal/sink_impl_base.hpp"
 
 namespace origin::logging {
-StreamSinkImpl::StreamSinkImpl() : SinkImplBase("StdoutSink.") {}
+StreamSinkImpl::StreamSinkImpl() : SinkImplBase("StreamSink.") {}
 
-StreamSinkImpl::StreamSinkImpl(const StreamType type)
+StreamSinkImpl::StreamSinkImpl(std::ostream &stream, std::string_view param_string)
+    : SinkImplBase(param_string), _stream(stream)
 {
-    if (type == StreamType::STDOUT) {
-        _stream = stdout;
-        set_param_string("StdoutSink.");
-    } else {
-        _stream = stderr;
-        set_param_string("StderrSink.");
-    }
 }
 
 void StreamSinkImpl::log_it(const LogMsg &logMsg)
@@ -29,13 +24,12 @@ void StreamSinkImpl::log_it(const LogMsg &logMsg)
 
 void StreamSinkImpl::sink_it(const std::string_view message) const
 {
-    std::fprintf(_stream, "%s\n", message.data());
-    std::fflush(_stream);
+    _stream << message << '\n';
 }
 
 void StreamSinkImpl::flush_it()
 {
-    std::fflush(_stream);
+    _stream.flush();
 }
 
 }  // namespace origin::logging

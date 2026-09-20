@@ -1,9 +1,12 @@
 #ifndef ORIGIN_LOGGING_LOGGING_HPP
 #define ORIGIN_LOGGING_LOGGING_HPP
 
+#include <cstdint>
 #include <format>
+#include <initializer_list>
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "logging/formatters/formatter.hpp"

@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <string_view>
 
 #include "logging/formatters/formatter.hpp"

@@ -14,7 +14,7 @@
 #include "logging/loggers/logger.hpp"
 #include "logging/sinks/sink.hpp"
 
-constexpr auto INVALID_LEVEL_C = static_cast<LogLevelC>(ORIGIN_LOG_LEVEL_OFF + 1);
+constexpr auto INVALID_LEVEL_C = static_cast<LogLevelC>(LOG_LEVEL_C_OFF + 1);
 
 struct MockLoggerSt {
     std::shared_ptr<origin::logging::Logger> ptr;
@@ -48,13 +48,13 @@ const std::vector<origin::logging::LogLevel> LOG_LEVELS = {origin::logging::LogL
                                                            origin::logging::LogLevel::FATAL,
                                                            origin::logging::LogLevel::OFF};
 
-const std::vector<LogLevelC> C_LOG_LEVELS = {ORIGIN_LOG_LEVEL_TRACE,
-                                             ORIGIN_LOG_LEVEL_DEBUG,
-                                             ORIGIN_LOG_LEVEL_INFO,
-                                             ORIGIN_LOG_LEVEL_WARN,
-                                             ORIGIN_LOG_LEVEL_ERROR,
-                                             ORIGIN_LOG_LEVEL_FATAL,
-                                             ORIGIN_LOG_LEVEL_OFF};
+const std::vector<LogLevelC> C_LOG_LEVELS = {LOG_LEVEL_C_TRACE,
+                                             LOG_LEVEL_C_DEBUG,
+                                             LOG_LEVEL_C_INFO,
+                                             LOG_LEVEL_C_WARN,
+                                             LOG_LEVEL_C_ERROR,
+                                             LOG_LEVEL_C_FATAL,
+                                             LOG_LEVEL_C_OFF};
 
 int32_t diff_log_level(origin::logging::LogLevel a, origin::logging::LogLevel b);
 std::string get_logger_name(const testing::TestInfo *test_info);

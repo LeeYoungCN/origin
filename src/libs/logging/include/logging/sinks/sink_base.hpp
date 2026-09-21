@@ -5,9 +5,9 @@
 #include <string_view>
 
 #include "common/macros/compiler.h"
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
-#include "logging/logging_api.h"
 #include "logging/sinks/sink.hpp"
 
 #if COMPILER_MSVC

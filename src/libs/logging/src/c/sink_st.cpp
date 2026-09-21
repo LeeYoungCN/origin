@@ -67,7 +67,7 @@ bool origin_sink_should_log(const SinkSt *sink, const LogLevelC level)
 
 LogLevelC origin_sink_level(const SinkSt *sink)
 {
-    RETURN_VALUE_IF_PTR_NULL(sink, ORIGIN_LOG_LEVEL_OFF);
+    RETURN_VALUE_IF_PTR_NULL(sink, LOG_LEVEL_C_OFF);
     return cpp_to_c_log_level(sink->ptr->level());
 }
 

@@ -7,13 +7,13 @@
 using namespace origin::logging;
 using namespace c_api;
 
-static_assert(static_cast<uint32_t>(LogLevel::TRACE) == ORIGIN_LOG_LEVEL_TRACE);
-static_assert(static_cast<uint32_t>(LogLevel::DEBUG) == ORIGIN_LOG_LEVEL_DEBUG);
-static_assert(static_cast<uint32_t>(LogLevel::INFO) == ORIGIN_LOG_LEVEL_INFO);
-static_assert(static_cast<uint32_t>(LogLevel::WARN) == ORIGIN_LOG_LEVEL_WARN);
-static_assert(static_cast<uint32_t>(LogLevel::ERR) == ORIGIN_LOG_LEVEL_ERROR);
-static_assert(static_cast<uint32_t>(LogLevel::FATAL) == ORIGIN_LOG_LEVEL_FATAL);
-static_assert(static_cast<uint32_t>(LogLevel::OFF) == ORIGIN_LOG_LEVEL_OFF);
+static_assert(static_cast<uint32_t>(LogLevel::TRACE) == LOG_LEVEL_C_TRACE);
+static_assert(static_cast<uint32_t>(LogLevel::DEBUG) == LOG_LEVEL_C_DEBUG);
+static_assert(static_cast<uint32_t>(LogLevel::INFO) == LOG_LEVEL_C_INFO);
+static_assert(static_cast<uint32_t>(LogLevel::WARN) == LOG_LEVEL_C_WARN);
+static_assert(static_cast<uint32_t>(LogLevel::ERR) == LOG_LEVEL_C_ERROR);
+static_assert(static_cast<uint32_t>(LogLevel::FATAL) == LOG_LEVEL_C_FATAL);
+static_assert(static_cast<uint32_t>(LogLevel::OFF) == LOG_LEVEL_C_OFF);
 
 extern "C" {
 const char* origin_log_level_full_name(const LogLevelC level)

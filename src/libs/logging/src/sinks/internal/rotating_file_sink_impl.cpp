@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "common/debug/debug_logger.h"
+#include "common/types/date_time_types.h"
+#include "common/types/filesystem_types.h"
 #include "internal/common.hpp"
 #include "logging/log_msg.hpp"
 #include "logging/sinks/rotating_file_sink.hpp"
+#include "sinks/internal/rotating_file_sink_impl_base.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/file_writer.h"
 #include "utils/filesystem_utils.h"
@@ -47,14 +50,14 @@ struct LogFileInfo {
 
 RotatingFileSinkImpl::RotatingFileSinkImpl() : RotatingFileSinkImpl(get_default_log_file("log")) {}
 
-RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, bool rotateOnOpen)
+RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, const bool rotateOnOpen)
     : RotatingFileSinkImpl(file, RotatingFileSink::DEFAULT_MAX_FILE_SIZE,
                            RotatingFileSink::DEFAULT_MAX_FILES, rotateOnOpen)
 {
 }
 
-RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, uint32_t maxFileSize,
-                                           uint32_t maxFiles, bool rotateOnOpen)
+RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, const uint32_t maxFileSize,
+                                           const uint32_t maxFiles, const bool rotateOnOpen)
     : RotatingFileSinkImplBase(
           file, false, maxFiles, "rotating log file",
           std::format("RotatingFileSinkImpl, File: \"{}\", MaxFileSize: {}, MaxFiles: {}.", file,
@@ -78,7 +81,7 @@ RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, uint32_t
     }
 }
 
-void RotatingFileSinkImpl::set_max_file_size(uint32_t maxFileSize)
+void RotatingFileSinkImpl::set_max_file_size(const uint32_t maxFileSize)
 {
     std::lock_guard const lock(_sinkMtx);
     if (maxFileSize > 0) {
@@ -158,13 +161,13 @@ std::string RotatingFileSinkImpl::get_next_file()
     return _file + "." + std::to_string(get_next_idx());
 }
 
-void RotatingFileSinkImpl::set_next_idx(uint32_t idx)
+void RotatingFileSinkImpl::set_next_idx(const uint32_t idx)
 {
-    if (idx > RotatingFileSink::MAX_INDEX) {
-        idx = RotatingFileSink::MIN_INDEX;
+    _nextIdx = idx;
+    if (_nextIdx > RotatingFileSink::MAX_INDEX) {
+        _nextIdx = RotatingFileSink::MIN_INDEX;
         ORIGIN_DEBUG_DBG("Rotate log file wrap around. nextIdx: {}.", _nextIdx);
     }
-    _nextIdx = idx;
 }
 
 uint32_t RotatingFileSinkImpl::get_next_idx()

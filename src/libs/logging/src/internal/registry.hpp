@@ -3,6 +3,7 @@
 #ifndef ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 #define ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string_view>
@@ -21,13 +22,10 @@ class Registry : public common::base::SingletonBase<Registry> {
     friend common::base::SingletonBase<Registry>;
 
 public:
-    static constexpr std::string_view ROOT_LOGGER_NAME = "__root_logger__";
-
-public:
 #pragma region root logger
     std::shared_ptr<Logger> root_logger();
     Logger* root_logger_raw();
-    void set_root_logger(std::shared_ptr<Logger> newLogger);
+    void set_root_logger(std::shared_ptr<Logger> logger);
 #pragma endregion
 
 #pragma region logging manager

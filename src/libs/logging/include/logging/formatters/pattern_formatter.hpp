@@ -1,6 +1,10 @@
 #ifndef ORIGIN_LOGGING_FORMATTERS_PATTERN_FORMATTER_HPP
 #define ORIGIN_LOGGING_FORMATTERS_PATTERN_FORMATTER_HPP
 
+#include <string_view>
+
+#include "logging/detail/constants.h"
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter_base.hpp"
 
 namespace origin::logging {
@@ -22,7 +26,7 @@ namespace origin::logging {
 class LOGGING_API PatternFormatter : public FormatterBase {
 public:
     static constexpr const char* DEFAULT_PATTERN =
-        "[%d][%l][%s:%#]: %v";  // 默认日志格式[时间戳][等级缩写][文件名:行号]: 日志内容
+        PATTERN_FORMATTER_DEFAULT_PATTERN;  // 默认日志格式[时间戳][等级缩写][文件名:行号]: 日志内容
 
 public:
     PatternFormatter();

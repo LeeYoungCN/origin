@@ -10,6 +10,7 @@
 
 #include "common/debug/debug_logger.h"
 #include "internal/task_pool.hpp"
+#include "logging/detail/constants.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
@@ -21,8 +22,9 @@ namespace origin::logging {
 
 Registry::Registry() : _globalFormatter(new PatternFormatter())
 {
-    _rootLogger = std::make_shared<SyncLogger>(ROOT_LOGGER_NAME, std::make_shared<StdoutSink>());
-    _loggers[ROOT_LOGGER_NAME] = _rootLogger;
+    _rootLogger =
+        std::make_shared<SyncLogger>(LOGGING_ROOT_LOGGER_NAME, std::make_shared<StdoutSink>());
+    _loggers[_rootLogger->name()] = _rootLogger;
 }
 
 #pragma region root logger
@@ -41,15 +43,15 @@ Logger* Registry::root_logger_raw()
     return _rootLogger.get();
 }
 
-void Registry::set_root_logger(std::shared_ptr<Logger> newLogger)
+void Registry::set_root_logger(std::shared_ptr<Logger> logger)
 {
-    if (newLogger == nullptr) {
+    if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Set root logger failed. newLogger nullptr.");
         return;
     }
     std::lock_guard const lock(_loggerMapMtx);
-    register_or_replace_logger_it(newLogger);
-    _rootLogger = std::move(newLogger);
+    register_or_replace_logger_it(logger);
+    _rootLogger = std::move(logger);
 }
 #pragma endregion
 

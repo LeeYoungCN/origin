@@ -14,13 +14,13 @@ using namespace origin::filesystem;
 
 RotatingFileSink::RotatingFileSink() : SinkBase(std::make_unique<RotatingFileSinkImpl>()) {}
 
-RotatingFileSink::RotatingFileSink(const std::string_view file, bool rotateOnOpen)
+RotatingFileSink::RotatingFileSink(const std::string_view file, const bool rotateOnOpen)
     : SinkBase(std::make_unique<RotatingFileSinkImpl>(file, rotateOnOpen))
 {
 }
 
-RotatingFileSink::RotatingFileSink(const std::string_view file, uint32_t maxFileSize,
-                                   uint32_t maxFiles, bool rotateOnOpen)
+RotatingFileSink::RotatingFileSink(const std::string_view file, const uint32_t maxFileSize,
+                                   const uint32_t maxFiles, const bool rotateOnOpen)
     : SinkBase(std::make_unique<RotatingFileSinkImpl>(file, maxFileSize, maxFiles, rotateOnOpen))
 {
 }

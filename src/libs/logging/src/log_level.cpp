@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "logging/detail/constants.h"
+
 namespace {
 struct LogLvlStrInfo {
     const char* full;
@@ -9,13 +11,20 @@ struct LogLvlStrInfo {
 };
 
 const std::unordered_map<origin::logging::LogLevel, LogLvlStrInfo> LOG_STR_MAP = {
-    {origin::logging::LogLevel::TRACE, {.full = "TRACE", .abbr = "T"}},
-    {origin::logging::LogLevel::DEBUG, {.full = "DEBUG", .abbr = "D"}},
-    {origin::logging::LogLevel::INFO, {.full = "INFO", .abbr = "I"}},
-    {origin::logging::LogLevel::WARN, {.full = "WARN", .abbr = "W"}},
-    {origin::logging::LogLevel::ERR, {.full = "ERROR", .abbr = "E"}},
-    {origin::logging::LogLevel::FATAL, {.full = "FATAL", .abbr = "F"}},
-    {origin::logging::LogLevel::OFF, {.full = "OFF", .abbr = "O"}}};
+    {origin::logging::LogLevel::TRACE,
+     {.full = LOG_LEVEL_FULL_NAME_TRACE, .abbr = LOG_LEVEL_ABBR_NAME_TRACE}},
+    {origin::logging::LogLevel::DEBUG,
+     {.full = LOG_LEVEL_FULL_NAME_DEBUG, .abbr = LOG_LEVEL_ABBR_NAME_DEBUG}},
+    {origin::logging::LogLevel::INFO,
+     {.full = LOG_LEVEL_FULL_NAME_INFO, .abbr = LOG_LEVEL_ABBR_NAME_INFO}},
+    {origin::logging::LogLevel::WARN,
+     {.full = LOG_LEVEL_FULL_NAME_WARN, .abbr = LOG_LEVEL_ABBR_NAME_WARN}},
+    {origin::logging::LogLevel::ERR,
+     {.full = LOG_LEVEL_FULL_NAME_ERROR, .abbr = LOG_LEVEL_ABBR_NAME_ERROR}},
+    {origin::logging::LogLevel::FATAL,
+     {.full = LOG_LEVEL_FULL_NAME_FATAL, .abbr = LOG_LEVEL_ABBR_NAME_FATAL}},
+    {origin::logging::LogLevel::OFF,
+     {.full = LOG_LEVEL_FULL_NAME_OFF, .abbr = LOG_LEVEL_ABBR_NAME_OFF}}};
 
 }  // namespace
 

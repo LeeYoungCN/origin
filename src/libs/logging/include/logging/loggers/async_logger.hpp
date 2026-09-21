@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "logging/detail/logging_api.h"
 #include "logging/loggers/logger_base.hpp"
 
 namespace origin::logging {

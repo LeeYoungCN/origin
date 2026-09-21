@@ -13,19 +13,19 @@ namespace origin::logging {
 
 DailyFileSink::DailyFileSink() : SinkBase(std::make_unique<DailyFileSinkImpl>()) {}
 
-DailyFileSink::DailyFileSink(const std::string_view file, bool overwrite)
+DailyFileSink::DailyFileSink(const std::string_view file, const bool overwrite)
     : SinkBase(std::make_unique<DailyFileSinkImpl>(file, overwrite))
 {
 }
 
-DailyFileSink::DailyFileSink(const std::string_view file, uint32_t hour, uint32_t minute,
-                             bool overwrite)
+DailyFileSink::DailyFileSink(const std::string_view file, const uint32_t hour,
+                             const uint32_t minute, const bool overwrite)
     : SinkBase(std::make_unique<DailyFileSinkImpl>(file, hour, minute, overwrite))
 {
 }
 
-DailyFileSink::DailyFileSink(const std::string_view file, uint32_t hour, uint32_t minute,
-                             uint32_t maxFiles, bool overwrite)
+DailyFileSink::DailyFileSink(const std::string_view file, const uint32_t hour,
+                             const uint32_t minute, const uint32_t maxFiles, const bool overwrite)
     : SinkBase(std::make_unique<DailyFileSinkImpl>(file, hour, minute, maxFiles, overwrite))
 
 {

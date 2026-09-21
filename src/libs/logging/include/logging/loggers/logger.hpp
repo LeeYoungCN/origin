@@ -4,14 +4,15 @@
 #include <format>
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "common/types/type_traits.h"
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
 #include "logging/log_source.hpp"
-#include "logging/logging_api.h"
 #include "logging/sinks/sink.hpp"
 #include "utils/string_utils.h"
 

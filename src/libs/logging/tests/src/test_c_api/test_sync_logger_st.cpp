@@ -100,9 +100,9 @@ TEST_F(TestSyncLoggerSt, log_filter)
                               origin_log_level_full_name(filterLevel),
                               origin_log_level_full_name(logLevel));
         }
-        if (filterLevel != ORIGIN_LOG_LEVEL_OFF) {
+        if (filterLevel != LOG_LEVEL_C_OFF) {
             EXPECT_EQ(_sink->buffer().size(),
-                      ORIGIN_LOG_LEVEL_FATAL - origin_logger_level(_loggerSt) + 1);
+                      LOG_LEVEL_C_FATAL - origin_logger_level(_loggerSt) + 1);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }
@@ -129,14 +129,14 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
 {
     init_logger(test_info_);
 
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
     for (const LogLevelC flushLevel : C_LOG_LEVELS) {
         // 设置刷新等级
         origin_logger_flush_on(_loggerSt, flushLevel);
         for (uint32_t i = 0; i < C_LOG_LEVELS.size(); ++i) {
             const LogLevelC level = C_LOG_LEVELS[i];
-            if (level == ORIGIN_LOG_LEVEL_OFF) {
+            if (level == LOG_LEVEL_C_OFF) {
                 break;
             }
             ORIGIN_LOGGER_LOG(_loggerSt,
@@ -145,7 +145,7 @@ TEST_F(TestSyncLoggerSt, log_flush_on)
                               origin_log_level_abbr_name(flushLevel),
                               origin_log_level_abbr_name(level));
 
-            if (flushLevel == ORIGIN_LOG_LEVEL_OFF || level < flushLevel) {
+            if (flushLevel == LOG_LEVEL_C_OFF || level < flushLevel) {
                 EXPECT_EQ(_sink->buffer().size(), i + 1);
                 EXPECT_EQ(_sink->disk().size(), 0);
             } else {
@@ -161,35 +161,23 @@ TEST_F(TestSyncLoggerSt, log_macros)
 {
     init_logger(test_info_);
 
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
     constexpr uint32_t logCount = 100;
     for (uint32_t i = 0; i < logCount; ++i) {
-        ORIGIN_LOGGER_TRACE(_loggerSt,
-                            "Level: [%s], idx: %u",
-                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_TRACE),
-                            i);
-        ORIGIN_LOGGER_DEBUG(_loggerSt,
-                            "Level: [%s], idx: %u",
-                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_DEBUG),
-                            i);
-        ORIGIN_LOGGER_INFO(_loggerSt,
-                           "Level: [%s], idx: %u",
-                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_INFO),
-                           i);
-        ORIGIN_LOGGER_WARN(_loggerSt,
-                           "Level: [%s], idx: %u",
-                           origin_log_level_full_name(ORIGIN_LOG_LEVEL_WARN),
-                           i);
-        ORIGIN_LOGGER_ERROR(_loggerSt,
-                            "Level: [%s], idx: %u",
-                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_ERROR),
-                            i);
+        ORIGIN_LOGGER_TRACE(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_TRACE), i);
+        ORIGIN_LOGGER_DEBUG(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_DEBUG), i);
+        ORIGIN_LOGGER_INFO(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_INFO), i);
+        ORIGIN_LOGGER_WARN(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_WARN), i);
+        ORIGIN_LOGGER_ERROR(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_ERROR), i);
 
-        ORIGIN_LOGGER_FATAL(_loggerSt,
-                            "Level: [%s], idx: %u",
-                            origin_log_level_full_name(ORIGIN_LOG_LEVEL_FATAL),
-                            i);
+        ORIGIN_LOGGER_FATAL(
+            _loggerSt, "Level: [%s], idx: %u", origin_log_level_full_name(LOG_LEVEL_C_FATAL), i);
     }
 
     _sink->flush();

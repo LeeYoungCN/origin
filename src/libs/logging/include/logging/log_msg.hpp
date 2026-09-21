@@ -7,9 +7,9 @@
 #include "common/types/date_time_types.h"
 #include "common/types/process_types.h"
 #include "common/types/thread_types.h"
+#include "logging/detail/logging_api.h"
 #include "logging/log_level.hpp"
 #include "logging/log_source.hpp"
-#include "logging/logging_api.h"
 
 namespace origin::logging {
 struct LogMsg {

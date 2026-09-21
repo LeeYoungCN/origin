@@ -10,7 +10,7 @@
 namespace origin::logging {
 StreamSinkImpl::StreamSinkImpl() : SinkImplBase("StreamSink.") {}
 
-StreamSinkImpl::StreamSinkImpl(std::ostream &stream, std::string_view param_string)
+StreamSinkImpl::StreamSinkImpl(std::ostream &stream, const std::string_view param_string)
     : SinkImplBase(param_string), _stream(stream)
 {
 }

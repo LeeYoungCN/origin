@@ -4,9 +4,9 @@
 #include <memory>
 #include <string_view>
 
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
-#include "logging/logging_api.h"
 
 namespace origin::logging {
 struct LogMsg;

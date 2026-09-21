@@ -63,7 +63,7 @@ LogLevelC origin_level()
 {
     if (!ROOT_LOGGER) {
         ORIGIN_DEBUG_WARN("Root logger get log level failed. {}", ROOT_LOGGER_NULL_LOG);
-        return ORIGIN_LOG_LEVEL_OFF;
+        return LOG_LEVEL_C_OFF;
     }
     return cpp_to_c_log_level(ROOT_LOGGER->level());
 }
@@ -100,7 +100,7 @@ LogLevelC origin_flush_level()
 {
     if (!ROOT_LOGGER) {
         ORIGIN_DEBUG_ERR("Root logger get flush level failed. {}", ROOT_LOGGER_NULL_LOG);
-        return ORIGIN_LOG_LEVEL_OFF;
+        return LOG_LEVEL_C_OFF;
     }
     return cpp_to_c_log_level(ROOT_LOGGER->flush_level());
 }

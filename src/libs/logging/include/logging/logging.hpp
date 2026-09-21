@@ -9,12 +9,12 @@
 #include <type_traits>
 #include <utility>
 
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
 #include "logging/log_source.hpp"
 #include "logging/loggers/async_logger.hpp"
 #include "logging/loggers/logger.hpp"
-#include "logging/logging_api.h"
 #include "logging/sinks/sink.hpp"
 
 namespace origin::logging {

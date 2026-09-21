@@ -16,25 +16,25 @@
 namespace origin::logging::c_api {
 bool log_level_c_invalid(const LogLevelC level)
 {
-    return (level > ORIGIN_LOG_LEVEL_OFF || level < ORIGIN_LOG_LEVEL_TRACE);
+    return (level > LOG_LEVEL_C_OFF || level < LOG_LEVEL_C_TRACE);
 }
 
 LogLevel c_to_cpp_log_level(const LogLevelC level)
 {
     switch (level) {
-        case ORIGIN_LOG_LEVEL_TRACE:
+        case LOG_LEVEL_C_TRACE:
             return LogLevel::TRACE;
-        case ORIGIN_LOG_LEVEL_DEBUG:
+        case LOG_LEVEL_C_DEBUG:
             return LogLevel::DEBUG;
-        case ORIGIN_LOG_LEVEL_INFO:
+        case LOG_LEVEL_C_INFO:
             return LogLevel::INFO;
-        case ORIGIN_LOG_LEVEL_WARN:
+        case LOG_LEVEL_C_WARN:
             return LogLevel::WARN;
-        case ORIGIN_LOG_LEVEL_ERROR:
+        case LOG_LEVEL_C_ERROR:
             return LogLevel::ERR;
-        case ORIGIN_LOG_LEVEL_FATAL:
+        case LOG_LEVEL_C_FATAL:
             return LogLevel::FATAL;
-        case ORIGIN_LOG_LEVEL_OFF:
+        case LOG_LEVEL_C_OFF:
             return LogLevel::OFF;
         default:
             throw std::invalid_argument(LOG_LEVEL_C_INVALID_LOG.data());
@@ -45,19 +45,19 @@ LogLevelC cpp_to_c_log_level(const LogLevel level)
 {
     switch (level) {
         case LogLevel::TRACE:
-            return ORIGIN_LOG_LEVEL_TRACE;
+            return LOG_LEVEL_C_TRACE;
         case LogLevel::DEBUG:
-            return ORIGIN_LOG_LEVEL_DEBUG;
+            return LOG_LEVEL_C_DEBUG;
         case LogLevel::INFO:
-            return ORIGIN_LOG_LEVEL_INFO;
+            return LOG_LEVEL_C_INFO;
         case LogLevel::WARN:
-            return ORIGIN_LOG_LEVEL_WARN;
+            return LOG_LEVEL_C_WARN;
         case LogLevel::ERR:
-            return ORIGIN_LOG_LEVEL_ERROR;
+            return LOG_LEVEL_C_ERROR;
         case LogLevel::FATAL:
-            return ORIGIN_LOG_LEVEL_FATAL;
+            return LOG_LEVEL_C_FATAL;
         case LogLevel::OFF:
-            return ORIGIN_LOG_LEVEL_OFF;
+            return LOG_LEVEL_C_OFF;
         default:
             throw std::invalid_argument("LogLevel invalid.");
     }

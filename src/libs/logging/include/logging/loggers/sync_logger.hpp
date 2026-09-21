@@ -6,6 +6,7 @@
 #include <string_view>
 #include <vector>
 
+#include "logging/detail/logging_api.h"
 #include "logging/loggers/logger_base.hpp"
 #include "logging/sinks/sink.hpp"
 

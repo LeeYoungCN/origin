@@ -61,7 +61,7 @@ TEST_F(TestLoggerStPublicApi, set_level)
     for (const LogLevelC level : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, level);
         EXPECT_EQ(origin_logger_level(_loggerSt), level);
-        if (level != ORIGIN_LOG_LEVEL_OFF) {
+        if (level != LOG_LEVEL_C_OFF) {
             EXPECT_TRUE(origin_logger_should_log(_loggerSt, level));
         } else {
             EXPECT_FALSE(origin_logger_should_log(_loggerSt, level));
@@ -71,27 +71,27 @@ TEST_F(TestLoggerStPublicApi, set_level)
 
 TEST_F(TestLoggerStPublicApi, set_level_failed_when_level_invalid)
 {
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
     origin_logger_set_level(_loggerSt, INVALID_LEVEL_C);
-    EXPECT_EQ(origin_logger_level(_loggerSt), ORIGIN_LOG_LEVEL_TRACE);
+    EXPECT_EQ(origin_logger_level(_loggerSt), LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestLoggerStPublicApi, set_level_failed_when_logger_nullptr)
 {
-    origin_logger_set_level(nullptr, ORIGIN_LOG_LEVEL_TRACE);
-    origin_logger_set_level(_nullLogger, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(nullptr, LOG_LEVEL_C_TRACE);
+    origin_logger_set_level(_nullLogger, LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestLoggerStPublicApi, get_level_failed_when_logger_nullptr)
 {
-    EXPECT_EQ(origin_logger_level(nullptr), ORIGIN_LOG_LEVEL_OFF);
-    EXPECT_EQ(origin_logger_level(_nullLogger), ORIGIN_LOG_LEVEL_OFF);
+    EXPECT_EQ(origin_logger_level(nullptr), LOG_LEVEL_C_OFF);
+    EXPECT_EQ(origin_logger_level(_nullLogger), LOG_LEVEL_C_OFF);
 }
 
 TEST_F(TestLoggerStPublicApi, should_log_false_when_logger_nullptr)
 {
-    EXPECT_FALSE(origin_logger_should_log(nullptr, ORIGIN_LOG_LEVEL_ERROR));
-    EXPECT_FALSE(origin_logger_should_log(_nullLogger, ORIGIN_LOG_LEVEL_ERROR));
+    EXPECT_FALSE(origin_logger_should_log(nullptr, LOG_LEVEL_C_ERROR));
+    EXPECT_FALSE(origin_logger_should_log(_nullLogger, LOG_LEVEL_C_ERROR));
 }
 
 TEST_F(TestLoggerStPublicApi, should_log_false_when_level_invalid)
@@ -104,7 +104,7 @@ TEST_F(TestLoggerStPublicApi, flush_on)
     for (const LogLevelC level : C_LOG_LEVELS) {
         origin_logger_flush_on(_loggerSt, level);
         EXPECT_EQ(origin_logger_flush_level(_loggerSt), level);
-        if (level != ORIGIN_LOG_LEVEL_OFF) {
+        if (level != LOG_LEVEL_C_OFF) {
             EXPECT_TRUE(origin_logger_should_flush(_loggerSt, level));
         } else {
             EXPECT_FALSE(origin_logger_should_flush(_loggerSt, level));
@@ -114,29 +114,29 @@ TEST_F(TestLoggerStPublicApi, flush_on)
 
 TEST_F(TestLoggerStPublicApi, flush_on_failed_when_level_invalid)
 {
-    origin_logger_flush_on(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
-    EXPECT_EQ(origin_logger_flush_level(_loggerSt), ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_flush_on(_loggerSt, LOG_LEVEL_C_TRACE);
+    EXPECT_EQ(origin_logger_flush_level(_loggerSt), LOG_LEVEL_C_TRACE);
 
     origin_logger_flush_on(_loggerSt, INVALID_LEVEL_C);
-    EXPECT_EQ(origin_logger_flush_level(_loggerSt), ORIGIN_LOG_LEVEL_TRACE);
+    EXPECT_EQ(origin_logger_flush_level(_loggerSt), LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestLoggerStPublicApi, flush_on_failed_when_logger_nullptr)
 {
-    origin_logger_flush_on(nullptr, ORIGIN_LOG_LEVEL_TRACE);
-    origin_logger_flush_on(_nullLogger, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_flush_on(nullptr, LOG_LEVEL_C_TRACE);
+    origin_logger_flush_on(_nullLogger, LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestLoggerStPublicApi, get_flush_level_failed_when_logger_nullptr)
 {
-    EXPECT_EQ(origin_logger_flush_level(nullptr), ORIGIN_LOG_LEVEL_OFF);
-    EXPECT_EQ(origin_logger_flush_level(_nullLogger), ORIGIN_LOG_LEVEL_OFF);
+    EXPECT_EQ(origin_logger_flush_level(nullptr), LOG_LEVEL_C_OFF);
+    EXPECT_EQ(origin_logger_flush_level(_nullLogger), LOG_LEVEL_C_OFF);
 }
 
 TEST_F(TestLoggerStPublicApi, should_flush_false_when_logger_nullptr)
 {
-    EXPECT_FALSE(origin_logger_should_flush(nullptr, ORIGIN_LOG_LEVEL_ERROR));
-    EXPECT_FALSE(origin_logger_should_flush(_nullLogger, ORIGIN_LOG_LEVEL_ERROR));
+    EXPECT_FALSE(origin_logger_should_flush(nullptr, LOG_LEVEL_C_ERROR));
+    EXPECT_FALSE(origin_logger_should_flush(_nullLogger, LOG_LEVEL_C_ERROR));
 }
 
 TEST_F(TestLoggerStPublicApi, should_flush_false_when_level_invalid)
@@ -146,7 +146,7 @@ TEST_F(TestLoggerStPublicApi, should_flush_false_when_level_invalid)
 
 TEST_F(TestLoggerStPublicApi, set_pattern)
 {
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
     origin_logger_set_pattern(_loggerSt, "%v");
     for (uint32_t i = 0; i < 10; i++) {
@@ -177,7 +177,7 @@ TEST_F(TestLoggerStPublicApi, set_pattern_failed_when_pattern_empty)
 
 TEST_F(TestLoggerStPublicApi, set_formatter)
 {
-    origin_logger_set_level(_loggerSt, ORIGIN_LOG_LEVEL_TRACE);
+    origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
     FormatterSt *formatter = origin_create_pattern_formatter("%v");
     origin_logger_set_formatter(_loggerSt, formatter);
@@ -205,8 +205,8 @@ TEST_F(TestLoggerStPublicApi, set_formatter_failed_when_formatter_nullptr)
 
 TEST_F(TestLoggerStPublicApi, log_failed_when_logger_nullptr)
 {
-    ORIGIN_LOGGER_LOG(nullptr, ORIGIN_LOG_LEVEL_ERROR, "Test LoggerSt public api.");
-    ORIGIN_LOGGER_LOG(_nullLogger, ORIGIN_LOG_LEVEL_ERROR, "Test LoggerSt public api.");
+    ORIGIN_LOGGER_LOG(nullptr, LOG_LEVEL_C_ERROR, "Test LoggerSt public api.");
+    ORIGIN_LOGGER_LOG(_nullLogger, LOG_LEVEL_C_ERROR, "Test LoggerSt public api.");
 }
 
 TEST_F(TestLoggerStPublicApi, log_failed_when_level_invalid)

@@ -11,7 +11,7 @@ namespace origin::logging {
 
 BasicFileSink::BasicFileSink() : SinkBase(std::make_unique<BasicFileSinkImpl>()) {}
 
-BasicFileSink::BasicFileSink(const std::string_view file, bool overwrite)
+BasicFileSink::BasicFileSink(const std::string_view file, const bool overwrite)
     : SinkBase(std::make_unique<BasicFileSinkImpl>(file, overwrite))
 {
 }

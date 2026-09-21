@@ -2,20 +2,26 @@
 #define ORIGIN_LOGGING_SINKS_ROTATING_FILE_SINK_HPP
 
 #include <cstdint>
+#include <string>
 #include <string_view>
 #include <vector>
 
-#include "logging/logging_api.h"
+#include "logging/detail/constants.h"
+#include "logging/detail/logging_api.h"
 #include "logging/sinks/sink_base.hpp"
 
 namespace origin::logging {
 class LOGGING_API RotatingFileSink : public SinkBase {
 public:
-    static constexpr uint32_t DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;  // 默认日志文件大小10MB
-    static constexpr uint32_t DEFAULT_MAX_FILES = 100;  // 默认最大保留100个日志文件
-    static constexpr uint32_t MAX_FILES = 2000;         // 最大保留20000个日志文件
-    static constexpr uint32_t MIN_INDEX = 1;            // 日志文件索引号 [1, 20000]
-    static constexpr uint32_t MAX_INDEX = 20000;        // 日志文件索引号 [1, 20000]
+    static constexpr uint32_t DEFAULT_MAX_FILE_SIZE =
+        ROTATING_FILE_SINK_DEFAULT_MAX_FILE_SIZE;  // 默认日志文件大小10MB
+    static constexpr uint32_t DEFAULT_MAX_FILES =
+        ROTATING_FILE_SINK_DEFAULT_MAX_FILES;  // 默认最大保留100个日志文件
+    static constexpr uint32_t MAX_FILES = ROTATING_FILE_SINK_MAX_FILES;  // 最大保留20000个日志文件
+    static constexpr uint32_t MIN_INDEX =
+        ROTATING_FILE_SINK_MIN_INDEX;  // 日志文件索引号 [1, 20000]
+    static constexpr uint32_t MAX_INDEX =
+        ROTATING_FILE_SINK_MAX_INDEX;  // 日志文件索引号 [1, 20000]
 
     RotatingFileSink();
     ~RotatingFileSink() override = default;

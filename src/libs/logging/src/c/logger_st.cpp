@@ -119,7 +119,7 @@ LogLevelC origin_logger_level(const LoggerSt *logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get level failed. {}", LOGGER_NULL_LOG);
-        return ORIGIN_LOG_LEVEL_OFF;
+        return LOG_LEVEL_C_OFF;
     }
     return cpp_to_c_log_level(logger->ptr->level());
 }
@@ -160,7 +160,7 @@ LogLevelC origin_logger_flush_level(const LoggerSt *logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get flush level. {}", LOGGER_NULL_LOG);
-        return ORIGIN_LOG_LEVEL_OFF;
+        return LOG_LEVEL_C_OFF;
     }
     return cpp_to_c_log_level(logger->ptr->flush_level());
 }

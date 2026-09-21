@@ -5,7 +5,8 @@
 #include <string_view>
 #include <vector>
 
-#include "logging/logging_api.h"
+#include "logging/detail/constants.h"
+#include "logging/detail/logging_api.h"
 #include "logging/sinks/sink_base.hpp"
 
 namespace origin::logging {
@@ -14,10 +15,13 @@ namespace origin::logging {
  */
 class LOGGING_API DailyFileSink : public SinkBase {
 public:
-    static constexpr uint32_t DEFAULT_ROTATION_HOUR = 0;    // 默认滚动时间每天00:00
-    static constexpr uint32_t DEFAULT_ROTATION_MINUTE = 0;  // 默认滚动时间每天00:00
-    static constexpr uint32_t DEFAULT_MAX_FILES = 30;       // 默认最大保留30天日志文件
-    static constexpr uint32_t MAX_FILES = 20000;            // 最大保留20000个日志文件
+    static constexpr uint32_t DEFAULT_ROTATION_HOUR =
+        DAILY_FILE_SINK_DEFAULT_ROTATION_HOUR;  // 默认滚动时间每天00:00
+    static constexpr uint32_t DEFAULT_ROTATION_MINUTE =
+        DAILY_FILE_SINK_DEFAULT_ROTATION_MINUTE;  // 默认滚动时间每天00:00
+    static constexpr uint32_t DEFAULT_MAX_FILES =
+        DAILY_FILE_SINK_DEFAULT_MAX_FILES;                            // 默认最大保留30天日志文件
+    static constexpr uint32_t MAX_FILES = DAILY_FILE_SINK_MAX_FILES;  // 最大保留20000个日志文件
 
 public:
     DailyFileSink();

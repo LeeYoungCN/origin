@@ -3,9 +3,10 @@
 
 #include <memory>
 
+#include "common/macros/compiler.h"
+#include "logging/detail/logging_api.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_msg.hpp"
-#include "logging/logging_api.h"
 
 #if COMPILER_MSVC
 #pragma warning(push)

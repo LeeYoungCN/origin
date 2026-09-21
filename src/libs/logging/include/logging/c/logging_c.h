@@ -7,7 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 
-#include "logging/logging_api.h"
+#include "logging/detail/constants.h"
+#include "logging/detail/logging_api.h"
 
 typedef struct LoggerSt LoggerSt;
 typedef struct SinkSt SinkSt;
@@ -15,13 +16,13 @@ typedef struct FormatterSt FormatterSt;
 typedef struct TaskPoolSt TaskPoolSt;
 
 typedef enum {
-    ORIGIN_LOG_LEVEL_TRACE = 0,
-    ORIGIN_LOG_LEVEL_DEBUG,
-    ORIGIN_LOG_LEVEL_INFO,
-    ORIGIN_LOG_LEVEL_WARN,
-    ORIGIN_LOG_LEVEL_ERROR,
-    ORIGIN_LOG_LEVEL_FATAL,
-    ORIGIN_LOG_LEVEL_OFF
+    LOG_LEVEL_C_TRACE = LOG_LEVEL_VALUE_TRACE,
+    LOG_LEVEL_C_DEBUG = LOG_LEVEL_VALUE_DEBUG,
+    LOG_LEVEL_C_INFO = LOG_LEVEL_VALUE_INFO,
+    LOG_LEVEL_C_WARN = LOG_LEVEL_VALUE_WARN,
+    LOG_LEVEL_C_ERROR = LOG_LEVEL_VALUE_ERROR,
+    LOG_LEVEL_C_FATAL = LOG_LEVEL_VALUE_FATAL,
+    LOG_LEVEL_C_OFF = LOG_LEVEL_VALUE_OFF
 } LogLevelC;
 
 LOGGING_API const char *origin_log_level_full_name(LogLevelC level);
@@ -135,43 +136,43 @@ LOGGING_API void origin_shutdown();
     origin_log(__FILE__, __LINE__, __FUNCTION__, level, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_TRACE(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_TRACE, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_TRACE, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_DEBUG(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_DEBUG, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_DEBUG, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_INFO(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_INFO, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_INFO, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_WARN(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_WARN, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_WARN, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_ERROR(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_ERROR, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_ERROR, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_FATAL(fmt, ...) \
-    ORIGIN_LOGGING_LOG(ORIGIN_LOG_LEVEL_FATAL, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGING_LOG(LOG_LEVEL_C_FATAL, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_LOG(logger, level, fmt, ...) \
     origin_logger_log(                             \
         logger, __FILE__, __LINE__, __FUNCTION__, level, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_TRACE(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_TRACE, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_TRACE, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_DEBUG(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_DEBUG, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_DEBUG, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_INFO(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_INFO, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_INFO, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_WARN(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_WARN, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_WARN, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_ERROR(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_ERROR, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_ERROR, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGER_FATAL(logger, fmt, ...) \
-    ORIGIN_LOGGER_LOG(logger, ORIGIN_LOG_LEVEL_FATAL, fmt __VA_OPT__(, ) __VA_ARGS__);
+    ORIGIN_LOGGER_LOG(logger, LOG_LEVEL_C_FATAL, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #endif  // ORIGIN_LOGGING_C_LOGGING_C_H

@@ -1,0 +1,43 @@
+#ifndef ORIGIN_LOGGING_DETAIL_CONSTANTS_DEF_H
+#define ORIGIN_LOGGING_DETAIL_CONSTANTS_DEF_H
+
+#define LOGGING_ROOT_LOGGER_NAME "__root_logger__"
+#define PATTERN_FORMATTER_DEFAULT_PATTERN \
+    "[%d][%l][%s:%#]: %v"  // 默认日志格式: [时间戳][等级缩写][文件名:行号]: 日志内容
+
+#define DAILY_FILE_SINK_DEFAULT_ROTATION_HOUR   (0)      // 默认滚动时间每天00:00
+#define DAILY_FILE_SINK_DEFAULT_ROTATION_MINUTE (0)      // 默认滚动时间每天00:00
+#define DAILY_FILE_SINK_DEFAULT_MAX_FILES       (30)     // 默认最大保留30天日志文件
+#define DAILY_FILE_SINK_MAX_FILES               (20000)  // 最大保留20000个日志文件
+
+#define ROTATING_FILE_SINK_DEFAULT_MAX_FILE_SIZE (10 * 1024 * 1024)  // 默认日志文件大小10MB
+#define ROTATING_FILE_SINK_DEFAULT_MAX_FILES     (100)               // 默认最大保留100个日志文件
+#define ROTATING_FILE_SINK_MAX_FILES             (2000)              // 最大保留20000个日志文件
+#define ROTATING_FILE_SINK_MIN_INDEX             (1)                 // 日志文件索引号 [1, 20000]
+#define ROTATING_FILE_SINK_MAX_INDEX             (20000)             // 日志文件索引号 [1, 20000]
+
+#define LOG_LEVEL_FULL_NAME_TRACE "TRACE"
+#define LOG_LEVEL_FULL_NAME_DEBUG "DEBUG"
+#define LOG_LEVEL_FULL_NAME_INFO  "INFO"
+#define LOG_LEVEL_FULL_NAME_WARN  "WARN"
+#define LOG_LEVEL_FULL_NAME_ERROR "ERROR"
+#define LOG_LEVEL_FULL_NAME_FATAL "FATAL"
+#define LOG_LEVEL_FULL_NAME_OFF   "OFF"
+
+#define LOG_LEVEL_ABBR_NAME_TRACE "T"
+#define LOG_LEVEL_ABBR_NAME_DEBUG "D"
+#define LOG_LEVEL_ABBR_NAME_INFO  "I"
+#define LOG_LEVEL_ABBR_NAME_WARN  "W"
+#define LOG_LEVEL_ABBR_NAME_ERROR "E"
+#define LOG_LEVEL_ABBR_NAME_FATAL "F"
+#define LOG_LEVEL_ABBR_NAME_OFF   "O"
+
+#define LOG_LEVEL_VALUE_TRACE (0)
+#define LOG_LEVEL_VALUE_DEBUG (1)
+#define LOG_LEVEL_VALUE_INFO  (2)
+#define LOG_LEVEL_VALUE_WARN  (3)
+#define LOG_LEVEL_VALUE_ERROR (4)
+#define LOG_LEVEL_VALUE_FATAL (5)
+#define LOG_LEVEL_VALUE_OFF   (6)
+
+#endif  //  ORIGIN_LOGGING_DETAIL_CONSTANTS_DEF_H

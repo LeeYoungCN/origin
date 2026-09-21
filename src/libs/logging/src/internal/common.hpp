@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "common/debug/debug_logger.h"
 

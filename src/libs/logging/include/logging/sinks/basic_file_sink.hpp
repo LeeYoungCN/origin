@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-#include "logging/logging_api.h"
+#include "logging/detail/logging_api.h"
 #include "logging/sinks/sink_base.hpp"
 
 namespace origin::logging {

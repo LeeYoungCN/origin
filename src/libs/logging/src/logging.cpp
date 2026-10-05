@@ -208,14 +208,14 @@ std::shared_ptr<Logger> get_logger(const std::string_view name)
     return REGISTRY.get_logger(name);
 }
 
-void init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
+bool is_logger_exists(const std::string_view name)
 {
-    REGISTRY.init_root_task_pool(capacity, threadCnt);
+    return REGISTRY.exists(name);
 }
 
-void set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
+bool set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
 {
-    REGISTRY.set_root_task_pool(std::move(taskPool));
+    return REGISTRY.set_root_task_pool(std::move(taskPool));
 }
 
 std::shared_ptr<TaskPool> root_task_pool()

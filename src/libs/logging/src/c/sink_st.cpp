@@ -41,7 +41,7 @@ SinkSt *origin_create_rotating_file_sink(const char *file, const uint32_t maxFil
     return new SinkSt(std::make_shared<DailyFileSink>(file, maxFileSize, maxFiles, rotateOnOpen));
 }
 
-void origin_detroy_sink(SinkSt *sink)
+void origin_destroy_sink(SinkSt *sink)
 {
     if (sink != nullptr) {
         if (sink->ptr != nullptr) {

@@ -103,4 +103,24 @@ void destroy_mock_formatter_st(FormatterSt* formatter)
     delete mockFormatter;
 }
 
+TaskPoolSt* create_mock_task_pool_st(std::shared_ptr<origin::logging::TaskPool> taskPool)
+{
+    const auto mockLogger = new MockTaskPoolSt(std::move(taskPool));
+    return reinterpret_cast<TaskPoolSt*>(mockLogger);
+}
+void destroy_mock_task_pool_st(TaskPoolSt* taskPool)
+{
+    if (taskPool == nullptr) {
+        return;
+    }
+
+    const auto mockTaskPool = reinterpret_cast<MockTaskPoolSt*>(taskPool);
+
+    if (mockTaskPool->ptr != nullptr) {
+        ORIGIN_DEBUG_DBG("Release MockFormatterSt.");
+        mockTaskPool->ptr.reset();
+    }
+    delete mockTaskPool;
+}
+
 }  // namespace logging_test

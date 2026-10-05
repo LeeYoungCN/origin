@@ -112,9 +112,9 @@ LOGGING_API void origin_register_or_replace_logger(const LoggerSt *logger);
 LOGGING_API void origin_remove_logger(const char *name);
 LOGGING_API void origin_remove_all();
 LOGGING_API LoggerSt *origin_get_logger(const char *name);
+LOGGING_API bool origin_is_logger_exists(const char *name);
 
-LOGGING_API void origin_init_root_task_pool(uint32_t capacity, uint32_t threadCnt);
-LOGGING_API void origin_set_root_task_pool(const TaskPoolSt *taskPool);
+LOGGING_API bool origin_set_root_task_pool(const TaskPoolSt *taskPool);
 LOGGING_API TaskPoolSt *origin_root_task_pool();
 #pragma endregion
 

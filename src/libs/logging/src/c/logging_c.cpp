@@ -210,24 +210,29 @@ LoggerSt *origin_get_logger(const char *name)
     return new LoggerSt(logger);
 }
 
-void origin_init_root_task_pool(uint32_t capacity, uint32_t threadCnt)
+bool origin_is_logger_exists(const char *name)
 {
-    REGISTRY.init_root_task_pool(capacity, threadCnt);
+    if (name == nullptr) {
+        ORIGIN_DEBUG_ERR("Check logger exists failed. name nullptr.");
+        return false;
+    }
+    return REGISTRY.exists(name);
 }
 
-void origin_set_root_task_pool(const TaskPoolSt *taskPool)
+bool origin_set_root_task_pool(const TaskPoolSt *taskPool)
 {
     if (taskPool == nullptr) {
         ORIGIN_DEBUG_ERR("Set root task pool failed. taskPool nullptr.");
-        return;
+        return false;
     }
-    REGISTRY.set_root_task_pool(taskPool->ptr);
+    return REGISTRY.set_root_task_pool(taskPool->ptr);
 }
 
 TaskPoolSt *origin_root_task_pool()
 {
     const auto taskPool = REGISTRY.root_task_pool();
     if (taskPool == nullptr) {
+        ORIGIN_DEBUG_ERR("Root task pool is nullptr.");
         return nullptr;
     }
     return new struct TaskPoolSt(taskPool);

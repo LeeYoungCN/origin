@@ -31,6 +31,10 @@ Registry::Registry() : _globalFormatter(new PatternFormatter())
 std::shared_ptr<Logger> Registry::root_logger()
 {
     std::lock_guard const lock(_loggerMapMtx);
+    if (_rootLogger == nullptr) {
+        ORIGIN_DEBUG_ERR("Root logger is nullptr.");
+        return nullptr;
+    }
     return _rootLogger;
 }
 
@@ -38,6 +42,7 @@ Logger* Registry::root_logger_raw()
 {
     std::lock_guard const lock(_loggerMapMtx);
     if (_rootLogger == nullptr) {
+        ORIGIN_DEBUG_ERR("Root logger is nullptr.");
         return nullptr;
     }
     return _rootLogger.get();
@@ -163,6 +168,7 @@ void Registry::remove_logger(const std::string_view name)
     _loggers.erase(name);
     if (isDefaultLogger) {
         _rootLogger.reset();
+        ORIGIN_DEBUG_DBG("Remove root logger. Name: {}.", name);
     }
 }
 
@@ -185,39 +191,34 @@ std::shared_ptr<Logger> Registry::get_logger(const std::string_view name)
     return it == _loggers.end() ? nullptr : it->second;
 }
 
-bool Registry::exist(const std::string_view name)
+bool Registry::exists(const std::string_view name)
 {
     std::lock_guard const lock(_loggerMapMtx);
     return exist_it(name);
 }
 
-void Registry::init_root_task_pool(const uint32_t capacity, const uint32_t threadCnt)
-{
-    std::lock_guard const lock(_taskPoolMtx);
-    if (_rootTaskPool != nullptr) {
-        ORIGIN_DEBUG_ERR("Task pool already initialized.");
-        return;
-    }
-    _rootTaskPool = std::make_shared<TaskPool>(capacity, threadCnt);
-}
-
-void Registry::set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
+bool Registry::set_root_task_pool(std::shared_ptr<TaskPool> taskPool)
 {
     if (taskPool == nullptr) {
         ORIGIN_DEBUG_ERR("Set root task pool failed. taskPool nullptr.");
-        return;
+        return false;
     }
     std::lock_guard<std::recursive_mutex> const lock(_taskPoolMtx);
     if (_rootTaskPool != nullptr) {
-        ORIGIN_DEBUG_ERR("Task pool already initialized.");
-        return;
+        ORIGIN_DEBUG_ERR("Set root task pool failed. Root task pool already exists.");
+        return false;
     }
     _rootTaskPool = std::move(taskPool);
+    return true;
 }
 
 std::shared_ptr<TaskPool> Registry::root_task_pool()
 {
     std::lock_guard const lock(_taskPoolMtx);
+    if (_rootTaskPool == nullptr) {
+        ORIGIN_DEBUG_ERR("Root task pool is nullptr.");
+        return nullptr;
+    }
     return _rootTaskPool;
 }
 #pragma endregion

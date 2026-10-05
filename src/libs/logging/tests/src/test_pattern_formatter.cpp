@@ -7,6 +7,7 @@
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
 #include "logging/log_msg.hpp"
+#include "logging/log_source.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
 #include "utils/process_utils.h"

@@ -14,6 +14,10 @@
 #include "logging/loggers/logger.hpp"
 #include "logging/sinks/sink.hpp"
 
+namespace origin::logging {
+class TaskPool;
+}
+
 constexpr auto INVALID_LEVEL_C = static_cast<LogLevelC>(LOG_LEVEL_C_OFF + 1);
 
 struct MockLoggerSt {
@@ -37,6 +41,16 @@ struct MockFormatterSt {
     {
     }
     explicit MockFormatterSt(origin::logging::Formatter *formatter) : ptr(formatter) {}
+};
+
+struct MockTaskPoolSt {
+    std::shared_ptr<origin::logging::TaskPool> ptr;
+
+    explicit MockTaskPoolSt(std::shared_ptr<origin::logging::TaskPool> taskPool)
+        : ptr(std::move(taskPool))
+    {
+    }
+    // explicit MockTaskPoolSt(origin::logging::TaskPool *taskPool) : ptr(taskPool) {}
 };
 
 namespace logging_test {
@@ -69,6 +83,9 @@ void destroy_mock_logger_st(LoggerSt *logger);
 
 FormatterSt *create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter);
 void destroy_mock_formatter_st(FormatterSt *formatter);
+
+TaskPoolSt *create_mock_task_pool_st(std::shared_ptr<origin::logging::TaskPool> taskPool);
+void destroy_mock_task_pool_st(TaskPoolSt *taskPool);
 
 }  // namespace logging_test
 #endif  // TEST_LOGGING_DETAIL_COMMON_H

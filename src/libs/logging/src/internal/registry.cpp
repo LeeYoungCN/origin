@@ -1,6 +1,5 @@
 #include "internal/registry.hpp"
 
-#include <cstdint>
 #include <exception>
 #include <memory>
 #include <mutex>

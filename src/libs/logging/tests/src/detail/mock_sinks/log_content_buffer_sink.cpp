@@ -7,15 +7,15 @@
 #include <vector>
 
 #include "common/debug/debug_logger.h"
+#include "detail/mock_sinks/base_test_sink.hpp"
 #include "logging/log_msg.hpp"
 
 namespace logging_test {
-LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024)
-{
-    _paramStr = std::string("LogContentBufferSink, Capacity: ") + std::to_string(_capacity);
-}
+LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024) {}
 
-LogContentBufferSink::LogContentBufferSink(uint32_t capacity) : _capacity(capacity)
+LogContentBufferSink::LogContentBufferSink(uint32_t capacity)
+    : BaseTestSink(std::string("LogContentBufferSink, Capacity: ") + std::to_string(capacity)),
+      _capacity(capacity)
 {
     _buffer.reserve(_capacity);
 }

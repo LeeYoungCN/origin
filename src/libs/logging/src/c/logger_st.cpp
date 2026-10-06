@@ -178,7 +178,13 @@ void origin_logger_set_pattern(const LoggerSt *logger, const char *pattern)
         return;
     }
 
-    logger->ptr->set_pattern(pattern);
+    try {
+        logger->ptr->set_pattern(pattern);
+    } catch (std::exception &e) {
+        ORIGIN_DEBUG_ERR("Logger set pattern failed. Name: [{}]. [Exception]: {}",
+                         logger->ptr->name(),
+                         e.what());
+    }
 }
 
 void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *formatter)

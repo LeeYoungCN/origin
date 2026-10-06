@@ -1,11 +1,15 @@
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
+#include <string>
 
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
+#include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
+#include "logging/log_source.hpp"
 #include "logging/loggers/sync_logger.hpp"
 #include "logging/logging.hpp"
 
@@ -166,13 +170,19 @@ TEST_F(TestRootLogger, log_function)
 TEST_F(TestRootLogger, log_level)
 {
     init_logger(test_info_);
-    for (const LogLevel logLevel : LOG_LEVELS) {
-        set_level(logLevel);
-        EXPECT_EQ(level(), logLevel);
-        if (logLevel != LogLevel::OFF) {
-            EXPECT_TRUE(should_log(logLevel));
-        } else {
-            EXPECT_FALSE(should_log(logLevel));
+    for (const LogLevel fileterLevel : LOG_LEVELS) {
+        set_level(fileterLevel);
+        EXPECT_EQ(level(), fileterLevel);
+        for (const LogLevel level : LOG_LEVELS) {
+            if (fileterLevel != LogLevel::OFF) {
+                EXPECT_TRUE(should_log(fileterLevel));
+            } else {
+                if (level >= fileterLevel && level != LogLevel::OFF) {
+                    EXPECT_TRUE(should_log(fileterLevel));
+                } else {
+                    EXPECT_FALSE(should_log(fileterLevel));
+                }
+            }
         }
     }
 }
@@ -195,13 +205,19 @@ TEST_F(TestRootLogger, should_log_failed_when_root_logger_nullptr)
 TEST_F(TestRootLogger, flush_on)
 {
     init_logger(test_info_);
-    for (LogLevel const level : LOG_LEVELS) {
-        flush_on(level);
-        EXPECT_EQ(flush_level(), level);
-        if (level != LogLevel::OFF) {
-            EXPECT_TRUE(should_flush(level));
-        } else {
-            EXPECT_FALSE(should_flush(level));
+    for (const LogLevel flushLevel : LOG_LEVELS) {
+        flush_on(flushLevel);
+        EXPECT_EQ(_logger->flush_level(), flushLevel);
+        for (const LogLevel level : LOG_LEVELS) {
+            if (flushLevel != LogLevel::OFF) {
+                EXPECT_TRUE(should_flush(flushLevel));
+            } else {
+                if (level >= flushLevel && level != LogLevel::OFF) {
+                    EXPECT_TRUE(should_flush(flushLevel));
+                } else {
+                    EXPECT_FALSE(should_flush(flushLevel));
+                }
+            }
         }
     }
 }
@@ -237,7 +253,7 @@ TEST_F(TestRootLogger, set_pattern_failed_when_empty)
     set_pattern("%v");
     error("test");
     EXPECT_EQ("test", _sink->buffer()[0]);
-    set_pattern("");
+    EXPECT_THROW(set_pattern(""), std::invalid_argument);
     error("test");
     EXPECT_EQ("test", _sink->buffer()[1]);
 }

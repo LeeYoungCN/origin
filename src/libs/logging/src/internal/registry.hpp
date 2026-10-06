@@ -3,7 +3,6 @@
 #ifndef ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 #define ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 
-#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string_view>

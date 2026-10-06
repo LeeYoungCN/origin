@@ -185,13 +185,19 @@ TEST_F(TestRootLoggerC, flush_level_filter)
 TEST_F(TestRootLoggerC, set_and_get_level)
 {
     init_root_logger(test_info_);
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_set_level(level);
-        EXPECT_EQ(origin_level(), level);
-        if (level != LOG_LEVEL_C_OFF) {
-            EXPECT_TRUE(origin_should_log(level));
-        } else {
-            EXPECT_FALSE(origin_should_log(level));
+    for (const LogLevelC filterLevel : C_LOG_LEVELS) {
+        origin_set_level(filterLevel);
+        EXPECT_EQ(origin_level(), filterLevel);
+        for (const LogLevelC level : C_LOG_LEVELS) {
+            if (filterLevel != LOG_LEVEL_C_OFF) {
+                EXPECT_TRUE(origin_should_log(filterLevel));
+            } else {
+                if (level >= filterLevel && level != LOG_LEVEL_C_OFF) {
+                    EXPECT_TRUE(origin_should_log(filterLevel));
+                } else {
+                    EXPECT_FALSE(origin_should_log(filterLevel));
+                }
+            }
         }
     }
 }
@@ -227,13 +233,19 @@ TEST_F(TestRootLoggerC, should_log_false_when_root_logger_nullptr)
 TEST_F(TestRootLoggerC, flush_on)
 {
     init_root_logger(test_info_);
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_flush_on(level);
-        EXPECT_EQ(origin_flush_level(), level);
-        if (level != LOG_LEVEL_C_OFF) {
-            EXPECT_TRUE(origin_should_flush(level));
-        } else {
-            EXPECT_FALSE(origin_should_flush(level));
+    for (const LogLevelC filterLevel : C_LOG_LEVELS) {
+        origin_flush_on(filterLevel);
+        EXPECT_EQ(origin_flush_level(), filterLevel);
+        for (const LogLevelC level : C_LOG_LEVELS) {
+            if (filterLevel != LOG_LEVEL_C_OFF) {
+                EXPECT_TRUE(origin_should_flush(filterLevel));
+            } else {
+                if (level >= filterLevel && level != LOG_LEVEL_C_OFF) {
+                    EXPECT_TRUE(origin_should_flush(filterLevel));
+                } else {
+                    EXPECT_FALSE(origin_should_flush(filterLevel));
+                }
+            }
         }
     }
 }

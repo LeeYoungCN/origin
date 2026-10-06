@@ -58,13 +58,19 @@ TEST_F(TestLoggerStPublicApi, get_name_failed_when_logger_nullptr)
 
 TEST_F(TestLoggerStPublicApi, set_level)
 {
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_logger_set_level(_loggerSt, level);
-        EXPECT_EQ(origin_logger_level(_loggerSt), level);
-        if (level != LOG_LEVEL_C_OFF) {
-            EXPECT_TRUE(origin_logger_should_log(_loggerSt, level));
-        } else {
-            EXPECT_FALSE(origin_logger_should_log(_loggerSt, level));
+    for (const LogLevelC filterLevel : C_LOG_LEVELS) {
+        origin_logger_set_level(_loggerSt, filterLevel);
+        EXPECT_EQ(origin_logger_level(_loggerSt), filterLevel);
+        for (const LogLevelC level : C_LOG_LEVELS) {
+            if (filterLevel != LOG_LEVEL_C_OFF) {
+                EXPECT_TRUE(origin_logger_should_log(_loggerSt, filterLevel));
+            } else {
+                if (level >= filterLevel && level != LOG_LEVEL_C_OFF) {
+                    EXPECT_TRUE(origin_logger_should_log(_loggerSt, filterLevel));
+                } else {
+                    EXPECT_FALSE(origin_logger_should_log(_loggerSt, filterLevel));
+                }
+            }
         }
     }
 }
@@ -101,13 +107,19 @@ TEST_F(TestLoggerStPublicApi, should_log_false_when_level_invalid)
 
 TEST_F(TestLoggerStPublicApi, flush_on)
 {
-    for (const LogLevelC level : C_LOG_LEVELS) {
-        origin_logger_flush_on(_loggerSt, level);
-        EXPECT_EQ(origin_logger_flush_level(_loggerSt), level);
-        if (level != LOG_LEVEL_C_OFF) {
-            EXPECT_TRUE(origin_logger_should_flush(_loggerSt, level));
-        } else {
-            EXPECT_FALSE(origin_logger_should_flush(_loggerSt, level));
+    for (const LogLevelC flushLevel : C_LOG_LEVELS) {
+        origin_logger_flush_on(_loggerSt, flushLevel);
+        EXPECT_EQ(origin_logger_flush_level(_loggerSt), flushLevel);
+        for (const LogLevelC level : C_LOG_LEVELS) {
+            if (flushLevel != LOG_LEVEL_C_OFF) {
+                EXPECT_TRUE(origin_logger_should_flush(_loggerSt, flushLevel));
+            } else {
+                if (level >= flushLevel && level != LOG_LEVEL_C_OFF) {
+                    EXPECT_TRUE(origin_logger_should_flush(_loggerSt, flushLevel));
+                } else {
+                    EXPECT_FALSE(origin_logger_should_flush(_loggerSt, flushLevel));
+                }
+            }
         }
     }
 }

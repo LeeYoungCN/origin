@@ -1,4 +1,5 @@
 #include <format>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -43,6 +44,11 @@ protected:
  * P: Process ID;
  * v: Log message;
  */
+
+TEST_F(TestPatternFormatter, create_failed_when_pattern_empty)
+{
+    EXPECT_THROW(PatternFormatter(""), std::invalid_argument);
+}
 
 TEST_F(TestPatternFormatter, date_time)
 {

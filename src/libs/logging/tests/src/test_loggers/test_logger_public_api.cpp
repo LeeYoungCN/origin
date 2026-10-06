@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -38,13 +39,19 @@ void TestLoggerPublicApi::init_logger(const testing::TestInfo* test_info)
 TEST_F(TestLoggerPublicApi, log_level)
 {
     init_logger(test_info_);
-    for (LogLevel const level : LOG_LEVELS) {
-        _logger->set_level(level);
-        EXPECT_EQ(_logger->level(), level);
-        if (level != LogLevel::OFF) {
-            EXPECT_TRUE(_logger->should_log(level));
-        } else {
-            EXPECT_FALSE(_logger->should_log(level));
+    for (const LogLevel fileterLevel : LOG_LEVELS) {
+        _logger->set_level(fileterLevel);
+        EXPECT_EQ(_logger->level(), fileterLevel);
+        for (const LogLevel level : LOG_LEVELS) {
+            if (fileterLevel != LogLevel::OFF) {
+                EXPECT_TRUE(_logger->should_log(fileterLevel));
+            } else {
+                if (level >= fileterLevel && level != LogLevel::OFF) {
+                    EXPECT_TRUE(_logger->should_log(fileterLevel));
+                } else {
+                    EXPECT_FALSE(_logger->should_log(fileterLevel));
+                }
+            }
         }
     }
 }
@@ -52,13 +59,19 @@ TEST_F(TestLoggerPublicApi, log_level)
 TEST_F(TestLoggerPublicApi, flush_level)
 {
     init_logger(test_info_);
-    for (LogLevel const level : LOG_LEVELS) {
-        _logger->flush_on(level);
-        EXPECT_EQ(_logger->flush_level(), level);
-        if (level != LogLevel::OFF) {
-            EXPECT_TRUE(_logger->should_flush(level));
-        } else {
-            EXPECT_FALSE(_logger->should_flush(level));
+    for (const LogLevel flushLevel : LOG_LEVELS) {
+        _logger->flush_on(flushLevel);
+        EXPECT_EQ(_logger->flush_level(), flushLevel);
+        for (const LogLevel level : LOG_LEVELS) {
+            if (flushLevel != LogLevel::OFF) {
+                EXPECT_TRUE(_logger->should_flush(flushLevel));
+            } else {
+                if (level >= flushLevel && level != LogLevel::OFF) {
+                    EXPECT_TRUE(_logger->should_flush(flushLevel));
+                } else {
+                    EXPECT_FALSE(_logger->should_flush(flushLevel));
+                }
+            }
         }
     }
 }
@@ -79,7 +92,7 @@ TEST_F(TestLoggerPublicApi, set_pattern_failed_when_empty)
     _logger->set_pattern("%v");
     _logger->error("test");
     EXPECT_EQ("test", _sink->buffer()[0]);
-    _logger->set_pattern("");
+    EXPECT_THROW(_logger->set_pattern(""), std::invalid_argument);
     _logger->error("test");
     EXPECT_EQ("test", _sink->buffer()[1]);
 }

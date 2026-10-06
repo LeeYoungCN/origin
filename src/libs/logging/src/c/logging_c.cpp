@@ -1,7 +1,7 @@
 #include "logging/c/logging_c.h"
 
 #include <cstdarg>
-#include <cstdint>
+#include <exception>
 
 #include "c/internal/common_c.hpp"
 #include "common/base/singleton.h"
@@ -33,7 +33,7 @@ void origin_set_root_logger(const LoggerSt *logger)
     REGISTRY.set_root_logger(logger->ptr);
 }
 
-void origin_set_level(LogLevelC level)
+void origin_set_level(const LogLevelC level)
 {
     if (log_level_c_invalid(level)) {
         ORIGIN_DEBUG_ERR("Root logger set level failed. {}", LOG_LEVEL_C_INVALID_LOG);
@@ -115,7 +115,11 @@ void origin_set_pattern(const char *pattern)
         ORIGIN_DEBUG_ERR("Root logger set pattern failed. {}", ROOT_LOGGER_NULL_LOG);
         return;
     }
-    return ROOT_LOGGER->set_pattern(pattern);
+    try {
+        ROOT_LOGGER->set_pattern(pattern);
+    } catch (std::exception &e) {
+        ORIGIN_DEBUG_ERR("Root logger set pattern failed. [Exception]: {}", e.what());
+    }
 }
 
 void origin_set_formatter(const FormatterSt *formatter)

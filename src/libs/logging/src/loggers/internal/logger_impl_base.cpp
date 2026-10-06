@@ -88,11 +88,7 @@ bool LoggerImplBase::should_flush(const LogLevel level) const
 
 void LoggerImplBase::set_pattern(const std::string_view pattern) const
 {
-    try {
-        set_formatter(std::make_unique<PatternFormatter>(pattern));
-    } catch (std::exception& e) {
-        ORIGIN_DEBUG_ERR("Logger set pattern failed. Name: [{}]. {}", _name, e.what());
-    }
+    set_formatter(std::make_unique<PatternFormatter>(pattern));
 }
 
 void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) const

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "common/debug/debug_logger.h"
-#include "internal/common.hpp"
 #include "logging/formatters/formatter.hpp"
 #include "logging/formatters/pattern_formatter.hpp"
 #include "logging/log_level.hpp"
@@ -59,16 +58,15 @@ LogLevel SinkImplBase::level() const
 
 void SinkImplBase::set_pattern(const std::string_view pattern)
 {
-    try {
-        set_formatter(std::make_unique<PatternFormatter>(pattern));
-    } catch (std::exception& e) {
-        ORIGIN_DEBUG_ERR("Sink set pattern failed. [Exception]: {}", e.what());
-    }
+    set_formatter(std::make_unique<PatternFormatter>(pattern));
 }
 
 void SinkImplBase::set_formatter(std::unique_ptr<Formatter> formatter)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Sink set formatter failed.");
+    if (!formatter) {
+        ORIGIN_DEBUG_ERR("Sink set formatter failed.");
+        return;
+    }
     std::lock_guard const lock(_sinkMtx);
     _formatter = std::move(formatter);
 }

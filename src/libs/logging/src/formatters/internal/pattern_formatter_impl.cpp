@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "common/debug/debug_logger.h"
 #include "common/types/date_time_types.h"
 #include "logging/formatters/formatter.hpp"
 #include "logging/log_level.hpp"
@@ -22,6 +23,7 @@ namespace origin::logging {
 PatternFormatterImpl::PatternFormatterImpl(const std::string_view pattern) : _pattern(pattern)
 {
     if (_pattern.empty()) {
+        ORIGIN_DEBUG_ERR("PatternFormatter create failed. pattern is empty.");
         throw std::invalid_argument("pattern is empty.");
     }
 }

@@ -14,14 +14,14 @@ using namespace origin::logging;
 
 namespace logging_test {
 
-class TestLoggerStPublicApi : public ::testing::Test {
+class TestLoggerStApi : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
     void SetUp() override;
     void TearDown() override;
 
-    std::string_view _loggerName = "TestLoggerStPublicApi";
+    std::string_view _loggerName = "TestLoggerStApi";
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
     SinkSt *_sinkSt = create_mock_sink_st(_sink);
     LoggerSt *_nullLogger = create_mock_logger_st(nullptr);
@@ -30,14 +30,14 @@ protected:
     LoggerSt *_loggerSt = origin_create_sync_logger(_loggerName.data(), _sinks, 1);
 };
 
-void TestLoggerStPublicApi::SetUp()
+void TestLoggerStApi::SetUp()
 {
     ASSERT_NE(_loggerSt, nullptr);
     _sink->set_level(LogLevel::TRACE);
     _sink->enable_debug_info(false);
 }
 
-void TestLoggerStPublicApi::TearDown()
+void TestLoggerStApi::TearDown()
 {
     destroy_mock_logger_st(_nullLogger);
     destroy_mock_sink_st(_sinkSt);
@@ -45,18 +45,18 @@ void TestLoggerStPublicApi::TearDown()
     origin_destroy_logger(_loggerSt);
 }
 
-TEST_F(TestLoggerStPublicApi, get_name)
+TEST_F(TestLoggerStApi, get_name)
 {
     EXPECT_STREQ(origin_logger_name(_loggerSt), _loggerName.data());
 }
 
-TEST_F(TestLoggerStPublicApi, get_name_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, get_name_failed_when_logger_nullptr)
 {
     EXPECT_STREQ(origin_logger_name(nullptr), "");
     EXPECT_STREQ(origin_logger_name(_nullLogger), "");
 }
 
-TEST_F(TestLoggerStPublicApi, set_level)
+TEST_F(TestLoggerStApi, set_level)
 {
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
         origin_logger_set_level(_loggerSt, filterLevel);
@@ -75,37 +75,37 @@ TEST_F(TestLoggerStPublicApi, set_level)
     }
 }
 
-TEST_F(TestLoggerStPublicApi, set_level_failed_when_level_invalid)
+TEST_F(TestLoggerStApi, set_level_failed_when_level_invalid)
 {
     origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
     origin_logger_set_level(_loggerSt, INVALID_LEVEL_C);
     EXPECT_EQ(origin_logger_level(_loggerSt), LOG_LEVEL_C_TRACE);
 }
 
-TEST_F(TestLoggerStPublicApi, set_level_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, set_level_failed_when_logger_nullptr)
 {
     origin_logger_set_level(nullptr, LOG_LEVEL_C_TRACE);
     origin_logger_set_level(_nullLogger, LOG_LEVEL_C_TRACE);
 }
 
-TEST_F(TestLoggerStPublicApi, get_level_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, get_level_failed_when_logger_nullptr)
 {
     EXPECT_EQ(origin_logger_level(nullptr), LOG_LEVEL_C_OFF);
     EXPECT_EQ(origin_logger_level(_nullLogger), LOG_LEVEL_C_OFF);
 }
 
-TEST_F(TestLoggerStPublicApi, should_log_false_when_logger_nullptr)
+TEST_F(TestLoggerStApi, should_log_false_when_logger_nullptr)
 {
     EXPECT_FALSE(origin_logger_should_log(nullptr, LOG_LEVEL_C_ERROR));
     EXPECT_FALSE(origin_logger_should_log(_nullLogger, LOG_LEVEL_C_ERROR));
 }
 
-TEST_F(TestLoggerStPublicApi, should_log_false_when_level_invalid)
+TEST_F(TestLoggerStApi, should_log_false_when_level_invalid)
 {
     EXPECT_FALSE(origin_logger_should_log(_loggerSt, INVALID_LEVEL_C));
 }
 
-TEST_F(TestLoggerStPublicApi, flush_on)
+TEST_F(TestLoggerStApi, flush_on)
 {
     for (const LogLevelC flushLevel : C_LOG_LEVELS) {
         origin_logger_flush_on(_loggerSt, flushLevel);
@@ -124,7 +124,7 @@ TEST_F(TestLoggerStPublicApi, flush_on)
     }
 }
 
-TEST_F(TestLoggerStPublicApi, flush_on_failed_when_level_invalid)
+TEST_F(TestLoggerStApi, flush_on_failed_when_level_invalid)
 {
     origin_logger_flush_on(_loggerSt, LOG_LEVEL_C_TRACE);
     EXPECT_EQ(origin_logger_flush_level(_loggerSt), LOG_LEVEL_C_TRACE);
@@ -133,30 +133,30 @@ TEST_F(TestLoggerStPublicApi, flush_on_failed_when_level_invalid)
     EXPECT_EQ(origin_logger_flush_level(_loggerSt), LOG_LEVEL_C_TRACE);
 }
 
-TEST_F(TestLoggerStPublicApi, flush_on_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, flush_on_failed_when_logger_nullptr)
 {
     origin_logger_flush_on(nullptr, LOG_LEVEL_C_TRACE);
     origin_logger_flush_on(_nullLogger, LOG_LEVEL_C_TRACE);
 }
 
-TEST_F(TestLoggerStPublicApi, get_flush_level_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, get_flush_level_failed_when_logger_nullptr)
 {
     EXPECT_EQ(origin_logger_flush_level(nullptr), LOG_LEVEL_C_OFF);
     EXPECT_EQ(origin_logger_flush_level(_nullLogger), LOG_LEVEL_C_OFF);
 }
 
-TEST_F(TestLoggerStPublicApi, should_flush_false_when_logger_nullptr)
+TEST_F(TestLoggerStApi, should_flush_false_when_logger_nullptr)
 {
     EXPECT_FALSE(origin_logger_should_flush(nullptr, LOG_LEVEL_C_ERROR));
     EXPECT_FALSE(origin_logger_should_flush(_nullLogger, LOG_LEVEL_C_ERROR));
 }
 
-TEST_F(TestLoggerStPublicApi, should_flush_false_when_level_invalid)
+TEST_F(TestLoggerStApi, should_flush_false_when_level_invalid)
 {
     EXPECT_FALSE(origin_logger_should_flush(_loggerSt, INVALID_LEVEL_C));
 }
 
-TEST_F(TestLoggerStPublicApi, set_pattern)
+TEST_F(TestLoggerStApi, set_pattern)
 {
     origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
@@ -167,27 +167,27 @@ TEST_F(TestLoggerStPublicApi, set_pattern)
     }
 }
 
-TEST_F(TestLoggerStPublicApi, set_pattern_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, set_pattern_failed_when_logger_nullptr)
 {
     origin_logger_set_pattern(nullptr, "%v");
     origin_logger_set_pattern(_nullLogger, "%v");
 }
 
-TEST_F(TestLoggerStPublicApi, set_pattern_failed_when_pattern_nullptr)
+TEST_F(TestLoggerStApi, set_pattern_failed_when_pattern_nullptr)
 {
     origin_logger_set_pattern(_loggerSt, nullptr);
     ORIGIN_LOGGER_ERROR(_loggerSt, "test");
     EXPECT_NE("test", _sink->buffer()[0]);
 }
 
-TEST_F(TestLoggerStPublicApi, set_pattern_failed_when_pattern_empty)
+TEST_F(TestLoggerStApi, set_pattern_failed_when_pattern_empty)
 {
     origin_logger_set_pattern(_loggerSt, "");
     ORIGIN_LOGGER_ERROR(_loggerSt, "test");
     EXPECT_NE("test", _sink->buffer()[0]);
 }
 
-TEST_F(TestLoggerStPublicApi, set_formatter)
+TEST_F(TestLoggerStApi, set_formatter)
 {
     origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
@@ -201,7 +201,7 @@ TEST_F(TestLoggerStPublicApi, set_formatter)
     }
 }
 
-TEST_F(TestLoggerStPublicApi, set_formatter_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, set_formatter_failed_when_logger_nullptr)
 {
     FormatterSt *formatter = origin_create_pattern_formatter("%v");
     origin_logger_set_formatter(nullptr, formatter);
@@ -209,31 +209,31 @@ TEST_F(TestLoggerStPublicApi, set_formatter_failed_when_logger_nullptr)
     origin_destroy_formatter(formatter);
 }
 
-TEST_F(TestLoggerStPublicApi, set_formatter_failed_when_formatter_nullptr)
+TEST_F(TestLoggerStApi, set_formatter_failed_when_formatter_nullptr)
 {
     origin_logger_set_formatter(_loggerSt, nullptr);
     origin_logger_set_formatter(_loggerSt, _nullFormatter);
 }
 
-TEST_F(TestLoggerStPublicApi, log_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, log_failed_when_logger_nullptr)
 {
     ORIGIN_LOGGER_LOG(nullptr, LOG_LEVEL_C_ERROR, "Test LoggerSt public api.");
     ORIGIN_LOGGER_LOG(_nullLogger, LOG_LEVEL_C_ERROR, "Test LoggerSt public api.");
 }
 
-TEST_F(TestLoggerStPublicApi, log_failed_when_level_invalid)
+TEST_F(TestLoggerStApi, log_failed_when_level_invalid)
 {
     ORIGIN_LOGGER_LOG(_loggerSt, INVALID_LEVEL_C, "Test LoggerSt public api.");
     EXPECT_EQ(_sink->buffer().size(), 0);
 }
 
-TEST_F(TestLoggerStPublicApi, log_failed_when_formtat_nullptr)
+TEST_F(TestLoggerStApi, log_failed_when_formtat_nullptr)
 {
     ORIGIN_LOGGER_ERROR(_loggerSt, nullptr);
     EXPECT_EQ(_sink->buffer().size(), 0);
 }
 
-TEST_F(TestLoggerStPublicApi, flush_failed_when_logger_nullptr)
+TEST_F(TestLoggerStApi, flush_failed_when_logger_nullptr)
 {
     ORIGIN_LOGGER_ERROR(_loggerSt, "Test LoggerSt public api.");
     EXPECT_EQ(_sink->buffer().size(), 1);

@@ -98,11 +98,7 @@ void Registry::flush_on_all(const LogLevel level)
 
 void Registry::set_pattern_all(const std::string_view pattern)
 {
-    try {
-        set_formatter_all(std::make_unique<PatternFormatter>(pattern));
-    } catch (std::exception& e) {
-        ORIGIN_DEBUG_ERR("Set pattern all failed. [Exception]: {}", e.what());
-    }
+    set_formatter_all(std::make_unique<PatternFormatter>(pattern));
 }
 
 void Registry::set_formatter_all(std::unique_ptr<Formatter> formatter)

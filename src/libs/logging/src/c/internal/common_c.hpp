@@ -53,9 +53,10 @@ struct TaskPoolSt {
 #define PTR_INVALID(stPtr) ((stPtr) == nullptr || (stPtr)->ptr == nullptr)
 
 constexpr std::string_view LOGGER_NULL_LOG = "logger nullptr or logger->ptr nullptr.";
+constexpr std::string_view SINK_NULL_LOG = "sink nullptr or sink->ptr nullptr.";
 constexpr std::string_view ROOT_LOGGER_NULL_LOG = "root logger nullptr.";
 constexpr std::string_view FORMATTER_NULL_LOG = "formatter nullptr or formatter->ptr nullptr.";
-constexpr std::string_view LOG_LEVEL_C_INVALID_LOG = "level invalid.";
+constexpr std::string_view LOG_LEVEL_C_INVALID_LOG = "log level c invalid.";
 
 namespace origin::logging::c_api {
 bool log_level_c_invalid(LogLevelC level);

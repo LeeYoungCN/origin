@@ -18,7 +18,7 @@ using namespace origin::logging;
 
 namespace logging_test {
 
-class TestLoggerPublicApi : public ::testing::Test {
+class TestLoggerApi : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
@@ -30,13 +30,13 @@ protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
 };
 
-void TestLoggerPublicApi::init_logger(const testing::TestInfo* test_info)
+void TestLoggerApi::init_logger(const testing::TestInfo* test_info)
 {
     const std::string name = get_logger_name(test_info);
     _logger = std::make_shared<SyncLogger>(name, _sink);
 }
 
-TEST_F(TestLoggerPublicApi, log_level)
+TEST_F(TestLoggerApi, log_level)
 {
     init_logger(test_info_);
     for (const LogLevel fileterLevel : LOG_LEVELS) {
@@ -56,7 +56,7 @@ TEST_F(TestLoggerPublicApi, log_level)
     }
 }
 
-TEST_F(TestLoggerPublicApi, flush_level)
+TEST_F(TestLoggerApi, flush_level)
 {
     init_logger(test_info_);
     for (const LogLevel flushLevel : LOG_LEVELS) {
@@ -76,7 +76,7 @@ TEST_F(TestLoggerPublicApi, flush_level)
     }
 }
 
-TEST_F(TestLoggerPublicApi, set_pattern)
+TEST_F(TestLoggerApi, set_pattern)
 {
     init_logger(test_info_);
     _logger->set_pattern("%v");
@@ -86,7 +86,7 @@ TEST_F(TestLoggerPublicApi, set_pattern)
     }
 }
 
-TEST_F(TestLoggerPublicApi, set_pattern_failed_when_empty)
+TEST_F(TestLoggerApi, set_pattern_failed_when_empty)
 {
     init_logger(test_info_);
     _logger->set_pattern("%v");
@@ -97,7 +97,7 @@ TEST_F(TestLoggerPublicApi, set_pattern_failed_when_empty)
     EXPECT_EQ("test", _sink->buffer()[1]);
 }
 
-TEST_F(TestLoggerPublicApi, set_formatter)
+TEST_F(TestLoggerApi, set_formatter)
 {
     init_logger(test_info_);
     _sink->set_level(LogLevel::TRACE);
@@ -110,7 +110,7 @@ TEST_F(TestLoggerPublicApi, set_formatter)
     }
 }
 
-TEST_F(TestLoggerPublicApi, set_formatter_failed_when_nullptr)
+TEST_F(TestLoggerApi, set_formatter_failed_when_nullptr)
 {
     init_logger(test_info_);
     _logger->set_pattern("%v");

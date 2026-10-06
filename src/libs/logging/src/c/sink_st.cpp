@@ -3,7 +3,6 @@
 
 #include "c/internal/common_c.hpp"
 #include "common/debug/debug_logger.h"
-#include "internal/common.hpp"
 #include "logging/c/logging_c.h"
 #include "logging/sinks/basic_file_sink.hpp"
 #include "logging/sinks/daily_file_sink.hpp"
@@ -55,34 +54,66 @@ void origin_destroy_sink(SinkSt *sink)
 
 void origin_sink_set_level(const SinkSt *sink, const LogLevelC level)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(sink, "sink set level.");
+    if (PTR_INVALID(sink)) {
+        ORIGIN_DEBUG_ERR("Sink set level failed. {}", SINK_NULL_LOG);
+        return;
+    }
+    if (log_level_c_invalid(level)) {
+        ORIGIN_DEBUG_ERR("Sink set level failed. param: [{}]. {}",
+                         sink->ptr->param_string(),
+                         LOG_LEVEL_C_INVALID_LOG);
+        return;
+    }
     sink->ptr->set_level(c_to_cpp_log_level(level));
 }
 
 bool origin_sink_should_log(const SinkSt *sink, const LogLevelC level)
 {
-    RETURN_VALUE_IF_PTR_NULL(sink, false);
+    if (PTR_INVALID(sink)) {
+        ORIGIN_DEBUG_WARN("Sink should log failed. {}", SINK_NULL_LOG);
+        return false;
+    }
+    if (log_level_c_invalid(level)) {
+        ORIGIN_DEBUG_WARN("Sink should log failed. param: [{}]. {}",
+                          sink->ptr->param_string(),
+                          LOG_LEVEL_C_INVALID_LOG);
+        return false;
+    }
     return sink->ptr->should_log(c_to_cpp_log_level(level));
 }
 
 LogLevelC origin_sink_level(const SinkSt *sink)
 {
-    RETURN_VALUE_IF_PTR_NULL(sink, LOG_LEVEL_C_OFF);
+    if (PTR_INVALID(sink)) {
+        ORIGIN_DEBUG_ERR("Sink get level failed. {}", SINK_NULL_LOG);
+        return LOG_LEVEL_C_OFF;
+    }
     return cpp_to_c_log_level(sink->ptr->level());
 }
 
 void origin_sink_set_pattern(const SinkSt *sink, const char *pattern)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(sink, "sink set pattern.");
-    RETURN_AND_LOG_IF_PTR_NULL(pattern, "sink set pattern.");
+    if (PTR_INVALID(sink)) {
+        ORIGIN_DEBUG_ERR("Sink set pattern failed. {}", SINK_NULL_LOG);
+        return;
+    }
+    if (pattern == nullptr) {
+        ORIGIN_DEBUG_ERR("Sink set pattern failed. pattern nullptr.");
+        return;
+    }
     sink->ptr->set_pattern(pattern);
 }
 
 void origin_sink_set_formatter(const SinkSt *sink, const FormatterSt *formatter)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(sink, "Sink set formatter failed.");
-    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Sink set formatter failed.");
-    RETURN_AND_LOG_IF_PTR_NULL(formatter->ptr, "Sink set formatter failed.");
+    if (PTR_INVALID(sink)) {
+        ORIGIN_DEBUG_ERR("Sink set formatter failed. {}", SINK_NULL_LOG);
+        return;
+    }
+    if (PTR_INVALID(formatter)) {
+        ORIGIN_DEBUG_ERR("Sink set formatter failed. {}", FORMATTER_NULL_LOG);
+        return;
+    }
     sink->ptr->set_formatter(formatter->ptr->clone());
 }
 }

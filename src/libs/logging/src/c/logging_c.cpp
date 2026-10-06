@@ -6,7 +6,6 @@
 #include "c/internal/common_c.hpp"
 #include "common/base/singleton.h"
 #include "common/debug/debug_logger.h"
-#include "internal/common.hpp"
 #include "internal/registry.hpp"
 
 using namespace origin::logging;
@@ -124,7 +123,7 @@ void origin_set_pattern(const char *pattern)
 
 void origin_set_formatter(const FormatterSt *formatter)
 {
-    if (formatter == nullptr) {
+    if (PTR_INVALID(formatter)) {
         ORIGIN_DEBUG_ERR("Root logger set formatter failed. formatter nullptr.");
         return;
     }
@@ -132,7 +131,7 @@ void origin_set_formatter(const FormatterSt *formatter)
         ORIGIN_DEBUG_ERR("Root logger set formatter failed. {}", ROOT_LOGGER_NULL_LOG);
         return;
     }
-    return ROOT_LOGGER->set_formatter(formatter->ptr);
+    return ROOT_LOGGER->set_formatter(formatter->ptr->clone());
 }
 
 void origin_flush()
@@ -263,14 +262,24 @@ void origin_flush_on_all(const LogLevelC level)
 
 void origin_set_pattern_all(const char *pattern)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(pattern, "Set pattern all failed.");
-    REGISTRY.set_pattern_all(pattern);
+    if (pattern == nullptr) {
+        ORIGIN_DEBUG_ERR("Set pattern all failed. pattern nullptr.");
+        return;
+    }
+    try {
+        REGISTRY.set_pattern_all(pattern);
+    } catch (std::exception &e) {
+        ORIGIN_DEBUG_ERR("Set pattern all failed. [Exception]: {}", e.what());
+    }
 }
 
 void origin_set_formatter_all(const FormatterSt *formatter)
 {
-    RETURN_AND_LOG_IF_PTR_NULL(formatter, "Set formatter all failed.");
-    RETURN_AND_LOG_IF_PTR_NULL(formatter->ptr, "Set formatter all failed.");
+    if (PTR_INVALID(formatter)) {
+        ORIGIN_DEBUG_ERR("Set formatter all failed. {}", FORMATTER_NULL_LOG);
+        return;
+    }
+
     REGISTRY.set_formatter_all(formatter->ptr->clone());
 }
 

@@ -194,12 +194,12 @@ void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *form
         return;
     }
 
-    if (formatter == nullptr) {
-        ORIGIN_DEBUG_ERR("Logger set formatter failed. Name: [{}]. pattern nullptr.",
-                         logger->ptr->name());
+    if (PTR_INVALID(formatter)) {
+        ORIGIN_DEBUG_ERR(
+            "Logger set formatter failed. Name: [{}]. {}", logger->ptr->name(), FORMATTER_NULL_LOG);
         return;
     }
-    logger->ptr->set_formatter(formatter->ptr);
+    logger->ptr->set_formatter(formatter->ptr->clone());
 }
 
 void origin_logger_flush(const LoggerSt *logger)

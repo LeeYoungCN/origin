@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <exception>
 #include <memory>
 
 #include "c/internal/common_c.hpp"
@@ -101,7 +102,13 @@ void origin_sink_set_pattern(const SinkSt *sink, const char *pattern)
         ORIGIN_DEBUG_ERR("Sink set pattern failed. pattern nullptr.");
         return;
     }
-    sink->ptr->set_pattern(pattern);
+    try {
+        sink->ptr->set_pattern(pattern);
+    } catch (std::exception &e) {
+        ORIGIN_DEBUG_ERR("Sink set pattern failed. param: [{}]. [Exception]: {}",
+                         sink->ptr->param_string(),
+                         e.what());
+    }
 }
 
 void origin_sink_set_formatter(const SinkSt *sink, const FormatterSt *formatter)

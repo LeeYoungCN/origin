@@ -1,7 +1,12 @@
 #include "filesystem/internal/common.hpp"
 
+#include "common/macros/compiler.h"
+
 #if COMPILER_MSVC
 #include <windows.h>
+
+#include <winerror.h>
+
 #else
 #include <cerrno>
 #endif

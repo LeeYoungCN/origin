@@ -12,6 +12,11 @@
 
 #if OS_WINDOWS
 #include <windows.h>
+
+#include <libloaderapi.h>
+#include <minwindef.h>
+#include <processthreadsapi.h>
+
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
 #elif OS_MACOS

@@ -1,10 +1,14 @@
 #ifndef ORIGIN_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
 #define ORIGIN_CONTAINER_CONCURRENT_BLOCKING_QUEUE_HPP
 
+#include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <cstddef>
 #include <cstdint>
 #include <mutex>
+#include <stdexcept>
+#include <string>
 #include <utility>
 
 #include "common/debug/debug_logger.h"

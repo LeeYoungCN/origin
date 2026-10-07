@@ -13,6 +13,9 @@
 
 #if OS_WINDOWS
 #include <windows.h>
+
+#include <processthreadsapi.h>
+
 #elif OS_LINUX
 #include <sys/syscall.h>
 #include <unistd.h>

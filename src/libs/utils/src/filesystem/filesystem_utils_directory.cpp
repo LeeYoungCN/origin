@@ -9,15 +9,6 @@
  *
  */
 
-#include "common/macros/compiler.h"
-
-#if OS_WINDOWS
-#include <windows.h>
-#elif OS_LINUX
-#include <unistd.h>  // Linux的readlink函数
-#elif OS_MACOS
-#include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
-#endif
 #include <exception>
 #include <filesystem>
 #include <string_view>

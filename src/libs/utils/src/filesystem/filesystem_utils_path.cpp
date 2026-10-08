@@ -9,16 +9,6 @@
  *
  */
 
-#include "common/macros/compiler.h"
-
-#if OS_WINDOWS
-#include <windows.h>
-#elif OS_LINUX
-#include <unistd.h>  // Linux的readlink函数
-#elif OS_MACOS
-#include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
-#endif
-
 #include <cstddef>
 #include <exception>
 #include <filesystem>
@@ -29,6 +19,7 @@
 #include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"
 #include "common/debug/debug_logger.h"
+#include "common/macros/compiler.h"
 #include "filesystem/internal/common.hpp"
 #include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
@@ -82,14 +73,14 @@ std::string normalize_path(std::string_view path)
         return normalized.string();
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
-        ORIGIN_DEBUG_ERR("Normalized path faild. path: \"{}\", message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
         return "";
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
-        ORIGIN_DEBUG_ERR("Normalized path faild. path: \"{}\", message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
@@ -112,14 +103,14 @@ std::string to_absolute_path(std::string_view relPath, std::string_view baseDir)
         return absPath.string();
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
-        ORIGIN_DEBUG_ERR("Absolute path faild. path: \"{}\", message: {}. ex: {}",
+        ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}. ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());
         return "";
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
-        ORIGIN_DEBUG_ERR("Absolute path faild. path: \"{}\", message: {}.ex: {}",
+        ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}.ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());

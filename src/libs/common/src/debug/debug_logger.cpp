@@ -1,5 +1,7 @@
 #include "common/debug/debug_logger.h"
 
+#include "common/macros/compiler.h"
+
 #if OS_WINDOWS
 #include <windows.h>
 

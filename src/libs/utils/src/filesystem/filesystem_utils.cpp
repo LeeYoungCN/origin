@@ -9,15 +9,8 @@
  *
  */
 
-#include "common/macros/compiler.h"
+#include "utils/filesystem_utils.h"
 
-#if OS_WINDOWS
-#include <windows.h>
-#elif OS_LINUX
-#include <unistd.h>  // Linux的readlink函数
-#elif OS_MACOS
-#include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
-#endif
 #include <filesystem>
 #include <string_view>
 #include <system_error>
@@ -25,7 +18,6 @@
 #include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/filesystem_types.h"
-#include "utils/filesystem_utils.h"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 

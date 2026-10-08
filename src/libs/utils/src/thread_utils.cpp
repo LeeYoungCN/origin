@@ -21,6 +21,8 @@
 #include <unistd.h>
 #elif OS_MACOS
 #include <pthread.h>
+
+#include <cstdint>
 #else
 #error "Unsupport system"
 #endif

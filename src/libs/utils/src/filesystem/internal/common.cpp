@@ -45,13 +45,15 @@ ErrorCode ConvertGenericCategory(const std::error_code& ec)
 ErrorCode ConvertSystemCategory(const std::error_code& ec)
 {
     static const std::unordered_map<int, ErrorCode> ERR_MAP = {
-
+#if OS_WINDOWS
         {ERROR_FILE_NOT_FOUND, ERR_UTILS_NOT_FOUND},
         {ERROR_DIR_NOT_EMPTY, ERR_UTILS_DIR_NOT_EMPTY},
         {ERROR_PATH_NOT_FOUND, ERR_UTILS_NOT_FOUND},
         {ERROR_FILE_EXISTS, ERR_UTILS_ALREADY_EXISTS},
         {ERROR_SHARING_VIOLATION, ERR_UTILS_SHARING_VIOLATION},
         {ERROR_ACCESS_DENIED, ERR_UTILS_PERMISSION_DENIED}
+#else
+#endif
     };
 
     auto it = ERR_MAP.find(ec.value());

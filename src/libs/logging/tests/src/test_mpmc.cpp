@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <format>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <utility>
@@ -36,11 +37,8 @@ namespace {
 constexpr auto TEST_LOG_LEVEL = LogLevel::ERR;
 
 struct ProducerInfo {
+    uint32_t idx{0};
     ThreadId tid{0};
-    uint32_t idx;
-    std::thread work_loop;
-
-    ProducerInfo(uint32_t idx, std::thread thread) : idx(idx), work_loop(std::move(thread)) {}
 };
 
 LogSource TEST_LOG_SRC = {__FILE__, __LINE__, "function"};
@@ -64,8 +62,10 @@ protected:
     std::string _dir = get_log_dir();
     std::shared_ptr<Logger> _logger;
     std::shared_ptr<TidMsgMapSink> _sink = std::make_shared<TidMsgMapSink>();
-    std::vector<ProducerInfo> _producers;
     std::shared_ptr<TaskPool> _taskPool;
+    std::vector<ThreadId> _tids;
+    std::mutex _tidsLock;
+    std::vector<std::thread> _threads;
 };
 
 void TestMPMC::SetUp()
@@ -88,7 +88,10 @@ std::string TestMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)
 
 void TestMPMC::producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt)
 {
-    _producers[idx - 1].tid = get_curr_thread_id();
+    {
+        const std::lock_guard lock(_tidsLock);
+        _tids[idx] = get_curr_thread_id();
+    }
     ORIGIN_DEBUG_INFO("Producer start. [{}/{}]", idx, producerCnt);
     for (uint32_t i = 0; i < logCnt; i++) {
         _logger->log(TEST_LOG_SRC, TEST_LOG_LEVEL, format_log_msg(idx, i));
@@ -98,29 +101,30 @@ void TestMPMC::producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt
 
 void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
 {
-    for (uint32_t i = 1; i <= producerCnt; i++) {
-        _producers.emplace_back(
-            i, std::thread(&TestMPMC::producer_loop, this, i, producerCnt, logCnt));
+    _tids = std::vector<ThreadId>(producerCnt);
+    for (uint32_t i = 0; i < producerCnt; i++) {
+        _threads.emplace_back(&TestMPMC::producer_loop, this, i, producerCnt, logCnt);
     }
 
-    for (auto &producer : _producers) {
-        producer.work_loop.join();
+    for (auto &thread : _threads) {
+        thread.join();
     }
 
     wait_flush_complete(producerCnt, logCnt, 10, 500);
 
     EXPECT_EQ(_sink->buffer().size(), producerCnt);
-    for (const ProducerInfo &producer : _producers) {
-        EXPECT_NE(_sink->buffer().count(producer.tid), 0) << "tid: " << producer.tid;
-        std::vector<LogMsg> logMsgs = _sink->buffer().at(producer.tid);
+    for (uint32_t idx = 0; idx < producerCnt; idx++) {
+        const auto tid = _tids[idx];
+        EXPECT_NE(_sink->buffer().count(tid), 0) << "idx: " << idx << ", tid: " << tid;
+        std::vector<LogMsg> logMsgs = _sink->buffer().at(tid);
         EXPECT_EQ(logMsgs.size(), logCnt);
         std::sort(logMsgs.begin(), logMsgs.end(), [](const LogMsg &a, const LogMsg &b) {
             return a.data < b.data;
         });
         for (uint32_t i = 0; i < logCnt; i++) {
             const LogMsg &logMsg = logMsgs.at(i);
-            EXPECT_EQ(logMsg.threadId, producer.tid);
-            EXPECT_EQ(logMsg.data, format_log_msg(producer.idx, i));
+            EXPECT_EQ(logMsg.threadId, tid);
+            EXPECT_EQ(logMsg.data, format_log_msg(idx, i));
             EXPECT_EQ(logMsg.loggerName, _logger->name());
             EXPECT_EQ(logMsg.level, TEST_LOG_LEVEL);
             EXPECT_EQ(logMsg.source.file, TEST_LOG_SRC.file);

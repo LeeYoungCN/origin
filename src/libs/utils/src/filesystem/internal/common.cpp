@@ -2,7 +2,7 @@
 
 #include "common/macros/compiler.h"
 
-#if COMPILER_MSVC
+#if OS_WINDOWS
 #include <windows.h>
 
 #include <winerror.h>
@@ -18,14 +18,13 @@
 
 #include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
-#include "common/macros/compiler.h"
 #include "common/types/error_code_types.h"
-#include "filesystem/internal/common.hpp"
 #include "utils/thread_utils.h"
 #include "utils/utils_error_code.h"
 
-namespace origin::filesystem {
 using namespace origin::thread;
+
+namespace {
 ErrorCode ConvertGenericCategory(const std::error_code& ec)
 {
     static const std::unordered_map<int, ErrorCode> ERR_MAP = {
@@ -59,7 +58,9 @@ ErrorCode ConvertSystemCategory(const std::error_code& ec)
     auto it = ERR_MAP.find(ec.value());
     return (it != ERR_MAP.end() ? it->second : ERR_COMM_SYSTEM_ERROR);
 }
+}  // namespace
 
+namespace origin::filesystem {
 ErrorCode ConvertExceptionToErrorCode(const std::exception& ex)
 {
     try {

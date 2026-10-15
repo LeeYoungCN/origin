@@ -68,4 +68,15 @@ std::string_view BaseTestSink::param_string() const
     return _paramStr;
 }
 
+void BaseTestSink::enable_debug_info(bool enable)
+{
+    _enableDebugInfo = enable;
+}
+
+void BaseTestSink::clear()
+{
+    std::lock_guard<std::mutex> const lock(_sinkMtx);
+    clear_it();
+}
+
 }  // namespace logging_test

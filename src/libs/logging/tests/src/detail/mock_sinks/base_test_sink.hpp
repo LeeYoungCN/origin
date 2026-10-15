@@ -32,16 +32,21 @@ public:
     [[nodiscard]] LogLevel level() const override;
     [[nodiscard]] std::string_view param_string() const override;
 
+    void enable_debug_info(bool enable);
+    void clear();
+
 protected:
     explicit BaseTestSink(std::string_view parameter);
     virtual void log_it(const LogMsg& logMsg) = 0;
     virtual void flush_it() = 0;
+    virtual void clear_it() = 0;
 
 protected:
     std::atomic<LogLevel> _level{LogLevel::INFO};
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
     std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};
+    bool _enableDebugInfo{false};
 };
 }  // namespace logging_test
 

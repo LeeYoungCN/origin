@@ -1,10 +1,14 @@
 #ifndef ORIGIN_LOGGING_LOGGERS_ASYNC_LOGGER_HPP
 #define ORIGIN_LOGGING_LOGGERS_ASYNC_LOGGER_HPP
 
+#include <initializer_list>
 #include <memory>
+#include <string_view>
+#include <vector>
 
 #include "logging/detail/logging_api.h"
 #include "logging/loggers/logger_base.hpp"
+#include "logging/sinks/sink.hpp"
 
 namespace origin::logging {
 class TaskPool;

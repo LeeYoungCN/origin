@@ -2,6 +2,7 @@
 #define LOGGING_TEST_TID_MSG_SINK_HPP
 
 #include <map>
+#include <vector>
 
 #include "common/types/thread_types.h"
 #include "detail/mock_sinks/base_test_sink.hpp"
@@ -10,17 +11,18 @@
 namespace logging_test {
 class TidMsgMapSink : public BaseTestSink {
 public:
-    TidMsgMapSink() = default;
+    TidMsgMapSink() : BaseTestSink("TidMsgMapSink.") {};
     ~TidMsgMapSink() override = default;
 
+    const std::map<ThreadId, std::vector<LogMsg>>& buffer();
+
 protected:
+    void clear_it() override;
     void log_it(const LogMsg& logMsg) override;
     void flush_it() override {}
 
-    const std::map<ThreadId, LogMsg>& buffer();
-
 private:
-    std::map<ThreadId, LogMsg> _buffer;
+    std::map<ThreadId, std::vector<LogMsg>> _buffer;
 };
 }  // namespace logging_test
 #endif  // LOGGING_TEST_TID_MSG_SINK_HPP

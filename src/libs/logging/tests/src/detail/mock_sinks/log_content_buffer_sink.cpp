@@ -20,11 +20,6 @@ LogContentBufferSink::LogContentBufferSink(uint32_t capacity)
     _buffer.reserve(_capacity);
 }
 
-void LogContentBufferSink::enable_debug_info(bool enable)
-{
-    _enanleDebugInfo = enable;
-}
-
 uint32_t LogContentBufferSink::capacity() const
 {
     return _capacity;
@@ -42,10 +37,9 @@ const std::vector<std::string>& LogContentBufferSink::disk()
     return _disk;
 }
 
-void LogContentBufferSink::clear()
+void LogContentBufferSink::clear_it()
 {
-    std::lock_guard<std::mutex> const lock(_sinkMtx);
-    if (_enanleDebugInfo) {
+    if (_enableDebugInfo) {
         ORIGIN_DEBUG_INFO(
             "LogContentBufferSink clear. disk: {}, buffer: {}.", _disk.size(), _buffer.size());
     }
@@ -62,7 +56,7 @@ void LogContentBufferSink::log_it(const LogMsg& logMsg)
 
 void LogContentBufferSink::sink_it(const std::string_view message)
 {
-    if (_enanleDebugInfo) {
+    if (_enableDebugInfo) {
         ORIGIN_DEBUG_INFO("{}", message);
     }
     _buffer.emplace_back(message);
@@ -73,7 +67,7 @@ void LogContentBufferSink::sink_it(const std::string_view message)
 
 void LogContentBufferSink::flush_it()
 {
-    if (_enanleDebugInfo) {
+    if (_enableDebugInfo) {
         ORIGIN_DEBUG_INFO(
             "LogContentBufferSink flush. disk: {}, buffer: {}.", _disk.size(), _buffer.size());
     }

@@ -46,6 +46,7 @@ void TestSinkApi::SetUp()
 
 void TestSinkApi::TearDown()
 {
+    _sink.reset();
     delete_dir(_dir, true);
 }
 

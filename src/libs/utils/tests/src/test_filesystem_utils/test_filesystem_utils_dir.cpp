@@ -1,5 +1,6 @@
 #include <string>
 
+#include "common/common_error_code.h"
 #include "common/macros/compiler.h"
 #include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"
@@ -115,7 +116,7 @@ TEST_F(TestFilesystemUtilsDir, DeleteDir_NotRecursiveFalse)
 
     EXPECT_FALSE(delete_dir(m_testDir1, false));
 #if COMPILER_MINGW
-    EXPECT_EQ(get_thread_last_err(), ERR_UTILS_IO_ERROR) << get_thread_last_err_msg();
+    EXPECT_EQ(get_thread_last_err(), ERR_UTILS_PERMISSION_DENIED) << get_thread_last_err_msg();
 #else
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_DIR_NOT_EMPTY) << get_thread_last_err_msg();
 #endif

@@ -111,8 +111,9 @@ void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
 
     EXPECT_EQ(_sink->buffer().size(), producerCnt);
     for (const ProducerInfo &producer : _producers) {
+        ASSERT_NE(_sink->buffer().count(producer.tid), 0);
         std::vector<LogMsg> logMsgs = _sink->buffer().at(producer.tid);
-        EXPECT_EQ(logMsgs.size(), logCnt);
+        ASSERT_EQ(logMsgs.size(), logCnt);
         std::sort(logMsgs.begin(), logMsgs.end(), [](const LogMsg &a, const LogMsg &b) {
             return a.data < b.data;
         });

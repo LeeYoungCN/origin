@@ -76,6 +76,8 @@ void TestMPMC::SetUp()
 
 void TestMPMC::TearDown()
 {
+    _logger.reset();
+    _taskPool.reset();
     delete_dir(_dir);
 }
 

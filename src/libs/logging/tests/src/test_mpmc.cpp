@@ -5,11 +5,9 @@
 #include <mutex>
 #include <string>
 #include <thread>
-#include <utility>
 #include <vector>
 
 #include "common/debug/debug_logger.h"
-#include "common/types/date_time_types.h"
 #include "common/types/thread_types.h"
 #include "detail/common.hpp"
 #include "detail/mock_sinks/tid_msg_map_sink.hpp"

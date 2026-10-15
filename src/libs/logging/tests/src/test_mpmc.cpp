@@ -89,11 +89,11 @@ std::string TestMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)
 void TestMPMC::producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt)
 {
     _producers[idx - 1].tid = get_curr_thread_id();
-    ORIGIN_DEBUG_DBG("Producer start. [{}/{}]", idx, producerCnt);
+    ORIGIN_DEBUG_INFO("Producer start. [{}/{}]", idx, producerCnt);
     for (uint32_t i = 0; i < logCnt; i++) {
         _logger->log(TEST_LOG_SRC, TEST_LOG_LEVEL, format_log_msg(idx, i));
     }
-    ORIGIN_DEBUG_DBG("Producer stop. [{}/{}]", idx, producerCnt);
+    ORIGIN_DEBUG_INFO("Producer stop. [{}/{}]", idx, producerCnt);
 }
 
 void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
@@ -111,9 +111,9 @@ void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
 
     EXPECT_EQ(_sink->buffer().size(), producerCnt);
     for (const ProducerInfo &producer : _producers) {
-        ASSERT_NE(_sink->buffer().count(producer.tid), 0);
+        EXPECT_NE(_sink->buffer().count(producer.tid), 0) << "tid: " << producer.tid;
         std::vector<LogMsg> logMsgs = _sink->buffer().at(producer.tid);
-        ASSERT_EQ(logMsgs.size(), logCnt);
+        EXPECT_EQ(logMsgs.size(), logCnt);
         std::sort(logMsgs.begin(), logMsgs.end(), [](const LogMsg &a, const LogMsg &b) {
             return a.data < b.data;
         });

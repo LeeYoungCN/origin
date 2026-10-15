@@ -91,12 +91,13 @@ ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
 
     if (ec.category() == std::system_category()) {
         return ConvertSystemCategory(ec);
-    } else if (ec.category() == std::generic_category()) {
-        return ConvertGenericCategory(ec);
-    } else {
-        ORIGIN_DEBUG_FATAL("Unknown error category: {}", ec.category().name());
-        return ERR_COMM_UNKNOWN_ERROR;
     }
+
+    if (ec.category() == std::generic_category()) {
+        return ConvertGenericCategory(ec);
+    }
+    ORIGIN_DEBUG_FATAL("Unknown error category: {}", ec.category().name());
+    return ERR_COMM_UNKNOWN_ERROR;
 }
 
 }  // namespace origin::filesystem

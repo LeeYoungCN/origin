@@ -34,16 +34,11 @@ using namespace origin::filesystem;
 namespace {
 constexpr auto TEST_LOG_LEVEL = LogLevel::ERR;
 
-struct ProducerInfo {
-    uint32_t idx{0};
-    ThreadId tid{0};
-};
-
 LogSource TEST_LOG_SRC = {__FILE__, __LINE__, "function"};
 }  // namespace
 
 namespace logging_test {
-class TestMPMC : public ::testing::Test {
+class TestLoggingMPMC : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
@@ -66,42 +61,42 @@ protected:
     std::vector<std::thread> _threads;
 };
 
-void TestMPMC::SetUp()
+void TestLoggingMPMC::SetUp()
 {
     _sink->set_level(LogLevel::TRACE);
     _sink->enable_debug_info(false);
 }
 
-void TestMPMC::TearDown()
+void TestLoggingMPMC::TearDown()
 {
     _logger.reset();
     _taskPool.reset();
     delete_dir(_dir);
 }
 
-std::string TestMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)
+std::string TestLoggingMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)
 {
     return std::format("Producer {}: {:04}.", producerIdx, msgIdx);
 }
 
-void TestMPMC::producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt)
+void TestLoggingMPMC::producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt)
 {
     {
         const std::lock_guard lock(_tidsLock);
         _tids[idx] = get_curr_thread_id();
     }
-    ORIGIN_DEBUG_INFO("Producer start. [{}/{}]", idx, producerCnt);
+    ORIGIN_DEBUG_DBG("Producer start. [{}/{}]", idx, producerCnt);
     for (uint32_t i = 0; i < logCnt; i++) {
         _logger->log(TEST_LOG_SRC, TEST_LOG_LEVEL, format_log_msg(idx, i));
     }
-    ORIGIN_DEBUG_INFO("Producer stop. [{}/{}]", idx, producerCnt);
+    ORIGIN_DEBUG_DBG("Producer stop. [{}/{}]", idx, producerCnt);
 }
 
-void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
+void TestLoggingMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
 {
     _tids = std::vector<ThreadId>(producerCnt);
     for (uint32_t i = 0; i < producerCnt; i++) {
-        _threads.emplace_back(&TestMPMC::producer_loop, this, i, producerCnt, logCnt);
+        _threads.emplace_back(&TestLoggingMPMC::producer_loop, this, i, producerCnt, logCnt);
     }
 
     for (auto &thread : _threads) {
@@ -132,8 +127,8 @@ void TestMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
     }
 }
 
-void TestMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt, uint32_t intervalMs,
-                                   uint32_t maxWaitTimeMs) const
+void TestLoggingMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt,
+                                          uint32_t intervalMs, uint32_t maxWaitTimeMs) const
 {
     auto _isFlushComplete = [&]() -> bool {
         if (_sink->buffer().size() < producerCnt) {
@@ -156,7 +151,7 @@ void TestMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt, uint32
     }
 }
 
-void TestMPMC::init_logger(const testing::TestInfo *test_info, uint32_t consumerCnt)
+void TestLoggingMPMC::init_logger(const testing::TestInfo *test_info, uint32_t consumerCnt)
 {
     const std::string name = get_logger_name(test_info);
     const std::string logFile = join_paths({_dir, name + ".log"});
@@ -173,7 +168,7 @@ void TestMPMC::init_logger(const testing::TestInfo *test_info, uint32_t consumer
     _logger->set_level(LogLevel::TRACE);
 }
 
-TEST_F(TestMPMC, Sync_SPSC)
+TEST_F(TestLoggingMPMC, Sync_SPSC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 1;
@@ -182,7 +177,7 @@ TEST_F(TestMPMC, Sync_SPSC)
     run_test(producerCnt, logCnt);
 }
 
-TEST_F(TestMPMC, Async_SPSC)
+TEST_F(TestLoggingMPMC, Async_SPSC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 1;
@@ -191,7 +186,7 @@ TEST_F(TestMPMC, Async_SPSC)
     run_test(producerCnt, logCnt);
 }
 
-TEST_F(TestMPMC, Sync_MPSC)
+TEST_F(TestLoggingMPMC, Sync_MPSC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 5;
@@ -200,7 +195,7 @@ TEST_F(TestMPMC, Sync_MPSC)
     run_test(producerCnt, logCnt);
 }
 
-TEST_F(TestMPMC, Async_MPSC)
+TEST_F(TestLoggingMPMC, Async_MPSC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 5;
@@ -209,7 +204,7 @@ TEST_F(TestMPMC, Async_MPSC)
     run_test(producerCnt, logCnt);
 }
 
-TEST_F(TestMPMC, Async_SPMC)
+TEST_F(TestLoggingMPMC, Async_SPMC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 1;
@@ -218,7 +213,7 @@ TEST_F(TestMPMC, Async_SPMC)
     run_test(producerCnt, logCnt);
 }
 
-TEST_F(TestMPMC, Async_MPMC)
+TEST_F(TestLoggingMPMC, Async_MPMC)
 {
     constexpr uint32_t logCnt = 2048;
     constexpr uint32_t producerCnt = 5;

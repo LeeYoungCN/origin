@@ -10,7 +10,7 @@ fi
 export Platform="${ARCHITECTURE}"
 
 readonly VS_PATH="/D/ProgramFiles/Microsoft Visual Studio/18/Community"
-MSVC_VERSION="14.50.35717"
+readonly MSVC_VERSION="14.51.36231"
 readonly WIN_KITS_10="/C/Program Files (x86)/Windows Kits/10"
 readonly WINSDK_VERSION="10.0.26100.0"
 

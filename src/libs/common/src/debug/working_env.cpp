@@ -1,6 +1,7 @@
 #include "common/debug/working_env.h"
 
 #include "common/macros/compiler.h"
+
 #if OS_WINDOWS
 #include <windows.h>
 
@@ -15,6 +16,7 @@
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #include <unistd.h>
 #endif
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -102,7 +104,7 @@ uint64_t GetProcessId()
 #if OS_WINDOWS
     return GetCurrentProcessId();
 #else
-    return getpid();
+    return static_cast<uint64_t>(getpid());
 #endif
 }
 
@@ -144,9 +146,9 @@ void PrintEnvParams()
         "PATH", "LD_LIBRARY_PATH", "LIBPATH", "LIB", "INCLUDE"};
 
     for (const auto& name : ENV_NAMES) {
-        char* value = nullptr;
+        char const* value = nullptr;
         auto err = 0;
-        size_t len = 0;
+        size_t const len = 0;
 #if COMPILER_MSVC
         err = _dupenv_s(&value, &len, name);
 #else

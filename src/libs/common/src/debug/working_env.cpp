@@ -9,7 +9,6 @@
 #include <minwindef.h>
 #include <processthreadsapi.h>
 
-#include <cstdlib>
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
 #elif OS_MACOS
@@ -146,9 +145,9 @@ void PrintEnvParams()
         "PATH", "LD_LIBRARY_PATH", "LIBPATH", "LIB", "INCLUDE"};
 
     for (const auto& name : ENV_NAMES) {
-        char const* value = nullptr;
+        char* value = nullptr;
         auto err = 0;
-        size_t const len = 0;
+        size_t len = 0;
 #if COMPILER_MSVC
         err = _dupenv_s(&value, &len, name);
 #else

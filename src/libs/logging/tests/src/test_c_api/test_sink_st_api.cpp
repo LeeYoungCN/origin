@@ -1,6 +1,7 @@
 #include <memory>
 #include <string>
 
+#include "common/common_error_code.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
 #include "logging/c/logging_c.h"
@@ -10,9 +11,11 @@
 #include "logging/log_source.hpp"
 #include "logging/sinks/sink.hpp"
 #include "utils/filesystem_utils.h"
+#include "utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
+using namespace origin::thread;
 
 namespace logging_test {
 class TestSinkStApi : public ::testing::Test {
@@ -46,6 +49,7 @@ void TestSinkStApi::InitSink(const testing::TestInfo* test_info_)
 void TestSinkStApi::SetUp()
 {
     delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 void TestSinkStApi::TearDown()
@@ -54,6 +58,7 @@ void TestSinkStApi::TearDown()
     origin_destroy_sink(_sink);
     destroy_mock_sink_st(_nullSink);
     delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 TEST_F(TestSinkStApi, set_pattern)

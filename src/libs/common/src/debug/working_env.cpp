@@ -3,10 +3,17 @@
 #include "common/macros/compiler.h"
 #if OS_WINDOWS
 #include <windows.h>
+
+#include <libloaderapi.h>
+#include <minwindef.h>
+#include <processthreadsapi.h>
+
+#include <cstdlib>
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
 #elif OS_MACOS
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
+#include <unistd.h>
 #endif
 #include <array>
 #include <cstddef>
@@ -52,7 +59,7 @@ std::string GetOsName()
 
 std::vector<std::string> GetCompilers()
 {
-    static std::vector<std::string> compilers = {
+    static std::vector<std::string> const compilers = {
 #ifdef _MSC_VER
         "_MSC_VER",
 #endif
@@ -88,6 +95,15 @@ std::string GetProcessPath()
 #error "Unsupport system."
 #endif
     return path;
+}
+
+uint64_t GetProcessId()
+{
+#if OS_WINDOWS
+    return GetCurrentProcessId();
+#else
+    return getpid();
+#endif
 }
 
 std::string GetArchitecture()
@@ -190,6 +206,7 @@ void origin_show_working_env()
     std::cout << "C   Standard: " << GetCStandard() << std::endl;
     std::cout << "Wording directory: " << std::filesystem::current_path() << std::endl;
     std::cout << "Process: " << GetProcessPath() << std::endl;
+    std::cout << "Process ID: " << GetProcessId() << std::endl;
     PrintEnvParams();
 }
 

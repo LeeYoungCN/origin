@@ -11,6 +11,11 @@ target_include_directories(${TEST_OBJECT}
         ${CMAKE_CURRENT_SOURCE_DIR}/src  # 编译时路径
 )
 
+target_include_directories(${TEST_RUNTIME}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src  # 编译时路径
+)
+
 target_link_libraries(${TEST_OBJECT} PUBLIC ${LIB_NAME} GTest::gtest)
 target_link_libraries(${TEST_RUNTIME} PUBLIC ${LIB_NAME} GTest::gtest)
 

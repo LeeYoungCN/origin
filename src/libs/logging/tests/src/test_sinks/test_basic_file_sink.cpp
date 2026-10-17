@@ -2,6 +2,7 @@
 #include <string>
 #include <string_view>
 
+#include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"
 #include "common/types/filesystem_types.h"
 #include "detail/common.hpp"
@@ -11,25 +12,34 @@
 #include "logging/log_source.hpp"
 #include "logging/sinks/basic_file_sink.hpp"
 #include "utils/filesystem_utils.h"
+#include "utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
+using namespace origin::thread;
 
 namespace logging_test {
 class TestBasicFileSink : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
-    void SetUp() override {};
+    void SetUp() override;
     void TearDown() override;
 
 protected:
     std::string _dir = get_log_dir();
 };
 
+void TestBasicFileSink::SetUp()
+{
+    delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+}
+
 void TestBasicFileSink::TearDown()
 {
     delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 TEST_F(TestBasicFileSink, create_file_empty)

@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "common/common_error_code.h"
 #include "common/constants/date_time_constants.h"
 #include "common/types/date_time_types.h"
 #include "detail/common.hpp"
@@ -17,11 +18,13 @@
 #include "logging/sinks/daily_file_sink.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
+#include "utils/thread_utils.h"
 
 namespace logging_test {
 using namespace origin::date_time;
 using namespace origin::logging;
 using namespace origin::filesystem;
+using namespace origin::thread;
 
 class TestDailyFileSink : public ::testing::Test {
 protected:
@@ -44,12 +47,13 @@ protected:
 void TestDailyFileSink::SetUp()
 {
     delete_dir(_dir);
-    create_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 void TestDailyFileSink::TearDown()
 {
     delete_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, TimestampMs time)
@@ -166,6 +170,9 @@ TEST_F(TestDailyFileSink, create_when_param_invalid)
 
 TEST_F(TestDailyFileSink, init_with_existing_files)
 {
+    create_dir(_dir);
+    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+
     const std::string filenameStem = get_logger_name(test_info_);
     const std::string baseFile = join_paths({_dir, filenameStem + ".log"});
     const TimestampMs now = get_now_timestamp_ms();

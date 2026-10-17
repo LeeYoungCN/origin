@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "common/common_error_code.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
 #include "logging/formatters/pattern_formatter.hpp"
@@ -11,9 +12,11 @@
 #include "logging/sinks/basic_file_sink.hpp"
 #include "logging/sinks/sink.hpp"
 #include "utils/filesystem_utils.h"
+#include "utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
+using namespace origin::thread;
 
 namespace logging_test {
 class TestSinkApi : public ::testing::Test {
@@ -42,12 +45,14 @@ void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
 void TestSinkApi::SetUp()
 {
     delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 void TestSinkApi::TearDown()
 {
     _sink.reset();
     delete_dir(_dir, true);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 TEST_F(TestSinkApi, param_string)

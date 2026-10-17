@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "common/common_error_code.h"
 #include "common/constants/filesystem_constants.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
@@ -13,10 +14,12 @@
 #include "logging/sinks/rotating_file_sink.hpp"
 #include "utils/date_time_utils.h"
 #include "utils/filesystem_utils.h"
+#include "utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
 using namespace origin::date_time;
+using namespace origin::thread;
 
 namespace logging_test {
 class TestRotatingFileSink : public ::testing::Test {
@@ -47,12 +50,14 @@ protected:
 
 void TestRotatingFileSink::SetUp()
 {
-    create_dir(_dir);
+    delete_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 void TestRotatingFileSink::TearDown()
 {
     delete_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 void TestRotatingFileSink::InitLogFileList(std::vector<std::uint32_t>& existFileIdx,
@@ -106,6 +111,9 @@ void TestRotatingFileSink::InsertLogMsg(RotatingFileSink& sink, uint32_t maxFile
 void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info, uint32_t startIdx,
                                       const uint32_t existFileCount, const uint32_t rotateCount)
 {
+    create_dir(_dir);
+    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+
     const std::string logFile = join_paths({_dir, get_logger_name(test_info) + ".log"});
     std::vector<uint32_t> existFileIdx;
 
@@ -143,6 +151,9 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
                                                const uint32_t existFileCount,
                                                const uint32_t rotateCount)
 {
+    create_dir(_dir);
+    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+
     const std::string logFile = join_paths({_dir, get_logger_name(test_info) + ".log"});
     constexpr uint32_t maxFileSize = 1024;
 
@@ -187,6 +198,9 @@ TEST_F(TestRotatingFileSink, invalid_param)
 
 TEST_F(TestRotatingFileSink, init_with_existing_files)
 {
+    create_dir(_dir);
+    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+
     const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
 
     // valid file

@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 
+#include "common/common_error_code.h"
 #include "common/debug/debug_logger.h"
 #include "common/types/thread_types.h"
 #include "detail/common.hpp"
@@ -63,6 +64,8 @@ protected:
 
 void TestLoggingMPMC::SetUp()
 {
+    delete_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
     _sink->set_level(LogLevel::TRACE);
     _sink->enable_debug_info(false);
 }
@@ -72,6 +75,7 @@ void TestLoggingMPMC::TearDown()
     _logger.reset();
     _taskPool.reset();
     delete_dir(_dir);
+    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
 std::string TestLoggingMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)

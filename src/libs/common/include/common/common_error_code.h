@@ -6,12 +6,10 @@
 #define COMMON_MODULE_ID 1
 
 typedef enum {
-    COMM_ERR_TYPE_COMM = 1,
-    COMM_ERR_TYPE_CONTAINER
+    COMM_ERR_TYPE_COMM = 1
 } CommErrType;
 
 typedef enum {
-    COMM_ERR_ID_SUCCESS = 0,
     COMM_ERR_ID_MALLOC_FAILED = 1,
     COMM_ERR_ID_IDX_OUT_OF_RANGE,
     COMM_ERR_ID_ENUM_INVALID,

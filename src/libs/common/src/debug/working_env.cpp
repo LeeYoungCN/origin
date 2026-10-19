@@ -8,6 +8,7 @@
 #include <libloaderapi.h>
 #include <minwindef.h>
 #include <processthreadsapi.h>
+#include <stdlib.h>
 
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
@@ -28,7 +29,7 @@
 #include "working_env_c.h"
 
 namespace {
-std::string GetOsName()
+const char* GetOsName()
 {
 #ifdef _WIN32
 // Windows 32位或64位（_WIN32在64位系统上也会定义）
@@ -58,9 +59,9 @@ std::string GetOsName()
 #endif
 }
 
-std::vector<std::string> GetCompilers()
+std::vector<const char*> GetCompilers()
 {
-    static std::vector<std::string> const compilers = {
+    static std::vector const compilers = {
 #ifdef _MSC_VER
         "_MSC_VER",
 #endif
@@ -107,7 +108,7 @@ uint64_t GetProcessId()
 #endif
 }
 
-std::string GetArchitecture()
+const char* GetArchitecture()
 {
 // x86 架构 (32位)
 #if defined(__i386__) || defined(_M_IX86)
@@ -139,29 +140,33 @@ std::string GetArchitecture()
 #endif
 }
 
+ void PrintEnvValue(const char* name)
+{
+#if COMPILER_MSVC
+    char* value = nullptr;
+    auto err = 0;
+    size_t len = 0;
+    err = _dupenv_s(&value, &len, name);
+    if (err == 0 && value != nullptr) {
+        std::cout << "-------------------- " << name << " --------------------" << std::endl;
+        std::cout << name << ": " << value << std::endl;
+        free(value);
+    }
+#else
+    if (const auto value = std::getenv(name); value != nullptr) {
+        std::cout << "-------------------- " << name << " --------------------" << std::endl;
+        std::cout << name << ": " << value << std::endl;
+    }
+#endif
+}
+
 void PrintEnvParams()
 {
-    const std::array<const char*, 5> ENV_NAMES{
+    constexpr std::array<const char*, 5> ENV_NAMES{
         "PATH", "LD_LIBRARY_PATH", "LIBPATH", "LIB", "INCLUDE"};
 
     for (const auto& name : ENV_NAMES) {
-        char* value = nullptr;
-        auto err = 0;
-        size_t len = 0;
-#if COMPILER_MSVC
-        err = _dupenv_s(&value, &len, name);
-#else
-        (void)err;
-        (void)len;
-        value = std::getenv(name);
-#endif
-        if (err == 0 && value != nullptr) {
-            std::cout << "-------------------- " << name << " --------------------" << std::endl;
-            std::cout << name << ": " << value << std::endl;
-#if COMPILER_MSVC
-            free(value);
-#endif
-        }
+        PrintEnvValue(name);
     }
 }
 

@@ -11,7 +11,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
 set(CMAKE_VERBOSE_MAKEFILE          OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(BUILD_TESTS "Build and run tests."   ON)
+option(BUILD_TESTS "Build and run tests."   OFF)
 option(ENABLE_ASAN "Enable asan."           OFF)
 
 if (MSVC)

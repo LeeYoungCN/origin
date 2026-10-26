@@ -26,9 +26,4 @@ set_target_properties(${LIB_NAME} PROPERTIES
     DEBUG_POSTFIX "d"
 )
 
-install(DIRECTORY include/
-        DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
-        COMPONENT ${LIB_NAME}
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-install(TARGETS ${LIB_NAME} COMPONENT ${LIB_NAME})
+include(${CMAKE_SOURCE_DIR}/cmake/package/lib_config.cmake)

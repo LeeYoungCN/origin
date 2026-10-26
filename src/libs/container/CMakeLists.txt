@@ -10,10 +10,7 @@ target_include_directories(${LIB_NAME}
         $<INSTALL_INTERFACE:include>                            # 安装时路径
 )
 
-install(DIRECTORY include/
-        DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
-        COMPONENT ${LIB_NAME}
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+include(${CMAKE_SOURCE_DIR}/cmake/package/lib_config.cmake)
 
 if (BUILD_TESTS)
     add_subdirectory(tests)

@@ -10,13 +10,11 @@ if (BUILD_TESTS)
     endif()
 endif()
 
-set(LIB_LIST "" CACHE STRING "Origin lib list" FORCE)
 set(TEST_OBJ_LIST "" CACHE STRING "Test objects list" FORCE)
 add_subdirectory(libs)
-
-message(STATUS "LIB_LIST: ${LIB_LIST}")
 
 if (BUILD_TESTS)
     message(STATUS "TEST_OBJ_LIST: ${TEST_OBJ_LIST}")
     add_subdirectory(tests)
 endif()
+

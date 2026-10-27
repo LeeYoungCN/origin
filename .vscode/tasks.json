@@ -42,6 +42,19 @@
             "problemMatcher": []
         },
         {
+            "label": "CMake Install",
+            "detail": "CMake: 构建项目",
+            "options": {
+                "cwd": "${workspaceFolder}/script"
+            },
+            "command": "./cmake_tools.sh",
+            "args": [
+                "--build",
+                "--install"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Run gtest all",
             "detail": "运行gtest测试用例",
             "options": {

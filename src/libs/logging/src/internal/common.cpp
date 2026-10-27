@@ -4,11 +4,11 @@
 #include <string>
 #include <string_view>
 
-#include "common/debug/debug_logger.h"
-#include "utils/date_time_utils.h"
-#include "utils/filesystem_utils.h"
-#include "utils/process_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/utils/date_time_utils.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/process_utils.h"
+#include "origin/utils/thread_utils.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;

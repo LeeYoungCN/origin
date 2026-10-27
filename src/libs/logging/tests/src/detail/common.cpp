@@ -8,14 +8,14 @@
 #include <string>
 #include <utility>
 
-#include "common/debug/debug_logger.h"
-#include "logging/c/logging_c.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/loggers/logger.hpp"
-#include "logging/sinks/sink.hpp"
-#include "utils/filesystem_utils.h"
-#include "utils/process_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/loggers/logger.hpp"
+#include "origin/logging/sinks/sink.hpp"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/process_utils.h"
 
 namespace logging_test {
 using namespace origin;

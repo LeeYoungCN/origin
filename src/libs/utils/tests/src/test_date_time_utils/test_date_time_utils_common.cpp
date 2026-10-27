@@ -1,6 +1,6 @@
 #include "test_date_time_utils_common.h"
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -9,10 +9,10 @@
 #include <ctime>
 #include <string_view>
 
-#include "common/constants/date_time_constants.h"
-#include "common/types/date_time_types.h"
 #include "gtest/gtest.h"
-#include "utils/date_time_utils.h"
+#include "origin/common/constants/date_time_constants.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/utils/date_time_utils.h"
 
 namespace utils_test::date_time_test {
 

@@ -5,9 +5,9 @@
 #include <string>
 #include <string_view>
 
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_msg.hpp"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_msg.hpp"
 
 namespace origin::logging {
 /**

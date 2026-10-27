@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/c/logging_c.h"
-#include "logging/log_level.hpp"
-#include "utils/date_time_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/log_level.hpp"
+#include "origin/utils/date_time_utils.h"
 
 using namespace origin::logging;
 using namespace origin::date_time;

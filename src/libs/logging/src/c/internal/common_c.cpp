@@ -6,12 +6,12 @@
 #include <stdexcept>
 #include <vector>
 
-#include "logging/c/logging_c.h"
-#include "logging/log_level.hpp"
-#include "logging/log_source.hpp"
-#include "logging/loggers/logger.hpp"
-#include "logging/sinks/sink.hpp"
-#include "utils/string_utils.h"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/loggers/logger.hpp"
+#include "origin/logging/sinks/sink.hpp"
+#include "origin/utils/string_utils.h"
 
 namespace origin::logging::c_api {
 bool log_level_c_invalid(const LogLevelC level)

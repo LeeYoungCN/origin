@@ -1,6 +1,6 @@
-#include "common/debug/working_env.h"
+#include "origin/common/debug/working_env.h"
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -140,7 +140,7 @@ const char* GetArchitecture()
 #endif
 }
 
- void PrintEnvValue(const char* name)
+void PrintEnvValue(const char* name)
 {
 #if COMPILER_MSVC
     char* value = nullptr;

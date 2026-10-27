@@ -1,6 +1,6 @@
 #include "filesystem/internal/common.hpp"
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -16,11 +16,11 @@
 #include <system_error>
 #include <unordered_map>
 
-#include "common/common_error_code.h"
-#include "common/debug/debug_logger.h"
-#include "common/types/error_code_types.h"
-#include "utils/thread_utils.h"
-#include "utils/utils_error_code.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/error_code_types.h"
+#include "origin/utils/thread_utils.h"
+#include "origin/utils/utils_error_code.h"
 
 using namespace origin::thread;
 

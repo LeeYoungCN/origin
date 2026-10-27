@@ -4,9 +4,9 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "logging/loggers/sync_logger.hpp"
-#include "logging/logging.hpp"
-#include "logging/sinks/stdout_sink.hpp"
+#include "origin/logging/loggers/sync_logger.hpp"
+#include "origin/logging/logging.hpp"
+#include "origin/logging/sinks/stdout_sink.hpp"
 
 namespace logging_test {
 using namespace origin::logging;

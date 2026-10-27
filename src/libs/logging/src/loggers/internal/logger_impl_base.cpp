@@ -8,13 +8,13 @@
 #include <string_view>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/log_msg.hpp"
-#include "logging/log_source.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 LoggerImplBase::LoggerImplBase(const std::string_view name, const std::shared_ptr<Sink>& sink)

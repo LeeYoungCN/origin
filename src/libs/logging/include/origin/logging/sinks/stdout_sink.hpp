@@ -1,0 +1,14 @@
+#ifndef ORIGIN_LOGGING_SINKS_STDOUT_SINK_HPP
+#define ORIGIN_LOGGING_SINKS_STDOUT_SINK_HPP
+
+#include "origin/logging/detail/logging_api.h"
+#include "origin/logging/sinks/sink_base.hpp"
+
+namespace origin::logging {
+class LOGGING_API StdoutSink : public SinkBase {
+public:
+    StdoutSink();
+    ~StdoutSink() override = default;
+};
+}  // namespace origin::logging
+#endif  // ORIGIN_LOGGING_SINKS_STDOUT_SINK_HPP

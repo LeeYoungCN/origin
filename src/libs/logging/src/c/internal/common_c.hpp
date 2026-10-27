@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "internal/task_pool.hpp"
-#include "logging/c/logging_c.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/loggers/logger.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/loggers/logger.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 struct LoggerSt {
     std::shared_ptr<origin::logging::Logger> ptr;

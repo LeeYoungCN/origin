@@ -9,17 +9,17 @@
  *
  */
 
-#include "utils/filesystem_utils.h"
+#include "origin/utils/filesystem_utils.h"
 
 #include <filesystem>
 #include <string_view>
 #include <system_error>
 
-#include "common/common_error_code.h"
-#include "common/debug/debug_logger.h"
-#include "common/types/filesystem_types.h"
-#include "utils/thread_utils.h"
-#include "utils/utils_error_code.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/filesystem_types.h"
+#include "origin/utils/thread_utils.h"
+#include "origin/utils/utils_error_code.h"
 
 namespace origin::filesystem {
 namespace fs = std::filesystem;

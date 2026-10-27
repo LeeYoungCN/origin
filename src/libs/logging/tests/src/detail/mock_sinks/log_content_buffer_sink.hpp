@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "detail/mock_sinks/base_test_sink.hpp"
-#include "logging/log_msg.hpp"
+#include "origin/logging/log_msg.hpp"
 
 using namespace origin::logging;
 

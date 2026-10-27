@@ -1,10 +1,10 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "common/types/thread_types.h"
-#include "container/concurrent_blocking_queue.hpp"
 #include "gtest/gtest.h"
-#include "utils/thread_utils.h"
+#include "origin/common/types/thread_types.h"
+#include "origin/container/concurrent_blocking_queue.hpp"
+#include "origin/utils/thread_utils.h"
 
 namespace test::test_container::test_concurrent_queue {
 using namespace origin::container;

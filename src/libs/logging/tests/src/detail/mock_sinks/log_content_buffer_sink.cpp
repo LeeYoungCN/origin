@@ -6,9 +6,9 @@
 #include <string_view>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
 #include "detail/mock_sinks/base_test_sink.hpp"
-#include "logging/log_msg.hpp"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/log_msg.hpp"
 
 namespace logging_test {
 LogContentBufferSink::LogContentBufferSink() : LogContentBufferSink(1024) {}

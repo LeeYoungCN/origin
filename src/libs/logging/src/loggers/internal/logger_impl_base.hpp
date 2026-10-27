@@ -6,11 +6,11 @@
 #include <string_view>
 #include <vector>
 
-#include "logging/formatters/formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/log_source.hpp"
-#include "logging/loggers/logger.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/loggers/logger.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 class LoggerImplBase : public Logger {

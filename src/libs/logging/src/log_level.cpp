@@ -1,8 +1,8 @@
-#include "logging/log_level.hpp"
+#include "origin/logging/log_level.hpp"
 
 #include <unordered_map>
 
-#include "logging/detail/constants.h"
+#include "origin/logging/detail/constants.h"
 
 namespace {
 struct LogLvlStrInfo {

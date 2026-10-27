@@ -5,9 +5,9 @@
 #include <string>
 #include <string_view>
 
-#include "common/common_error_code.h"
-#include "common/types/error_code_types.h"
-#include "common/types/filesystem_types.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/types/error_code_types.h"
+#include "origin/common/types/filesystem_types.h"
 
 namespace origin::filesystem {
 

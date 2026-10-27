@@ -8,10 +8,10 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/loggers/sync_logger.hpp"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/loggers/sync_logger.hpp"
 
 using namespace logging_test;
 using namespace origin::logging;

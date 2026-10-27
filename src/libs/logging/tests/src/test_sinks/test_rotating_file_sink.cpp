@@ -4,17 +4,17 @@
 #include <string>
 #include <vector>
 
-#include "common/common_error_code.h"
-#include "common/constants/filesystem_constants.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "logging/log_level.hpp"
-#include "logging/log_msg.hpp"
-#include "logging/log_source.hpp"
-#include "logging/sinks/rotating_file_sink.hpp"
-#include "utils/date_time_utils.h"
-#include "utils/filesystem_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/constants/filesystem_constants.h"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/sinks/rotating_file_sink.hpp"
+#include "origin/utils/date_time_utils.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

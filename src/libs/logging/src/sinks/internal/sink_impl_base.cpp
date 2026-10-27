@@ -7,10 +7,10 @@
 #include <string_view>
 #include <utility>
 
-#include "common/debug/debug_logger.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_level.hpp"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_level.hpp"
 
 namespace origin::logging {
 

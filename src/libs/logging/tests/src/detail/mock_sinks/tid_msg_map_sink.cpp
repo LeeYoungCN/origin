@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
-#include "common/types/thread_types.h"
-#include "logging/log_msg.hpp"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/thread_types.h"
+#include "origin/logging/log_msg.hpp"
 
 using namespace origin::logging;
 

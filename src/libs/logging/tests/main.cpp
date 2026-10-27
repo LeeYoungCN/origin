@@ -1,7 +1,7 @@
-#include "common/debug/debug_logger.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "utils/filesystem_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/utils/filesystem_utils.h"
 
 int main(int argc, char *argv[])
 {

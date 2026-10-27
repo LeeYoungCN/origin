@@ -3,7 +3,7 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "logging/c/logging_c.h"
+#include "origin/logging/c/logging_c.h"
 
 namespace logging_test {
 using namespace origin::logging;

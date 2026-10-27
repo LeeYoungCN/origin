@@ -7,9 +7,9 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/log_level.hpp"
-#include "logging/log_source.hpp"
-#include "logging/loggers/sync_logger.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/loggers/sync_logger.hpp"
 
 using namespace logging_test;
 using namespace origin::logging;

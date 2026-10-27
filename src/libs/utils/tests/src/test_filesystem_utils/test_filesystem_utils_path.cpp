@@ -10,13 +10,13 @@
  */
 #include <cstddef>
 
-#include "common/constants/filesystem_constants.h"
-#include "common/types/filesystem_types.h"
 #include "gtest/gtest.h"
+#include "origin/common/constants/filesystem_constants.h"
+#include "origin/common/types/filesystem_types.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/thread_utils.h"
+#include "origin/utils/utils_error_code.h"
 #include "test_filesystem_utils_base.h"
-#include "utils/filesystem_utils.h"
-#include "utils/thread_utils.h"
-#include "utils/utils_error_code.h"
 
 namespace utils_test::filesystem_test {
 

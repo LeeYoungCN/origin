@@ -1,17 +1,17 @@
 #include <memory>
 #include <string>
 
-#include "common/common_error_code.h"
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "logging/c/logging_c.h"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/log_msg.hpp"
-#include "logging/log_source.hpp"
-#include "logging/sinks/sink.hpp"
-#include "utils/filesystem_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/common_error_code.h"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/sinks/sink.hpp"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/thread_utils.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

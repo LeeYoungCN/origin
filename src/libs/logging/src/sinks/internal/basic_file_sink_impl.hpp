@@ -5,9 +5,9 @@
 #include <string>
 #include <string_view>
 
-#include "logging/log_msg.hpp"
+#include "origin/logging/log_msg.hpp"
+#include "origin/utils/file_writer.h"
 #include "sinks/internal/sink_impl_base.hpp"
-#include "utils/file_writer.h"
 
 namespace origin::logging {
 class BasicFileSinkImpl : public SinkImplBase {

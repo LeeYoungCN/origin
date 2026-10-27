@@ -9,7 +9,7 @@
  *
  */
 
-#include "utils/thread_utils.h"
+#include "origin/utils/thread_utils.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -29,11 +29,11 @@
 
 #include <string>
 
-#include "common/common_error_code.h"
-#include "common/macros/compiler.h"
-#include "common/types/error_code_types.h"
-#include "common/types/thread_types.h"
-#include "utils/utils_error_code.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/macros/compiler.h"
+#include "origin/common/types/error_code_types.h"
+#include "origin/common/types/thread_types.h"
+#include "origin/utils/utils_error_code.h"
 
 namespace {
 

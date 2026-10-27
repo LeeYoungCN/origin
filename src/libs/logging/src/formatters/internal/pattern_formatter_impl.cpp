@@ -8,12 +8,12 @@
 #include <string>
 #include <string_view>
 
-#include "common/debug/debug_logger.h"
-#include "common/types/date_time_types.h"
-#include "logging/formatters/formatter.hpp"
-#include "logging/log_level.hpp"
-#include "utils/date_time_utils.h"
-#include "utils/filesystem_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/utils/date_time_utils.h"
+#include "origin/utils/filesystem_utils.h"
 
 using namespace origin::date_time;
 using namespace origin::filesystem;

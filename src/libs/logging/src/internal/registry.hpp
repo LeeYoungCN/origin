@@ -8,11 +8,11 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "common/base/singleton.h"
 #include "internal/task_pool.hpp"
-#include "logging/formatters/formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/loggers/logger.hpp"
+#include "origin/common/base/singleton.h"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/loggers/logger.hpp"
 
 #define REGISTRY (origin::logging::Registry::instance())
 

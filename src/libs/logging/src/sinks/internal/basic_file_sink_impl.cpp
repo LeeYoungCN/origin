@@ -5,14 +5,14 @@
 #include <string>
 #include <string_view>
 
-#include "common/common_error_code.h"
-#include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
-#include "logging/log_msg.hpp"
+#include "origin/common/common_error_code.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/log_msg.hpp"
+#include "origin/utils/file_writer.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/utils_error_code.h"
 #include "sinks/internal/sink_impl_base.hpp"
-#include "utils/file_writer.h"
-#include "utils/filesystem_utils.h"
-#include "utils/utils_error_code.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;

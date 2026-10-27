@@ -1,4 +1,4 @@
-#include "logging/sinks/rotating_file_sink.hpp"
+#include "origin/logging/sinks/rotating_file_sink.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 
-#include "logging/sinks/sink_base.hpp"
+#include "origin/logging/sinks/sink_base.hpp"
 #include "sinks/internal/rotating_file_sink_impl.hpp"
 
 namespace origin::logging {

@@ -5,7 +5,7 @@
 #include <string_view>
 
 #include "loggers/internal/logger_impl_base.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 class SyncLoggerImpl : public LoggerImplBase {

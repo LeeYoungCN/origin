@@ -10,7 +10,7 @@
  */
 
 #include "gtest/gtest.h"
-#include "utils/thread_utils.h"
+#include "origin/utils/thread_utils.h"
 using namespace origin::thread;
 TEST(TestThreadUtils, ThreadId)
 {

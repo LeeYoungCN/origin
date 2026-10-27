@@ -1,8 +1,8 @@
 #include <cstdint>
 
 #include "internal/common_c.hpp"
-#include "logging/c/logging_c.h"
-#include "logging/log_level.hpp"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/log_level.hpp"
 
 using namespace origin::logging;
 using namespace c_api;

@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-#include "common/types/date_time_types.h"
+#include "origin/common/types/date_time_types.h"
 #include "sinks/internal/rotating_file_sink_impl_base.hpp"
 
 namespace origin::logging {

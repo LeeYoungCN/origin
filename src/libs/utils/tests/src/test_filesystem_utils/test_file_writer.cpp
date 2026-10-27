@@ -4,12 +4,12 @@
 #include <stdexcept>
 #include <string>
 
-#include "common/common_error_code.h"
-#include "common/constants/filesystem_constants.h"
 #include "gtest/gtest.h"
-#include "utils/file_writer.h"
-#include "utils/filesystem_utils.h"
-#include "utils/process_utils.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/constants/filesystem_constants.h"
+#include "origin/utils/file_writer.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/process_utils.h"
 
 namespace utils_test::test_file_writer {
 using namespace origin::filesystem;

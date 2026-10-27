@@ -1,6 +1,6 @@
-#include "common/common_error_code.h"
-#include "container/cstring.hpp"
 #include "gtest/gtest.h"
+#include "origin/common/common_error_code.h"
+#include "origin/container/cstring.hpp"
 
 namespace test::test_container::test_CString {
 

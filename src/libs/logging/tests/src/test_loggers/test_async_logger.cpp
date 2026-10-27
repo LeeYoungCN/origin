@@ -6,15 +6,15 @@
 #include <string>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/log_level.hpp"
-#include "logging/log_source.hpp"
-#include "logging/loggers/async_logger.hpp"
-#include "logging/logging.hpp"
-#include "utils/date_time_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
+#include "origin/logging/loggers/async_logger.hpp"
+#include "origin/logging/logging.hpp"
+#include "origin/utils/date_time_utils.h"
 
 using namespace logging_test;
 using namespace origin::date_time;

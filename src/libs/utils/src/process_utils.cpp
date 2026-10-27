@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2026
  *
  */
-#include "utils/process_utils.h"
+#include "origin/utils/process_utils.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -27,13 +27,13 @@
 #endif
 #include <string>
 
-#include "common/common_error_code.h"
-#include "common/constants/filesystem_constants.h"
-#include "common/debug/debug_logger.h"
-#include "common/macros/compiler.h"
-#include "common/types/process_types.h"
-#include "utils/filesystem_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/constants/filesystem_constants.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/macros/compiler.h"
+#include "origin/common/types/process_types.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/thread_utils.h"
 
 namespace origin::process {
 using namespace origin::filesystem;

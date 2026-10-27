@@ -1,12 +1,12 @@
-#include "utils/file_writer.h"
+#include "origin/utils/file_writer.h"
 
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "common/types/error_code_types.h"
-#include "common/types/filesystem_types.h"
 #include "filesystem/internal/file_writer_impl.hpp"
+#include "origin/common/types/error_code_types.h"
+#include "origin/common/types/filesystem_types.h"
 
 #define MODE_STR(mode) ((mode) ? "overwrite" : "append")
 

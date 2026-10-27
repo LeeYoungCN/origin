@@ -6,8 +6,8 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "logging/c/logging_c.h"
-#include "logging/log_level.hpp"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/log_level.hpp"
 
 using namespace origin::logging;
 

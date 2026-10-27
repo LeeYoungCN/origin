@@ -1,9 +1,9 @@
-#include "logging/sinks/stdout_sink.hpp"
+#include "origin/logging/sinks/stdout_sink.hpp"
 
 #include <iostream>
 #include <memory>
 
-#include "logging/sinks/sink_base.hpp"
+#include "origin/logging/sinks/sink_base.hpp"
 #include "sinks/internal/stream_sink_impl.hpp"
 
 namespace origin::logging {

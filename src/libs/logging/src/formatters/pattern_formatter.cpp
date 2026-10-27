@@ -1,10 +1,10 @@
-#include "logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
 
 #include <memory>
 #include <string_view>
 
 #include "formatters/internal/pattern_formatter_impl.hpp"
-#include "logging/formatters/formatter_base.hpp"
+#include "origin/logging/formatters/formatter_base.hpp"
 
 namespace origin::logging {
 

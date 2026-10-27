@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-#include "logging/log_msg.hpp"
+#include "origin/logging/log_msg.hpp"
 
 namespace origin::logging {
 class LoggerImplBase;

@@ -9,8 +9,8 @@
 #include <string_view>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
 #include "internal/common.hpp"
+#include "origin/common/debug/debug_logger.h"
 #include "sinks/internal/basic_file_sink_impl.hpp"
 
 namespace origin::logging {

@@ -1,6 +1,6 @@
-#include "common/debug/debug_logger.h"
+#include "origin/common/debug/debug_logger.h"
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -36,8 +36,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "common/base/singleton.h"
-#include "common/macros/compiler.h"
+#include "origin/common/base/singleton.h"
+#include "origin/common/macros/compiler.h"
 
 namespace {
 int64_t get_now_timestamp_ms()

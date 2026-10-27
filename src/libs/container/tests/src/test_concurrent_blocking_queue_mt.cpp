@@ -5,12 +5,12 @@
 #include <thread>
 #include <vector>
 
-#include "common/debug/debug_logger.h"
-#include "common/types/thread_types.h"
-#include "container/concurrent_blocking_queue.hpp"
 #include "gtest/gtest.h"
-#include "utils/date_time_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/thread_types.h"
+#include "origin/container/concurrent_blocking_queue.hpp"
+#include "origin/utils/date_time_utils.h"
+#include "origin/utils/thread_utils.h"
 
 namespace {
 constexpr uint32_t MAX_NUM = 2048;

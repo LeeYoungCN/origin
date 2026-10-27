@@ -7,11 +7,11 @@
 #include <string>
 #include <string_view>
 
-#include "logging/formatters/formatter.hpp"
-#include "logging/formatters/pattern_formatter.hpp"
-#include "logging/log_level.hpp"
-#include "logging/log_msg.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/logging/formatters/formatter.hpp"
+#include "origin/logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 class SinkImplBase : public Sink {

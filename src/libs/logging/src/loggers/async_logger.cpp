@@ -1,4 +1,4 @@
-#include "logging/loggers/async_logger.hpp"
+#include "origin/logging/loggers/async_logger.hpp"
 
 #include <initializer_list>
 #include <memory>
@@ -7,8 +7,8 @@
 
 #include "internal/task_pool.hpp"
 #include "loggers/internal/async_logger_impl.hpp"
-#include "logging/loggers/logger_base.hpp"
-#include "logging/sinks/sink.hpp"
+#include "origin/logging/loggers/logger_base.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 

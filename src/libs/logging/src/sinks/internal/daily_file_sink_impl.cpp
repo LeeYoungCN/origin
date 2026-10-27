@@ -11,16 +11,16 @@
 #include <utility>
 #include <vector>
 
-#include "common/constants/date_time_constants.h"
-#include "common/debug/debug_logger.h"
-#include "common/types/date_time_types.h"
 #include "internal/common.hpp"
-#include "logging/log_msg.hpp"
-#include "logging/sinks/daily_file_sink.hpp"
+#include "origin/common/constants/date_time_constants.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/sinks/daily_file_sink.hpp"
+#include "origin/utils/date_time_utils.h"
+#include "origin/utils/file_writer.h"
+#include "origin/utils/filesystem_utils.h"
 #include "sinks/internal/rotating_file_sink_impl_base.hpp"
-#include "utils/date_time_utils.h"
-#include "utils/file_writer.h"
-#include "utils/filesystem_utils.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;

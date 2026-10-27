@@ -2,9 +2,9 @@
 #include <memory>
 
 #include "c/internal/common_c.hpp"
-#include "common/debug/debug_logger.h"
 #include "internal/task_pool.hpp"
-#include "logging/c/logging_c.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/c/logging_c.h"
 
 using namespace origin::logging;
 

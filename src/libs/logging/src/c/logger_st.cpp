@@ -6,10 +6,10 @@
 #include <string_view>
 
 #include "c/internal/common_c.hpp"
-#include "common/debug/debug_logger.h"
-#include "logging/c/logging_c.h"
-#include "logging/loggers/async_logger.hpp"
-#include "logging/loggers/sync_logger.hpp"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/loggers/async_logger.hpp"
+#include "origin/logging/loggers/sync_logger.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c_api;

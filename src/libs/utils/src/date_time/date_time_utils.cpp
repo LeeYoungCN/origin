@@ -1,6 +1,6 @@
-#include "utils/date_time_utils.h"
+#include "origin/utils/date_time_utils.h"
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -10,7 +10,7 @@
 #include <synchapi.h>
 #include <sysinfoapi.h>
 
-#include "common/constants/date_time_constants.h"
+#include "origin/common/constants/date_time_constants.h"
 
 #else
 #include <cerrno>
@@ -21,12 +21,12 @@
 #include <cstdint>
 #include <ctime>
 
-#include "common/common_error_code.h"
-#include "common/constants/date_time_constants.h"
-#include "common/debug/debug_logger.h"
-#include "common/types/date_time_types.h"
-#include "utils/thread_utils.h"
-#include "utils/utils_error_code.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/constants/date_time_constants.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/utils/thread_utils.h"
+#include "origin/utils/utils_error_code.h"
 
 namespace {
 using namespace origin::thread;

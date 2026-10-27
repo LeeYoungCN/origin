@@ -9,11 +9,11 @@
  *
  */
 
-#include "common/common_error_code.h"
 #include "gtest/gtest.h"
-#include "utils/filesystem_utils.h"
-#include "utils/process_utils.h"
-#include "utils/thread_utils.h"
+#include "origin/common/common_error_code.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/process_utils.h"
+#include "origin/utils/thread_utils.h"
 
 namespace utils_test::filesystem_test {
 using namespace origin::filesystem;

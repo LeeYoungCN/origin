@@ -1,6 +1,6 @@
 #include "c/internal/common_c.hpp"
-#include "logging/c/logging_c.h"
-#include "logging/formatters/pattern_formatter.hpp"
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/formatters/pattern_formatter.hpp"
 
 using namespace origin::logging;
 

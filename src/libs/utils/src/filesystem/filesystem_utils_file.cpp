@@ -9,12 +9,12 @@
  *
  */
 
-#include "common/macros/compiler.h"
+#include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
 #include <windows.h>
 
-#include "common/constants/date_time_constants.h"
+#include "origin/common/constants/date_time_constants.h"
 #else
 #include <chrono>
 #endif
@@ -32,14 +32,14 @@
 #include <system_error>
 #include <vector>
 
-#include "common/common_error_code.h"
-#include "common/debug/debug_logger.h"
-#include "common/types/date_time_types.h"
-#include "common/types/filesystem_types.h"
 #include "filesystem/internal/common.hpp"
-#include "utils/filesystem_utils.h"
-#include "utils/thread_utils.h"
-#include "utils/utils_error_code.h"
+#include "origin/common/common_error_code.h"
+#include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/common/types/filesystem_types.h"
+#include "origin/utils/filesystem_utils.h"
+#include "origin/utils/thread_utils.h"
+#include "origin/utils/utils_error_code.h"
 
 // std::ios::out：默认模式，创建文件（若存在则截断）。
 // std::ios::app：追加模式（文件存在时在末尾添加内容，不截断）。

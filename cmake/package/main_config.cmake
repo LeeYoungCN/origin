@@ -1,3 +1,4 @@
+include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 # 版本文件

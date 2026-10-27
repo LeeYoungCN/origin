@@ -12,7 +12,7 @@ install(TARGETS ${LIB_NAME}
 )
 
 install(EXPORT ${LIB_NAME}_EXPORT
-    FILE Origin-${LIB_NAME}.cmake
+    FILE ${LIB_NAME}-target.cmake
     NAMESPACE ${PROJECT_NAME}::
     DESTINATION lib/cmake/${PROJECT_NAME}/components
 )

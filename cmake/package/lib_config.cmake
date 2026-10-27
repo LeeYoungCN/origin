@@ -3,16 +3,16 @@ install(DIRECTORY include/
         COMPONENT ${LIB_NAME}
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
-install(TARGETS ${LIB_NAME}
-    EXPORT ${LIB_NAME}_EXPORT
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
-)
+# install(TARGETS ${LIB_NAME}
+#     EXPORT ${LIB_NAME}_EXPORT
+#     LIBRARY DESTINATION lib
+#     ARCHIVE DESTINATION lib
+#     RUNTIME DESTINATION bin
+#     INCLUDES DESTINATION include
+# )
 
-install(EXPORT ${LIB_NAME}_EXPORT
-    FILE ${LIB_NAME}-target.cmake
-    NAMESPACE ${PROJECT_NAME}::
-    DESTINATION lib/cmake/${PROJECT_NAME}/components
-)
+# install(EXPORT ${LIB_NAME}_EXPORT
+#     FILE ${LIB_NAME}-target.cmake
+#     NAMESPACE ${PROJECT_NAME}::
+#     DESTINATION lib/cmake/${PROJECT_NAME}/components
+# )

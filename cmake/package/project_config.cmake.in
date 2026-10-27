@@ -1,5 +1,12 @@
 @PACKAGE_INIT@
 
-foreach(_comp ${@PROJECT_NAME@_FIND_COMPONENTS})
-  include("${CMAKE_CURRENT_LIST_DIR}/components/${_comp}-target.cmake" OPTIONAL)
-endforeach()
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Target.cmake")
+
+check_required_components(@PROJECT_NAME@)
+
+set(ORIGIN_LIBS "@LIB_LIST@")
+
+set_and_check(ORIGIN_ROOT_DIR "${PACKAGE_PREFIX_DIR}")
+set(ORIGIN_BIN_DIR "${ORIGIN_ROOT_DIR}/bin" CACHE INTERNAL "Origin dll directory")
+set(ORIGIN_LIB_DIR "${ORIGIN_ROOT_DIR}/lib" CACHE INTERNAL "Origin lib directory.")
+set(ORIGIN_INCLUDE_DIR "${ORIGIN_ROOT_DIR}/include" CACHE INTERNAL "Origin include directory.")

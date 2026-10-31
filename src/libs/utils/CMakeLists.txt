@@ -1,35 +1,15 @@
-set(LIB_NAME utils)
-list(APPEND LIB_LIST ${LIB_NAME})
-set(LIB_LIST "${LIB_LIST}" CACHE STRING "" FORCE)
+set(LIB_NAME Utils)
 
 add_library(${LIB_NAME} SHARED)
 target_compile_definitions(${LIB_NAME} PRIVATE UTILS_BUILD_SHARED)
 
-file(GLOB_RECURSE SRC_LIST  "src/*.cpp" "src/*.c")
-target_sources(${LIB_NAME} PRIVATE ${SRC_LIST})
-
-target_include_directories(${LIB_NAME}
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # 编译时路径
-        $<INSTALL_INTERFACE:include>                            # 安装时路径
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src                        # 内部头文件路径
-)
-
-if (MINGW)
-    target_link_libraries(${LIB_NAME} PUBLIC pthread)
-endif()
+set_lib_public_properties(${LIB_NAME})
 
 set_target_properties(${LIB_NAME} PROPERTIES
-    PREFIX "lib"          # 给输出文件名加前缀
-    IMPORT_PREFIX "lib"   # 给导入库(.lib)加前缀
     WINDOWS_EXPORT_ALL_SYMBOLS ON  # 自动导出所有符号
-    DEBUG_POSTFIX "d"
 )
 
-target_link_libraries(${LIB_NAME} PUBLIC common)
-
-include(${CMAKE_SOURCE_DIR}/cmake/package/lib_config.cmake)
+target_link_libraries(${LIB_NAME} PUBLIC Common)
 
 if (BUILD_TESTS)
     add_subdirectory(tests)

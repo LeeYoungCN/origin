@@ -183,7 +183,7 @@ void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
             timeString.append("%");
             break;
         }
-        bool success = true;
+
         switch (format[formatIdx]) {
             case 'Y':
                 std::format_to(std::back_inserter(timeString), "{:04}", dateTime.year);
@@ -234,9 +234,7 @@ void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
                 timeString.append(std::string_view(format.data() + formatIdx - 1, 1));
                 break;
         }
-        if (!success) {
-            break;
-        }
+
     }
 
     set_thread_last_err(ERR_COMM_SUCCESS);

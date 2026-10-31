@@ -6,8 +6,8 @@ file(GLOB_RECURSE SRC_LIST "src/*.cpp")
 add_library(${TEST_OBJECT} OBJECT ${SRC_LIST})
 add_executable(${TEST_RUNTIME} main.cpp $<TARGET_OBJECTS:${TEST_OBJECT}>)
 
-target_link_libraries(${TEST_OBJECT} PUBLIC ${LIB_NAME} common utils GTest::gtest)
-target_link_libraries(${TEST_RUNTIME} PUBLIC ${LIB_NAME} common utils GTest::gtest)
+target_link_libraries(${TEST_OBJECT} PUBLIC ${LIB_NAME} Common Utils GTest::gtest)
+target_link_libraries(${TEST_RUNTIME} PUBLIC ${LIB_NAME} Common Utils GTest::gtest)
 
 if (MINGW)
     target_link_libraries(${TEST_OBJECT} PUBLIC pthread)

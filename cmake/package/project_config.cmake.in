@@ -4,9 +4,29 @@ include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Target.cmake")
 
 check_required_components(@PROJECT_NAME@)
 
-set(ORIGIN_LIBS "@LIB_LIST@")
-
 set_and_check(ORIGIN_ROOT_DIR "${PACKAGE_PREFIX_DIR}")
 set(ORIGIN_BIN_DIR "${ORIGIN_ROOT_DIR}/bin" CACHE INTERNAL "Origin dll directory")
 set(ORIGIN_LIB_DIR "${ORIGIN_ROOT_DIR}/lib" CACHE INTERNAL "Origin lib directory.")
 set(ORIGIN_INCLUDE_DIR "${ORIGIN_ROOT_DIR}/include" CACHE INTERNAL "Origin include directory.")
+
+if (WIN32)
+    file(GLOB ORIGIN_LIBS "${ORIGIN_BIN_DIR}/*")
+else()
+    file(GLOB ORIGIN_LIBS "${ORIGIN_LIB_DIR}/*")
+endif()
+
+function(deploy_origin_post_build target)
+    add_custom_command(TARGET ${target}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${ORIGIN_LIBS}
+        $<TARGET_FILE_DIR:${target}>
+        COMMAND_EXPAND_LISTS
+        COMMENT "Copy ${ORIGIN_LIBS}."
+        VERBATIM
+    )
+endfunction()
+
+function(install_origin destination)
+    install(FILES ${ORIGIN_LIBS} DESTINATION ${destination})
+endfunction()

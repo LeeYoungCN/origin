@@ -26,35 +26,47 @@ namespace origin::logging {
 using namespace origin::filesystem;
 using namespace origin::date_time;
 
-constexpr char SPLIT_CHAR = '.';
-
 DailyFileSinkImpl::DailyFileSinkImpl()
-    : DailyFileSinkImpl(get_default_log_file(), DailyFileSink::DEFAULT_ROTATION_HOUR,
-                        DailyFileSink::DEFAULT_ROTATION_MINUTE, DailyFileSink::DEFAULT_MAX_FILES,
+    : DailyFileSinkImpl(get_default_log_file(),
+                        DailyFileSink::DEFAULT_ROTATION_HOUR,
+                        DailyFileSink::DEFAULT_ROTATION_MINUTE,
+                        DailyFileSink::DEFAULT_MAX_FILES,
                         false)
 {
 }
 
 DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const bool overwrite)
-    : DailyFileSinkImpl(file, DailyFileSink::DEFAULT_ROTATION_HOUR,
-                        DailyFileSink::DEFAULT_ROTATION_MINUTE, DailyFileSink::DEFAULT_MAX_FILES,
+    : DailyFileSinkImpl(file,
+                        DailyFileSink::DEFAULT_ROTATION_HOUR,
+                        DailyFileSink::DEFAULT_ROTATION_MINUTE,
+                        DailyFileSink::DEFAULT_MAX_FILES,
                         overwrite)
 {
 }
 
-DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const uint32_t hour,
-                                     const uint32_t minute, const bool overwrite)
+DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file,
+                                     const uint32_t hour,
+                                     const uint32_t minute,
+                                     const bool overwrite)
     : DailyFileSinkImpl(file, hour, minute, DailyFileSink::DEFAULT_MAX_FILES, overwrite)
 {
 }
 
-DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file, const uint32_t hour,
-                                     const uint32_t minute, const uint32_t maxFiles,
+DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file,
+                                     const uint32_t hour,
+                                     const uint32_t minute,
+                                     const uint32_t maxFiles,
                                      const bool overwrite)
     : RotatingFileSinkImplBase(
-          file, overwrite, maxFiles, "daliy log file",
-          std::format("DailyFileSinkImpl. file: \"{}\", hour: {}, minute: {}, maxFiles: {}.", file,
-                      hour, minute, maxFiles)),
+          file,
+          overwrite,
+          maxFiles,
+          "daliy log file",
+          std::format("DailyFileSinkImpl. file: \"{}\", hour: {}, minute: {}, maxFiles: {}.",
+                      file,
+                      hour,
+                      minute,
+                      maxFiles)),
       _hour(hour),
       _minute(minute)
 {
@@ -140,12 +152,12 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(const std::string_view filena
 
     uint32_t idx = 0;
     for (; idx < _filenameStem.size(); ++idx) {
-        if (filename[idx] != _filenameStem[idx]) {
+        if (filename.at(idx) != _filenameStem.at(idx)) {
             return 0;
         }
     }
 
-    if (filename[idx++] != SPLIT_CHAR) {
+    if (filename.at(idx++) != SPLIT_CHAR) {
         return 0;
     }
 

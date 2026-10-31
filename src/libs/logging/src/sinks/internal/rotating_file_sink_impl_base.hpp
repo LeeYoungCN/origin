@@ -14,6 +14,8 @@ namespace origin::logging {
 
 class RotatingFileSinkImplBase : public BasicFileSinkImpl {
 public:
+    static constexpr char SPLIT_CHAR = '.';
+public:
     RotatingFileSinkImplBase() = delete;
     RotatingFileSinkImplBase(std::string_view file, bool overwrite, uint32_t maxFiles,
                              std::string_view itemName, std::string_view paramStr);

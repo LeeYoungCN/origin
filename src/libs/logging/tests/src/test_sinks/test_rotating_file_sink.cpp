@@ -32,20 +32,30 @@ protected:
     std::string logContent = std::string(100, 'a');
     size_t logMsgSize = logContent.size() + LF_LENGTH;
 
-    static void InitLogFileList(std::vector<std::uint32_t>& existFileIdx, uint32_t startIdx,
+    static void InitLogFileList(std::vector<std::uint32_t>& existFileIdx,
+                                uint32_t startIdx,
                                 uint32_t existFileCount);
     static void AppendLogFileList(std::vector<std::uint32_t>& existFileIdx, uint32_t appendCount);
-    static void CreateLogFiles(const std::string& logFile,
-                               const std::vector<std::uint32_t>& existFileIdx,
-                               uint32_t sleepMs = 5);
+    void CreateLogFiles(const std::string& logFile,
+                        const std::vector<std::uint32_t>& existFileIdx,
+                        uint32_t sleepMs = 5);
 
     void InsertLogMsg(RotatingFileSink& sink, uint32_t maxFileSize, uint32_t rotateCount) const;
-    void TestRotate(const testing::TestInfo* test_info, uint32_t startIdx, uint32_t existFileCount,
+    void TestRotate(const testing::TestInfo* test_info,
+                    uint32_t startIdx,
+                    uint32_t existFileCount,
                     uint32_t rotateCount);
-    void TestRotateAndDelete(const testing::TestInfo* test_info, uint32_t maxFiles,
-                             uint32_t startIdx, uint32_t existFileCount, uint32_t rotateCount);
+    void TestRotateAndDelete(const testing::TestInfo* test_info,
+                             uint32_t maxFiles,
+                             uint32_t startIdx,
+                             uint32_t existFileCount,
+                             uint32_t rotateCount);
+    std::string calc_log_file(const std::string& str);
+    std::string calc_log_file(uint32_t idx);
 
     std::string _dir = get_log_dir();
+    std::string _fileNameStem;
+    std::string _extension = ".log";
 };
 
 void TestRotatingFileSink::SetUp()
@@ -60,8 +70,19 @@ void TestRotatingFileSink::TearDown()
     EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
 }
 
+std::string TestRotatingFileSink::calc_log_file(const std::string& str)
+{
+    return join_paths({_dir, _fileNameStem + "." + str + _extension});
+}
+
+std::string TestRotatingFileSink::calc_log_file(uint32_t idx)
+{
+    return calc_log_file(std::to_string(idx));
+}
+
 void TestRotatingFileSink::InitLogFileList(std::vector<std::uint32_t>& existFileIdx,
-                                           const uint32_t startIdx, const uint32_t existFileCount)
+                                           const uint32_t startIdx,
+                                           const uint32_t existFileCount)
 {
     for (uint32_t i = 0; i < existFileCount; ++i) {
         uint32_t nextIdx = startIdx + i;
@@ -89,13 +110,14 @@ void TestRotatingFileSink::CreateLogFiles(const std::string& logFile,
                                           const uint32_t sleepMs)
 {
     for (const auto& idx : existFileIdx) {
-        std::string const file = logFile + "." + std::to_string(idx);
+        std::string file = calc_log_file(idx);
         create_file(file);
         sleep_ms(sleepMs);  // 确保文件修改时间不同
     }
 }
 
-void TestRotatingFileSink::InsertLogMsg(RotatingFileSink& sink, uint32_t maxFileSize,
+void TestRotatingFileSink::InsertLogMsg(RotatingFileSink& sink,
+                                        uint32_t maxFileSize,
                                         const uint32_t rotateCount) const
 {
     sink.set_pattern("%v");
@@ -108,13 +130,15 @@ void TestRotatingFileSink::InsertLogMsg(RotatingFileSink& sink, uint32_t maxFile
     }
 }
 
-void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info, uint32_t startIdx,
-                                      const uint32_t existFileCount, const uint32_t rotateCount)
+void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
+                                      uint32_t startIdx,
+                                      const uint32_t existFileCount,
+                                      const uint32_t rotateCount)
 {
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
-
-    const std::string logFile = join_paths({_dir, get_logger_name(test_info) + ".log"});
+    _fileNameStem = get_logger_name(test_info);
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
     std::vector<uint32_t> existFileIdx;
 
     InitLogFileList(existFileIdx, startIdx, existFileCount);
@@ -136,7 +160,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info, uint32
     for (uint32_t i = existFileCount; i < totalFileCount; i++) {
         const uint32_t nextIdx = existFileIdx[i];
 
-        std::string const nextLogFile = logFile + "." + std::to_string(nextIdx);
+        std::string const nextLogFile = calc_log_file(nextIdx);
 
         EXPECT_TRUE(file_exists(nextLogFile)) << nextLogFile;
         if (i >= existFileCount) {
@@ -147,14 +171,15 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info, uint32
 }
 
 void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_info,
-                                               const uint32_t maxFiles, const uint32_t startIdx,
+                                               const uint32_t maxFiles,
+                                               const uint32_t startIdx,
                                                const uint32_t existFileCount,
                                                const uint32_t rotateCount)
 {
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
-
-    const std::string logFile = join_paths({_dir, get_logger_name(test_info) + ".log"});
+    _fileNameStem = get_logger_name(test_info);
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
     constexpr uint32_t maxFileSize = 1024;
 
     std::vector<uint32_t> existFileIdx;
@@ -173,7 +198,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
 
     for (uint32_t i = 0; i < existFileIdx.size(); ++i) {
         const uint32_t idx = existFileIdx[i];
-        std::string const file = logFile + "." + std::to_string(idx);
+        std::string const file = calc_log_file(idx);
         if (i < existFileIdx.size() - maxFiles) {
             EXPECT_FALSE(file_exists(file)) << file;
         } else {
@@ -186,7 +211,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
 
 TEST_F(TestRotatingFileSink, invalid_param)
 {
-    std::string const logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    std::string const logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     EXPECT_THROW(RotatingFileSink(""), std::invalid_argument);
     EXPECT_THROW(RotatingFileSink(logFile, 0, RotatingFileSink::DEFAULT_MAX_FILES),
                  std::invalid_argument);
@@ -200,8 +225,8 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
 {
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
-
-    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    _fileNameStem = get_logger_name(test_info_);
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
 
     // valid file
     std::vector<std::uint32_t> validFileIdx;
@@ -220,13 +245,12 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
 
     // invalid file
     create_file(logFile);
-    create_file(logFile + ".0");
-    create_file(logFile + ".00");
-    create_file(logFile + ".01");
-    create_file(logFile + ".");
-    create_file(logFile + ".a");
-    create_file(logFile + "a");
-    create_file(logFile + "." + std::to_string(RotatingFileSink::MAX_INDEX + 1));
+    create_file(calc_log_file("0"));
+    create_file(calc_log_file("00"));
+    create_file(calc_log_file("01"));
+    create_file(calc_log_file(""));
+    create_file(calc_log_file("a"));
+    create_file(calc_log_file(RotatingFileSink::MAX_INDEX + 1));
 
     const RotatingFileSink sink(logFile, false);
 
@@ -234,14 +258,14 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
     EXPECT_EQ(fileList.size(), validFileIdx.size());
 
     for (uint32_t i = 0; i < validFileIdx.size(); ++i) {
-        std::string const file = logFile + "." + std::to_string(validFileIdx[i]);
+        std::string const file = calc_log_file(validFileIdx[i]);
         EXPECT_EQ(fileList[i], file);
     }
 }
 
 TEST_F(TestRotatingFileSink, set_and_get_max_file_size)
 {
-    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     const RotatingFileSink sink(logFile, false);
 
     constexpr uint32_t maxFileSize = 1024;
@@ -254,7 +278,7 @@ TEST_F(TestRotatingFileSink, set_and_get_max_file_size)
 
 TEST_F(TestRotatingFileSink, set_and_get_max_files)
 {
-    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     const RotatingFileSink sink(logFile, false);
 
     constexpr uint32_t maxFiles = 5;

@@ -158,7 +158,8 @@ void RotatingFileSinkImpl::init_file_queue()
 
 std::string RotatingFileSinkImpl::get_next_file()
 {
-    return _file + "." + std::to_string(get_next_idx());
+    auto filename = std::format("{}{}{}{}", _filenameStem, SPLIT_CHAR, get_next_idx(), _extension);
+    return join_paths({_directory, filename});
 }
 
 void RotatingFileSinkImpl::set_next_idx(const uint32_t idx)
@@ -191,14 +192,18 @@ uint32_t RotatingFileSinkImpl::parse_log_index(const std::string_view filename) 
         return 0;
     }
 
+    if (get_extension(filename) != _extension) {
+        return 0;
+    }
+
     uint32_t i = 0;
-    for (; i < _filename.length(); ++i) {
-        if (filename.at(i) != _filename.at(i)) {
+    for (; i < _filenameStem.size(); ++i) {
+        if (filename.at(i) != _filenameStem.at(i)) {
             return 0;
         }
     }
 
-    if (filename.at(i++) != '.') {
+    if (filename.at(i++) != SPLIT_CHAR) {
         return 0;
     }
 
@@ -206,17 +211,17 @@ uint32_t RotatingFileSinkImpl::parse_log_index(const std::string_view filename) 
         return 0;
     }
 
-    uint32_t idx = 0;
-    for (; i < filename.size(); ++i) {
+    uint32_t logIdx = 0;
+    for (; i < filename.size() - _extension.size(); ++i) {
         auto c = filename.at(i);
         if (c >= '0' && c <= '9') {
-            idx = idx * 10 + static_cast<uint32_t>(c - '0');
+            logIdx = logIdx * 10 + static_cast<uint32_t>(c - '0');
         } else {
             return 0;
         }
     }
 
-    return idx;
+    return logIdx;
 }
 
 }  // namespace origin::logging

@@ -99,7 +99,7 @@ AttributeMacros:
 # false表示函数实参要么都在同一行，要么都各自一行
 BinPackArguments: false
 # false表示所有形参要么都在同一行，要么都各自一行
-BinPackParameters: BinPack
+BinPackParameters: false
 BitFieldColonSpacing: Both
 # 大括号换行，只有当BreakBeforeBraces设置为Custom时才有效
 BraceWrapping:
@@ -144,7 +144,7 @@ CompactNamespaces: false
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
-DerivePointerAlignment: true
+DerivePointerAlignment: false
 DisableFormat:   false
 EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: LogicalBlock
@@ -227,7 +227,7 @@ PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
 PenaltyIndentedWhitespace: 0
 PenaltyReturnTypeOnItsOwnLine: 200
-PointerAlignment: Right
+PointerAlignment: Left
 PPIndentWidth:   -1
 QualifierAlignment: Leave
 RawStringFormats:
@@ -331,4 +331,3 @@ WhitespaceSensitiveMacros:
   - STRINGIZE
 WrapNamespaceBodyWithEmptyLines: Leave
 ...
-

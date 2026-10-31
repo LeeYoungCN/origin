@@ -77,8 +77,8 @@
             },
             "command": "./cmake_tools.sh",
             "args": [
-                "--build=test_logging",
-                "--gtest_target=test_logging"
+                "--build=test_Logging",
+                "--gtest_target=test_Logging"
             ],
             "problemMatcher": [
                 "$gcc"

@@ -4,13 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "origin/common/macros/compiler.h"
 #include "origin/logging/detail/logging_api.h"
-
-#if COMPILER_MSVC
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
 
 namespace origin::logging {
 struct LogMsg;
@@ -24,9 +18,5 @@ public:
     [[nodiscard]] virtual std::unique_ptr<Formatter> clone() const = 0;
 };
 }  // namespace origin::logging
-
-#if COMPILER_MSVC
-#pragma warning(pop)
-#endif
 
 #endif  // ORIGIN_LOGGING_FORMATTERS_FORMATTER_HPP

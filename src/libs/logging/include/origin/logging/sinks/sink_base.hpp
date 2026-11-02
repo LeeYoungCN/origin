@@ -10,11 +10,6 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/sinks/sink.hpp"
 
-#if COMPILER_MSVC
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
 namespace origin::logging {
 class LOGGING_API SinkBase : public Sink {
 public:
@@ -35,12 +30,15 @@ public:
 
 protected:
     void throw_if_pimpl_null() const;
+#if COMPILER_MSVC
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
     std::unique_ptr<Sink> _pImpl;
-};
-}  // namespace origin::logging
-
 #if COMPILER_MSVC
 #pragma warning(pop)
 #endif
+};
+}  // namespace origin::logging
 
 #endif  // ORIGIN_LOGGING_SINKS_BASE_SINK_HPP

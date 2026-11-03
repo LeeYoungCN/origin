@@ -6,7 +6,11 @@
 #include <windows.h>
 #endif
 #include <cstdint>
+#include <cstdio>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <string_view>
 
 #include "gtest/gtest.h"

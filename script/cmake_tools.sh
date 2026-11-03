@@ -74,6 +74,7 @@ cmake_configure_param_cfg=""
 ARCHITECTURE="x64"
 env_param_file=""
 cmake_enable_asan="OFF"
+cmake_enable_test="ON"
 
 g_is_init_param=1
 
@@ -381,7 +382,7 @@ function cmake_configure() {
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
         -DENABLE_ASAN="${cmake_enable_asan}" \
-        -DBUILD_TESTS="ON"; then
+        -DBUILD_TESTS="${cmake_enable_test}"; then
         print_log "[${cmake_preset}] CMake configuration success." info
         cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     else

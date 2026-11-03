@@ -36,9 +36,7 @@ protected:
                                 uint32_t startIdx,
                                 uint32_t existFileCount);
     static void AppendLogFileList(std::vector<std::uint32_t>& existFileIdx, uint32_t appendCount);
-    void CreateLogFiles(const std::string& logFile,
-                        const std::vector<std::uint32_t>& existFileIdx,
-                        uint32_t sleepMs = 5);
+    void CreateLogFiles(const std::vector<std::uint32_t>& existFileIdx, uint32_t sleepMs = 5);
 
     void InsertLogMsg(RotatingFileSink& sink, uint32_t maxFileSize, uint32_t rotateCount) const;
     void TestRotate(const testing::TestInfo* test_info,
@@ -105,8 +103,7 @@ void TestRotatingFileSink::AppendLogFileList(std::vector<std::uint32_t>& existFi
     }
 }
 
-void TestRotatingFileSink::CreateLogFiles(const std::string& logFile,
-                                          const std::vector<std::uint32_t>& existFileIdx,
+void TestRotatingFileSink::CreateLogFiles(const std::vector<std::uint32_t>& existFileIdx,
                                           const uint32_t sleepMs)
 {
     for (const auto& idx : existFileIdx) {
@@ -143,7 +140,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
 
     InitLogFileList(existFileIdx, startIdx, existFileCount);
 
-    CreateLogFiles(logFile, existFileIdx, 10);
+    CreateLogFiles(existFileIdx, 10);
 
     constexpr uint32_t maxFileSize = 1024;
     RotatingFileSink sink(logFile, maxFileSize, RotatingFileSink::DEFAULT_MAX_FILES, false);
@@ -186,7 +183,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
 
     InitLogFileList(existFileIdx, startIdx, existFileCount);
 
-    CreateLogFiles(logFile, existFileIdx, 10);
+    CreateLogFiles(existFileIdx, 10);
 
     RotatingFileSink sink(logFile, maxFileSize, maxFiles, false);
 
@@ -241,7 +238,7 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
         validFileIdx.emplace_back(i);
     }
 
-    CreateLogFiles(logFile, validFileIdx);
+    CreateLogFiles(validFileIdx);
 
     // invalid file
     create_file(logFile);

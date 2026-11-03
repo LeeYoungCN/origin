@@ -1,4 +1,6 @@
 set(LIB_LIST "" CACHE STRING "Origin lib list" FORCE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
+find_package(Threads REQUIRED)
 
 function(set_lib_public_properties lib)
     list(APPEND LIB_LIST ${LIB_NAME})
@@ -15,9 +17,7 @@ function(set_lib_public_properties lib)
             ${CMAKE_CURRENT_SOURCE_DIR}/src                        # 内部头文件路径
     )
 
-    if (MINGW)
-        target_link_libraries(${lib} PUBLIC pthread)
-    endif()
+    target_link_libraries(${lib} PUBLIC Threads::Threads)
 
     set_target_properties(${lib} PROPERTIES
         OUTPUT_NAME "${PROJECT_NAME}${LIB_NAME}"

@@ -95,6 +95,15 @@ if (BUILD_TESTS)
     add_compile_definitions(ENABLE_TEST)
 endif()
 
+include(GNUInstallDirs)
+
+# 安装产物的 RPATH：按相对位置查找同一 install 树里的库，整个目录可搬迁
+if (APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+elseif (UNIX)
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+endif()
+
 # 版本头：产物里能查到编译时使用的版本
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/version.h.in"

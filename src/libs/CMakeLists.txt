@@ -9,6 +9,7 @@ function(origin_add_component lib)
     target_include_directories(${lib}
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # 编译时路径
+            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>        # 生成的 version.h
             $<INSTALL_INTERFACE:include>                            # 安装时路径
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/src                        # 内部头文件路径

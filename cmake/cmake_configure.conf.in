@@ -1,4 +1,5 @@
 cmake_configure_file="@CMAKE_CONFIGURE_FILE@"
+project_version="@PROJECT_VERSION@"
 cmake_preset="@CMAKE_PRESET@"
 BUILD_TESTS="@BUILD_TESTS@"
 cmake_build_type="@CMAKE_BUILD_TYPE@"

@@ -30,6 +30,10 @@ install(TARGETS ${LIB_LIST}
     INCLUDES DESTINATION include
 )
 
+# 生成的 version.h 随组件头文件一起安装，保持 include 下的目录结构
+install(FILES "${CMAKE_BINARY_DIR}/generated/origin/version.h"
+    DESTINATION include/origin)
+
 install(EXPORT ${PROJECT_NAME}_EXPORT
     FILE ${PROJECT_NAME}Target.cmake
     NAMESPACE ${PROJECT_NAME}::

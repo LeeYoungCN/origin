@@ -95,4 +95,10 @@ if (BUILD_TESTS)
     add_compile_definitions(ENABLE_TEST)
 endif()
 
+# 版本头：产物里能查到编译时使用的版本
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
+    "${CMAKE_BINARY_DIR}/generated/origin/version.h"
+    @ONLY)
+
 add_subdirectory(src)

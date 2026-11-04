@@ -110,7 +110,9 @@ jobs:
         DIST="${{ steps.strings.outputs.dist-dir }}"
         mkdir -p "${DIST}"
         cd "${{ steps.strings.outputs.build-install-dir }}/${{ matrix.preset }}"
-        tar -czf "${DIST}/${PKG}.tar.gz" .
+        # 先在当前目录生成再移走：GNU tar 会把 "D:\..." 中的盘符当成远程主机（host:path）
+        tar -czf "${PKG}.tar.gz" .
+        mv "${PKG}.tar.gz" "${DIST}/"
         echo "package=${PKG}" >> "$GITHUB_OUTPUT"
         ls -lh "${DIST}"
 

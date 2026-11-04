@@ -10,10 +10,11 @@ if (BUILD_TESTS)
     endif()
 endif()
 
-set(TEST_OBJ_LIST "" CACHE STRING "Test objects list" FORCE)
+set_property(GLOBAL PROPERTY ORIGIN_TEST_OBJ_LIST "")
 add_subdirectory(libs)
 
 if (BUILD_TESTS)
+    get_property(TEST_OBJ_LIST GLOBAL PROPERTY ORIGIN_TEST_OBJ_LIST)
     message(STATUS "TEST_OBJ_LIST: ${TEST_OBJ_LIST}")
     add_subdirectory(tests)
 endif()

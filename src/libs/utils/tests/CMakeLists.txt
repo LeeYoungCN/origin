@@ -9,13 +9,10 @@ add_executable(${TEST_RUNTIME} main.cpp $<TARGET_OBJECTS:${TEST_OBJECT}>)
 target_link_libraries(${TEST_OBJECT} PUBLIC ${LIB_NAME} GTest::gtest)
 target_link_libraries(${TEST_RUNTIME} PUBLIC ${LIB_NAME} GTest::gtest)
 
-if (MINGW)
-    target_link_libraries(${TEST_OBJECT} PUBLIC pthread)
-    target_link_libraries(${TEST_RUNTIME} PUBLIC pthread)
-endif()
+target_link_libraries(${TEST_OBJECT} PRIVATE Threads::Threads)
+target_link_libraries(${TEST_RUNTIME} PRIVATE Threads::Threads)
 
-list(APPEND TEST_OBJ_LIST $<TARGET_OBJECTS:${TEST_OBJECT}>)
-set(TEST_OBJ_LIST "${TEST_OBJ_LIST}" CACHE STRING "" FORCE)
+set_property(GLOBAL APPEND PROPERTY ORIGIN_TEST_OBJ_LIST $<TARGET_OBJECTS:${TEST_OBJECT}>)
 
 # include(GoogleTest)
 # gtest_discover_tests(${TEST_RUNTIME})

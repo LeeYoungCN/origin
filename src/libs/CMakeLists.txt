@@ -1,13 +1,10 @@
-set(LIB_LIST "" CACHE STRING "Origin lib list" FORCE)
+set_property(GLOBAL PROPERTY ORIGIN_LIB_LIST "")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
-function(set_lib_public_properties lib)
-    list(APPEND LIB_LIST ${LIB_NAME})
-    set(LIB_LIST "${LIB_LIST}" CACHE STRING "" FORCE)
-
-    file(GLOB_RECURSE SRC_LIST "src/*.cpp" "src/*.c")
-    target_sources(${LIB_NAME} PRIVATE ${SRC_LIST})
+function(origin_add_component lib)
+    # 只负责配置组件；源文件由各组件目录自己 glob 后交给 add_library。
+    set_property(GLOBAL APPEND PROPERTY ORIGIN_LIB_LIST ${lib})
 
     target_include_directories(${lib}
         PUBLIC
@@ -20,8 +17,10 @@ function(set_lib_public_properties lib)
     target_link_libraries(${lib} PUBLIC Threads::Threads)
 
     set_target_properties(${lib} PROPERTIES
-        OUTPUT_NAME "${PROJECT_NAME}${LIB_NAME}"
+        OUTPUT_NAME   "${PROJECT_NAME}${lib}"
         DEBUG_POSTFIX "d"
+        VERSION       ${PROJECT_VERSION}
+        SOVERSION     ${PROJECT_VERSION_MAJOR}
     )
 
     install(DIRECTORY include/
@@ -30,13 +29,14 @@ function(set_lib_public_properties lib)
 endfunction()
 
 
-file(GLOB LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/*")
+file(GLOB LIBS_DIR CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*")
 foreach(DIR ${LIBS_DIR})
     if (IS_DIRECTORY ${DIR})
         add_subdirectory(${DIR})
     endif()
 endforeach()
 
+get_property(LIB_LIST GLOBAL PROPERTY ORIGIN_LIB_LIST)
 message(STATUS "LIB_LIST: ${LIB_LIST}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/package/main_config.cmake)

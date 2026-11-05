@@ -110,9 +110,11 @@ jobs:
         DIST="${{ steps.strings.outputs.dist-dir }}"
         mkdir -p "${DIST}"
         cd "${{ steps.strings.outputs.build-install-dir }}/${{ matrix.preset }}"
-        # 先在当前目录生成再移走：GNU tar 会把 "D:\..." 中的盘符当成远程主机（host:path）
-        tar -czf "${PKG}.tar.gz" .
-        mv "${PKG}.tar.gz" "${DIST}/"
+        # 归档写到上一级再移走，原因有两个：
+        #   1) 若写在 "." 内部，tar 会报 "file changed as we read it"，Linux 上直接失败
+        #   2) 用相对路径，避免 GNU tar 把 Windows 的 "D:\..." 盘符当成远程主机 host:path
+        tar -czf "../${PKG}.tar.gz" .
+        mv "../${PKG}.tar.gz" "${DIST}/"
         echo "package=${PKG}" >> "$GITHUB_OUTPUT"
         ls -lh "${DIST}"
 

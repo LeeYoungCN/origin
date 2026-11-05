@@ -5,6 +5,7 @@
 extern "C" {
 #endif  // __cplusplus
 
+#include <stdbool.h>  // C17 及更早的实现没有 bool 关键字，C 接口必须显式包含
 #include <stdint.h>
 
 #include "origin/logging/detail/constants.h"
@@ -27,6 +28,13 @@ typedef enum {
 
 LOGGING_API const char *origin_log_level_full_name(LogLevelC level);
 LOGGING_API const char *origin_log_level_abbr_name(LogLevelC level);
+
+#pragma region Version
+/** @brief 库版本字符串，形如 "1.0.0" */
+LOGGING_API const char *origin_logging_version();
+/** @brief 库构建时间，形如 "2026-11-05T21:34:47+0800" */
+LOGGING_API const char *origin_logging_build_time();
+#pragma endregion
 
 #pragma region Logger
 LOGGING_API LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],
@@ -87,45 +95,45 @@ LOGGING_API void origin_destroy_task_pool(TaskPoolSt *taskPool);
 #pragma endregion
 
 #pragma region Root logger
-LOGGING_API LoggerSt *origin_root_logger();
-LOGGING_API void origin_set_root_logger(const LoggerSt *logger);
+LOGGING_API LoggerSt *origin_logging_root_logger();
+LOGGING_API void origin_logging_set_root_logger(const LoggerSt *logger);
 
-LOGGING_API void origin_set_level(LogLevelC level);
-LOGGING_API bool origin_should_log(LogLevelC level);
-LOGGING_API LogLevelC origin_level();
+LOGGING_API void origin_logging_set_level(LogLevelC level);
+LOGGING_API bool origin_logging_should_log(LogLevelC level);
+LOGGING_API LogLevelC origin_logging_level();
 
-LOGGING_API void origin_flush_on(LogLevelC level);
-LOGGING_API bool origin_should_flush(LogLevelC level);
-LOGGING_API LogLevelC origin_flush_level();
+LOGGING_API void origin_logging_flush_on(LogLevelC level);
+LOGGING_API bool origin_logging_should_flush(LogLevelC level);
+LOGGING_API LogLevelC origin_logging_flush_level();
 
-LOGGING_API void origin_set_pattern(const char *pattern);
-LOGGING_API void origin_set_formatter(const FormatterSt *formatter);
+LOGGING_API void origin_logging_set_pattern(const char *pattern);
+LOGGING_API void origin_logging_set_formatter(const FormatterSt *formatter);
 
-LOGGING_API void origin_flush();
-LOGGING_API void origin_log(const char *file, int line, const char *func, LogLevelC level,
+LOGGING_API void origin_logging_flush();
+LOGGING_API void origin_logging_log(const char *file, int line, const char *func, LogLevelC level,
                             const char *format, ...);
 #pragma endregion
 
 #pragma region Registry
-LOGGING_API bool origin_register_logger(const LoggerSt *logger);
-LOGGING_API void origin_register_or_replace_logger(const LoggerSt *logger);
-LOGGING_API void origin_remove_logger(const char *name);
-LOGGING_API void origin_remove_all();
-LOGGING_API LoggerSt *origin_get_logger(const char *name);
-LOGGING_API bool origin_is_logger_exists(const char *name);
+LOGGING_API bool origin_logging_register_logger(const LoggerSt *logger);
+LOGGING_API void origin_logging_register_or_replace_logger(const LoggerSt *logger);
+LOGGING_API void origin_logging_remove_logger(const char *name);
+LOGGING_API void origin_logging_remove_all();
+LOGGING_API LoggerSt *origin_logging_get_logger(const char *name);
+LOGGING_API bool origin_logging_is_logger_exists(const char *name);
 
-LOGGING_API bool origin_set_root_task_pool(const TaskPoolSt *taskPool);
-LOGGING_API TaskPoolSt *origin_root_task_pool();
+LOGGING_API bool origin_logging_set_root_task_pool(const TaskPoolSt *taskPool);
+LOGGING_API TaskPoolSt *origin_logging_root_task_pool();
 #pragma endregion
 
 #pragma region Logging manager
-LOGGING_API void origin_initialize_logger(LoggerSt const *logger, bool autoRegister);
-LOGGING_API void origin_set_level_all(LogLevelC level);
-LOGGING_API void origin_flush_on_all(LogLevelC level);
-LOGGING_API void origin_set_pattern_all(const char *pattern);
-LOGGING_API void origin_set_formatter_all(FormatterSt const *formatter);
-LOGGING_API void origin_flush_all();
-LOGGING_API void origin_shutdown();
+LOGGING_API void origin_logging_initialize_logger(LoggerSt const *logger, bool autoRegister);
+LOGGING_API void origin_logging_set_level_all(LogLevelC level);
+LOGGING_API void origin_logging_flush_on_all(LogLevelC level);
+LOGGING_API void origin_logging_set_pattern_all(const char *pattern);
+LOGGING_API void origin_logging_set_formatter_all(FormatterSt const *formatter);
+LOGGING_API void origin_logging_flush_all();
+LOGGING_API void origin_logging_shutdown();
 #pragma endregion
 
 #ifdef __cplusplus
@@ -133,7 +141,7 @@ LOGGING_API void origin_shutdown();
 #endif  // __cplusplus
 
 #define ORIGIN_LOGGING_LOG(level, fmt, ...) \
-    origin_log(__FILE__, __LINE__, __FUNCTION__, level, fmt __VA_OPT__(, ) __VA_ARGS__);
+    origin_logging_log(__FILE__, __LINE__, __FUNCTION__, level, fmt __VA_OPT__(, ) __VA_ARGS__);
 
 #define ORIGIN_LOGGING_TRACE(fmt, ...) \
     ORIGIN_LOGGING_LOG(LOG_LEVEL_C_TRACE, fmt __VA_OPT__(, ) __VA_ARGS__);

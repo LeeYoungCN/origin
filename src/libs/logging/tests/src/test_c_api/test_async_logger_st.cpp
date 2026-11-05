@@ -136,14 +136,14 @@ TEST_F(TestAsyncLoggerSt, create_multi_sinks)
 
 TEST_F(TestAsyncLoggerSt, create_by_root_task_pool)
 {
-    origin_set_root_task_pool(_taskPoolSt);
+    origin_logging_set_root_task_pool(_taskPoolSt);
     const std::string name = get_logger_name(test_info_);
     _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, nullptr);
     ASSERT_NE(_loggerSt, nullptr);
     EXPECT_EQ(_sink.use_count(), 3);
     EXPECT_EQ(origin_logger_name(_loggerSt), name);
     EXPECT_EQ(_sink->buffer().size(), 0);
-    origin_shutdown();
+    origin_logging_shutdown();
 }
 
 TEST_F(TestAsyncLoggerSt, log_filter)

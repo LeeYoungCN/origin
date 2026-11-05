@@ -33,7 +33,7 @@ void TestRootLoggerC::SetUp()
 {
     _sink->set_level(LogLevel::TRACE);
     _sink->enable_debug_info(false);
-    origin_shutdown();
+    origin_logging_shutdown();
 }
 
 void TestRootLoggerC::TearDown()
@@ -42,7 +42,7 @@ void TestRootLoggerC::TearDown()
     origin_destroy_logger(_loggerSt);
     destroy_mock_logger_st(_nullLogger);
     destroy_mock_formatter_st(_nullFormatter);
-    origin_shutdown();
+    origin_logging_shutdown();
 }
 
 void TestRootLoggerC::init_root_logger(const testing::TestInfo *test_info)
@@ -50,8 +50,8 @@ void TestRootLoggerC::init_root_logger(const testing::TestInfo *test_info)
     const std::string name = get_logger_name(test_info);
     _loggerSt = origin_create_sync_logger(name.data(), _sinks, 1);
     ASSERT_NE(_loggerSt, nullptr);
-    origin_set_root_logger(_loggerSt);
-    origin_set_level(LOG_LEVEL_C_TRACE);
+    origin_logging_set_root_logger(_loggerSt);
+    origin_logging_set_level(LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestRootLoggerC, set_and_get_root_logger)
@@ -59,8 +59,8 @@ TEST_F(TestRootLoggerC, set_and_get_root_logger)
     const std::string name = get_logger_name(test_info_);
     _loggerSt = origin_create_sync_logger(name.data(), _sinks, 1);
     ASSERT_NE(_loggerSt, nullptr);
-    origin_set_root_logger(_loggerSt);
-    const auto rootLogger = origin_root_logger();
+    origin_logging_set_root_logger(_loggerSt);
+    const auto rootLogger = origin_logging_root_logger();
     ASSERT_NE(rootLogger, nullptr);
     EXPECT_EQ(origin_logger_name(rootLogger), name);
     origin_destroy_logger(rootLogger);
@@ -70,8 +70,8 @@ TEST_F(TestRootLoggerC, set_root_logger_failed_when_logger_nullptr)
 {
     init_root_logger(test_info_);
 
-    origin_set_root_logger(nullptr);
-    const auto rootLogger = origin_root_logger();
+    origin_logging_set_root_logger(nullptr);
+    const auto rootLogger = origin_logging_root_logger();
     ASSERT_NE(rootLogger, nullptr);
     EXPECT_EQ(origin_logger_name(rootLogger), origin_logger_name(_loggerSt));
     origin_destroy_logger(rootLogger);
@@ -81,8 +81,8 @@ TEST_F(TestRootLoggerC, set_root_logger_failed_when_logger_ptr_nullptr)
 {
     init_root_logger(test_info_);
 
-    origin_set_root_logger(_nullLogger);
-    const auto rootLogger = origin_root_logger();
+    origin_logging_set_root_logger(_nullLogger);
+    const auto rootLogger = origin_logging_root_logger();
     ASSERT_NE(rootLogger, nullptr);
     EXPECT_EQ(origin_logger_name(rootLogger), origin_logger_name(_loggerSt));
     origin_destroy_logger(rootLogger);
@@ -90,7 +90,7 @@ TEST_F(TestRootLoggerC, set_root_logger_failed_when_logger_ptr_nullptr)
 
 TEST_F(TestRootLoggerC, get_root_logger_failed_when_nonexist)
 {
-    EXPECT_EQ(origin_root_logger(), nullptr);
+    EXPECT_EQ(origin_logging_root_logger(), nullptr);
 }
 
 TEST_F(TestRootLoggerC, log_macros)
@@ -127,7 +127,7 @@ TEST_F(TestRootLoggerC, log_flush)
         EXPECT_EQ(_sink->buffer().size(), i + 1);
         EXPECT_EQ(_sink->disk().size(), 0);
     }
-    origin_flush();
+    origin_logging_flush();
     EXPECT_EQ(_sink->buffer().size(), 0);
     EXPECT_EQ(_sink->disk().size(), MAX_ITEM_CNT);
 }
@@ -137,7 +137,7 @@ TEST_F(TestRootLoggerC, log_level_filter)
     init_root_logger(test_info_);
 
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
-        origin_set_level(filterLevel);
+        origin_logging_set_level(filterLevel);
         for (const LogLevelC logLevel : C_LOG_LEVELS) {
             ORIGIN_LOGGING_LOG(logLevel,
                                "FilterLevel: [%s], Level: [%s].",
@@ -145,7 +145,7 @@ TEST_F(TestRootLoggerC, log_level_filter)
                                origin_log_level_full_name(logLevel));
         }
         if (filterLevel != LOG_LEVEL_C_OFF) {
-            EXPECT_EQ(_sink->buffer().size(), LOG_LEVEL_C_FATAL - origin_level() + 1);
+            EXPECT_EQ(_sink->buffer().size(), LOG_LEVEL_C_FATAL - origin_logging_level() + 1);
         } else {
             EXPECT_EQ(_sink->buffer().size(), 0);
         }
@@ -159,7 +159,7 @@ TEST_F(TestRootLoggerC, flush_level_filter)
 
     for (LogLevelC const flushLevel : C_LOG_LEVELS) {
         // 设置刷新等级
-        origin_flush_on(flushLevel);
+        origin_logging_flush_on(flushLevel);
         for (uint32_t i = 0; i < C_LOG_LEVELS.size(); ++i) {
             LogLevelC const level = C_LOG_LEVELS[i];
             if (level == LOG_LEVEL_C_OFF) {
@@ -186,16 +186,16 @@ TEST_F(TestRootLoggerC, set_and_get_level)
 {
     init_root_logger(test_info_);
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
-        origin_set_level(filterLevel);
-        EXPECT_EQ(origin_level(), filterLevel);
+        origin_logging_set_level(filterLevel);
+        EXPECT_EQ(origin_logging_level(), filterLevel);
         for (const LogLevelC level : C_LOG_LEVELS) {
             if (filterLevel != LOG_LEVEL_C_OFF) {
-                EXPECT_TRUE(origin_should_log(filterLevel));
+                EXPECT_TRUE(origin_logging_should_log(filterLevel));
             } else {
                 if (level >= filterLevel && level != LOG_LEVEL_C_OFF) {
-                    EXPECT_TRUE(origin_should_log(filterLevel));
+                    EXPECT_TRUE(origin_logging_should_log(filterLevel));
                 } else {
-                    EXPECT_FALSE(origin_should_log(filterLevel));
+                    EXPECT_FALSE(origin_logging_should_log(filterLevel));
                 }
             }
         }
@@ -205,45 +205,45 @@ TEST_F(TestRootLoggerC, set_and_get_level)
 TEST_F(TestRootLoggerC, set_level_failed_when_level_invalid)
 {
     init_root_logger(test_info_);
-    origin_set_level(INVALID_LEVEL_C);
-    EXPECT_EQ(origin_level(), LOG_LEVEL_C_TRACE);
+    origin_logging_set_level(INVALID_LEVEL_C);
+    EXPECT_EQ(origin_logging_level(), LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestRootLoggerC, set_level_failed_when_root_logger_nullptr)
 {
-    origin_set_level(LOG_LEVEL_C_INFO);
+    origin_logging_set_level(LOG_LEVEL_C_INFO);
 }
 
 TEST_F(TestRootLoggerC, get_level_failed_when_root_logger_nullptr)
 {
-    EXPECT_EQ(origin_level(), LOG_LEVEL_C_OFF);
+    EXPECT_EQ(origin_logging_level(), LOG_LEVEL_C_OFF);
 }
 
 TEST_F(TestRootLoggerC, should_log_false_when_level_invalid)
 {
     init_root_logger(test_info_);
-    EXPECT_FALSE(origin_should_log(INVALID_LEVEL_C));
+    EXPECT_FALSE(origin_logging_should_log(INVALID_LEVEL_C));
 }
 
 TEST_F(TestRootLoggerC, should_log_false_when_root_logger_nullptr)
 {
-    EXPECT_FALSE(origin_should_log(LOG_LEVEL_C_OFF));
+    EXPECT_FALSE(origin_logging_should_log(LOG_LEVEL_C_OFF));
 }
 
 TEST_F(TestRootLoggerC, flush_on)
 {
     init_root_logger(test_info_);
     for (const LogLevelC filterLevel : C_LOG_LEVELS) {
-        origin_flush_on(filterLevel);
-        EXPECT_EQ(origin_flush_level(), filterLevel);
+        origin_logging_flush_on(filterLevel);
+        EXPECT_EQ(origin_logging_flush_level(), filterLevel);
         for (const LogLevelC level : C_LOG_LEVELS) {
             if (filterLevel != LOG_LEVEL_C_OFF) {
-                EXPECT_TRUE(origin_should_flush(filterLevel));
+                EXPECT_TRUE(origin_logging_should_flush(filterLevel));
             } else {
                 if (level >= filterLevel && level != LOG_LEVEL_C_OFF) {
-                    EXPECT_TRUE(origin_should_flush(filterLevel));
+                    EXPECT_TRUE(origin_logging_should_flush(filterLevel));
                 } else {
-                    EXPECT_FALSE(origin_should_flush(filterLevel));
+                    EXPECT_FALSE(origin_logging_should_flush(filterLevel));
                 }
             }
         }
@@ -252,40 +252,40 @@ TEST_F(TestRootLoggerC, flush_on)
 
 TEST_F(TestRootLoggerC, flush_on_failed_when_level_invalid)
 {
-    origin_flush_on(LOG_LEVEL_C_TRACE);
+    origin_logging_flush_on(LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestRootLoggerC, flush_on_failed_when_root_logger_nullptr)
 {
     init_root_logger(test_info_);
-    origin_flush_on(LOG_LEVEL_C_TRACE);
-    EXPECT_EQ(origin_flush_level(), LOG_LEVEL_C_TRACE);
+    origin_logging_flush_on(LOG_LEVEL_C_TRACE);
+    EXPECT_EQ(origin_logging_flush_level(), LOG_LEVEL_C_TRACE);
 
-    origin_flush_on(INVALID_LEVEL_C);
-    EXPECT_EQ(origin_flush_level(), LOG_LEVEL_C_TRACE);
+    origin_logging_flush_on(INVALID_LEVEL_C);
+    EXPECT_EQ(origin_logging_flush_level(), LOG_LEVEL_C_TRACE);
 }
 
 TEST_F(TestRootLoggerC, should_flush_false_when_level_invalid)
 {
     init_root_logger(test_info_);
-    EXPECT_FALSE(origin_should_flush(INVALID_LEVEL_C));
+    EXPECT_FALSE(origin_logging_should_flush(INVALID_LEVEL_C));
 }
 
 TEST_F(TestRootLoggerC, should_flush_false_when_root_logger_nullptr)
 {
-    EXPECT_FALSE(origin_should_flush(INVALID_LEVEL_C));
+    EXPECT_FALSE(origin_logging_should_flush(INVALID_LEVEL_C));
 }
 
 TEST_F(TestRootLoggerC, fluash_level_failed_when_root_logger_nullptr)
 {
-    EXPECT_EQ(origin_flush_level(), LOG_LEVEL_C_OFF);
+    EXPECT_EQ(origin_logging_flush_level(), LOG_LEVEL_C_OFF);
 }
 
 TEST_F(TestRootLoggerC, set_pattern)
 {
     init_root_logger(test_info_);
 
-    origin_set_pattern("%v");
+    origin_logging_set_pattern("%v");
     for (uint32_t i = 0; i < 10; i++) {
         ORIGIN_LOGGING_ERROR("%u", i);
         EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
@@ -295,7 +295,7 @@ TEST_F(TestRootLoggerC, set_pattern)
 TEST_F(TestRootLoggerC, set_pattern_failed_when_pattern_nullptr)
 {
     init_root_logger(test_info_);
-    origin_set_pattern(nullptr);
+    origin_logging_set_pattern(nullptr);
     ORIGIN_LOGGING_ERROR("test");
     EXPECT_NE("test", _sink->buffer()[0]);
 }
@@ -303,14 +303,14 @@ TEST_F(TestRootLoggerC, set_pattern_failed_when_pattern_nullptr)
 TEST_F(TestRootLoggerC, set_pattern_failed_when_pattern_empty)
 {
     init_root_logger(test_info_);
-    origin_set_pattern("");
+    origin_logging_set_pattern("");
     ORIGIN_LOGGING_ERROR("test");
     EXPECT_NE("test", _sink->buffer()[0]);
 }
 
 TEST_F(TestRootLoggerC, set_pattern_failed_when_root_logger_nullptr)
 {
-    origin_set_pattern("%v");
+    origin_logging_set_pattern("%v");
 }
 
 TEST_F(TestRootLoggerC, set_formatter)
@@ -318,7 +318,7 @@ TEST_F(TestRootLoggerC, set_formatter)
     init_root_logger(test_info_);
 
     FormatterSt *formatter = origin_create_pattern_formatter("%v");
-    origin_set_formatter(formatter);
+    origin_logging_set_formatter(formatter);
     origin_destroy_formatter(formatter);
 
     for (uint32_t i = 0; i < 10; i++) {
@@ -330,21 +330,21 @@ TEST_F(TestRootLoggerC, set_formatter)
 TEST_F(TestRootLoggerC, set_formatter_failed_when_formatter_nullptr)
 {
     init_root_logger(test_info_);
-    origin_set_formatter(nullptr);
-    origin_set_formatter(_nullFormatter);
+    origin_logging_set_formatter(nullptr);
+    origin_logging_set_formatter(_nullFormatter);
 }
 
 TEST_F(TestRootLoggerC, set_formatter_failed_when_root_logger_nullptr)
 {
     FormatterSt *formatter = origin_create_pattern_formatter("%v");
-    origin_set_formatter(formatter);
+    origin_logging_set_formatter(formatter);
     origin_destroy_formatter(formatter);
 }
 
 TEST_F(TestRootLoggerC, log_failed_when_level_invalid)
 {
     init_root_logger(test_info_);
-    origin_log(__FILE__,
+    origin_logging_log(__FILE__,
                __LINE__,
                __FUNCTION__,
                INVALID_LEVEL_C,
@@ -355,18 +355,18 @@ TEST_F(TestRootLoggerC, log_failed_when_level_invalid)
 TEST_F(TestRootLoggerC, log_failed_when_formtat_nullptr)
 {
     init_root_logger(test_info_);
-    origin_log(__FILE__, __LINE__, __FUNCTION__, LOG_LEVEL_C_ERROR, nullptr);
+    origin_logging_log(__FILE__, __LINE__, __FUNCTION__, LOG_LEVEL_C_ERROR, nullptr);
     EXPECT_EQ(_sink->buffer().size(), 0);
 }
 
 TEST_F(TestRootLoggerC, log_failed_when_root_logger_nullptr)
 {
-    origin_log(
+    origin_logging_log(
         __FILE__, __LINE__, __FUNCTION__, LOG_LEVEL_C_ERROR, "log_failed_when_root_logger_nullptr");
 }
 
 TEST_F(TestRootLoggerC, flush_failed_when_root_logger_nullptr)
 {
-    origin_flush();
+    origin_logging_flush();
 }
 }  // namespace logging_test

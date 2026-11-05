@@ -18,6 +18,11 @@ FetchContent_Declare(
 )
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# gtest 的安装规则默认开启（INSTALL_GTEST 默认 ON），会把 include/gtest、
+# lib/cmake/GTest 和 libgtest*.a 一起装进我们的安装前缀；嵌入式使用必须关掉。
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+# 项目只用到 gtest 本体，不构建 gmock，省编译时间也少一套安装项。
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # v1.18.0 的 gtest-printers.h 仍保留 ImplicitCast_<char32_t>(char16_t/char8_t)，

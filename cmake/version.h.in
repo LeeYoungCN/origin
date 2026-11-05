@@ -9,4 +9,7 @@
 // 完整版本字符串，形如 "1.0.0"
 #define ORIGIN_VERSION_STRING "@PROJECT_VERSION@"
 
+// 构建时间：configure 阶段的本地时间，带时区偏移，形如 "2025-11-05T21:34:28+0800"
+#define ORIGIN_BUILD_TIMESTAMP "@ORIGIN_BUILD_TIMESTAMP@"
+
 #endif  // ORIGIN_VERSION_H

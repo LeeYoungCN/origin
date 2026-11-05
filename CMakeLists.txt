@@ -104,6 +104,9 @@ elseif (UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 endif()
 
+# 构建时间：取自 configure 阶段的本地时间，带时区偏移（%z），避免跨时区歧义
+string(TIMESTAMP ORIGIN_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%S%z")
+
 # 版本头：产物里能查到编译时使用的版本
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/version.h.in"

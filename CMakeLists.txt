@@ -24,14 +24,14 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
     add_compile_options(/permissive- /utf-8 /Zc:__cplusplus)
-    if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         add_compile_options(/Zc:preprocessor)
     endif()
 endif()
 
 if (MINGW OR CMAKE_COMPILER_IS_GNUCXX OR
-    (${CMAKE_CXX_COMPILER_ID} MATCHES "(Apple)?Clang" AND
-     ${CMAKE_C_COMPILER_FRONTEND_VARIANT} STREQUAL "GNU"))
+    (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang" AND
+     CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "GNU"))
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -O0")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
@@ -51,9 +51,11 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/get_cmake_preset.cmake)
 
-if (${CMAKE_INSTALL_PREFIX} STREQUAL "C:/Program Files (x86)/${PROJECT_NAME}" OR
-    ${CMAKE_INSTALL_PREFIX} STREQUAL "/usr/local")
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/out/install/${CMAKE_PRESET}" CACHE STRING "Default CMAKE_INSTALL_PREFIX out/install/${CMAKE_PRESET}" FORCE)
+if (NOT CMAKE_INSTALL_PREFIX OR
+    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files (x86)/${PROJECT_NAME}" OR
+    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/${PROJECT_NAME}" OR
+    CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/out/install/${CMAKE_PRESET}" CACHE PATH "Default CMAKE_INSTALL_PREFIX out/install/${CMAKE_PRESET}" FORCE)
 endif()
 
 if (NOT CMAKE_THIRD_PARTY_PATH)
@@ -61,7 +63,7 @@ if (NOT CMAKE_THIRD_PARTY_PATH)
 endif()
 
 if (ENABLE_ASAN)
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         if(MSVC)
             add_compile_options(/fsanitize=address /Zi)
             add_link_options(/fsanitize=address)
@@ -75,7 +77,7 @@ if (ENABLE_ASAN)
         endif()
     else()
         if (CMAKE_COMPILER_IS_GNUCXX OR
-            (${CMAKE_CXX_COMPILER_ID} MATCHES "(Apple)?Clang"))
+            (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang"))
             add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
             add_link_options(-fsanitize=address)
         else()
@@ -84,7 +86,7 @@ if (ENABLE_ASAN)
     endif()
 endif()
 
-if (NOT EXISTS ${CMAKE_THIRD_PARTY_PATH})
+if (NOT EXISTS "${CMAKE_THIRD_PARTY_PATH}")
     message(WARNING "CMAKE_THIRD_PARTY_PATH does not exist: ${CMAKE_THIRD_PARTY_PATH}")
 endif()
 

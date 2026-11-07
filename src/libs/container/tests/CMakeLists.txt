@@ -1,7 +1,13 @@
 set(TEST_RUNTIME test_${LIB_NAME})
 set(TEST_OBJECT  test_${LIB_NAME}_obj)
 
-file(GLOB_RECURSE SRC_LIST "src/*.cpp")
+# 显式源文件清单：新增/删除测试文件时同步改这里。
+set(SRC_LIST
+    src/test_blocking_queue.cpp
+    src/test_concurrent_blocking_queue_mt.cpp
+    src/test_concurrent_blocking_queue_st.cpp
+    src/test_cstring.cpp
+)
 
 add_library(${TEST_OBJECT} OBJECT ${SRC_LIST})
 add_executable(${TEST_RUNTIME} main.cpp $<TARGET_OBJECTS:${TEST_OBJECT}>)

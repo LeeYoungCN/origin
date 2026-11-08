@@ -37,7 +37,7 @@ protected:
     virtual void flush_it() = 0;
     void set_param_string(std::string_view param);
 
-    std::atomic<LogLevel> _level{LogLevel::INFO};
+    std::atomic<LogLevel> _level{LogLevel::TRACE};  // 默认不按级别过滤，由 logger 决定
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
     mutable std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};

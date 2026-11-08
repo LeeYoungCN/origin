@@ -42,7 +42,7 @@ protected:
     virtual void clear_it() = 0;
 
 protected:
-    std::atomic<LogLevel> _level{LogLevel::INFO};
+    std::atomic<LogLevel> _level{LogLevel::TRACE};  // 与生产实现保持一致：默认不过滤
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
     std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};

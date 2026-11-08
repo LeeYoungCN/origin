@@ -46,6 +46,8 @@ int main()
 }
 ```
 
+示例里的 `set_level(LogLevel::DEBUG)` 一步就能看到 `debug` 日志 —— sink 默认是 `TRACE`，不会额外过滤；只有需要按 sink 分流时才去设 sink 级别（见第 4 节）。
+
 CMake 里链接组件即可（头文件路径由组件自动带出）：
 
 ```cmake
@@ -83,21 +85,33 @@ target_link_libraries(your_target PRIVATE Logging)
 1. logger 级别：`level >= logger.level()` 才继续（`OFF` 永远不输出）；
 2. sink 级别：`level >= sink.level()` 才写这个 sink。
 
-**两处默认级别都是 `INFO`**。所以只把 logger 调到 `TRACE` 是不够的，sink 也得一起调：
+但两级的默认值不同，这一点和 spdlog 一致：
+
+| 对象 | 默认级别 | 含义 |
+|---|---|---|
+| logger | `INFO` | 默认只放 info 及以上，这是唯一的默认过滤层 |
+| sink | `TRACE` | 默认**不过滤**，logger 放过来的都写 |
+
+所以平时只调 logger 就够了：
 
 ```cpp
-set_level(LogLevel::TRACE);              // 只作用于 root logger
-root_logger()->sinks()[0]->set_level(LogLevel::TRACE);  // 还要放开 sink
+set_level(LogLevel::DEBUG);   // 一步到位，sink 默认不挡
 ```
 
-自己创建 logger 时更常见的写法：
+只有需要**按 sink 分流**时才去动 sink 级别（比如控制台只留 info+、文件要 debug+）：
 
 ```cpp
-auto sink = create_sink<BasicFileSink>("logs/app.log", true);
-sink->set_level(LogLevel::TRACE);
-auto logger = create_logger<SyncLogger>("app", sink);
-logger->set_level(LogLevel::DEBUG);
+auto console = create_sink<StdoutSink>();
+console->set_level(LogLevel::INFO);
+
+auto file = create_sink<BasicFileSink>("logs/app.log", true);
+file->set_level(LogLevel::DEBUG);
+
+auto logger = create_logger<SyncLogger>("app", {console, file});
+logger->set_level(LogLevel::DEBUG);   // logger 这层放到 debug
 ```
+
+`sink->set_level(LogLevel::OFF)` 等价于**关掉这个 sink**：`OFF` 比任何级别都大，`level >= OFF` 永不成立。
 
 `should_log(level)` 可以在格式化代价高的日志前先判断，避免无谓的格式化开销：
 
@@ -199,7 +213,8 @@ set_root_logger(logger);
 - `RotatingFileSink` 没有 `overwrite`，`rotateOnOpen = true` 表示启动时先把已存在的文件转成历史文件（变成 `.1`），再新开一个空文件；
 - `DailyFileSink` 的 `hour`/`minute` 是每天的滚动时刻（默认 00:00），取值越界抛 `std::out_of_range`；
 - `get_file_list()` 可以拿到已经滚动出来的文件列表，便于排查或打包；
-- 每个 sink 有自己的级别和格式，`logger->set_pattern()` 会把格式**下发到它所有的 sink**。
+- 每个 sink 有自己的级别和格式，`logger->set_pattern()` 会把格式**下发到它所有的 sink**；
+- sink 级别默认 `TRACE`（不过滤），不调就永远不挡消息，需要按 sink 分流时才显式 `set_level`。
 
 ## 8. 异步日志与线程池
 
@@ -384,7 +399,7 @@ std::string_view built = origin::logging::build_time();     // 运行期构建�
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| 设了 `TRACE`/`DEBUG` 还是没输出 | sink 级别默认也是 `INFO` | 同时 `sink->set_level(...)` |
+| 设了 `TRACE`/`DEBUG` 还是没输出 | logger 级别没调，或某个 sink 被显式调高了 | 检查 `logger->level()` 和各 `sink->level()` |
 | 异步日志偶发丢失 | 进程退出时队列还没排空 | 退出前 `flush_all()` 并销毁线程池 / 调用 `shutdown()` |
 | `create_logger<AsyncLogger>` 抛 `runtime_error` | 没有注册全局线程池 | 先 `set_root_task_pool(create_task_pool(...))` |
 | 重名 logger 注册失败 | `register_logger` 遇到同名返回 `false` | 用 `register_or_replace_logger`，或先 `remove_logger` |

@@ -19,41 +19,30 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
-        platform: [gnu, clang, msvc]
         include:
           # Windows 配置
           - os: windows-latest
-            platform: msvc
             preset: win_clang_cl_release
-            compiler: msvc
+            compiler: clang
+          # MSVC 对"临时对象绑非 const 引用"等写法宽容，clang 会直接报错；
+          # 额外跑一个 clang-cl debug 行，提前暴露这类只在 clang 下出现的编译问题
           - os: windows-latest
-            platform: gnu
+            preset: win_clang_cl_debug
+            compiler: clang
+          - os: windows-latest
             preset: win_mingw_release
             compiler: mingw
           # Ubuntu 配置
           - os: ubuntu-latest
-            platform: clang
             preset: linux_clang_release
             compiler: clang
           - os: ubuntu-latest
-            platform: gnu
             preset: linux_gnu_release
             compiler: gcc
           # macOS 配置
           - os: macos-15
-            platform: clang
             preset: darwin_clang_release
             compiler: clang
-        exclude:
-          - os: windows-latest
-            platform: clang
-          - os: ubuntu-latest
-            platform: msvc
-          - os: macos-15
-            platform: msvc
-          - os: macos-15
-            platform: gnu
 
     steps:
     - uses: actions/checkout@v4

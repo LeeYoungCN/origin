@@ -82,7 +82,10 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.preset }} -DORIGIN_VERSION=${{ steps.strings.outputs.version }}
+      # Windows runner 默认 shell 是 pwsh，它会把 "-DVAR=x.y.z" 拆成 "-DVAR=x" 和 ".y.z"，
+      # 后者会被 CMake 当成源码目录；统一用 bash 并给参数加引号，避免依赖 shell 的差异。
+      shell: bash
+      run: cmake --preset=${{ matrix.preset }} "-DORIGIN_VERSION:STRING=${{ steps.strings.outputs.version }}"
 
     - name: Build And Install
       working-directory: ${{ github.workspace }}

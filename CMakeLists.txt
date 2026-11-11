@@ -1,5 +1,18 @@
 cmake_minimum_required(VERSION 3.14)
-project(Origin VERSION 1.0.0 LANGUAGES C CXX)
+
+# 版本号：默认值用于本地开发；CI 以 git tag 覆盖（cmake --preset=xxx -DORIGIN_VERSION=x.y.z），
+# 保证产物包名与库内 origin::version() / ORIGIN_VERSION_STRING 一致。
+set(ORIGIN_VERSION "1.0.0" CACHE STRING "Project version, overridable by CI from git tag")
+
+# project(VERSION) 只接受纯数字，预发布 tag（如 1.0.0-rc1）要剥掉后缀；
+# 完整字符串仍通过 ORIGIN_VERSION_STRING 暴露给库内版本查询。
+string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" ORIGIN_VERSION_NUMERIC "${ORIGIN_VERSION}")
+if(NOT ORIGIN_VERSION_NUMERIC)
+    message(WARNING "ORIGIN_VERSION '${ORIGIN_VERSION}' has no numeric prefix, fallback to 0.0.0")
+    set(ORIGIN_VERSION_NUMERIC "0.0.0")
+endif()
+
+project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

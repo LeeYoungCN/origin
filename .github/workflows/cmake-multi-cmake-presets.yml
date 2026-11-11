@@ -66,6 +66,15 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/out/build" >> "$GITHUB_OUTPUT"
         echo "build-install-dir=${{ github.workspace }}/out/install" >> "$GITHUB_OUTPUT"
         echo "dist-dir=${{ github.workspace }}/dist" >> "$GITHUB_OUTPUT"
+        # 打 tag（v1.2.3）时用 tag 号当版本，其余情况库内版本为 0.0.0；
+        # 包名额外带短 sha，保证同一条流水线产出的包名总能区分来源。
+        if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "pkg-version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "version=0.0.0" >> "$GITHUB_OUTPUT"
+          echo "pkg-version=0.0.0-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        fi
 
     - name: Update MinGW via MSYS2 (Windows GCC only)
       if: matrix.os == 'windows-latest' && matrix.compiler == 'mingw'
@@ -84,7 +93,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.preset }}
+      run: cmake --preset=${{ matrix.preset }} -DORIGIN_VERSION=${{ steps.strings.outputs.version }}
 
     - name: Build And Install
       working-directory: ${{ github.workspace }}
@@ -101,12 +110,7 @@ jobs:
       shell: bash
       run: |
         set -euo pipefail
-        if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          VERSION="${GITHUB_REF_NAME#v}"
-        else
-          VERSION="0.0.0-${GITHUB_SHA::7}"
-        fi
-        PKG="origin-${VERSION}-${{ matrix.preset }}"
+        PKG="origin-${{ steps.strings.outputs.pkg-version }}-${{ matrix.preset }}"
         DIST="${{ steps.strings.outputs.dist-dir }}"
         mkdir -p "${DIST}"
         cd "${{ steps.strings.outputs.build-install-dir }}/${{ matrix.preset }}"

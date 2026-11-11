@@ -26,7 +26,8 @@ std::shared_ptr<Logger> create_async_logger(const std::string_view name,
 }
 
 std::shared_ptr<Logger> create_async_logger(
-    const std::string_view name, const std::initializer_list<std::shared_ptr<Sink>> sinks,
+    const std::string_view name,
+    const std::initializer_list<std::shared_ptr<Sink>> sinks,
     const std::weak_ptr<TaskPool>& pool)
 {
     return std::make_shared<AsyncLogger>(name, sinks, pool);
@@ -173,7 +174,17 @@ void set_formatter_all(std::unique_ptr<Formatter> formatter)
 
 void flush_all()
 {
-    REGISTRY.flush_all();
+    apply_all([](const std::shared_ptr<Logger>& logger) { logger->flush(); });
+}
+
+void apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun)
+{
+    if (fun == nullptr) {
+        ORIGIN_DEBUG_ERR("Apply all failed. fun nullptr.");
+        return;
+    }
+
+    REGISTRY.apply_all(fun);
 }
 
 void shutdown()
@@ -211,6 +222,11 @@ std::shared_ptr<Logger> get_logger(const std::string_view name)
 bool is_logger_exists(const std::string_view name)
 {
     return REGISTRY.exists(name);
+}
+
+std::vector<std::shared_ptr<Logger>> snapshot_loggers()
+{
+    return REGISTRY.snapshot_loggers();
 }
 
 bool set_root_task_pool(std::shared_ptr<TaskPool> taskPool)

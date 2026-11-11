@@ -3,11 +3,14 @@
 
 #include <cstdint>
 #include <format>
+#include <functional>
 #include <initializer_list>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "origin/logging/detail/logging_api.h"
 #include "origin/logging/formatters/formatter.hpp"
@@ -86,8 +89,7 @@ void log(LogLevel level, std::format_string<Args...> format, Args&&... args)
 }
 
 template <typename... Args>
-void log(const LogSource& source, LogLevel level, std::format_string<Args...> format,
-         Args&&... args)
+void log(const LogSource& source, LogLevel level, std::format_string<Args...> format, Args&&... args)
 {
     root_logger()->log(source, level, format, std::forward<Args>(args)...);
 }
@@ -267,7 +269,14 @@ LOGGING_API void set_level_all(LogLevel level);
 LOGGING_API void flush_on_all(LogLevel level);
 LOGGING_API void set_pattern_all(std::string_view pattern);
 LOGGING_API void set_formatter_all(std::unique_ptr<Formatter> formatter);
+/**
+ * @brief 向所有已注册 logger 各写一条日志。
+ *
+ * 按每个 logger 自己的级别过滤，返回实际写入的 logger 数量。消息只格式化一次；
+ * 若多个 logger 共享同一个 sink，该 sink 会收到多条（每个 logger 各一条）。
+ */
 LOGGING_API void flush_all();
+LOGGING_API void apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun);
 LOGGING_API void shutdown();
 #pragma endregion
 
@@ -278,6 +287,7 @@ LOGGING_API void remove_logger(std::string_view name);
 LOGGING_API void remove_all();
 LOGGING_API std::shared_ptr<Logger> get_logger(std::string_view name);
 LOGGING_API bool is_logger_exists(std::string_view name);
+LOGGING_API std::vector<std::shared_ptr<Logger>> snapshot_loggers();
 
 LOGGING_API bool set_root_task_pool(std::shared_ptr<TaskPool> taskPool);
 LOGGING_API std::shared_ptr<TaskPool> root_task_pool();

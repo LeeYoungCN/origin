@@ -1,11 +1,11 @@
 #include "internal/registry.hpp"
 
-#include <exception>
 #include <memory>
 #include <mutex>
 #include <ranges>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "internal/task_pool.hpp"
 #include "origin/common/debug/debug_logger.h"
@@ -78,22 +78,22 @@ void Registry::initialize_logger(const std::shared_ptr<Logger>& logger, const bo
 
 void Registry::set_level_all(const LogLevel level)
 {
-    std::lock_guard const lock(_loggerMapMtx);
-    _globalLevel = level;
-
-    for (const auto& logger : _loggers | std::views::values) {
-        logger->set_level(_globalLevel);
+    {
+        std::lock_guard const lock(_loggerMapMtx);
+        _globalLevel = level;
     }
+
+    apply_all([level](const std::shared_ptr<Logger>& logger) { logger->set_level(level); });
 }
 
 void Registry::flush_on_all(const LogLevel level)
 {
-    std::lock_guard const lock(_loggerMapMtx);
-    _globalFlushLevel = level;
-
-    for (const auto& logger : _loggers | std::views::values) {
-        logger->flush_on(_globalFlushLevel);
+    {
+        std::lock_guard const lock(_loggerMapMtx);
+        _globalFlushLevel = level;
     }
+
+    apply_all([level](const std::shared_ptr<Logger>& logger) { logger->flush_on(level); });
 }
 
 void Registry::set_pattern_all(const std::string_view pattern)
@@ -107,18 +107,23 @@ void Registry::set_formatter_all(std::unique_ptr<Formatter> formatter)
         ORIGIN_DEBUG_ERR("Set formatter failed. formatter nullptr");
         return;
     }
-    std::lock_guard const lock(_loggerMapMtx);
-    _globalFormatter = std::move(formatter);
-    for (const auto& logger : _loggers | std::views::values) {
-        logger->set_formatter(_globalFormatter->clone());
+
+    std::unique_ptr<Formatter> formatterSnapshot;
+    {
+        std::lock_guard const lock(_loggerMapMtx);
+        _globalFormatter = std::move(formatter);
+        formatterSnapshot = _globalFormatter->clone();
     }
+
+    apply_all([&formatterSnapshot](const std::shared_ptr<Logger>& logger) {
+        logger->set_formatter(formatterSnapshot);
+    });
 }
 
-void Registry::flush_all()
+void Registry::apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun)
 {
-    std::lock_guard const lock(_loggerMapMtx);
-    for (const auto& logger : _loggers | std::views::values) {
-        logger->flush();
+    for (const auto& logger : snapshot_loggers()) {
+        fun(logger);
     }
 }
 
@@ -133,6 +138,7 @@ void Registry::shutdown()
     }
     ORIGIN_DEBUG_DBG("Logging module shutdown.");
 }
+
 #pragma endregion
 
 #pragma region registry
@@ -190,6 +196,17 @@ bool Registry::exists(const std::string_view name)
 {
     std::lock_guard const lock(_loggerMapMtx);
     return exist_it(name);
+}
+
+std::vector<std::shared_ptr<Logger>> Registry::snapshot_loggers()
+{
+    std::lock_guard const lock(_loggerMapMtx);
+    std::vector<std::shared_ptr<Logger>> loggers;
+    loggers.reserve(_loggers.size());
+    for (const auto& logger : _loggers | std::views::values) {
+        loggers.push_back(logger);
+    }
+    return loggers;
 }
 
 bool Registry::set_root_task_pool(std::shared_ptr<TaskPool> taskPool)

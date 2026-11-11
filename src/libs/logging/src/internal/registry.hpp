@@ -3,10 +3,12 @@
 #ifndef ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 #define ORIGIN_LOGGING_INTERNAL_REGISTRY_HPP
 
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "internal/task_pool.hpp"
 #include "origin/common/base/singleton.h"
@@ -33,7 +35,7 @@ public:
     void flush_on_all(LogLevel level);
     void set_pattern_all(std::string_view pattern);
     void set_formatter_all(std::unique_ptr<Formatter> formatter);
-    void flush_all();
+    void apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun);
     void shutdown();
 #pragma endregion
 
@@ -44,6 +46,7 @@ public:
     void remove_all();
     std::shared_ptr<Logger> get_logger(std::string_view name);
     bool exists(std::string_view name);
+    std::vector<std::shared_ptr<Logger>> snapshot_loggers();
 
     bool set_root_task_pool(std::shared_ptr<TaskPool> taskPool);
     std::shared_ptr<TaskPool> root_task_pool();

@@ -7,6 +7,7 @@
 #include "internal/registry.hpp"
 #include "origin/common/base/singleton.h"
 #include "origin/common/debug/debug_logger.h"
+#include "origin/logging/logging.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c_api;
@@ -285,7 +286,7 @@ void origin_logging_set_formatter_all(const FormatterSt *formatter)
 
 void origin_logging_flush_all()
 {
-    REGISTRY.flush_all();
+    flush_all();
 }
 
 void origin_logging_shutdown()

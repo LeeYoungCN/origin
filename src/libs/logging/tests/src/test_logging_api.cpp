@@ -3,6 +3,7 @@
 #include <string>
 
 #include "detail/common.hpp"
+#include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
 #include "origin/logging/loggers/sync_logger.hpp"
 #include "origin/logging/logging.hpp"
@@ -186,6 +187,83 @@ TEST_F(TestLoggingApi, get_root_task_pool_failed_when_not_set)
 {
     auto taskPool = root_task_pool();
     EXPECT_EQ(nullptr, taskPool);
+}
+
+TEST_F(TestLoggingApi, set_level_all_applies_to_all_loggers)
+{
+    remove_all();
+    const std::string name1 = get_logger_name(test_info_);
+    const std::string name2 = name1 + "_2";
+    auto logger1 = create_logger<SyncLogger, StdoutSink>(name1);
+    auto logger2 = create_logger<SyncLogger, StdoutSink>(name2);
+    ASSERT_TRUE(register_logger(logger1));
+    ASSERT_TRUE(register_logger(logger2));
+
+    set_level_all(LogLevel::WARN);
+
+    EXPECT_EQ(logger1->level(), LogLevel::WARN);
+    EXPECT_EQ(logger2->level(), LogLevel::WARN);
+
+    // 之后经 initialize_logger 注册的 logger 继承全局级别
+    auto logger3 = create_logger<SyncLogger, StdoutSink>(name1 + "_3");
+    initialize_logger(logger3);
+    EXPECT_EQ(logger3->level(), LogLevel::WARN);
+}
+
+TEST_F(TestLoggingApi, flush_on_all_applies_to_all_loggers)
+{
+    remove_all();
+    const std::string name1 = get_logger_name(test_info_);
+    const std::string name2 = name1 + "_2";
+    auto logger1 = create_logger<SyncLogger, StdoutSink>(name1);
+    auto logger2 = create_logger<SyncLogger, StdoutSink>(name2);
+    ASSERT_TRUE(register_logger(logger1));
+    ASSERT_TRUE(register_logger(logger2));
+
+    flush_on_all(LogLevel::ERR);
+
+    EXPECT_EQ(logger1->flush_level(), LogLevel::ERR);
+    EXPECT_EQ(logger2->flush_level(), LogLevel::ERR);
+}
+
+TEST_F(TestLoggingApi, flush_all_flushes_every_sink)
+{
+    remove_all();
+    auto sink = std::make_shared<LogContentBufferSink>();
+    sink->set_level(LogLevel::TRACE);
+    sink->set_pattern("%v");
+
+    const std::string name = get_logger_name(test_info_);
+    auto logger = create_logger<SyncLogger>(name, sink);
+    logger->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger));
+
+    logger->info("hello");
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->disk().size(), 0u);
+
+    flush_all();
+
+    EXPECT_EQ(sink->buffer().size(), 0u);
+    EXPECT_EQ(sink->disk().size(), 1u);
+}
+
+TEST_F(TestLoggingApi, set_pattern_all_applies_to_all_loggers)
+{
+    remove_all();
+    auto sink = std::make_shared<LogContentBufferSink>();
+    sink->set_level(LogLevel::TRACE);
+
+    const std::string name = get_logger_name(test_info_);
+    auto logger = create_logger<SyncLogger>(name, sink);
+    logger->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger));
+
+    set_pattern_all("%v");
+    logger->info("hello");
+
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->buffer()[0], "hello");  // 没有前缀，说明 pattern 生效
 }
 
 }  // namespace logging_test

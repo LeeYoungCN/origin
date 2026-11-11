@@ -189,6 +189,129 @@ TEST_F(TestLoggingApi, get_root_task_pool_failed_when_not_set)
     EXPECT_EQ(nullptr, taskPool);
 }
 
+TEST_F(TestLoggingApi, log_all_writes_to_every_registered_logger)
+{
+    remove_all();  // 去掉进程启动时默认创建的 root logger，保证计数确定
+    const std::string name1 = get_logger_name(test_info_);
+    const std::string name2 = name1 + "_2";
+
+    auto sink1 = std::make_shared<LogContentBufferSink>();
+    auto sink2 = std::make_shared<LogContentBufferSink>();
+    sink1->set_level(LogLevel::TRACE);
+    sink2->set_level(LogLevel::TRACE);
+    sink1->set_pattern("%n=%v");
+    sink2->set_pattern("%n=%v");
+
+    auto logger1 = create_logger<SyncLogger>(name1, sink1);
+    auto logger2 = create_logger<SyncLogger>(name2, sink2);
+    logger1->set_level(LogLevel::TRACE);
+    logger2->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger1));
+    ASSERT_TRUE(register_logger(logger2));
+
+    const uint32_t count = log_all(LOG_SRC_LOCAL, LogLevel::INFO, "hello {}", 1);
+
+    EXPECT_EQ(count, 2u);
+    ASSERT_EQ(sink1->buffer().size(), 1u);
+    ASSERT_EQ(sink2->buffer().size(), 1u);
+    EXPECT_EQ(sink1->buffer()[0], name1 + "=hello 1");
+    EXPECT_EQ(sink2->buffer()[0], name2 + "=hello 1");
+}
+
+TEST_F(TestLoggingApi, log_all_skips_logger_below_level)
+{
+    remove_all();
+    const std::string name1 = get_logger_name(test_info_);
+    const std::string name2 = name1 + "_2";
+
+    auto sink1 = std::make_shared<LogContentBufferSink>();
+    auto sink2 = std::make_shared<LogContentBufferSink>();
+    sink1->set_level(LogLevel::TRACE);
+    sink2->set_level(LogLevel::TRACE);
+    sink1->set_pattern("%v");
+    sink2->set_pattern("%v");
+
+    auto logger1 = create_logger<SyncLogger>(name1, sink1);
+    auto logger2 = create_logger<SyncLogger>(name2, sink2);
+    logger1->set_level(LogLevel::TRACE);
+    logger2->set_level(LogLevel::ERR);
+    ASSERT_TRUE(register_logger(logger1));
+    ASSERT_TRUE(register_logger(logger2));
+
+    const uint32_t count = log_all(LOG_SRC_LOCAL, LogLevel::INFO, "filtered");
+
+    EXPECT_EQ(count, 1u);
+    EXPECT_EQ(sink1->buffer().size(), 1u);
+    EXPECT_EQ(sink2->buffer().size(), 0u);
+}
+
+TEST_F(TestLoggingApi, log_all_returns_zero_when_registry_empty)
+{
+    remove_all();
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, "nobody"), 0u);
+}
+
+TEST_F(TestLoggingApi, log_all_accepts_plain_string_without_recursion)
+{
+    remove_all();
+    auto sink = std::make_shared<LogContentBufferSink>();
+    sink->set_level(LogLevel::TRACE);
+    sink->set_pattern("%v");
+
+    const std::string name = get_logger_name(test_info_);
+    auto logger = create_logger<SyncLogger>(name, sink);
+    logger->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger));
+
+    // 走 const T& 重载：内部必须先转成 string_view 再委托，否则会递归到栈溢出
+    const std::string text = "plain string";
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, text), 1u);
+
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->buffer()[0], text);
+}
+
+TEST_F(TestLoggingApi, log_all_accepts_numeric_and_string_view_message)
+{
+    remove_all();
+    auto sink = std::make_shared<LogContentBufferSink>();
+    sink->set_level(LogLevel::TRACE);
+    sink->set_pattern("%v");
+
+    const std::string name = get_logger_name(test_info_);
+    auto logger = create_logger<SyncLogger>(name, sink);
+    logger->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger));
+
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, 42), 1u);
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->buffer()[0], "42");
+
+    sink->clear();
+    const std::string_view text = "from string_view";
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, text), 1u);
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->buffer()[0], text);
+}
+
+TEST_F(TestLoggingApi, log_all_treats_bare_literal_as_message)
+{
+    remove_all();
+    auto sink = std::make_shared<LogContentBufferSink>();
+    sink->set_level(LogLevel::TRACE);
+    sink->set_pattern("%v");
+
+    const std::string name = get_logger_name(test_info_);
+    auto logger = create_logger<SyncLogger>(name, sink);
+    logger->set_level(LogLevel::TRACE);
+    ASSERT_TRUE(register_logger(logger));
+
+    // 不带参数的字面量走 string_view 重载，不会被当成格式串解析
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, "{plain}"), 1u);
+    ASSERT_EQ(sink->buffer().size(), 1u);
+    EXPECT_EQ(sink->buffer()[0], "{plain}");
+}
+
 TEST_F(TestLoggingApi, set_level_all_applies_to_all_loggers)
 {
     remove_all();

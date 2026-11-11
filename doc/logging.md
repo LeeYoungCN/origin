@@ -291,7 +291,22 @@ logger->set_formatter(create_formatter<PatternFormatter>("[%L] %v"));
 | `set_pattern_all(pattern)` | 设置全局格式并同步到所有已注册 logger |
 | `set_formatter_all(formatter)` | 同上，自定义 Formatter 版本 |
 | `flush_all()` | flush 所有 logger 的所有 sink |
+| `apply_all(fun)` | 对每个已注册 logger 执行 `fun`（先取快照再回调，回调里可安全调用注册表接口） |
+| `log_all(source, level, ...)` | 向所有已注册 logger 各写一条日志，返回通过各 logger 级别过滤的数量（sink 级别仍可能再丢弃） |
 | `shutdown()` | 清空注册表（含 root logger）并释放全局线程池 |
+
+`log_all` 的三种调用形态与各自的落点：
+
+```cpp
+log_all(LOG_SRC_LOCAL, LogLevel::INFO, "config reloaded, version={}", 2);  // 格式化：消息只格式化一次
+log_all(LOG_SRC_LOCAL, LogLevel::INFO, std::string("already formatted"));  // 已拼好的字符串
+log_all(LOG_SRC_LOCAL, LogLevel::INFO, "{plain}");                         // 字面量：按消息处理，不当格式串
+```
+
+注意两点：
+
+- 消息只格式化一次，再分发给每个 logger，不会 N 个 logger 格式化 N 遍；
+- 若多个 logger 共享同一个 sink，这个 sink 会收到多条（每个 logger 各一条，`loggerName` 不同）。
 
 注册表相关：
 

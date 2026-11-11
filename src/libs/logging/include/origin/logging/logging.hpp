@@ -275,6 +275,22 @@ LOGGING_API void set_formatter_all(std::unique_ptr<Formatter> formatter);
  * 按每个 logger 自己的级别过滤，返回实际写入的 logger 数量。消息只格式化一次；
  * 若多个 logger 共享同一个 sink，该 sink 会收到多条（每个 logger 各一条）。
  */
+LOGGING_API uint32_t log_all(const LogSource& source, LogLevel level, std::string_view message);
+
+template <typename... Args>
+uint32_t log_all(const LogSource& source, LogLevel level, std::format_string<Args...> format,
+                 Args&&... args)
+{
+    const std::string text = std::format(format, std::forward<Args>(args)...);
+    return log_all(source, level, std::string_view(text));
+}
+
+template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
+uint32_t log_all(const LogSource& source, LogLevel level, const T& message)
+{
+    const std::string text = origin::string::type_to_string(message);
+    return log_all(source, level, std::string_view(text));
+}
 LOGGING_API void flush_all();
 LOGGING_API void apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun);
 LOGGING_API void shutdown();

@@ -172,6 +172,18 @@ void set_formatter_all(std::unique_ptr<Formatter> formatter)
     REGISTRY.set_formatter_all(std::move(formatter));
 }
 
+uint32_t log_all(const LogSource& source, LogLevel level, std::string_view message)
+{
+    uint32_t count = 0;
+    apply_all([&](const std::shared_ptr<Logger>& logger) {
+        if (logger->should_log(level)) {
+            logger->force_log(source, level, message);
+            ++count;
+        }
+    });
+    return count;
+}
+
 void flush_all()
 {
     apply_all([](const std::shared_ptr<Logger>& logger) { logger->flush(); });

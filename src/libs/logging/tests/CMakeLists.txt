@@ -28,7 +28,7 @@ set(SRC_LIST
     # 顶层用例
     src/test_logging_mpmc.cpp
     src/test_pattern_formatter.cpp
-    src/test_registry.cpp
+    src/test_logging_api.cpp
 )
 
 add_library(${TEST_OBJECT} OBJECT ${SRC_LIST})

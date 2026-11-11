@@ -11,7 +11,7 @@
 namespace logging_test {
 using namespace origin::logging;
 
-class TestRegistry : public ::testing::Test {
+class TestLoggingApi : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
     static void TearDownTestSuite() {}
@@ -19,12 +19,12 @@ protected:
     void TearDown() override;
 };
 
-void TestRegistry::TearDown()
+void TestLoggingApi::TearDown()
 {
     shutdown();
 }
 
-TEST_F(TestRegistry, register_logger)
+TEST_F(TestLoggingApi, register_logger)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -32,12 +32,12 @@ TEST_F(TestRegistry, register_logger)
     EXPECT_TRUE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, register_logger_failed_when_logger_is_nullptr)
+TEST_F(TestLoggingApi, register_logger_failed_when_logger_is_nullptr)
 {
     EXPECT_FALSE(register_logger(nullptr));
 }
 
-TEST_F(TestRegistry, register_logger_failed_when_logger_already_exists)
+TEST_F(TestLoggingApi, register_logger_failed_when_logger_already_exists)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -46,7 +46,7 @@ TEST_F(TestRegistry, register_logger_failed_when_logger_already_exists)
     EXPECT_FALSE(register_logger(logger2));
 }
 
-TEST_F(TestRegistry, get_logger)
+TEST_F(TestLoggingApi, get_logger)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -55,14 +55,14 @@ TEST_F(TestRegistry, get_logger)
     EXPECT_EQ(logger, logger2);
 }
 
-TEST_F(TestRegistry, get_logger_when_logger_not_exist)
+TEST_F(TestLoggingApi, get_logger_when_logger_not_exist)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = get_logger(name);
     EXPECT_EQ(nullptr, logger);
 }
 
-TEST_F(TestRegistry, remove_logger_when_logger_exist)
+TEST_F(TestLoggingApi, remove_logger_when_logger_exist)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -77,7 +77,7 @@ TEST_F(TestRegistry, remove_logger_when_logger_exist)
     EXPECT_FALSE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, remove_logger_when_logger_is_root_logger)
+TEST_F(TestLoggingApi, remove_logger_when_logger_is_root_logger)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -93,7 +93,7 @@ TEST_F(TestRegistry, remove_logger_when_logger_is_root_logger)
     EXPECT_FALSE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, remove_logger_when_logger_not_exist)
+TEST_F(TestLoggingApi, remove_logger_when_logger_not_exist)
 {
     const std::string name = get_logger_name(test_info_);
     EXPECT_FALSE(is_logger_exists(name));
@@ -103,7 +103,7 @@ TEST_F(TestRegistry, remove_logger_when_logger_not_exist)
     EXPECT_FALSE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, is_logger_exist)
+TEST_F(TestLoggingApi, is_logger_exist)
 {
     const std::string name = get_logger_name(test_info_);
     auto logger = create_logger<SyncLogger, StdoutSink>(name);
@@ -112,13 +112,13 @@ TEST_F(TestRegistry, is_logger_exist)
     EXPECT_TRUE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, is_logger_exist_when_logger_not_exist)
+TEST_F(TestLoggingApi, is_logger_exist_when_logger_not_exist)
 {
     const std::string name = get_logger_name(test_info_);
     EXPECT_FALSE(is_logger_exists(name));
 }
 
-TEST_F(TestRegistry, register_or_replace_logger)
+TEST_F(TestLoggingApi, register_or_replace_logger)
 {
     const std::string name = get_logger_name(test_info_);
 
@@ -132,7 +132,7 @@ TEST_F(TestRegistry, register_or_replace_logger)
     EXPECT_EQ(logger2, logger3);
 }
 
-TEST_F(TestRegistry, remove_all_loggers)
+TEST_F(TestLoggingApi, remove_all_loggers)
 {
     const std::string name1 = get_logger_name(test_info_);
     auto logger1 = create_logger<SyncLogger, StdoutSink>(name1);
@@ -151,7 +151,7 @@ TEST_F(TestRegistry, remove_all_loggers)
     EXPECT_FALSE(is_logger_exists(name2));
 }
 
-TEST_F(TestRegistry, set_root_task_pool)
+TEST_F(TestLoggingApi, set_root_task_pool)
 {
     constexpr uint32_t capacity = 10;
     constexpr uint32_t threadCnt = 1;
@@ -161,14 +161,14 @@ TEST_F(TestRegistry, set_root_task_pool)
     EXPECT_EQ(taskPool, taskPool1);
 }
 
-TEST_F(TestRegistry, set_root_task_pool_failed_when_task_pool_is_nullptr)
+TEST_F(TestLoggingApi, set_root_task_pool_failed_when_task_pool_is_nullptr)
 {
     EXPECT_FALSE(set_root_task_pool(nullptr));
     auto taskPool1 = root_task_pool();
     EXPECT_EQ(nullptr, taskPool1);
 }
 
-TEST_F(TestRegistry, set_root_task_pool_failed_when_task_pool_already_exists)
+TEST_F(TestLoggingApi, set_root_task_pool_failed_when_task_pool_already_exists)
 {
     constexpr uint32_t capacity = 10;
     constexpr uint32_t threadCnt = 1;
@@ -182,7 +182,7 @@ TEST_F(TestRegistry, set_root_task_pool_failed_when_task_pool_already_exists)
     EXPECT_EQ(taskPool2, taskPool);
 }
 
-TEST_F(TestRegistry, get_root_task_pool_failed_when_not_set)
+TEST_F(TestLoggingApi, get_root_task_pool_failed_when_not_set)
 {
     auto taskPool = root_task_pool();
     EXPECT_EQ(nullptr, taskPool);

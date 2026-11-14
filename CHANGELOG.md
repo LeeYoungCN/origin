@@ -47,6 +47,8 @@
 
 - `cmake_tools.sh --pkg[=<out-dir>]`：调用 CPack 生成 `origin-<完整版本>-<preset>.zip`
   （Windows 上不依赖外部 `zip` 命令），默认输出到 `out/pkg/<preset>`，打包后清理 `_CPack_Packages`。
+- `CMakePresets.json` 新增 `packagePresets`：`cpack --preset msvc_x64_debug_pkg`
+  （以及 `linux_gnu_*_pkg` / `darwin_clang_*_pkg`）可直接打包，免去手写 `--config` 路径。
 - `cmake_tools.sh --gtest_target=<name>`：只跑指定的测试进程（默认聚合进程 `test_origin`）；
   配合 `--gtest=<filter>` 过滤用例，`--gtest=list` 列出用例。
 - Windows Debug 构建随安装树一起安装 PDB（`$<TARGET_PDB_FILE>`），可单步进入库代码。

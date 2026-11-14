@@ -724,6 +724,63 @@
             ]
         }
     ],
+    "packagePresets": [
+        {
+            "name": "project_package_base",
+            "hidden": true,
+            "generators": [
+                "ZIP"
+            ]
+        },
+        {
+            "name": "msvc_x64_debug_pkg",
+            "description": "MSVC x64 Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "msvc_x64_debug"
+        },
+        {
+            "name": "msvc_x64_release_pkg",
+            "description": "MSVC x64 Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "msvc_x64_release"
+        },
+        {
+            "name": "linux_gnu_debug_pkg",
+            "description": "Linux GNU Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "linux_gnu_debug"
+        },
+        {
+            "name": "linux_gnu_release_pkg",
+            "description": "Linux GNU Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "linux_gnu_release"
+        },
+        {
+            "name": "darwin_clang_debug_pkg",
+            "description": "Darwin Clang Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "darwin_clang_debug"
+        },
+        {
+            "name": "darwin_clang_release_pkg",
+            "description": "Darwin Clang Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "darwin_clang_release"
+        }
+    ],
     "workflowPresets": [
         {
             "name": "win_clang_msvc_debug_workflow",

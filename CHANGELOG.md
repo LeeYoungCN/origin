@@ -36,9 +36,23 @@
   改用 `origin/common/c/version_c.h` 的 `origin_c_abi_version()`（C ABI 版本）、`origin_version()`、
   `origin_version_commit()`（扁平 getter，供 C#/Python 等绑定使用）。
 - `origin::logging::version()` 这类写法统一改为 `origin::version()`。
+- 顶层接入 CPack：`CPACK_GENERATOR=ZIP;TGZ`，包名 `origin-<完整版本>-<preset>`，
+  输出目录由 `CPACK_PACKAGE_DIRECTORY` 指定（默认 `out/pkg/<preset>`，`-B` 可覆盖）；
+  cpack 按 install 规则自行装到 staging，不依赖 `out/install`。
+- `cmake_tools.sh` 的 `--install` 语义由"安装 component"改为"指定安装前缀"
+  （`--install=<prefix>`，默认 `out/install/<preset>`）；仅当目标目录是 Origin 安装树时才清空。
+- `cmake_tools.sh` 日志统一为英文；Windows 平台识别兼容 MSYS2 / Cygwin（`MSYS_NT-*`）。
 
 ### 新增
 
+- `cmake_tools.sh --pkg[=<out-dir>]`：调用 CPack 生成 `origin-<完整版本>-<preset>.zip`
+  （Windows 上不依赖外部 `zip` 命令），默认输出到 `out/pkg/<preset>`，打包后清理 `_CPack_Packages`。
+- `cmake_tools.sh --gtest_target=<name>`：只跑指定的测试进程（默认聚合进程 `test_origin`）；
+  配合 `--gtest=<filter>` 过滤用例，`--gtest=list` 列出用例。
+- Windows Debug 构建随安装树一起安装 PDB（`$<TARGET_PDB_FILE>`），可单步进入库代码。
+- 构建树新增 `Origin::Common` / `Origin::Utils` / `Origin::Logging` 别名，与安装树写法一致。
+- `cmake_configure.conf` 新增 `project_version_full`（完整版本，含 `-dev+g<sha>`）与
+  `cpack_package_directory`；`common_func.sh` 新增 `create_dir`。
 - Windows 下的 DLL 嵌入 `VERSIONINFO` 资源（`cmake/version.rc.in` + `cmake/version_resource.cmake`）：
   资源管理器与 `GetFileVersionInfo()` 能看到文件/产品版本，数值部分取 `1.0.1.0`，
   字符串部分带开发后缀（如 `1.0.1-dev+g3df8f84-dirty`）。

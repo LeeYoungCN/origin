@@ -13,6 +13,9 @@ configure_file(
     "${CMAKE_CONFIGURE_FILE}"
 )
 
+message(STATUS "ORIGIN_VERSION:                         ${ORIGIN_VERSION}")
+message(STATUS "ORIGIN_VERSION_FULL:                    ${ORIGIN_VERSION_FULL}")
+message(STATUS "ORIGIN_VERSION_NUMERIC:                 ${ORIGIN_VERSION_NUMERIC}")
 message(STATUS "CMAKE_CONFIGURE_FILE:                   ${CMAKE_CONFIGURE_FILE}")
 message(STATUS "CMAKE_PRESET:                           ${CMAKE_PRESET}")
 message(STATUS "BUILD_TESTS:                            ${BUILD_TESTS}")
@@ -27,6 +30,7 @@ message(STATUS "CMAKE_CXX_FLAGS_RELEASE:                ${CMAKE_CXX_FLAGS_RELEAS
 message(STATUS "CMAKE_EXE_LINKER_FLAGS:                 ${CMAKE_EXE_LINKER_FLAGS}")
 message(STATUS "CMAKE_BINARY_DIR:                       ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX:                   ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CPACK_PACKAGE_DIRECTORY:                ${CPACK_PACKAGE_DIRECTORY}")
 message(STATUS "CMAKE_THIRD_PARTY_PATH                  ${CMAKE_THIRD_PARTY_PATH}")
 
 message(STATUS "CMAKE_SYSTEM_NAME:                      ${CMAKE_SYSTEM_NAME}")

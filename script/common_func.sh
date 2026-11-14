@@ -39,6 +39,22 @@ function replace_text() {
     return 0
 }
 
+function create_dir() {
+    local dir="${1}"
+    if [ -d "${dir}" ]; then
+        print_log "Create [${dir}] success, already exist." info
+        return 0
+    fi
+
+    if ! mkdir -p "${dir}"; then
+        print_log "Create [${dir}] failed." error
+        return 1
+    else
+        print_log "Create [${dir}] success." info
+        return 0
+    fi
+}
+
 function rm_dir() {
     local dir="${1}"
     if [ ! -d "${dir}" ]; then

@@ -1,5 +1,6 @@
 cmake_configure_file="@CMAKE_CONFIGURE_FILE@"
 project_version="@PROJECT_VERSION@"
+project_version_full="@ORIGIN_VERSION_FULL@"
 cmake_preset="@CMAKE_PRESET@"
 BUILD_TESTS="@BUILD_TESTS@"
 cmake_build_type="@CMAKE_BUILD_TYPE@"
@@ -23,6 +24,7 @@ cmake_system_processor="@CMAKE_SYSTEM_PROCESSOR@"
 cmake_source_dir="@CMAKE_SOURCE_DIR@"
 cmake_binary_dir="@CMAKE_BINARY_DIR@"
 cmake_install_prefix="@CMAKE_INSTALL_PREFIX@"
+cpack_package_directory="@CPACK_PACKAGE_DIRECTORY@"
 env_param_file="@ENV_PARAM_FILE@"
 cmake_enable_asan=@ENABLE_ASAN@
 ARCHITECTURE=@ARCHITECTURE@

@@ -18,9 +18,9 @@ readonly SCRIPT_DIR
 readonly ROOT_DIR
 
 OS=$(uname -s)
-if echo "${OS}" | grep -q "MINGW"; then
-    OS="Windows"
-fi
+case "${OS}" in
+MINGW* | MSYS* | CYGWIN*) OS="Windows" ;;
+esac
 
 readonly OS
 
@@ -31,6 +31,7 @@ cd "${ROOT_DIR}" || exit 1
 
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
+readonly PACKAGE_ROOT_DIR="${ROOT_DIR}/out/pkg"
 readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchain_files"
 gtest_target="test_origin"
 
@@ -45,7 +46,10 @@ arg_enable_configure=1
 arg_preset=""
 
 arg_enable_install=1
-arg_component="all"
+arg_install_prefix=""
+
+arg_enable_pkg=1
+arg_pkg_directory=""
 
 arg_enable_gtest=1
 arg_gtest_case="all"
@@ -63,12 +67,12 @@ cmake_source_dir="${ROOT_DIR}"
 cmake_binary_dir=""
 cmake_test_runtime=""
 cmake_install_prefix=""
+cpack_package_directory=""
 cmake_build_type=""
 cmake_toolchain_file=""
 cmake_generator=""
 cmake_preset=""
 cmake_build_target=""
-cmake_install_component=""
 cmake_configure_param_cfg=""
 # shellcheck disable=SC2034
 ARCHITECTURE="x64"
@@ -99,18 +103,26 @@ function print_help() {
     echo "                                       Build all targets:    --build(default) or --build=all"
     echo "                                       List all target name: --build=list"
     echo ""
-    echo "        --install[=<component>]        Run CMake install. Default install all."
-    echo "                                       Install all components: --install(default) or --install=all"
-    echo "                                       List all component: --install=list"
+    echo "        --install[=<prefix>]           Run CMake install. Default install all."
+    echo "                                       Install prefix: --install=<dir>"
+    echo "                                       Default prefix: out/install/<preset>"
     echo ""
-    echo "        --gtest[=<gtest-case>]         Run all gtest test case:      --gtest"
-    echo "                                       Run target gtest test case:   --gtest=<gtest-case>."
-    echo "                                       List all gtest case list:     --gtest=list."
+    echo "        --gtest[=<case-filter>]        Run gtest test case:         --gtest (all cases)"
+    echo "                                       Run filtered cases:         --gtest=Version.*"
+    echo "                                       List all cases:             --gtest=list"
+    echo "        --gtest_target[=<target>]      Run a single test executable. Default test_origin"
+    echo "                                       (aggregate target with all component tests; filter cases with --gtest=<filter>)"
+    echo "                                       e.g. --gtest_target=test_Logging"
     echo ""
     echo "        --ctest[=<ctest-case>]         Rerun ctest case TEST_ALL:    --ctest or --ctest=all"
     echo "                                       Run target ctest case:        --ctest=<ctest-case>"
     echo "                                       Run last failed ctest case:   --ctest=rerun"
     echo "                                       List all gtest case:          --ctest=list"
+    echo ""
+    echo "        --pkg[=<out-dir>]              Package the install tree into <out-dir>."
+    echo "                                       Default out-dir: out/pkg/<preset>"
+    echo "                                       Archive: origin-<version>-<preset>.zip (or .tar.gz)"
+    echo "                                       Uses CPack; run --configure first if CPackConfig.cmake is missing."
     echo ""
     echo "        --asan                         Enable asan."
     echo ""
@@ -138,7 +150,7 @@ function clean_env() {
         echo "all(default), build, install"
         ;;
     *)
-        print_log "Invalid clean type: [${arg_clean_type}]"
+        print_log "Invalid clean type: [${arg_clean_type}] (valid: all, build, install)"
         ;;
     esac
 }
@@ -154,7 +166,7 @@ function list_cmake_configure_param_in_dir() {
     local build_dir="${1}"
     local configure_param_cfg="${build_dir}/cmake_configure.conf"
     if [ ! -e "${configure_param_cfg}" ]; then
-        print_log "${configure_param_cfg} not exist." error
+        print_log "configure params file not found: ${configure_param_cfg}" error
         return 1
     fi
     echo "----- ${build_dir} -----"
@@ -192,7 +204,7 @@ function init_cmake_preset() {
         preset_array=("darwin_clang_debug" "darwin_clang_release")
         ;;
     *)
-        print_log "OS: ${OS} error!"
+        print_log "Unsupported OS: ${OS}"
         exit 1
         ;;
     esac
@@ -275,7 +287,7 @@ function init_cmake_configure_param() {
             cmake_build_type="Release"
             ;;
         *)
-            print_log "Preset: ${arg_preset} error!" error
+            print_log "Unknown preset for ${OS}: ${arg_preset}" error
             exit 1
             ;;
         esac
@@ -303,7 +315,7 @@ function init_cmake_configure_param() {
             cmake_build_type="Release"
             ;;
         *)
-            print_log "Preset: ${arg_preset} error!" error
+            print_log "Unknown preset for ${OS}: ${arg_preset}" error
             exit 1
             ;;
         esac
@@ -321,18 +333,29 @@ function init_cmake_configure_param() {
             cmake_build_type="Release"
             ;;
         *)
-            print_log "Preset: ${arg_preset} error!" error
+            print_log "Unknown preset for ${OS}: ${arg_preset}" error
             exit 1
             ;;
         esac
         ;;
     *)
-        print_log "OS: ${OS} error!"
+        print_log "Unsupported OS: ${OS}"
         exit 1
         ;;
     esac
 
-    cmake_install_prefix="${INSTALL_ROOT_DIR}/${cmake_preset}"
+    if [ -z "${arg_install_prefix}" ]; then
+        cmake_install_prefix="${INSTALL_ROOT_DIR}/${cmake_preset}"
+    else
+        cmake_install_prefix="${arg_install_prefix}"
+    fi
+
+    if [ -z "${arg_pkg_directory}" ]; then
+        cpack_package_directory="${PACKAGE_ROOT_DIR}/${cmake_preset}"
+    else
+        cpack_package_directory="${arg_pkg_directory}"
+    fi
+
     cmake_enable_asan="${arg_enable_asan}"
 
     if [ -n "${env_param_file}" ]; then
@@ -340,7 +363,7 @@ function init_cmake_configure_param() {
         source "${env_param_file}"
     fi
     g_is_init_param=0
-    print_log "Init CMake configure param success." info
+    print_log "CMake configure params ready." info
 }
 
 function init_cmake_env() {
@@ -349,7 +372,7 @@ function init_cmake_env() {
     fi
 
     if [ ! -d "${cmake_binary_dir}" ]; then
-        print_log "[${cmake_preset}] CMake not configure." error
+        print_log "[${cmake_preset}] build dir is not configured: ${cmake_binary_dir}" error
         exit 1
     fi
     cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
@@ -360,7 +383,7 @@ function init_cmake_env() {
         source "${cmake_configure_param_cfg}"
         g_is_init_param=0
     else
-        print_log "${cmake_configure_param_cfg} not exist." error
+        print_log "configure params file not found: ${cmake_configure_param_cfg}" error
     fi
     if [ -n "${env_param_file}" ]; then
         # shellcheck disable=SC1090
@@ -379,14 +402,15 @@ function cmake_configure() {
         -DCMAKE_TOOLCHAIN_FILE="${cmake_toolchain_file}" \
         -DCMAKE_BUILD_TYPE="${cmake_build_type}" \
         -DCMAKE_INSTALL_PREFIX="${cmake_install_prefix}" \
+        -DCPACK_PACKAGE_DIRECTORY="${cpack_package_directory}" \
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
         -DENABLE_ASAN="${cmake_enable_asan}" \
         -DBUILD_TESTS="${cmake_enable_test}"; then
-        print_log "[${cmake_preset}] CMake configuration success." info
+        print_log "[${cmake_preset}] configure done." info
         cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     else
-        print_log "[${cmake_preset}] CMake configuration failed." error
+        print_log "[${cmake_preset}] configure failed." error
         exit 1
     fi
 }
@@ -401,9 +425,9 @@ function cmake_build() {
         ;;
     *)
         if cmake --build "${cmake_binary_dir}" --target "${cmake_build_target}" -j4; then
-            print_log "[${cmake_preset}] CMake build success." info
+            print_log "[${cmake_preset}] build done." info
         else
-            print_log "[${cmake_preset}] CMake build failed." error
+            print_log "[${cmake_preset}] build failed." error
             exit 1
         fi
         ;;
@@ -413,38 +437,50 @@ function cmake_build() {
 function cmake_install() {
     init_cmake_env
 
-    readonly cmake_install_component=${arg_component}
+    if [ -n "${arg_install_prefix}" ]; then
+        cmake_install_prefix="${arg_install_prefix}"
+    fi
 
-    case ${cmake_install_component} in
-    list)
-        cmake --build "${cmake_binary_dir}" --target "list_install_components" -j4
-        return 0
-        ;;
-    all)
+    if [ -f "${cmake_install_prefix}/lib/cmake/Origin/OriginConfig.cmake" ]; then
         rm_dir "${cmake_install_prefix}"
-        if cmake --install "${cmake_binary_dir}"; then
-            print_log "[${cmake_preset}] CMake install all success." info
-        else
-            print_log "[${cmake_preset}] CMake install all failed." error
-            exit 1
-        fi
-        ;;
-    *)
-        if cmake --install "${cmake_binary_dir}" --component "${cmake_install_component}"; then
-            print_log "CMake install component [${cmake_install_component}] success." info
-        else
-            print_log "CMake install component [${cmake_install_component}] failed." error
-            exit 1
-        fi
-        ;;
-    esac
+    fi
+
+    if cmake --install "${cmake_binary_dir}" --prefix "${cmake_install_prefix}"; then
+        print_log "[${cmake_preset}] installed to [${cmake_install_prefix}]" info
+    else
+        print_log "[${cmake_preset}] install to [${cmake_install_prefix}] failed." error
+        exit 1
+    fi
+}
+
+function cmake_pkg() {
+    init_cmake_env
+
+    if [ ! -f "${cmake_binary_dir}/CPackConfig.cmake" ]; then
+        print_log "CPack config not found: ${cmake_binary_dir}/CPackConfig.cmake (run --configure first)" error
+        exit 1
+    fi
+
+    if [ -n "${arg_pkg_directory}" ]; then
+        cpack_package_directory="${arg_pkg_directory}"
+    fi
+
+    create_dir "${cpack_package_directory}"
+
+    if cpack --config "${cmake_binary_dir}/CPackConfig.cmake" -B "${cpack_package_directory}"; then
+        rm_dir "${cpack_package_directory}/_CPack_Packages"
+        print_log "[${cmake_preset}] packaged to ${cpack_package_directory}" info
+    else
+        print_log "[${cmake_preset}] packaging to [${cpack_package_directory}] failed." error
+        exit 1
+    fi
 }
 
 function run_gtest() {
     init_cmake_env
     cmake_test_runtime="${cmake_binary_dir}/bin/${gtest_target}"
     if [ ! -e "${cmake_test_runtime}" ]; then
-        print_log "Test runtime [${cmake_test_runtime}] not exist!" error
+        print_log "test executable not found: ${cmake_test_runtime}" error
         exit 1
     fi
 
@@ -488,7 +524,7 @@ function run_ctest() {
 function main() {
     if ! ARGS=$(
         getopt -o c::p:s: \
-            --long clean::,install::,preset:,configure,build::,gtest::,ctest::,help,list,asan,gtest_target:: \
+            --long clean::,install::,preset:,configure,build::,gtest::,ctest::,help,list,asan,gtest_target::,pkg:: \
             -n "$0" -- "$@"
     ); then
         print_log "getopt failed." error
@@ -528,7 +564,7 @@ function main() {
         --install)
             arg_enable_install=0
             if [ -n "${2}" ]; then
-                arg_component="${2}"
+                arg_install_prefix="${2}"
             fi
             shift 2
             ;;
@@ -546,10 +582,17 @@ function main() {
             fi
             shift 2
             ;;
+        --pkg)
+            arg_enable_pkg=0
+            # --pkg=<out-dir> 指定压缩包输出目录；不带值时用 out/pkg
+            if [ -n "${2}" ]; then
+                arg_pkg_directory="${2}"
+            fi
+            shift 2
+            ;;
         --ctest)
             arg_enable_ctest=0
-            if [ -n "${2}" ]; then
-                arg_ctest_case="${2}"
+            if [ -n "${2}" ]; then                arg_ctest_case="${2}"
             fi
             shift 2
             ;;
@@ -566,7 +609,7 @@ function main() {
             break
             ;;
         *)
-            print_log "Invalid getopt param [${1}]." error
+            print_log "Unknown option: ${1}" error
             exit 1
             ;;
         esac
@@ -582,12 +625,13 @@ function main() {
     readonly arg_build_target
 
     readonly arg_enable_install
-    readonly arg_component
 
     readonly arg_enable_gtest
     readonly arg_gtest_case
 
     readonly arg_enable_ctest
+    readonly arg_enable_pkg
+    readonly arg_pkg_directory
     readonly arg_ctest_case
 
     readonly arg_enable_asan
@@ -618,6 +662,10 @@ function main() {
 
     if [ ${arg_enable_install} -eq 0 ]; then
         cmake_install
+    fi
+
+    if [ ${arg_enable_pkg} -eq 0 ]; then
+        cmake_pkg
     fi
 
     if [ ${arg_enable_gtest} -eq 0 ]; then

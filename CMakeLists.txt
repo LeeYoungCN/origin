@@ -86,6 +86,10 @@ if (NOT CMAKE_THIRD_PARTY_PATH)
     set(CMAKE_THIRD_PARTY_PATH "${CMAKE_SOURCE_DIR}/third_party/${CMAKE_PRESET}" CACHE STRING "Default CMAKE_THIRD_PARTY_PATH third_party" FORCE)
 endif()
 
+if (NOT CPACK_PACKAGE_DIRECTORY)
+    set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/out/pkg/${CMAKE_PRESET}")
+endif()
+
 if (ENABLE_ASAN)
     if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         if(MSVC)
@@ -131,3 +135,22 @@ elseif (UNIX)
 endif()
 
 add_subdirectory(src)
+
+# ---------------------------------------------------------------
+# CPack：标准打包入口（cmake_tools.sh --pkg 会优先用它）
+#
+#   cpack --config out/build/<preset>/CPackConfig.cmake -G ZIP -B out/pkg
+#
+# 只打安装树（include/lib/bin + lib/cmake/Origin），解压后可直接被
+# CMAKE_PREFIX_PATH + find_package(Origin CONFIG) 使用。
+# CPACK_PACKAGE_VERSION 必须是纯数字（dev 后缀会破坏版本比较），
+# 完整版本（含 -dev+g<sha>）放在包名里。
+# ---------------------------------------------------------------
+set(CPACK_PACKAGE_NAME "origin")
+set(CPACK_PACKAGE_VENDOR "LeeYoungCN")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Origin C++ libraries")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "origin-${ORIGIN_VERSION_FULL}-${CMAKE_PRESET}")
+set(CPACK_GENERATOR "ZIP;TGZ")
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+include(CPack)

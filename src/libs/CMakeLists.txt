@@ -6,6 +6,10 @@ include(${CMAKE_SOURCE_DIR}/cmake/version_resource.cmake)
 
 function(origin_add_component lib)
     set(origin_output_name "${PROJECT_NAME}${lib}")
+
+    # 构建树与安装树使用同一套目标名（安装树导出 Origin::xxx）
+    add_library(${PROJECT_NAME}::${lib} ALIAS ${lib})
+
     # 只负责配置组件；源文件由各组件目录自己 glob 后交给 add_library。
     set_property(GLOBAL APPEND PROPERTY ORIGIN_LIB_LIST ${lib})
 
@@ -29,6 +33,11 @@ function(origin_add_component lib)
 
     # Windows 专属：嵌入版本资源，资源管理器里能看到文件/产品版本
     origin_add_version_resource(${lib} "${origin_output_name}" "${lib} library of ${PROJECT_NAME}")
+
+    # 调试符号：MSVC / clang-cl 生成 PDB，随 Debug 包一起安装，方便单步进库代码
+    if(WIN32 AND NOT MINGW)
+        install(FILES $<TARGET_PDB_FILE:${lib}> DESTINATION ${CMAKE_INSTALL_BINDIR} OPTIONAL)
+    endif()
 
     install(DIRECTORY include/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

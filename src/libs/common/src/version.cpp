@@ -10,7 +10,6 @@
  */
 #include "origin/common/version.h"
 
-#include <format>
 #include <string>
 #include <string_view>
 
@@ -32,14 +31,7 @@ BuildInfo build_info() noexcept
     info.version = ORIGIN_VERSION_FULL;
     info.commit = ORIGIN_VERSION_COMMIT;
     info.dirty = ORIGIN_VERSION_DIRTY != 0;
-    info.build_time = ORIGIN_BUILD_TIMESTAMP;
     return info;
-}
-
-std::string version_info()
-{
-    const BuildInfo info = build_info();
-    return std::format("Origin {} (build {})", info.version, info.build_time);
 }
 
 bool headers_match_binary() noexcept

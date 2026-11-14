@@ -3,12 +3,9 @@
 
 // 该文件由 cmake/build_info.h.in 生成，请勿手改。
 //
-// 构建时间单独成一个头文件：它每次 configure 都会变，如果塞在 version.h 里，
-// 所有依赖版本头的编译单元都会在每次 reconfigure 后重编。这里只有
-// Common 的 version.cpp 引用它，reconfigure 的代价缩小到单个编译单元 + 重新链接。
-
-// 构建时间：configure 阶段的本地时间，形如 "2026-11-14T12:11:59+0800"
-#define ORIGIN_BUILD_TIMESTAMP "@ORIGIN_BUILD_TIMESTAMP@"
+// 开发版相关的版本信息（完整串 / 提交号 / 是否脏）单独成一个头文件：
+// 它们随提交变化，放进 version.h 会让所有依赖版本头的编译单元重编。
+// 这里只有 Common 的 version.cpp 引用它。
 
 // 开发版完整版本串，形如 "1.0.1-dev+g7b4ef62-dirty"；发布构建等于 ORIGIN_VERSION_STRING
 #define ORIGIN_VERSION_FULL "@ORIGIN_VERSION_FULL@"

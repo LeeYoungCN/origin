@@ -25,9 +25,4 @@ const char *origin_version_commit(void)
     return info.commit.empty() ? "" : info.commit.data();
 }
 
-const char *origin_build_time(void)
-{
-    return origin::build_info().build_time.data();
-}
-
 }  // extern "C"

@@ -38,13 +38,6 @@ COMMON_API const char *origin_version(void);
  */
 COMMON_API const char *origin_version_commit(void);
 
-/**
- * @brief 构建时间（configure 阶段），形如 "2026-11-14T15:53:08+0800"。
- *
- * 返回库内静态存储，调用方不需要释放。
- */
-COMMON_API const char *origin_build_time(void);
-
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

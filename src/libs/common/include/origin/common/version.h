@@ -33,15 +33,13 @@ struct Version
 /**
  * @brief 结构化的构建信息
  *
- * 适合需要把版本 / 提交 / 构建时间分开上报的场景（崩溃报告、遥测、JSON 输出），
- * 调用方不必解析 version_info() 的字符串。
+ * 适合需要把版本与提交号分开上报的场景（崩溃报告、遥测、JSON 输出）。
  */
 struct BuildInfo
 {
-    std::string_view version;     ///< 完整版本，形如 "1.0.1-dev+g7b4ef62"
-    std::string_view commit;      ///< 短 git sha；发布构建或无 git 时为空
-    bool dirty = false;           ///< 开发版构建时工作区是否有未提交修改
-    std::string_view build_time;  ///< configure 时间，形如 "2026-11-14T12:11:59+0800"
+    std::string_view version;  ///< 完整版本，形如 "1.0.1-dev+g7b4ef62"
+    std::string_view commit;   ///< 短 git sha；发布构建或无 git 时为空
+    bool dirty = false;        ///< 开发版构建时工作区是否有未提交修改
 };
 
 /**
@@ -63,15 +61,7 @@ struct BuildInfo
 COMMON_API std::string_view version() noexcept;
 
 /**
- * @brief 版本信息汇总，供日志 / --version / 崩溃报告直接打印
- *
- * 形如 "Origin 1.0.1-dev+g7b4ef62 (build 2026-11-14T12:11:59+0800)"。
- * 返回 std::string 而不是 string_view，避免静态缓冲区带来的线程与生命周期问题。
- */
-COMMON_API std::string version_info();
-
-/**
- * @brief 获取结构化的构建信息（版本 / 提交 / 是否脏 / 构建时间）
+ * @brief 获取结构化的构建信息（版本 / 提交 / 是否脏）
  */
 [[nodiscard]] COMMON_API BuildInfo build_info() noexcept;
 

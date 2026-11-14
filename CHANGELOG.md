@@ -30,10 +30,11 @@
 - 版本信息的公开接口收敛到 Common 一套：删除 `utils` / `logging` / `container` 各自的
   `version.h` 与 `version()` / `build_time()` / `compiled_build_time()` 入口，删除
   `origin::build_time()`。
-  构建时间不再作为 API，只出现在 `version_info()` 的字符串里。
+- 构建时间不再暴露：它取自 configure 阶段（增量重建后不会更新），且会让同一份源码
+  产生不同二进制，妨碍可复现构建。
 - C 接口的版本查询从 logging 挪到 Common：删除 `origin_logging_version()` / `origin_logging_build_time()`，
   改用 `origin/common/c/version_c.h` 的 `origin_c_abi_version()`（C ABI 版本）、`origin_version()`、
-  `origin_version_commit()`、`origin_build_time()`（扁平 getter，供 C#/Python 等绑定使用）。
+  `origin_version_commit()`（扁平 getter，供 C#/Python 等绑定使用）。
 - `origin::logging::version()` 这类写法统一改为 `origin::version()`。
 
 ### 新增
@@ -41,15 +42,13 @@
 - Windows 下的 DLL 嵌入 `VERSIONINFO` 资源（`cmake/version.rc.in` + `cmake/version_resource.cmake`）：
   资源管理器与 `GetFileVersionInfo()` 能看到文件/产品版本，数值部分取 `1.0.1.0`，
   字符串部分带开发后缀（如 `1.0.1-dev+g3df8f84-dirty`）。
-- `origin::version_info()`：返回 `"Origin 1.0.1-dev+g<sha> (build <时间>)"` 形态的字符串，
-  供启动日志、`--version`、崩溃报告直接打印。
-- `origin::build_info()` / C 接口 `origin_build_info()`：结构化返回 `version` / `commit` / `dirty` / `build_time`，
-  需要分字段上报时不必解析 `version_info()` 的字符串。
+- `origin::build_info()`：结构化返回 `version` / `commit` / `dirty`，需要分字段上报时
+  不必解析版本字符串；C 侧对应 `origin_version()` / `origin_version_commit()`。
 - 版本头只保留语义化版本：`ORIGIN_VERSION_STRING` / `origin::compiled_version()` 形如 `1.0.1`；
-  开发版后缀（`-dev+g<sha>[-dirty]`）与构建时间移到生成头 `origin/build_info.h`，
-  由 `origin::version()` / `version_info()` 体现。这样每次提交不再改动 `version.h`，避免全量重编。
+  开发版后缀（`-dev+g<sha>[-dirty]`）移到生成头 `origin/build_info.h`，由 `origin::version()` 体现。
+  这样每次提交与 reconfigure 都不再改动 `version.h`，避免全量重编。
 - `origin::headers_match_binary()`：判断头文件版本与运行期库版本是否一致，用于发现"头/库混装"。
-- 版本信息测试：锁定宏与 `Version` 字段一致、头/库一致、`version_info()` 内容完整。
+- 版本信息测试：锁定宏与 `Version` 字段一致、头/库一致、C ABI 版本与 getter 一致。
 - `script/check_clang.sh`：按平台选择 clang debug preset，一条命令完成 configure / build / ctest。
 
 ## [1.0.0] - 2026-11-11

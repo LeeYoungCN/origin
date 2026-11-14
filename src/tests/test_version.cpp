@@ -15,7 +15,7 @@ namespace origin_test {
  * 这里锁住三件事：
  * 1) 编译期宏与 struct 字段一致；
  * 2) 运行期版本非空，且与头文件版本一致；
- * 3) version_info() 里确实带上了版本号与构建时间。
+ * 3) C ABI 的版本号与 getter 与 C++ 侧一致。
  */
 
 TEST(Version, compiled_version_matches_macros)
@@ -39,16 +39,6 @@ TEST(Version, headers_match_binary)
         << "headers=" << origin::compiled_version().string << " binary=" << origin::version();
 }
 
-TEST(Version, version_info_contains_version_and_build_time)
-{
-    const std::string info = origin::version_info();
-    EXPECT_NE(info.find(std::string(origin::version())), std::string::npos) << info;
-
-    // 构建时间不再暴露成宏（它每次 configure 都会变，见 origin/build_info.h），
-    // 这里只校验格式，形如 "(build 2026-11-14T15:34:49+0800)"。
-    const std::regex pattern(R"(\(build \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}\))");
-    EXPECT_TRUE(std::regex_search(info, pattern)) << info;
-}
 
 TEST(Version, c_api_abi_version_matches_header)
 {
@@ -60,7 +50,6 @@ TEST(Version, build_info_matches_version)
 {
     const auto info = origin::build_info();
     EXPECT_EQ(info.version, origin::version());
-    EXPECT_FALSE(info.build_time.empty());
 
     if (info.commit.empty()) {
         // 发布构建：完整版本应与头文件里的语义化版本一致
@@ -86,11 +75,9 @@ TEST(Version, c_api_getters_match_cpp)
 
     ASSERT_NE(origin_version(), nullptr);
     ASSERT_NE(origin_version_commit(), nullptr);
-    ASSERT_NE(origin_build_time(), nullptr);
 
     EXPECT_EQ(std::string_view(origin_version()), origin::version());
     EXPECT_EQ(std::string_view(origin_version_commit()), cpp.commit);
-    EXPECT_EQ(std::string_view(origin_build_time()), cpp.build_time);
 }
 
 }  // namespace origin_test

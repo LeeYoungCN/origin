@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     origin_set_debug_logger_level(ORG_DBG_LVL_INFO);
     ORIGIN_DEBUG_INFO("Running main() from \"{}\".", __FILE__);
     ORIGIN_DEBUG_INFO("Log file directory: \"{}\".", dir);
-    ORIGIN_DEBUG_INFO("{}", origin::version_info());
+    ORIGIN_DEBUG_INFO("Origin {}", origin::version());
 
     testing::InitGoogleTest(&argc, argv);
     auto rst = RUN_ALL_TESTS();

@@ -12,17 +12,14 @@ if(WIN32)
     enable_language(RC)
 endif()
 
-# 构建时间：取自 configure 阶段的本地时间，带时区偏移（%z），避免跨时区歧义
-string(TIMESTAMP ORIGIN_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%S%z")
-
 # 版本头：产物里能查到编译时使用的版本
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/version.h"
     @ONLY)
 
-# 构建时间单独生成：它每次 configure 都会变，只让 Common 的 version.cpp 引用，
-# 避免 reconfigure 触发全量重编。
+# 开发版信息（完整串 / 提交号 / 是否脏）单独生成，只有 Common 的 version.cpp 引用，
+# 避免每次提交或 reconfigure 触发全量重编。
 configure_file(
     "${CMAKE_SOURCE_DIR}/cmake/build_info.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/build_info.h"

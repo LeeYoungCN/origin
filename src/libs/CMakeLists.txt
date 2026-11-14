@@ -2,7 +2,10 @@ set_property(GLOBAL PROPERTY ORIGIN_LIB_LIST "")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
+include(${CMAKE_SOURCE_DIR}/cmake/version_resource.cmake)
+
 function(origin_add_component lib)
+    set(origin_output_name "${PROJECT_NAME}${lib}")
     # 只负责配置组件；源文件由各组件目录自己 glob 后交给 add_library。
     set_property(GLOBAL APPEND PROPERTY ORIGIN_LIB_LIST ${lib})
 
@@ -18,11 +21,14 @@ function(origin_add_component lib)
     target_link_libraries(${lib} PUBLIC Threads::Threads)
 
     set_target_properties(${lib} PROPERTIES
-        OUTPUT_NAME   "${PROJECT_NAME}${lib}"
+        OUTPUT_NAME   "${origin_output_name}"
         DEBUG_POSTFIX "d"
         VERSION       ${PROJECT_VERSION}
         SOVERSION     ${PROJECT_VERSION_MAJOR}
     )
+
+    # Windows 专属：嵌入版本资源，资源管理器里能看到文件/产品版本
+    origin_add_version_resource(${lib} "${origin_output_name}" "${lib} library of ${PROJECT_NAME}")
 
     install(DIRECTORY include/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

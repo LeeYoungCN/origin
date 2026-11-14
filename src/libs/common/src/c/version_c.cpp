@@ -4,30 +4,30 @@
  */
 #include "origin/common/c/version_c.h"
 
-#include <algorithm>
-#include <cstring>
-#include <string>
-
 #include "origin/common/version.h"
 
 extern "C" {
 
-const char *origin_version()
+uint32_t origin_c_abi_version(void)
+{
+    return ORIGIN_C_ABI_VERSION;
+}
+
+const char *origin_version(void)
 {
     return origin::version().data();
 }
 
-size_t origin_version_info(char *buf, const size_t len)
+const char *origin_version_commit(void)
 {
-    const std::string info = origin::version_info();
-    if (buf == nullptr || len == 0) {
-        return info.size();
-    }
+    const origin::BuildInfo info = origin::build_info();
+    // 空字符串而不是 nullptr：绑定的字符串转换函数通常不接受 NULL
+    return info.commit.empty() ? "" : info.commit.data();
+}
 
-    const size_t written = std::min(info.size(), len - 1);
-    std::memcpy(buf, info.data(), written);
-    buf[written] = '\0';
-    return written;
+const char *origin_build_time(void)
+{
+    return origin::build_info().build_time.data();
 }
 
 }  // extern "C"

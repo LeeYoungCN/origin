@@ -6,10 +6,9 @@
 #define ORIGIN_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define ORIGIN_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
-// 完整版本字符串，形如 "1.0.0" 或预发布 "1.0.0-rc1"（由 -DORIGIN_VERSION 注入）
+// 完整版本字符串，形如 "1.0.0" 或预发布 "1.0.0-rc1"
 #define ORIGIN_VERSION_STRING "@ORIGIN_VERSION@"
 
-// 构建时间：configure 阶段的本地时间，带时区偏移，形如 "2025-11-05T21:34:28+0800"
-#define ORIGIN_BUILD_TIMESTAMP "@ORIGIN_BUILD_TIMESTAMP@"
+// 构建时间不在这里：见 origin/build_info.h（每次 configure 都会变，单独成文件避免全量重编）
 
 #endif  // ORIGIN_VERSION_H

@@ -1,4 +1,5 @@
 #include <cstring>
+#include <regex>
 #include <string>
 #include <string_view>
 
@@ -42,31 +43,54 @@ TEST(Version, version_info_contains_version_and_build_time)
 {
     const std::string info = origin::version_info();
     EXPECT_NE(info.find(std::string(origin::version())), std::string::npos) << info;
-    EXPECT_NE(info.find(std::string_view(ORIGIN_BUILD_TIMESTAMP)), std::string::npos) << info;
+
+    // 构建时间不再暴露成宏（它每次 configure 都会变，见 origin/build_info.h），
+    // 这里只校验格式，形如 "(build 2026-11-14T15:34:49+0800)"。
+    const std::regex pattern(R"(\(build \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}\))");
+    EXPECT_TRUE(std::regex_search(info, pattern)) << info;
 }
 
-TEST(Version, c_api_version_matches_cpp_api)
+TEST(Version, c_api_abi_version_matches_header)
 {
+    // 绑定在加载库后应先比对 ABI 版本，避免签名/布局不匹配时直接崩溃
+    EXPECT_EQ(origin_c_abi_version(), ORIGIN_C_ABI_VERSION);
+}
+
+TEST(Version, build_info_matches_version)
+{
+    const auto info = origin::build_info();
+    EXPECT_EQ(info.version, origin::version());
+    EXPECT_FALSE(info.build_time.empty());
+
+    if (info.commit.empty()) {
+        // 发布构建：完整版本应与头文件里的语义化版本一致
+        EXPECT_FALSE(info.dirty);
+        EXPECT_EQ(info.version, std::string_view(ORIGIN_VERSION_STRING));
+    } else {
+        EXPECT_NE(info.version.find(info.commit), std::string_view::npos) << info.version;
+    }
+}
+
+TEST(Version, header_version_is_plain_semver)
+{
+    // version.h 只放语义化版本，构建元数据在 build_info.h：
+    // 这样每次提交都不会改动 version.h，避免全量重编。
+    const std::string_view v = ORIGIN_VERSION_STRING;
+    EXPECT_TRUE(std::regex_match(std::string(v), std::regex(R"(\d+\.\d+\.\d+)"))) << v;
+    EXPECT_EQ(v.find("-dev"), std::string_view::npos) << v;
+}
+
+TEST(Version, c_api_getters_match_cpp)
+{
+    const auto cpp = origin::build_info();
+
     ASSERT_NE(origin_version(), nullptr);
+    ASSERT_NE(origin_version_commit(), nullptr);
+    ASSERT_NE(origin_build_time(), nullptr);
+
     EXPECT_EQ(std::string_view(origin_version()), origin::version());
-}
-
-TEST(Version, c_api_version_info_roundtrip)
-{
-    const size_t need = origin_version_info(nullptr, 0);
-    ASSERT_GT(need, 0u);
-
-    std::string buf(need + 1, '\0');
-    EXPECT_EQ(origin_version_info(buf.data(), buf.size()), need);
-    EXPECT_EQ(std::string(buf.c_str()), origin::version_info());
-}
-
-TEST(Version, c_api_version_info_truncates_when_buffer_too_small)
-{
-    std::string buf(8, '\0');
-    const size_t written = origin_version_info(buf.data(), buf.size());
-    EXPECT_EQ(written, buf.size() - 1);
-    EXPECT_EQ(std::strlen(buf.c_str()), buf.size() - 1);
+    EXPECT_EQ(std::string_view(origin_version_commit()), cpp.commit);
+    EXPECT_EQ(std::string_view(origin_build_time()), cpp.build_time);
 }
 
 }  // namespace origin_test

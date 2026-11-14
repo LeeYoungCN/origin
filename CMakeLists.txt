@@ -1,63 +1,32 @@
 cmake_minimum_required(VERSION 3.14)
 
-# 版本号唯一来源：发版时改这里，并打同名 tag（v<ORIGIN_VERSION>），CI 负责校验两者一致。
-# 以普通变量（而非 CACHE）给出，改这一行会对已有构建目录立即生效；
-# -DORIGIN_VERSION=x.y.z 可临时覆盖，但会留在缓存里，需用 -UORIGIN_VERSION 清除。
+# 版本号唯一来源：发版时改这里，并打同名 tag（v<版本号>），CI 负责校验两者一致。
+# 解析逻辑（-D 覆盖、开发版后缀、纯数字提取）见 cmake/project_version.cmake。
 set(ORIGIN_VERSION_FILE "1.0.1")
-if(DEFINED ORIGIN_VERSION)
-    if(NOT ORIGIN_VERSION STREQUAL ORIGIN_VERSION_FILE)
-        message(
-            WARNING
-                "build cache has ORIGIN_VERSION=${ORIGIN_VERSION}, CMakeLists has ${ORIGIN_VERSION_FILE}; "
-                "reconfigure with -UORIGIN_VERSION to follow the file")
-    endif()
-else()
-    set(ORIGIN_VERSION "${ORIGIN_VERSION_FILE}")
-endif()
-
-option(ORIGIN_DEV_SUFFIX "非发布构建在版本号后追加 -dev+g<sha>" ON)
-
-# 非发布构建（本地 / 分支）自动带上 git 状态，避免自称已发布版本。
-# 判据：HEAD 正好停在 v<ORIGIN_VERSION> 上才算发布构建。
-if(ORIGIN_DEV_SUFFIX)
-    execute_process(
-        COMMAND git describe --tags --exact-match
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        OUTPUT_VARIABLE ORIGIN_EXACT_TAG
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET)
-    if(NOT ORIGIN_EXACT_TAG STREQUAL "v${ORIGIN_VERSION}")
-        execute_process(
-            COMMAND git rev-parse --short HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE ORIGIN_HEAD_SHA
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET)
-        if(ORIGIN_HEAD_SHA)
-            execute_process(
-                COMMAND git status --porcelain --untracked-files=no
-                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-                OUTPUT_VARIABLE ORIGIN_DIRTY
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-                ERROR_QUIET)
-            set(ORIGIN_VERSION "${ORIGIN_VERSION}-dev+g${ORIGIN_HEAD_SHA}")
-            if(ORIGIN_DIRTY)
-                set(ORIGIN_VERSION "${ORIGIN_VERSION}-dirty")
-            endif()
-            message(STATUS "Origin dev version: ${ORIGIN_VERSION}")
-        endif()
-    endif()
-endif()
-
-# project(VERSION) 只接受纯数字，开发/预发布后缀要剥掉；
-# 完整字符串仍通过 ORIGIN_VERSION_STRING 暴露给库内版本查询。
-string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" ORIGIN_VERSION_NUMERIC "${ORIGIN_VERSION}")
-if(NOT ORIGIN_VERSION_NUMERIC)
-    message(WARNING "ORIGIN_VERSION '${ORIGIN_VERSION}' has no numeric prefix, fallback to 0.0.0")
-    set(ORIGIN_VERSION_NUMERIC "0.0.0")
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
 
 project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
+
+# Windows 下为 DLL 嵌入 VERSIONINFO 资源（资源管理器/GetFileVersionInfo 可读版本）
+if(WIN32)
+    enable_language(RC)
+endif()
+
+# 构建时间：取自 configure 阶段的本地时间，带时区偏移（%z），避免跨时区歧义
+string(TIMESTAMP ORIGIN_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%S%z")
+
+# 版本头：产物里能查到编译时使用的版本
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
+    "${CMAKE_BINARY_DIR}/generated/origin/version.h"
+    @ONLY)
+
+# 构建时间单独生成：它每次 configure 都会变，只让 Common 的 version.cpp 引用，
+# 避免 reconfigure 触发全量重编。
+configure_file(
+    "${CMAKE_SOURCE_DIR}/cmake/build_info.h.in"
+    "${CMAKE_BINARY_DIR}/generated/origin/build_info.h"
+    @ONLY)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -163,14 +132,5 @@ if (APPLE)
 elseif (UNIX)
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 endif()
-
-# 构建时间：取自 configure 阶段的本地时间，带时区偏移（%z），避免跨时区歧义
-string(TIMESTAMP ORIGIN_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%S%z")
-
-# 版本头：产物里能查到编译时使用的版本
-configure_file(
-    "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
-    "${CMAKE_BINARY_DIR}/generated/origin/version.h"
-    @ONLY)
 
 add_subdirectory(src)

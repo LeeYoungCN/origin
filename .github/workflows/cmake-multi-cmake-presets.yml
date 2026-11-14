@@ -57,7 +57,7 @@ jobs:
         echo "dist-dir=${{ github.workspace }}/dist" >> "$GITHUB_OUTPUT"
         # 版本号来自 CMakeLists 的 ORIGIN_VERSION（唯一来源），tag 只做校验；
         # 非 tag 构建由 CMake 自动追加 -dev+g<sha>，包名沿用同样的形态。
-        base_version=$(sed -n 's/^set(ORIGIN_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)
+        base_version=$(sed -n 's/^set(ORIGIN_VERSION_FILE "\([^"]*\)".*/\1/p' CMakeLists.txt)
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
           echo "configure-args=-DORIGIN_DEV_SUFFIX=OFF" >> "$GITHUB_OUTPUT"
           echo "pkg-version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
@@ -88,7 +88,7 @@ jobs:
       shell: bash
       run: |
         want="${GITHUB_REF_NAME#v}"
-        got=$(sed -n 's/^set(ORIGIN_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)
+        got=$(sed -n 's/^set(ORIGIN_VERSION_FILE "\([^"]*\)".*/\1/p' CMakeLists.txt)
         if [[ -z "${got}" ]]; then
           echo "::error::cannot parse ORIGIN_VERSION from CMakeLists.txt"
           exit 1

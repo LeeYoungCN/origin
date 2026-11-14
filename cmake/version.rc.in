@@ -1,0 +1,44 @@
+// 由 cmake/version_resource.cmake 从本模板生成，请勿手工修改目标文件。
+// 数值字段必须是 4 个 16 位整数，因此用 major/minor/patch；
+// 带 -dev+g<sha> 的完整版本只出现在字符串字段里。
+//
+// 配置相关的部分用 ORIGIN_RC_DEBUG 判断：version_resource.cmake 会按配置定义它，
+// 不依赖工具链是否给资源编译器传 -D_DEBUG。
+#include <windows.h>
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    @ORIGIN_RC_VERSION_MAJOR@,@ORIGIN_RC_VERSION_MINOR@,@ORIGIN_RC_VERSION_PATCH@,0
+ PRODUCTVERSION @ORIGIN_RC_VERSION_MAJOR@,@ORIGIN_RC_VERSION_MINOR@,@ORIGIN_RC_VERSION_PATCH@,0
+ FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+#ifdef ORIGIN_RC_DEBUG
+ FILEFLAGS      VS_FF_DEBUG
+#else
+ FILEFLAGS      0x0L
+#endif
+ FILEOS         VOS_NT_WINDOWS32
+ FILETYPE       VFT_@ORIGIN_RC_FILE_TYPE@
+ FILESUBTYPE    VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName",      "@ORIGIN_RC_COMPANY@"
+            VALUE "FileDescription",  "@ORIGIN_RC_DESCRIPTION@"
+            VALUE "FileVersion",      "@ORIGIN_VERSION@"
+            VALUE "InternalName",     "@ORIGIN_RC_INTERNAL_NAME@"
+            VALUE "LegalCopyright",   "@ORIGIN_RC_COPYRIGHT@"
+#ifdef ORIGIN_RC_DEBUG
+            VALUE "OriginalFilename", "@ORIGIN_RC_ORIGINAL_FILENAME@d.dll"
+#else
+            VALUE "OriginalFilename", "@ORIGIN_RC_ORIGINAL_FILENAME@.dll"
+#endif
+            VALUE "ProductName",      "@ORIGIN_RC_PRODUCT_NAME@"
+            VALUE "ProductVersion",   "@ORIGIN_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

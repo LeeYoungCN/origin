@@ -388,7 +388,8 @@ origin_destroy_sink(sink);
 - C 版对象都要用 `origin_destroy_*` 释放；`LoggerSt`/`SinkSt` 内部都是 `shared_ptr`，logger 持有 sink 的引用，
   销毁顺序不敏感，但两个都要销毁，否则泄漏；
 - `origin_create_async_logger` 需要传入 `TaskPoolSt*`；用 `origin_create_async_logger_use_root_tp` 可以复用全局池；
-- 版本查询：`origin_logging_version()`、`origin_logging_build_time()`。
+- 版本查询不在 logging 的 C 接口里：用 `origin/common/c/version_c.h` 的 `origin_version()` / `origin_version_info(buf, len)`，
+  它们属于 Common，反映整个 Origin 的版本。
 
 ## 13. 线程安全与生命周期
 
@@ -403,11 +404,14 @@ origin_destroy_sink(sink);
 C++ 侧版本信息：
 
 ```cpp
-#include "origin/logging/version.h"
+#include "origin/common/version.h"
 
-constexpr auto v = origin::logging::compiled_version();     // 编译期版本
-std::string_view runtime = origin::logging::version();      // 运行期实际链接到的库版本
-std::string_view built = origin::logging::build_time();     // 运行期构建时间
+constexpr auto v = origin::compiled_version();   // 编译期版本（头文件里的值）
+std::string_view runtime = origin::version();    // 运行期实际链接到的库版本
+std::string info = origin::version_info();       // "Origin 1.0.1 (build 2026-11-14T12:11:59+0800)"
+
+// 头文件与库是否同一版（装错包时返回 false，建议启动时断言）
+if (!origin::headers_match_binary()) { /* 记日志或直接终止 */ }
 ```
 
 ## 14. 常见问题

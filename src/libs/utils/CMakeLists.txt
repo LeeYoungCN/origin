@@ -17,8 +17,6 @@ set(SRC_LIST
     src/process_utils.cpp
     src/string_utils.cpp
     src/thread_utils.cpp
-    # version
-    src/version.cpp
 )
 add_library(${LIB_NAME} SHARED ${SRC_LIST})
 target_compile_definitions(${LIB_NAME} PRIVATE UTILS_BUILD_SHARED)

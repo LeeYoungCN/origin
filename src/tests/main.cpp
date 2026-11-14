@@ -7,8 +7,12 @@ int main(int argc, char *argv[])
 {
     origin_set_debug_logger_level(ORG_DBG_LVL_INFO);
     ORIGIN_DEBUG_INFO("Running main() from {}", __FILE__);
-    ORIGIN_DEBUG_INFO("Version: {}", origin::version());
-    ORIGIN_DEBUG_INFO("Build time: {}", origin::build_time())
+    ORIGIN_DEBUG_INFO("{}", origin::version_info());
+    if (!origin::headers_match_binary()) {
+        ORIGIN_DEBUG_ERR("Header/binary version mismatch: headers={} binary={}",
+                         origin::compiled_version().string,
+                         origin::version());
+    }
     // origin_show_working_env();
 
     testing::InitGoogleTest(&argc, argv);

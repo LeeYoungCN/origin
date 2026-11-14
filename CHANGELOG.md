@@ -26,9 +26,21 @@
   非发布构建自动追加 `-dev+g<sha>`，本地构建不再谎报为已发布版本。
 - CI 修复 Windows 下 `-DORIGIN_VERSION=1.0.0` 被 pwsh 拆成两个参数导致 configure 失败；
   矩阵改为显式 include 列表，并新增 `win_clang_cl_debug` 构建。
+- 版本信息的公开接口收敛到 Common 一套：删除 `utils` / `logging` / `container` 各自的
+  `version.h` 与 `version()` / `build_time()` / `compiled_build_time()` 入口，删除
+  `origin::build_time()`。
+  构建时间不再作为 API，只出现在 `version_info()` 的字符串里。
+- C 接口的版本查询从 logging 挪到 Common：`origin_logging_version()` 删除，改用
+  `origin/common/c/version_c.h` 的 `origin_version()` / `origin_version_info(buf, len)`；
+  `origin_logging_build_time()` 一并删除。
+- `origin::logging::version()` 这类写法统一改为 `origin::version()`。
 
 ### 新增
 
+- `origin::version_info()`：返回 `"Origin 1.0.1-dev+g<sha> (build <时间>)"` 形态的字符串，
+  供启动日志、`--version`、崩溃报告直接打印。
+- `origin::headers_match_binary()`：判断头文件版本与运行期库版本是否一致，用于发现"头/库混装"。
+- 版本信息测试：锁定宏与 `Version` 字段一致、头/库一致、`version_info()` 内容完整。
 - `script/check_clang.sh`：按平台选择 clang debug preset，一条命令完成 configure / build / ctest。
 
 ## [1.0.0] - 2026-11-11

@@ -12,6 +12,7 @@
 #ifndef ORIGIN_COMMON_VERSION_H
 #define ORIGIN_COMMON_VERSION_H
 
+#include <string>
 #include <string_view>
 
 #include "origin/common/common_api.h"
@@ -48,46 +49,21 @@ struct Version
 COMMON_API std::string_view version() noexcept;
 
 /**
- * @brief 编译期构建时间（头文件里的值，形如 "2025-11-05T21:34:28+0800"）
+ * @brief 版本信息汇总，供日志 / --version / 崩溃报告直接打印
+ *
+ * 形如 "Origin 1.0.1-dev+g7b4ef62 (build 2026-11-14T12:11:59+0800)"。
+ * 返回 std::string 而不是 string_view，避免静态缓冲区带来的线程与生命周期问题。
  */
-[[nodiscard]] constexpr std::string_view compiled_build_time() noexcept
-{
-    return ORIGIN_BUILD_TIMESTAMP;
-}
+COMMON_API std::string version_info();
 
 /**
- * @brief 运行期构建时间（库实际被构建的时间）
+ * @brief 头文件版本与运行期库版本是否一致
+ *
+ * 不一致通常意味着"装了 A 版本的头文件、链接的是 B 版本的库"：
+ * Linux 上不会报错但可能 ABI 不兼容，建议启动时断言或打一条日志。
  */
-COMMON_API std::string_view build_time() noexcept;
+[[nodiscard]] COMMON_API bool headers_match_binary() noexcept;
 
 }  // namespace origin
-
-/**
- * @brief Common 组件自身的版本信息
- *
- * 最早的 origin::version() 就实现在 Common 里，这里补一个同构的 origin::common::xxx 入口，
- * 让每个组件都能用 origin::<component>::version() 的统一写法。
- */
-namespace origin::common {
-[[nodiscard]] constexpr Version compiled_version() noexcept
-{
-    return origin::compiled_version();
-}
-
-[[nodiscard]] constexpr std::string_view compiled_build_time() noexcept
-{
-    return origin::compiled_build_time();
-}
-
-inline std::string_view version() noexcept
-{
-    return origin::version();
-}
-
-inline std::string_view build_time() noexcept
-{
-    return origin::build_time();
-}
-}  // namespace origin::common
 
 #endif  // ORIGIN_COMMON_VERSION_H

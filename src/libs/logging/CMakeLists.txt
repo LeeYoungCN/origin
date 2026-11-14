@@ -10,7 +10,6 @@ set(SRC_LIST
     src/c/logging_c.cpp
     src/c/sink_st.cpp
     src/c/task_pool_st.cpp
-    src/c/version_c.cpp
     # formatters
     src/formatters/formatter_base.cpp
     src/formatters/pattern_formatter.cpp
@@ -43,7 +42,6 @@ set(SRC_LIST
     src/logging.cpp
     src/log_level.cpp
     src/log_msg.cpp
-    src/version.cpp
 )
 add_library(${LIB_NAME} SHARED ${SRC_LIST})
 target_compile_definitions(${LIB_NAME} PRIVATE LOGGING_BUILD_SHARED)

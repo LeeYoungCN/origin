@@ -10,6 +10,9 @@
  */
 #include "origin/common/version.h"
 
+#include <format>
+#include <string>
+
 namespace origin {
 
 std::string_view version() noexcept
@@ -17,9 +20,14 @@ std::string_view version() noexcept
     return ORIGIN_VERSION_STRING;
 }
 
-std::string_view build_time() noexcept
+std::string version_info()
 {
-    return ORIGIN_BUILD_TIMESTAMP;
+    return std::format("Origin {} (build {})", ORIGIN_VERSION_STRING, ORIGIN_BUILD_TIMESTAMP);
+}
+
+bool headers_match_binary() noexcept
+{
+    return compiled_version().string == version();
 }
 
 }  // namespace origin

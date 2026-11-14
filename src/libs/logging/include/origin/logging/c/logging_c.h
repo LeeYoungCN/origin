@@ -29,13 +29,6 @@ typedef enum {
 LOGGING_API const char *origin_log_level_full_name(LogLevelC level);
 LOGGING_API const char *origin_log_level_abbr_name(LogLevelC level);
 
-#pragma region Version
-/** @brief 库版本字符串，形如 "1.0.0" */
-LOGGING_API const char *origin_logging_version();
-/** @brief 库构建时间，形如 "2026-11-05T21:34:47+0800" */
-LOGGING_API const char *origin_logging_build_time();
-#pragma endregion
-
 #pragma region Logger
 LOGGING_API LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],
                                                 uint32_t count);

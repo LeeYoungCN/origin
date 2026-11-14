@@ -55,14 +55,15 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/out/build" >> "$GITHUB_OUTPUT"
         echo "build-install-dir=${{ github.workspace }}/out/install" >> "$GITHUB_OUTPUT"
         echo "dist-dir=${{ github.workspace }}/dist" >> "$GITHUB_OUTPUT"
-        # 打 tag（v1.2.3）时用 tag 号当版本，其余情况库内版本为 0.0.0；
-        # 包名额外带短 sha，保证同一条流水线产出的包名总能区分来源。
+        # 版本号来自 CMakeLists 的 ORIGIN_VERSION（唯一来源），tag 只做校验；
+        # 非 tag 构建由 CMake 自动追加 -dev+g<sha>，包名沿用同样的形态。
+        base_version=$(sed -n 's/^set(ORIGIN_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "configure-args=-DORIGIN_DEV_SUFFIX=OFF" >> "$GITHUB_OUTPUT"
           echo "pkg-version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
         else
-          echo "version=0.0.0" >> "$GITHUB_OUTPUT"
-          echo "pkg-version=0.0.0-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "configure-args=" >> "$GITHUB_OUTPUT"
+          echo "pkg-version=${base_version}-dev+g${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
         fi
 
     - name: Update MinGW via MSYS2 (Windows GCC only)
@@ -80,12 +81,30 @@ jobs:
         # 4. 将 MinGW 路径添加到环境变量（确保优先使用）
         echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
 
+    - name: Verify version matches tag
+      # tag 只是"发布点"标记，版本号以 CMakeLists 为准；两边不一致就拒绝发布。
+      if: startsWith(github.ref, 'refs/tags/v')
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      run: |
+        want="${GITHUB_REF_NAME#v}"
+        got=$(sed -n 's/^set(ORIGIN_VERSION "\([^"]*\)".*/\1/p' CMakeLists.txt)
+        if [[ -z "${got}" ]]; then
+          echo "::error::cannot parse ORIGIN_VERSION from CMakeLists.txt"
+          exit 1
+        fi
+        if [[ "${want}" != "${got}" ]]; then
+          echo "::error::tag v${want} does not match CMakeLists ORIGIN_VERSION ${got}"
+          exit 1
+        fi
+        echo "version check OK: v${got}"
+
     - name: Configure CMake
       working-directory: ${{ github.workspace }}
       # Windows runner 默认 shell 是 pwsh，它会把 "-DVAR=x.y.z" 拆成 "-DVAR=x" 和 ".y.z"，
       # 后者会被 CMake 当成源码目录；统一用 bash 并给参数加引号，避免依赖 shell 的差异。
       shell: bash
-      run: cmake --preset=${{ matrix.preset }} "-DORIGIN_VERSION:STRING=${{ steps.strings.outputs.version }}"
+      run: cmake --preset=${{ matrix.preset }} ${{ steps.strings.outputs.configure-args }}
 
     - name: Build And Install
       working-directory: ${{ github.workspace }}

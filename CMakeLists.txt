@@ -1,10 +1,55 @@
 cmake_minimum_required(VERSION 3.14)
 
-# 版本号：默认值用于本地开发；CI 以 git tag 覆盖（cmake --preset=xxx -DORIGIN_VERSION=x.y.z），
-# 保证产物包名与库内 origin::version() / ORIGIN_VERSION_STRING 一致。
-set(ORIGIN_VERSION "1.0.0" CACHE STRING "Project version, overridable by CI from git tag")
+# 版本号唯一来源：发版时改这里，并打同名 tag（v<ORIGIN_VERSION>），CI 负责校验两者一致。
+# 以普通变量（而非 CACHE）给出，改这一行会对已有构建目录立即生效；
+# -DORIGIN_VERSION=x.y.z 可临时覆盖，但会留在缓存里，需用 -UORIGIN_VERSION 清除。
+set(ORIGIN_VERSION_FILE "1.0.1")
+if(DEFINED ORIGIN_VERSION)
+    if(NOT ORIGIN_VERSION STREQUAL ORIGIN_VERSION_FILE)
+        message(
+            WARNING
+                "build cache has ORIGIN_VERSION=${ORIGIN_VERSION}, CMakeLists has ${ORIGIN_VERSION_FILE}; "
+                "reconfigure with -UORIGIN_VERSION to follow the file")
+    endif()
+else()
+    set(ORIGIN_VERSION "${ORIGIN_VERSION_FILE}")
+endif()
 
-# project(VERSION) 只接受纯数字，预发布 tag（如 1.0.0-rc1）要剥掉后缀；
+option(ORIGIN_DEV_SUFFIX "非发布构建在版本号后追加 -dev+g<sha>" ON)
+
+# 非发布构建（本地 / 分支）自动带上 git 状态，避免自称已发布版本。
+# 判据：HEAD 正好停在 v<ORIGIN_VERSION> 上才算发布构建。
+if(ORIGIN_DEV_SUFFIX)
+    execute_process(
+        COMMAND git describe --tags --exact-match
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE ORIGIN_EXACT_TAG
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET)
+    if(NOT ORIGIN_EXACT_TAG STREQUAL "v${ORIGIN_VERSION}")
+        execute_process(
+            COMMAND git rev-parse --short HEAD
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            OUTPUT_VARIABLE ORIGIN_HEAD_SHA
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET)
+        if(ORIGIN_HEAD_SHA)
+            execute_process(
+                COMMAND git status --porcelain --untracked-files=no
+                WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                OUTPUT_VARIABLE ORIGIN_DIRTY
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET)
+            set(ORIGIN_VERSION "${ORIGIN_VERSION}-dev+g${ORIGIN_HEAD_SHA}")
+            if(ORIGIN_DIRTY)
+                set(ORIGIN_VERSION "${ORIGIN_VERSION}-dirty")
+            endif()
+            message(STATUS "Origin dev version: ${ORIGIN_VERSION}")
+        endif()
+    endif()
+endif()
+
+# project(VERSION) 只接受纯数字，开发/预发布后缀要剥掉；
 # 完整字符串仍通过 ORIGIN_VERSION_STRING 暴露给库内版本查询。
 string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" ORIGIN_VERSION_NUMERIC "${ORIGIN_VERSION}")
 if(NOT ORIGIN_VERSION_NUMERIC)

@@ -2,9 +2,13 @@
 
 本项目版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-版本号的唯一来源是 **git tag**：打 `v1.2.3` 时 CI 通过 `-DORIGIN_VERSION=1.2.3` 注入构建，
-产物包名、`origin::version()`、`ORIGIN_VERSION_STRING`、各组件 `version()` 都会同步；
-本地不带参数构建时使用 `CMakeLists.txt` 里的默认值。
+版本号的唯一来源是 **`CMakeLists.txt` 里的 `ORIGIN_VERSION`**：
+
+- 发版 = 一个把 `ORIGIN_VERSION` 改成新版本号、同时在本文加一节的提交，然后打**同名** tag（`v1.2.3`）；
+- CI 只做**校验**：tag 与 `ORIGIN_VERSION` 不一致时构建直接失败，不再往编译里注入版本号；
+- 非发布构建（本地、分支）由 CMake 自动把 git 状态追加成 `1.2.3-dev+g<短 sha>`（工作区脏还会带 `-dirty`），
+  所以本地编出来的库不会自称已发布版本；
+- 需要临时覆盖版本时用 `-DORIGIN_VERSION=x.y.z`，只影响当前构建目录。
 
 版本位与 ABI 的关系：
 
@@ -13,6 +17,19 @@
 | 仅新增接口 / 类成员 | minor | 不变，可直接替换库 |
 | 修复 bug、改实现 | patch | 不变 |
 | 删除接口、改签名、改虚函数布局 | major | 变化，依赖方需重编 |
+
+## [1.0.1] - 未发布
+
+### 变更
+
+- 版本号来源改为树内的 `ORIGIN_VERSION`，CI 从"注入"改为"校验 tag 与之一致"；
+  非发布构建自动追加 `-dev+g<sha>`，本地构建不再谎报为已发布版本。
+- CI 修复 Windows 下 `-DORIGIN_VERSION=1.0.0` 被 pwsh 拆成两个参数导致 configure 失败；
+  矩阵改为显式 include 列表，并新增 `win_clang_cl_debug` 构建。
+
+### 新增
+
+- `script/check_clang.sh`：按平台选择 clang debug preset，一条命令完成 configure / build / ctest。
 
 ## [1.0.0] - 2026-11-11
 

@@ -55,6 +55,19 @@
             "problemMatcher": []
         },
         {
+            "label": "CPack",
+            "detail": "CPack: 打包工程",
+            "options": {
+                "cwd": "${workspaceFolder}/script"
+            },
+            "command": "./cmake_tools.sh",
+            "args": [
+                "--build",
+                "--pkg"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Run gtest all",
             "detail": "运行gtest测试用例",
             "options": {

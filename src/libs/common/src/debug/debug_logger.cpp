@@ -172,7 +172,7 @@ public:
         } else {
             std::cout << logMsg << std::endl;
         }
-#ifdef DEBUG_MODE
+#if ORIGIN_DEBUG_LOG_ENABLED
         if (level == ORG_DBG_LVL_FATAL) {
             std::abort();
         }
@@ -188,7 +188,7 @@ private:
                                   [[maybe_unused]] int line = 0,
                                   [[maybe_unused]] const char* func = nullptr)
     {
-#ifdef DEBUG_MODE
+#if ORIGIN_DEBUG_LOG_ENABLED
         return std::format("[{}][{}][Tid: {}][{}:{}][{}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),
@@ -207,7 +207,7 @@ private:
     }
 
 private:
-#ifdef DEBUG_MODE
+#if ORIGIN_DEBUG_LOG_ENABLED
     OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_ERR;
 #else
     OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_OFF;

@@ -27,6 +27,9 @@
   摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。
 - 警告按编译器选择且只作用于 Origin 的库目标：MSVC 使用 `/W4`，
   clang / clang-cl / GCC 使用 `-Wall -Wextra -Wconversion -pedantic`。
+- 删除自定义 `DEBUG_MODE` / `NDEBUG_MODE` 宏；`ENABLE_TEST` 改名为
+  `ORIGIN_ENABLE_TEST`，并在 `debug_logger.h` 派生 `ORIGIN_DEBUG_LOG_ENABLED`
+  统一控制调试日志开关（Release 默认关闭，测试构建保持开启）。
 - ASan 下同时清理 C flags 里的 `/RTC`；去掉置空 `CMAKE_THIRD_PARTY_PATH`。
 - Windows 下 MinGW 产物去掉 `lib` 前缀，DLL 命名与 MSVC 一致。
 - `CMakePresets.json` 与 `cmake_tools.sh` 对齐：显式写出 `CMAKE_INSTALL_PREFIX` /

@@ -49,7 +49,14 @@ void origin_debug_logger_log(const char* file, int line, const char* func, Origi
 }
 #endif
 
-#if defined(NDEBUG) && !defined(ENABLE_TEST)
+// 调试日志开关：Release 默认关闭；测试构建（ORIGIN_ENABLE_TEST）下保持开启
+#if defined(NDEBUG) && !defined(ORIGIN_ENABLE_TEST)
+#define ORIGIN_DEBUG_LOG_ENABLED 0
+#else
+#define ORIGIN_DEBUG_LOG_ENABLED 1
+#endif
+
+#if !ORIGIN_DEBUG_LOG_ENABLED
 // Release模式：空操作，显式消费所有参数避免警告
 #define ORIGIN_DEBUG_LOGGER(level, format, ...) (static_cast<void>(0))
 #else

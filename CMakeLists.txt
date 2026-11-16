@@ -87,10 +87,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default CMAKE_BUILD_TYPE Debug" FORCE)
 endif()
 
-# 单配置生成器下按构建类型加宏；多配置生成器也能正确展开
-add_compile_definitions(
-    $<$<CONFIG:Debug>:DEBUG_MODE>
-    $<$<NOT:$<CONFIG:Debug>>:NDEBUG_MODE>)
+
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cmake_preset.cmake)
 
@@ -138,7 +135,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_configure_info.cmake)
 
 if (BUILD_TESTS)
     enable_testing()
-    add_compile_definitions(ENABLE_TEST)
+    add_compile_definitions(ORIGIN_ENABLE_TEST)
 endif()
 
 include(GNUInstallDirs)

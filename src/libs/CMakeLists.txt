@@ -24,12 +24,23 @@ function(origin_add_component lib)
 
     target_link_libraries(${lib} PUBLIC Threads::Threads)
 
+    # 警告只作用于 Origin 自己的库，第三方（FetchContent）不受影响
+    if (ORIGIN_WARNING_OPTIONS)
+        target_compile_options(${lib} PRIVATE ${ORIGIN_WARNING_OPTIONS})
+    endif()
+
     set_target_properties(${lib} PROPERTIES
         OUTPUT_NAME   "${origin_output_name}"
         DEBUG_POSTFIX "d"
         VERSION       ${PROJECT_VERSION}
         SOVERSION     ${PROJECT_VERSION_MAJOR}
     )
+
+    # MinGW 默认给 DLL 加 lib 前缀（libOriginLoggingd.dll），与 MSVC 的命名不一致；
+    # Windows 上统一去掉，保证两种工具链的产物名一致
+    if (WIN32)
+        set_target_properties(${lib} PROPERTIES PREFIX "")
+    endif()
 
     # Windows 专属：嵌入版本资源，资源管理器里能看到文件/产品版本
     origin_add_version_resource(${lib} "${origin_output_name}" "${lib} library of ${PROJECT_NAME}")

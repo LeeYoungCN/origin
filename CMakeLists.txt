@@ -43,24 +43,31 @@ option(BUILD_TESTS "Build and run tests."   OFF)
 option(ENABLE_ASAN "Enable asan."           OFF)
 
 if (MSVC)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-    add_compile_options(/permissive- /utf-8 /Zc:__cplusplus)
-    if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        add_compile_options(/Zc:preprocessor)
+    # CMake 默认 flags 带 /W3，目标级再加 /W4 会触发 D9025（overriding /W3 with /W4）；
+    # 这里先摘掉 /W3，警告级别统一由 ORIGIN_WARNING_OPTIONS 控制
+    string(REPLACE "/W3" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    # 摘掉 /W3 后会留下多余空格，顺手压一下
+    string(REGEX REPLACE " +" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string(REGEX REPLACE " +" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+    add_compile_options(/utf-8)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        # clang-cl 不支持这两个 MSVC 专有选项，传了只会得到 unused argument 警告
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/permissive->)
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor>)
     endif()
 endif()
 
-if (MINGW OR CMAKE_COMPILER_IS_GNUCXX OR
-    (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang" AND
-     CMAKE_C_COMPILER_FRONTEND_VARIANT STREQUAL "GNU"))
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -O0")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-    add_compile_options("-Wall" "-Wconversion" "-Wextra" "-pedantic")
+if (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
+    # clang / clang-cl 都用 clang 风格参数
+    set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
+elseif (MSVC)
+    # MSVC 只有警告等级，/W4 大致对应 -Wall -Wextra（含 C4244 等转换警告）
+    set(ORIGIN_WARNING_OPTIONS "/W4")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -95,11 +102,12 @@ if (ENABLE_ASAN)
         if(MSVC)
             add_compile_options(/fsanitize=address /Zi)
             add_link_options(/fsanitize=address)
-            # 关闭不兼容项
+            # 关闭与 ASan 不兼容的 /RTC（C 和 C++ 都要处理）
+            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
             string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
             string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
-            set(CMAKE_THIRD_PARTY_PATH "")
         else()
             message(WARNING "ASan is not supported on this platform/compiler.")
         endif()

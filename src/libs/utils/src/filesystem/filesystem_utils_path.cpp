@@ -27,7 +27,6 @@
 
 namespace origin::filesystem {
 namespace fs = std::filesystem;
-using namespace origin::filesystem;
 using namespace origin::thread;
 
 // ------------------------------ 系统路径接口 ------------------------------

@@ -174,21 +174,18 @@ const char* GetCppStandard()
 {
 #if __cplusplus >= 202302L
     return "C++23";
-#endif
-#if __cplusplus >= 202002L
+#elif __cplusplus >= 202002L
     return "C++20";
-#endif
-#if __cplusplus >= 201703L
+#elif __cplusplus >= 201703L
     return "C++17";
-#endif
-#if __cplusplus >= 201402L
+#elif __cplusplus >= 201402L
     return "C++14";
-#endif
-#if __cplusplus >= 201103L
+#elif __cplusplus >= 201103L
     return "C++11";
-#endif
-#if __cplusplus >= 199711L
+#elif __cplusplus >= 199711L
     return "C++98/C++03";
+#else
+    return "unknown";
 #endif
 }
 

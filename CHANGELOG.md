@@ -47,6 +47,9 @@
 
 - `cmake_tools.sh --pkg[=<out-dir>]`：调用 CPack 生成 `origin-<完整版本>-<preset>.zip`
   （Windows 上不依赖外部 `zip` 命令），默认输出到 `out/pkg/<preset>`，打包后清理 `_CPack_Packages`。
+- `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
+  把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），
+  之后可直接 `cmake --preset=msvc_x64_debug`；bash 侧继续用 `load_msvc_env.sh`。
 - `CMakePresets.json` 新增 `packagePresets`：`cpack --preset msvc_x64_debug_pkg`
   （以及 `linux_gnu_*_pkg` / `darwin_clang_*_pkg`）可直接打包，免去手写 `--config` 路径。
 - `cmake_tools.sh --gtest_target=<name>`：只跑指定的测试进程（默认聚合进程 `test_origin`）；

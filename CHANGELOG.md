@@ -18,14 +18,16 @@
 | 修复 bug、改实现 | patch | 不变 |
 | 删除接口、改签名、改虚函数布局 | major | 变化，依赖方需重编 |
 
-## [1.0.2] - 未发布
+## [1.1.0] - 未发布
 
 ### 变更
 
-- **BREAKING（仅头文件路径）**：`origin/utils/{filesystem_utils,file_writer,date_time_utils,
-  thread_utils,process_utils,string_utils}.h` 迁移到与命名空间一致的
-  `origin/{filesystem,date_time,thread,process,string}/`；旧路径已删除，
-  下游需要更新 include。命名空间（`origin::filesystem` 等）保持不变。
+- **BREAKING**：`origin/utils/{filesystem_utils,date_time_utils,thread_utils,process_utils,
+  string_utils}.h` 迁移为 `origin/<domain>/<domain>.h`（如 `origin/filesystem/filesystem.h`），
+  `file_writer.h` 移到 `origin/filesystem/file_writer.h`；旧路径直接删除，下游需更新 include。
+  命名空间（`origin::filesystem` 等）保持不变。
+- **BREAKING**：`OriginConfigVersion.cmake` 的兼容策略由 `SameMajorVersion` 改为
+  `SameMinorVersion`，1.0 的下游不会误匹配到 1.1（1.1 起头文件路径不兼容）。
 - 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；
   `/permissive-`、`/Zc:__cplusplus`、`/Zc:preprocessor` 仅对 C++ 生效并排除 clang-cl；
   摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。

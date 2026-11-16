@@ -10,7 +10,7 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/log_level.hpp"
-#include "origin/date_time/date_time_utils.h"
+#include "origin/date_time/date_time.h"
 
 using namespace origin::logging;
 using namespace origin::date_time;

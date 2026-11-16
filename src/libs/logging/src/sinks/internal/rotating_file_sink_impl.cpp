@@ -17,9 +17,9 @@
 #include "origin/common/types/filesystem_types.h"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/sinks/rotating_file_sink.hpp"
-#include "origin/date_time/date_time_utils.h"
+#include "origin/date_time/date_time.h"
 #include "origin/filesystem/file_writer.h"
-#include "origin/filesystem/filesystem_utils.h"
+#include "origin/filesystem/filesystem.h"
 #include "sinks/internal/rotating_file_sink_impl_base.hpp"
 
 namespace origin::logging {

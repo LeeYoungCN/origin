@@ -22,9 +22,9 @@
 #include "origin/logging/logging.hpp"
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/date_time/date_time_utils.h"
-#include "origin/filesystem/filesystem_utils.h"
-#include "origin/thread/thread_utils.h"
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/thread/thread.h"
 
 using namespace logging_test;
 using namespace origin::logging;

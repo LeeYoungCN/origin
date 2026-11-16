@@ -1,11 +1,12 @@
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-# 版本文件
+# 版本文件：SameMinorVersion 表示只有同一 major.minor 才视为兼容。
+# 破坏性变更（如头文件路径调整）放在新 minor，1.0 的下游不会被 1.1 误满足。
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
+    COMPATIBILITY SameMinorVersion
 )
 
 # 主Config模板

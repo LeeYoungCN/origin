@@ -9,8 +9,8 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/thread_types.h"
 #include "origin/container/concurrent_blocking_queue.hpp"
-#include "origin/date_time/date_time_utils.h"
-#include "origin/thread/thread_utils.h"
+#include "origin/date_time/date_time.h"
+#include "origin/thread/thread.h"
 
 namespace {
 constexpr uint32_t MAX_NUM = 2048;

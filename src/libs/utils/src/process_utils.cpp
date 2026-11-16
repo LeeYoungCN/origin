@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2026
  *
  */
-#include "origin/process/process_utils.h"
+#include "origin/process/process.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -32,8 +32,8 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/macros/compiler.h"
 #include "origin/common/types/process_types.h"
-#include "origin/filesystem/filesystem_utils.h"
-#include "origin/thread/thread_utils.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/thread/thread.h"
 
 namespace origin::process {
 using namespace origin::filesystem;

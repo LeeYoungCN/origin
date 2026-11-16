@@ -5,9 +5,9 @@
 
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
-#include "origin/date_time/date_time_utils.h"
-#include "origin/process/process_utils.h"
-#include "origin/thread/thread_utils.h"
+#include "origin/date_time/date_time.h"
+#include "origin/process/process.h"
+#include "origin/thread/thread.h"
 
 namespace origin::logging {
 LogMsg create_log_msg(const LogSource& source, const std::string_view loggerName,

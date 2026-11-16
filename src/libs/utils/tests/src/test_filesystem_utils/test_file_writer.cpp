@@ -8,8 +8,8 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/filesystem/file_writer.h"
-#include "origin/filesystem/filesystem_utils.h"
-#include "origin/process/process_utils.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/process/process.h"
 
 namespace utils_test::test_file_writer {
 using namespace origin::filesystem;

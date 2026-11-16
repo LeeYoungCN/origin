@@ -14,7 +14,7 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/async_logger.hpp"
 #include "origin/logging/logging.hpp"
-#include "origin/date_time/date_time_utils.h"
+#include "origin/date_time/date_time.h"
 
 using namespace logging_test;
 using namespace origin::date_time;

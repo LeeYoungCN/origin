@@ -7,8 +7,8 @@
  * @date 2025-07-27
  * @copyright Copyright (c) 2025
  */
-#ifndef ORIGIN_DATE_TIME_DATE_TIME_UTILS_H
-#define ORIGIN_DATE_TIME_DATE_TIME_UTILS_H
+#ifndef ORIGIN_DATE_TIME_DATE_TIME_H
+#define ORIGIN_DATE_TIME_DATE_TIME_H
 
 #include <cstdint>
 #include <ctime>
@@ -199,4 +199,4 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
 void sleep_ms(DurationMs ms);
 
 }  // namespace origin::date_time
-#endif  // ORIGIN_DATE_TIME_DATE_TIME_UTILS_H
+#endif  // ORIGIN_DATE_TIME_DATE_TIME_H

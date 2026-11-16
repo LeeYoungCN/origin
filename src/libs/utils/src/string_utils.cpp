@@ -1,4 +1,4 @@
-#include "origin/string/string_utils.h"
+#include "origin/string/string.h"
 
 #include <cstdarg>
 #include <cstdint>

@@ -14,8 +14,8 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/filesystem/filesystem_utils.h"
-#include "origin/process/process_utils.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/process/process.h"
 
 namespace logging_test {
 using namespace origin;

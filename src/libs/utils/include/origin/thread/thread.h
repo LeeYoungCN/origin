@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2025
  *
  */
-#ifndef ORIGIN_THREAD_THREAD_UTILS_H
-#define ORIGIN_THREAD_THREAD_UTILS_H
+#ifndef ORIGIN_THREAD_THREAD_H
+#define ORIGIN_THREAD_THREAD_H
 
 #include "origin/common/types/error_code_types.h"
 #include "origin/common/types/thread_types.h"
@@ -43,4 +43,4 @@ const char *get_thread_last_err_msg();
 
 }  // namespace origin::thread
 
-#endif  // ORIGIN_THREAD_THREAD_UTILS_H
+#endif  // ORIGIN_THREAD_THREAD_H

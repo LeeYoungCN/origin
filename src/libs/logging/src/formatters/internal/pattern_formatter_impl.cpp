@@ -12,8 +12,8 @@
 #include "origin/common/types/date_time_types.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
-#include "origin/date_time/date_time_utils.h"
-#include "origin/filesystem/filesystem_utils.h"
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
 
 using namespace origin::date_time;
 using namespace origin::filesystem;

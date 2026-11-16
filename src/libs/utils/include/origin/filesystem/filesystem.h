@@ -27,8 +27,8 @@
  * - 只有明确写了"要求存在"的接口才访问磁盘，其余是纯词法操作。
  * - 失败返回空字符串 / false / 0，错误码留在 thread-local 状态里。
  */
-#ifndef ORIGIN_FILESYSTEM_FILESYSTEM_UTILS_H
-#define ORIGIN_FILESYSTEM_FILESYSTEM_UTILS_H
+#ifndef ORIGIN_FILESYSTEM_FILESYSTEM_H
+#define ORIGIN_FILESYSTEM_FILESYSTEM_H
 
 #include <cstdint>
 #include <string>
@@ -275,4 +275,4 @@ bool create_dir(std::string_view path, bool recursive = true);
 bool delete_dir(std::string_view path, bool recursive = true);
 
 }  // namespace origin::filesystem
-#endif  // ORIGIN_FILESYSTEM_FILESYSTEM_UTILS_H
+#endif  // ORIGIN_FILESYSTEM_FILESYSTEM_H

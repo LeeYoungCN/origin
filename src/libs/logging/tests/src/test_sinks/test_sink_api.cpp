@@ -11,8 +11,8 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/filesystem/filesystem_utils.h"
-#include "origin/thread/thread_utils.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/thread/thread.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

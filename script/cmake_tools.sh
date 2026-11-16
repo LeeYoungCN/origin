@@ -500,8 +500,16 @@ function run_gtest() {
 function run_ctest() {
     init_cmake_env
 
+    # 与 CMakePresets.json 的 testPresets 对齐：同时输出文本日志和 JUnit 报告
+    local output_dir="${ROOT_DIR}/out/Testing/${cmake_preset}_ctest"
+    local ctest_output_args=("--output-log" "${output_dir}/Test_ALL.log")
+    if ctest --help 2>/dev/null | grep -q -- '--output-junit'; then
+        ctest_output_args+=("--output-junit" "${output_dir}/Test_ALL.xml")
+    fi
+
     if [ -z "${arg_ctest_case}" ]; then
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}"
+        mkdir -p "${output_dir}"
+        ctest --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
         return 0
     fi
 
@@ -510,13 +518,16 @@ function run_ctest() {
         ctest --test-dir "${cmake_binary_dir}" -N
         ;;
     rerun)
-        ctest --rerun-failed --output-on-failure --test-dir "${cmake_binary_dir}"
+        mkdir -p "${output_dir}"
+        ctest --rerun-failed --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
         ;;
     all)
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}"
+        mkdir -p "${output_dir}"
+        ctest --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
         ;;
     *)
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "${arg_ctest_case}"
+        mkdir -p "${output_dir}"
+        ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "${arg_ctest_case}" "${ctest_output_args[@]}"
         ;;
     esac
 }

@@ -75,12 +75,12 @@ if (MSVC)
     endif()
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    # clang / clang-cl / GCC：clang 风格开关
-    set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
-elseif (MSVC)
-    # MSVC 只有警告等级，/W4 大致对应 -Wall -Wextra（含 C4244 等转换警告）
+if (MSVC)
+    # MSVC 与 clang-cl 都用 /W4；clang-cl 的 -Wall 等价于 /Wall，
+    # 会把 -Wc++98-compat、-Wpadded 这类噪音全部打开
     set(ORIGIN_WARNING_OPTIONS "/W4")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)

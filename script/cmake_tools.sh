@@ -132,8 +132,8 @@ function print_help() {
 }
 
 function clean_env() {
-    local build_dir="${BUILD_CACHE_ROOT_DIR}/${arg_preset}"
-    local install_dir="${INSTALL_ROOT_DIR}/${arg_preset}"
+    local build_dir="${BUILD_CACHE_ROOT_DIR}/${cmake_preset}"
+    local install_dir="${INSTALL_ROOT_DIR}/${cmake_preset}"
 
     case "${arg_clean_type}" in
     all)
@@ -193,7 +193,7 @@ function init_cmake_preset() {
     case ${OS} in
     Windows)
         cmake_preset="msvc_x64_debug"
-        preset_array=("msvc_x64_debug" "msvc_x64_release" "msvc_x86_debug" "msvc_x86_release" "win_mingw_debug" "win_mingw_release" "win_clang_msvc_debug" "win_clang_msvc_release")
+        preset_array=("msvc_x64_debug" "msvc_x64_release" "msvc_x86_debug" "msvc_x86_release" "win_mingw_debug" "win_mingw_release" "win_clang_msvc_debug" "win_clang_msvc_release" "win_clang_mingw_debug" "win_clang_mingw_release" "win_clang_cl_debug" "win_clang_cl_release")
         ;;
     Linux)
         cmake_preset="linux_clang_debug"
@@ -209,7 +209,7 @@ function init_cmake_preset() {
         ;;
     esac
 
-    if [ -n "${arg_preset}" ] && [ "${arg_preset}" != "all" ]; then
+    if [ -n "${arg_preset}" ] && [ "${arg_preset}" != "all" ] && [ "${arg_preset}" != "list" ]; then
         cmake_preset="${arg_preset}"
     fi
     cmake_binary_dir="${BUILD_CACHE_ROOT_DIR}/${cmake_preset}"
@@ -636,6 +636,8 @@ function main() {
 
     readonly arg_enable_asan
 
+    init_cmake_preset
+
     if [ "${arg_preset}" == "list" ]; then
         echo "${preset_array[@]}"
         exit 0
@@ -646,7 +648,6 @@ function main() {
         exit 0
     fi
 
-    init_cmake_preset
 
     if [ ${arg_enable_list_param} -eq 0 ]; then
         list_cmake_configure_param

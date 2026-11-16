@@ -10,7 +10,10 @@
             "cacheVariables": {
                 "CMAKE_PRESET": "${presetName}",
                 "CMAKE_THIRD_PARTY_PATH": "${sourceDir}/third_party/${presetName}",
-                "BUILD_TESTS": "ON"
+                "CPACK_PACKAGE_DIRECTORY": "${sourceDir}/out/pkg/${presetName}",
+                "BUILD_TESTS": "ON",
+                "ENABLE_ASAN": "OFF",
+                "ENV_PARAM_FILE": ""
             }
         },
         {
@@ -21,7 +24,8 @@
             "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_msvc.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
-                "CMAKE_CXX_COMPILER": "cl.exe"
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "ENV_PARAM_FILE": "${sourceDir}/script/load_msvc_env.sh"
             },
             "condition": {
                 "type": "equals",
@@ -32,6 +36,7 @@
         {
             "name": "msvc_x64_debug",
             "displayName": "MSVC x64 Debug Configure",
+            "description": "Load the MSVC environment first: . ./script/load_msvc_env.ps1",
             "inherits": "msvc_base",
             "architecture": {
                 "value": "x64",
@@ -51,12 +56,15 @@
         },
         {
             "name": "msvc_x86_debug",
-            "hidden": true,
             "displayName": "MSVC x86 Debug Configure",
+            "description": "Load the MSVC environment first: . ./script/load_msvc_env.ps1 -Architecture x86",
             "inherits": "msvc_base",
             "architecture": {
                 "value": "x86",
                 "strategy": "external"
+            },
+            "environment": {
+                "ARCHITECTURE": "x86"
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
@@ -64,7 +72,6 @@
         },
         {
             "name": "msvc_x86_release",
-            "hidden": true,
             "displayName": "MSVC x86 Release Configure",
             "inherits": "msvc_x86_debug",
             "cacheVariables": {
@@ -339,7 +346,6 @@
         },
         {
             "name": "msvc_x86_debug_build",
-            "hidden": true,
             "configurePreset": "msvc_x86_debug",
             "displayName": "MSVC x86 Debug Build",
             "description": "Build the MSVC x86 Debug target.",
@@ -349,7 +355,6 @@
         },
         {
             "name": "msvc_x86_release_build",
-            "hidden": true,
             "configurePreset": "msvc_x86_release",
             "displayName": "MSVC x86 Release Build",
             "description": "Build the MSVC x86 Release target.",
@@ -555,7 +560,6 @@
         },
         {
             "name": "msvc_x86_debug_ctest",
-            "hidden": true,
             "displayName": "MSVC x86 Debug Ctest",
             "description": "Test the MSVC x86 Debug target.",
             "configurePreset": "msvc_x86_debug",
@@ -565,7 +569,6 @@
         },
         {
             "name": "msvc_x86_release_ctest",
-            "hidden": true,
             "displayName": "MSVC x86 Release Configure",
             "description": "Test the MSVC x86 Release target.",
             "configurePreset": "msvc_x86_release",

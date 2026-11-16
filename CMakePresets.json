@@ -519,8 +519,8 @@
             "hidden": true,
             "output": {
                 "outputOnFailure": true,
-                "outputLogFile": "Testing/Test_ALL.log",
-                "outputJUnitFile": "Testing/Test_ALL.xml",
+                "outputLogFile": "out/Testing/Test_ALL.log",
+                "outputJUnitFile": "out/Testing/Test_ALL.xml",
                 "verbosity": "verbose"
             },
             "execution": {

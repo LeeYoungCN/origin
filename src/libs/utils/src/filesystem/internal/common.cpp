@@ -19,7 +19,7 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/error_code_types.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/thread/thread_utils.h"
 #include "origin/utils/utils_error_code.h"
 
 using namespace origin::thread;

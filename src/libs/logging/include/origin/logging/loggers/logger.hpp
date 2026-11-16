@@ -14,7 +14,7 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/utils/string_utils.h"
+#include "origin/string/string_utils.h"
 
 namespace origin::logging {
 class LOGGING_API Logger {

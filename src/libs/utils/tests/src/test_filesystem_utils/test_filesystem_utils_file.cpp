@@ -11,8 +11,8 @@
 #include "gtest/gtest.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/macros/compiler.h"
-#include "origin/utils/filesystem_utils.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/filesystem/filesystem_utils.h"
+#include "origin/thread/thread_utils.h"
 #include "origin/utils/utils_error_code.h"
 #include "test_filesystem_utils_base.h"
 

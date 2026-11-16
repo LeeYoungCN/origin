@@ -9,7 +9,7 @@
  *
  */
 
-#include "origin/utils/thread_utils.h"
+#include "origin/thread/thread_utils.h"
 
 #if OS_WINDOWS
 #include <windows.h>

@@ -22,6 +22,10 @@
 
 ### 变更
 
+- **BREAKING（仅头文件路径）**：`origin/utils/{filesystem_utils,file_writer,date_time_utils,
+  thread_utils,process_utils,string_utils}.h` 迁移到与命名空间一致的
+  `origin/{filesystem,date_time,thread,process,string}/`；旧路径已删除，
+  下游需要更新 include。命名空间（`origin::filesystem` 等）保持不变。
 - 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；
   `/permissive-`、`/Zc:__cplusplus`、`/Zc:preprocessor` 仅对 C++ 生效并排除 clang-cl；
   摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。

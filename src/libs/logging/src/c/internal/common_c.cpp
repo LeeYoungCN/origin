@@ -11,7 +11,7 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/utils/string_utils.h"
+#include "origin/string/string_utils.h"
 
 namespace origin::logging::c_api {
 bool log_level_c_invalid(const LogLevelC level)

@@ -7,9 +7,9 @@
 #include "gtest/gtest.h"
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
-#include "origin/utils/file_writer.h"
-#include "origin/utils/filesystem_utils.h"
-#include "origin/utils/process_utils.h"
+#include "origin/filesystem/file_writer.h"
+#include "origin/filesystem/filesystem_utils.h"
+#include "origin/process/process_utils.h"
 
 namespace utils_test::test_file_writer {
 using namespace origin::filesystem;

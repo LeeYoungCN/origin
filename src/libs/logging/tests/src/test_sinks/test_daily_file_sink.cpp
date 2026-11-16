@@ -16,9 +16,9 @@
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/daily_file_sink.hpp"
-#include "origin/utils/date_time_utils.h"
-#include "origin/utils/filesystem_utils.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/date_time/date_time_utils.h"
+#include "origin/filesystem/filesystem_utils.h"
+#include "origin/thread/thread_utils.h"
 
 namespace logging_test {
 using namespace origin::date_time;

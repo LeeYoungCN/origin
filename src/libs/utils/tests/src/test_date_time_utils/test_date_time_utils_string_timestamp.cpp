@@ -5,7 +5,7 @@
 #include "gtest/gtest.h"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
-#include "origin/utils/date_time_utils.h"
+#include "origin/date_time/date_time_utils.h"
 #include "test_date_time_utils_common.h"
 
 namespace utils_test::date_time_test {

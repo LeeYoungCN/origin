@@ -37,8 +37,8 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/common/types/filesystem_types.h"
-#include "origin/utils/filesystem_utils.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/filesystem/filesystem_utils.h"
+#include "origin/thread/thread_utils.h"
 #include "origin/utils/utils_error_code.h"
 
 // std::ios::out：默认模式，创建文件（若存在则截断）。

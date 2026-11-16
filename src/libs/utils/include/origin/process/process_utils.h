@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2026
  *
  */
-#ifndef ORIGIN_UTILS_PROCESS_H
-#define ORIGIN_UTILS_PROCESS_H
+#ifndef ORIGIN_PROCESS_PROCESS_UTILS_H
+#define ORIGIN_PROCESS_PROCESS_UTILS_H
 
 #include <string>
 
@@ -48,4 +48,4 @@ std::string get_proc_filename_stem();
 ProcessId get_curr_proc_id();
 
 }  // namespace origin::process
-#endif  // ORIGIN_UTILS_PROCESS_H
+#endif  // ORIGIN_PROCESS_PROCESS_UTILS_H

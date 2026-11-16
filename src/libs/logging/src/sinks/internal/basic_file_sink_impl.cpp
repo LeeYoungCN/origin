@@ -9,8 +9,8 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/logging/log_msg.hpp"
-#include "origin/utils/file_writer.h"
-#include "origin/utils/filesystem_utils.h"
+#include "origin/filesystem/file_writer.h"
+#include "origin/filesystem/filesystem_utils.h"
 #include "origin/utils/utils_error_code.h"
 #include "sinks/internal/sink_impl_base.hpp"
 

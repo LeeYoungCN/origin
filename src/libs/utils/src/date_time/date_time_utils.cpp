@@ -1,4 +1,4 @@
-#include "origin/utils/date_time_utils.h"
+#include "origin/date_time/date_time_utils.h"
 
 #include "origin/common/macros/compiler.h"
 
@@ -25,7 +25,7 @@
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/thread/thread_utils.h"
 #include "origin/utils/utils_error_code.h"
 
 namespace {

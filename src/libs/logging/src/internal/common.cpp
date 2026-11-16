@@ -5,10 +5,10 @@
 #include <string_view>
 
 #include "origin/common/debug/debug_logger.h"
-#include "origin/utils/date_time_utils.h"
-#include "origin/utils/filesystem_utils.h"
-#include "origin/utils/process_utils.h"
-#include "origin/utils/thread_utils.h"
+#include "origin/date_time/date_time_utils.h"
+#include "origin/filesystem/filesystem_utils.h"
+#include "origin/process/process_utils.h"
+#include "origin/thread/thread_utils.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;

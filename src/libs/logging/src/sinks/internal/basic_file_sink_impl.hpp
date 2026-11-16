@@ -6,7 +6,7 @@
 #include <string_view>
 
 #include "origin/logging/log_msg.hpp"
-#include "origin/utils/file_writer.h"
+#include "origin/filesystem/file_writer.h"
 #include "sinks/internal/sink_impl_base.hpp"
 
 namespace origin::logging {

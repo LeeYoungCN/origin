@@ -1,5 +1,5 @@
-#ifndef ORIGIN_UTILS_STRING_UTILS_H
-#define ORIGIN_UTILS_STRING_UTILS_H
+#ifndef ORIGIN_STRING_STRING_UTILS_H
+#define ORIGIN_STRING_STRING_UTILS_H
 
 #include <cstdarg>
 #include <string>
@@ -25,4 +25,4 @@ std::string type_to_string(const T& type)
 
 }  // namespace origin::string
 
-#endif  // ORIGIN_UTILS_STRING_UTILS_H
+#endif  // ORIGIN_STRING_STRING_UTILS_H

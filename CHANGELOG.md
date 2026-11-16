@@ -18,7 +18,35 @@
 | 修复 bug、改实现 | patch | 不变 |
 | 删除接口、改签名、改虚函数布局 | major | 变化，依赖方需重编 |
 
-## [1.0.1] - 未发布
+## [1.0.2] - 未发布
+
+### 变更
+
+- 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；
+  `/permissive-`、`/Zc:__cplusplus`、`/Zc:preprocessor` 仅对 C++ 生效并排除 clang-cl；
+  摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。
+- 警告按编译器选择且只作用于 Origin 的库目标：MSVC 使用 `/W4`，
+  clang / clang-cl / GCC 使用 `-Wall -Wextra -Wconversion -pedantic`。
+- ASan 下同时清理 C flags 里的 `/RTC`；去掉置空 `CMAKE_THIRD_PARTY_PATH`。
+- Windows 下 MinGW 产物去掉 `lib` 前缀，DLL 命名与 MSVC 一致。
+- `CMakePresets.json` 与 `cmake_tools.sh` 对齐：显式写出 `CMAKE_INSTALL_PREFIX` /
+  `CPACK_PACKAGE_DIRECTORY` / `ENABLE_ASAN` / `ENV_PARAM_FILE`；`msvc_x86_*` 取消 hidden
+  并注明需要 32 位工具链环境；补全 `preset_array` 里的 `win_clang_mingw_*` / `win_clang_cl_*`。
+
+### 修复
+
+- `/W4` 暴露的死代码：`GetCppStandard` / `GetCStandard` 改为 `#elif` 链并补全返回值；
+  `logging.cpp` 删除 `throw` 之后不可达的 `return`（9 处）；
+  `filesystem_utils_path.cpp` 删除命名空间自引用 `using`。
+- `cmake_tools.sh --preset=list` 输出为空、`--clean` 不带 `-s` 时会删到 `out/build` 根目录。
+
+### 新增
+
+- `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
+  把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），
+  之后可直接 `cmake --preset=msvc_x64_debug`；bash 侧继续用 `load_msvc_env.sh`。
+
+## [1.0.1] - 2026-11-14
 
 ### 变更
 
@@ -47,9 +75,6 @@
 
 - `cmake_tools.sh --pkg[=<out-dir>]`：调用 CPack 生成 `origin-<完整版本>-<preset>.zip`
   （Windows 上不依赖外部 `zip` 命令），默认输出到 `out/pkg/<preset>`，打包后清理 `_CPack_Packages`。
-- `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
-  把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），
-  之后可直接 `cmake --preset=msvc_x64_debug`；bash 侧继续用 `load_msvc_env.sh`。
 - `CMakePresets.json` 新增 `packagePresets`：`cpack --preset msvc_x64_debug_pkg`
   （以及 `linux_gnu_*_pkg` / `darwin_clang_*_pkg`）可直接打包，免去手写 `--config` 路径。
 - `cmake_tools.sh --gtest_target=<name>`：只跑指定的测试进程（默认聚合进程 `test_origin`）；

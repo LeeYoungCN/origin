@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 # 版本号唯一来源：发版时改这里，并打同名 tag（v<版本号>），CI 负责校验两者一致。
 # 解析逻辑（-D 覆盖、开发版后缀、纯数字提取）见 cmake/project_version.cmake。
-set(ORIGIN_VERSION_FILE "1.0.1")
+set(ORIGIN_VERSION_FILE "1.0.2")
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
 
 project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)

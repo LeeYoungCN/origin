@@ -42,7 +42,7 @@ function(origin_add_version_resource target output_name)
 
     set(rc_file "${CMAKE_CURRENT_BINARY_DIR}/${target}.version.rc")
     configure_file(
-        "${CMAKE_SOURCE_DIR}/cmake/version.rc.in"
+        "${PROJECT_SOURCE_DIR}/cmake/version.rc.in"
         "${rc_file}"
         @ONLY)
 

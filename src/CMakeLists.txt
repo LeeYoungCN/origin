@@ -6,7 +6,7 @@ if (BUILD_TESTS)
 
     if (NOT GTest_FOUND)
         message(STATUS "GTest not found, fetching with FetchContent")
-        include(${CMAKE_SOURCE_DIR}/cmake/fetch_content.cmake)
+        include(${PROJECT_SOURCE_DIR}/cmake/fetch_content.cmake)
     endif()
 endif()
 

@@ -35,12 +35,19 @@
 
 ### 修复
 
+- 支持被 `FetchContent` / `add_subdirectory` 嵌入：路径改用 `PROJECT_SOURCE_DIR`，
+  `CMAKE_INSTALL_PREFIX` / `CMAKE_THIRD_PARTY_PATH` / `CPACK_PACKAGE_DIRECTORY` / `include(CPack)`
+  只在顶层生效，嵌入时改用 `ORIGIN_BUILD_TESTS` / `ORIGIN_ENABLE_ASAN` 选项，
+  不再覆盖父项目的全局设置。
 - `/W4` 暴露的死代码：`GetCppStandard` / `GetCStandard` 改为 `#elif` 链并补全返回值；
   `logging.cpp` 删除 `throw` 之后不可达的 `return`（9 处）；
   `filesystem_utils_path.cpp` 删除命名空间自引用 `using`。
 - `cmake_tools.sh --preset=list` 输出为空、`--clean` 不带 `-s` 时会删到 `out/build` 根目录。
 
 ### 新增
+
+- `doc/integration.md`：下游集成指南（`find_package` / `FetchContent` / `add_subdirectory` /
+  vcpkg 的用法、版本锁定策略、常见问题）。
 
 - `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
   把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），

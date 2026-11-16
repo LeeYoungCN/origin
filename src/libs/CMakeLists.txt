@@ -2,7 +2,7 @@ set_property(GLOBAL PROPERTY ORIGIN_LIB_LIST "")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
-include(${CMAKE_SOURCE_DIR}/cmake/version_resource.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/version_resource.cmake)
 
 function(origin_add_component lib)
     set(origin_output_name "${PROJECT_NAME}${lib}")
@@ -67,4 +67,4 @@ add_subdirectory(logging)
 get_property(LIB_LIST GLOBAL PROPERTY ORIGIN_LIB_LIST)
 message(STATUS "LIB_LIST: ${LIB_LIST}")
 
-include(${CMAKE_SOURCE_DIR}/cmake/package/main_config.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/package/main_config.cmake)

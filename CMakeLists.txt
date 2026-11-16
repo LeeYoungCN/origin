@@ -7,6 +7,14 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
 
 project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
 
+# FetchContent / add_subdirectory 嵌入时，CMAKE_SOURCE_DIR 指向父项目，
+# 这里区分是否作为顶层项目构建，用于决定要不要改全局设置。
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(ORIGIN_TOP_LEVEL TRUE)
+else()
+    set(ORIGIN_TOP_LEVEL FALSE)
+endif()
+
 # Windows 下为 DLL 嵌入 VERSIONINFO 资源（资源管理器/GetFileVersionInfo 可读版本）
 if(WIN32)
     enable_language(RC)
@@ -14,14 +22,14 @@ endif()
 
 # 版本头：产物里能查到编译时使用的版本
 configure_file(
-    "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/version.h"
     @ONLY)
 
 # 开发版信息（完整串 / 提交号 / 是否脏）单独生成，只有 Common 的 version.cpp 引用，
 # 避免每次提交或 reconfigure 触发全量重编。
 configure_file(
-    "${CMAKE_SOURCE_DIR}/cmake/build_info.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/build_info.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/build_info.h"
     @ONLY)
 
@@ -39,8 +47,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-option(BUILD_TESTS "Build and run tests."   OFF)
-option(ENABLE_ASAN "Enable asan."           OFF)
+if(ORIGIN_TOP_LEVEL)
+    option(BUILD_TESTS "Build and run tests."   OFF)
+    option(ENABLE_ASAN "Enable asan."           OFF)
+else()
+    # 嵌入父项目时用独立选项名，避免和父项目的 BUILD_TESTS / ENABLE_ASAN 冲突
+    option(ORIGIN_BUILD_TESTS "Build Origin tests when embedded" OFF)
+    option(ORIGIN_ENABLE_ASAN "Enable ASan when embedded"       OFF)
+    set(BUILD_TESTS ${ORIGIN_BUILD_TESTS})
+    set(ENABLE_ASAN ${ORIGIN_ENABLE_ASAN})
+endif()
 
 if (MSVC)
     # CMake 默认 flags 带 /W3，目标级再加 /W4 会触发 D9025（overriding /W3 with /W4）；
@@ -51,8 +67,7 @@ if (MSVC)
     string(REGEX REPLACE " +" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
     string(REGEX REPLACE " +" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-    add_compile_options(/utf-8)
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
+    add_compile_options(/utf-8 $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
     if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         # clang-cl 不支持这两个 MSVC 专有选项，传了只会得到 unused argument 警告
         add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/permissive->)
@@ -60,73 +75,66 @@ if (MSVC)
     endif()
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
-    # clang / clang-cl 都用 clang 风格参数
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    # clang / clang-cl / GCC：clang 风格开关
     set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
 elseif (MSVC)
     # MSVC 只有警告等级，/W4 大致对应 -Wall -Wextra（含 C4244 等转换警告）
     set(ORIGIN_WARNING_OPTIONS "/W4")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(ORIGIN_WARNING_OPTIONS "-Wall" "-Wextra" "-Wconversion" "-pedantic")
 endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default CMAKE_BUILD_TYPE Debug" FORCE)
 endif()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_definitions(DEBUG_MODE)
-else()
-    add_compile_definitions(NDEBUG_MODE)
-endif()
+# 单配置生成器下按构建类型加宏；多配置生成器也能正确展开
+add_compile_definitions(
+    $<$<CONFIG:Debug>:DEBUG_MODE>
+    $<$<NOT:$<CONFIG:Debug>>:NDEBUG_MODE>)
 
-include(${CMAKE_SOURCE_DIR}/cmake/get_cmake_preset.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cmake_preset.cmake)
 
-if (NOT CMAKE_INSTALL_PREFIX OR
-    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files (x86)/${PROJECT_NAME}" OR
-    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/${PROJECT_NAME}" OR
-    CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/out/install/${CMAKE_PRESET}" CACHE PATH "Default CMAKE_INSTALL_PREFIX out/install/${CMAKE_PRESET}" FORCE)
-endif()
+# 被 FetchContent / add_subdirectory 嵌入时，不要覆盖父项目的全局设置
+if(ORIGIN_TOP_LEVEL)
+    set(_origin_default_prefixes
+        "C:/Program Files (x86)/${PROJECT_NAME}"
+        "C:/Program Files/${PROJECT_NAME}"
+        "/usr/local")
+    if (NOT CMAKE_INSTALL_PREFIX OR CMAKE_INSTALL_PREFIX IN_LIST _origin_default_prefixes)
+        set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/out/install/${CMAKE_PRESET}" CACHE PATH "Default CMAKE_INSTALL_PREFIX out/install/${CMAKE_PRESET}" FORCE)
+    endif()
 
-if (NOT CMAKE_THIRD_PARTY_PATH)
-    set(CMAKE_THIRD_PARTY_PATH "${CMAKE_SOURCE_DIR}/third_party/${CMAKE_PRESET}" CACHE STRING "Default CMAKE_THIRD_PARTY_PATH third_party" FORCE)
-endif()
+    if (NOT CMAKE_THIRD_PARTY_PATH)
+        set(CMAKE_THIRD_PARTY_PATH "${PROJECT_SOURCE_DIR}/third_party/${CMAKE_PRESET}" CACHE STRING "Default CMAKE_THIRD_PARTY_PATH third_party" FORCE)
+    endif()
 
-if (NOT CPACK_PACKAGE_DIRECTORY)
-    set(CPACK_PACKAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/out/pkg/${CMAKE_PRESET}")
-endif()
-
-if (ENABLE_ASAN)
-    if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        if(MSVC)
-            add_compile_options(/fsanitize=address /Zi)
-            add_link_options(/fsanitize=address)
-            # 关闭与 ASan 不兼容的 /RTC（C 和 C++ 都要处理）
-            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-            string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
-        else()
-            message(WARNING "ASan is not supported on this platform/compiler.")
-        endif()
-    else()
-        if (CMAKE_COMPILER_IS_GNUCXX OR
-            (CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang"))
-            add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
-            add_link_options(-fsanitize=address)
-        else()
-            message(WARNING "ASan is not supported on this platform/compiler.")
-        endif()
+    if (NOT CPACK_PACKAGE_DIRECTORY)
+        set(CPACK_PACKAGE_DIRECTORY "${PROJECT_SOURCE_DIR}/out/pkg/${CMAKE_PRESET}")
     endif()
 endif()
 
-if (NOT EXISTS "${CMAKE_THIRD_PARTY_PATH}")
+if (ENABLE_ASAN)
+    if (MSVC)
+        add_compile_options(/fsanitize=address /Zi)
+        add_link_options(/fsanitize=address)
+        # /RTC 与 ASan 不兼容，C 和 C++ 的 debug flags 都要清理
+        foreach(flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG)
+            string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag} "${${flag}}")
+        endforeach()
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+        add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address)
+    else()
+        message(WARNING "ASan is not supported on this platform/compiler.")
+    endif()
+endif()
+
+if (ORIGIN_TOP_LEVEL AND NOT EXISTS "${CMAKE_THIRD_PARTY_PATH}")
     message(WARNING "CMAKE_THIRD_PARTY_PATH does not exist: ${CMAKE_THIRD_PARTY_PATH}")
 endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/cmake_configure_info.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_configure_info.cmake)
 
 if (BUILD_TESTS)
     enable_testing()
@@ -161,4 +169,6 @@ set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_FILE_NAME "origin-${ORIGIN_VERSION_FULL}-${CMAKE_PRESET}")
 set(CPACK_GENERATOR "ZIP;TGZ")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
-include(CPack)
+if(ORIGIN_TOP_LEVEL)
+    include(CPack)
+endif()

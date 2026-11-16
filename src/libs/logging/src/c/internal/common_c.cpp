@@ -11,7 +11,7 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/string/string.h"
+#include "origin/strings/strings.h"
 
 namespace origin::logging::c_api {
 bool log_level_c_invalid(const LogLevelC level)
@@ -84,7 +84,7 @@ void origin_force_log_it(const std::shared_ptr<Logger> &logger, const char *file
                          const char *func, const LogLevel level, const char *format, va_list args)
 {
     logger->force_log(
-        LogSource(file, line, func), level, origin::string::va_list_to_string(format, args));
+        LogSource(file, line, func), level, origin::strings::va_list_to_string(format, args));
 }
 
 void origin_log_it(const std::shared_ptr<Logger> &logger, const char *file, const int line,

@@ -28,6 +28,9 @@
   命名空间（`origin::filesystem` 等）保持不变。
 - **BREAKING**：`OriginConfigVersion.cmake` 的兼容策略由 `SameMajorVersion` 改为
   `SameMinorVersion`，1.0 的下游不会误匹配到 1.1（1.1 起头文件路径不兼容）。
+- **BREAKING**：`origin::string` 命名空间改为 `origin::strings`，头文件
+  `origin/string/string.h` 改为 `origin/strings/strings.h`，源文件改为 `strings.cpp`
+  （复数形式表示工具集合，与 abseil 的 `absl::strings` 一致）。
 - 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；
   `/permissive-`、`/Zc:__cplusplus`、`/Zc:preprocessor` 仅对 C++ 生效并排除 clang-cl；
   摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。

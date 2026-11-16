@@ -15,7 +15,7 @@ set(SRC_LIST
     src/filesystem/internal/file_writer_impl.cpp
     # process / string / thread
     src/process_utils.cpp
-    src/string_utils.cpp
+    src/strings.cpp
     src/thread_utils.cpp
 )
 add_library(${LIB_NAME} SHARED ${SRC_LIST})

@@ -103,7 +103,7 @@ void log(const LogSource& source, LogLevel level, const T& msg)
 template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
 void log(LogLevel level, const T& msg)
 {
-    root_logger()->log(level, origin::string::type_to_string(msg));
+    root_logger()->log(level, origin::strings::type_to_string(msg));
 }
 
 template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
@@ -288,7 +288,7 @@ uint32_t log_all(const LogSource& source, LogLevel level, std::format_string<Arg
 template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
 uint32_t log_all(const LogSource& source, LogLevel level, const T& message)
 {
-    const std::string text = origin::string::type_to_string(message);
+    const std::string text = origin::strings::type_to_string(message);
     return log_all(source, level, std::string_view(text));
 }
 LOGGING_API void flush_all();

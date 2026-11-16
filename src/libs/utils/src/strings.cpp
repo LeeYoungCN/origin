@@ -1,4 +1,4 @@
-#include "origin/string/string.h"
+#include "origin/strings/strings.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace origin::string {
+namespace origin::strings {
 
 bool string_is_null_or_empty(const char *str)
 {
@@ -30,4 +30,4 @@ std::string va_list_to_string(const char *format, va_list args)
     vsnprintf(message.data(), static_cast<uint32_t>(len) + 1, format, args);
     return message;
 }
-}  // namespace origin::string
+}  // namespace origin::strings

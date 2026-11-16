@@ -1,5 +1,5 @@
-#ifndef ORIGIN_STRING_STRING_H
-#define ORIGIN_STRING_STRING_H
+#ifndef ORIGIN_STRINGS_STRINGS_H
+#define ORIGIN_STRINGS_STRINGS_H
 
 #include <cstdarg>
 #include <string>
@@ -7,7 +7,7 @@
 
 #include "origin/common/types/type_traits.h"
 
-namespace origin::string {
+namespace origin::strings {
 std::string va_list_to_string(const char* format, va_list args);
 bool string_is_null_or_empty(const char* str);
 
@@ -23,6 +23,6 @@ std::string type_to_string(const T& type)
     return msg;
 }
 
-}  // namespace origin::string
+}  // namespace origin::strings
 
-#endif  // ORIGIN_STRING_STRING_H
+#endif  // ORIGIN_STRINGS_STRINGS_H

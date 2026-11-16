@@ -14,7 +14,7 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/string/string.h"
+#include "origin/strings/strings.h"
 
 namespace origin::logging {
 class LOGGING_API Logger {
@@ -45,7 +45,7 @@ public:
     void log(const LogSource& source, const LogLevel level, const T& message)
     {
         if (should_log(level)) {
-            force_log(source, level, origin::string::type_to_string(message));
+            force_log(source, level, origin::strings::type_to_string(message));
         }
     }
 

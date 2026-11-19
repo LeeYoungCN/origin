@@ -81,6 +81,19 @@ jobs:
         # 4. 将 MinGW 路径添加到环境变量（确保优先使用）
         echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
 
+    - name: Install LLVM 22 for clang-cl (Windows only)
+      # windows-2025-vs2026 镜像自带 LLVM 20，而 VS 18 的 MSVC STL 14.52 要求
+      # Clang 22+（否则 STL1000 直接拒绝编译），这里显式升级并按版本校验。
+      if: matrix.os == 'windows-latest' && matrix.compiler == 'clang'
+      shell: pwsh
+      run: |
+        choco upgrade llvm --version=22.1.8 --allow-downgrade -y --no-progress
+        $version = clang-cl --version | Select-Object -First 1
+        Write-Output $version
+        if ($version -notmatch 'clang version 22\.') {
+          throw "Expected clang-cl 22, got: $version"
+        }
+
     - name: Verify version matches tag
       # tag 只是"发布点"标记，版本号以 CMakeLists 为准；两边不一致就拒绝发布。
       if: startsWith(github.ref, 'refs/tags/v')

@@ -84,6 +84,8 @@
   `logging.cpp` 删除 `throw` 之后不可达的 `return`（9 处）；
   `filesystem_utils_path.cpp` 删除命名空间自引用 `using`。
 - `cmake_tools.sh --preset=list` 输出为空、`--clean` 不带 `-s` 时会删到 `out/build` 根目录。
+- CI：Windows runner 的 clang-cl 任务显式安装 LLVM 22（VS 18 的 MSVC STL 14.52 要求
+  Clang 22+，镜像自带的 LLVM 20 会触发 STL1000 编译失败）。
 
 ### 新增
 

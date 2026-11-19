@@ -74,17 +74,19 @@ inline const char* get_file_mode_str(bool overwrite)
 /**
  * @brief 获取当前工作路径。
  *
- * @return 工作路径
+ * @param[out] out 当前工作路径；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
 ErrorCode get_curr_working_dir(std::string& out);
 
 /**
  * @brief 拼接多个路径片段为完整路径
  * @param parts 路径片段列表
- * @return 拼接后的完整路径字符串
+ * @param[out] out 拼接后的完整路径字符串；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS；列表为空返回 ERR_UTILS_PATH_INVALID
  * @note 自动处理不同平台的路径分隔符
- * @note 空列表返回空串并设置 ERR_UTILS_PATH_INVALID；片段中若出现绝对路径，
- *       会替换掉前面已拼接的部分（std::filesystem::operator/= 语义）
+ * @note 片段中若出现绝对路径，会替换掉前面已拼接的部分
+ *       （std::filesystem::operator/= 语义）
  */
 ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
 
@@ -98,7 +100,8 @@ ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
  * - 空串返回空串。
  *
  * @param path 原始路径（UTF-8）
- * @return 规范化后的路径；失败返回空串并设置错误码
+ * @param[out] out 规范化后的路径；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @see to_absolute_path 需要绝对路径时使用
  */
 ErrorCode normalize_path(std::string_view path, std::string& out);
@@ -109,15 +112,16 @@ ErrorCode normalize_path(std::string_view path, std::string& out);
  * 过程：base = baseDir（为空时取 get_curr_working_dir()）→ base / relPath
  * → std::filesystem::absolute → lexically_normal。
  *
- * - relPath 为空时直接返回空串（不修改错误码）；
+ * - relPath 为空时直接返回 ERR_COMM_SUCCESS，并将 out 置为空串；
  * - relPath 为绝对路径时忽略 base（operator/= 语义）；
  * - 不检查路径是否存在，不解析符号链接；
  * - baseDir 为相对路径时按当前工作目录解析；
  * - 结果中的 `.`、`..` 已按词法折叠。
  *
  * @param relPath 相对路径（也允许传绝对路径）
- * @param baseDir 基准目录（默认为当前工作目录）
- * @return 绝对路径；失败返回空串并设置错误码
+ * @param baseDir 基准目录（传空串表示使用当前工作目录）
+ * @param[out] out 绝对路径；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @see normalize_path 只做词法规范化、不转绝对路径
  */
 ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out);
@@ -215,14 +219,18 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
 /**
  * @brief 读取文本文件内容
  * @param path 文本文件路径
- * @return 文件内容字符串，读取失败返回空字符串
+ * @param[out] out 文件内容；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
+ *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
 ErrorCode read_text_file(std::string_view path, std::string& out);
 
 /**
  * @brief 读取二进制文件内容
  * @param path 二进制文件路径
- * @return 二进制数据容器，读取失败返回空容器
+ * @param[out] out 文件内容；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
+ *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
 ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out);
 
@@ -238,16 +246,26 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
 /**
  * @brief 获取文件大小（字节数）
  * @param path 文件路径
- * @return 文件大小（字节），获取失败返回0
+ * @param[out] out 文件大小（字节）；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
+ *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
 ErrorCode get_file_size(std::string_view path, FileSize& out);
 
+/**
+ * @brief 获取文件的最后修改时间
+ * @param path 文件路径
+ * @param[out] out 毫秒级时间戳（Unix纪元基准）；失败时不被修改
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
 ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
 
 /**
  * @brief 获取文件的详细信息
  * @param path 文件路径
- * @return 包含文件信息的FileInfo结构体，获取失败返回默认初始化的结构体
+ * @param[out] out 文件信息（路径/类型/大小/修改时间）；失败时 path 与 type
+ *                 仍会写入，size 与 modifyTime 保持默认值
+ * @return 成功返回 ERR_COMM_SUCCESS；路径不存在返回 ERR_UTILS_NOT_FOUND
  */
 ErrorCode get_file_info(std::string_view path, FileInfo& out);
 
@@ -261,7 +279,7 @@ bool dir_exists(std::string_view path);
 /**
  * @brief 创建目录
  * @param path 要创建的目录路径
- * @param recursive 是否递归创建父目录（默认为false）
+ * @param recursive 是否递归创建父目录（默认为true）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
 ErrorCode create_dir(std::string_view path, bool recursive = true);
@@ -269,7 +287,7 @@ ErrorCode create_dir(std::string_view path, bool recursive = true);
 /**
  * @brief 删除目录
  * @param path 要删除的目录路径
- * @param recursive 是否递归删除非空目录（默认为false）
+ * @param recursive 是否递归删除非空目录（默认为true）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
 ErrorCode delete_dir(std::string_view path, bool recursive = true);

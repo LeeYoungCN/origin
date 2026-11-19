@@ -1,5 +1,5 @@
 /**
- * @file thread_utils.h
+ * @file thread.h
  * @author your name (you@domain.com)
  * @brief
  * @version 0.1
@@ -29,19 +29,17 @@ ThreadId get_curr_thread_id();
  * @brief 设置线程名称
  *
  * @param name 线程名称
+ * @return 成功返回 ERR_COMM_SUCCESS
  */
 ErrorCode set_curr_thread_name(const char* name);
 
 /**
  * @brief 获取当前线程名称
  *
- * @return 当前线程名称，未设置则为空
+ * @param[out] out 当前线程名称，未设置则为空串
+ * @return 成功返回 ERR_COMM_SUCCESS
  */
 ErrorCode get_curr_thread_name(std::string& out);
-
-#ifdef UTILS_BUILD_SHARED
-// 内部诊断状态：仅库内部实现使用，不对外暴露。
-#endif
 
 }  // namespace origin::thread
 

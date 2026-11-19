@@ -27,19 +27,19 @@ class TestFilesystemUtilsPath : public TestFilesystemUtilsBase {};
 TEST_F(TestFilesystemUtilsPath, ProcessPath)
 {
     EXPECT_FALSE(m_process.empty());
-    EXPECT_EQ(get_entry_type(m_process), EntryType::FILE);
+    EXPECT_EQ(fs_type(m_process), EntryType::FILE);
 }
 
 TEST_F(TestFilesystemUtilsPath, ProcessDir)
 {
     EXPECT_FALSE(m_processDir.empty());
-    EXPECT_EQ(get_entry_type(m_processDir), EntryType::DIRECTORY);
+    EXPECT_EQ(fs_type(m_processDir), EntryType::DIRECTORY);
 }
 
 TEST_F(TestFilesystemUtilsPath, WorkingDirectory)
 {
     EXPECT_FALSE(m_workDir.empty());
-    EXPECT_EQ(get_entry_type(m_workDir), EntryType::DIRECTORY);
+    EXPECT_EQ(fs_type(m_workDir), EntryType::DIRECTORY);
 }
 
 TEST_F(TestFilesystemUtilsPath, AbsolutePath)
@@ -54,11 +54,11 @@ TEST_F(TestFilesystemUtilsPath, ToAbsolute)
     auto baseName = get_filename(m_process);
     std::string relPah = std::string(".") + PATH_SEP + baseName;
     EXPECT_FALSE(is_absolute_path(relPah));
-    auto absFile = to_absolute_path(relPah, m_processDir);
+    auto absFile = fs_abs(relPah, m_processDir);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(is_absolute_path(absFile));
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
-    EXPECT_EQ(get_entry_type(m_process), EntryType::FILE);
+    EXPECT_EQ(fs_type(m_process), EntryType::FILE);
 }
 
 TEST_F(TestFilesystemUtilsPath, BaseName)
@@ -77,7 +77,7 @@ TEST_F(TestFilesystemUtilsPath, normalize_path)
 {
     auto baseName = get_filename(m_process);
     auto testPath = m_processDir + PATH_SEP + "." + PATH_SEP + baseName;
-    auto rstPath = normalize_path(testPath);
+    auto rstPath = fs_normalize(testPath);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_process, rstPath);
     EXPECT_TRUE(is_absolute_path(rstPath));
@@ -89,14 +89,14 @@ TEST_F(TestFilesystemUtilsPath, NormalizePath_WithDots)
     std::string expect(MAX_PATH_STD, '\0');
     auto len = snprintf(expect.data(), MAX_PATH_STD, "a%sc%sd", PATH_SEP, PATH_SEP);
     expect.resize(static_cast<size_t>(len));
-    auto result = normalize_path(test);
+    auto result = fs_normalize(test);
     EXPECT_EQ(result, expect);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsPath, NormalizePath_EmptyPath)
 {
-    std::string result = normalize_path("");
+    std::string result = fs_normalize("");
 
     EXPECT_EQ(result, "");
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
@@ -104,7 +104,7 @@ TEST_F(TestFilesystemUtilsPath, NormalizePath_EmptyPath)
 
 TEST_F(TestFilesystemUtilsPath, JoinPaths_empty)
 {
-    EXPECT_EQ(join_paths({}), "");
+    EXPECT_EQ(fs_join({}), "");
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_PATH_INVALID) << get_thread_last_err_msg();
 }
 
@@ -114,7 +114,7 @@ TEST_F(TestFilesystemUtilsPath, JoinPaths_Success)
     std::string expect(MAX_PATH_STD, '\0');
     auto size = snprintf(expect.data(), MAX_PATH_STD, "a%sb%sc", PATH_SEP, PATH_SEP);
     expect.resize(static_cast<size_t>(size));
-    EXPECT_EQ(join_paths(test), expect);
+    EXPECT_EQ(fs_join(test), expect);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 

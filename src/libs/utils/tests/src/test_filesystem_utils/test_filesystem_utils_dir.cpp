@@ -26,8 +26,8 @@ void TestFilesystemUtilsDir::SetUp()
 {
     TestFilesystemUtilsBase::SetUp();
 
-    m_testDir1 = to_absolute_path("./test_dir1_" + std::to_string(m_pid), m_processDir);
-    m_testDir2 = to_absolute_path("./test_dir2_" + std::to_string(m_pid), m_testDir1);
+    m_testDir1 = fs_abs("./test_dir1_" + std::to_string(m_pid), m_processDir);
+    m_testDir2 = fs_abs("./test_dir2_" + std::to_string(m_pid), m_testDir1);
     EXPECT_EQ(delete_dir(m_testDir1, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(m_testDir1));
 }

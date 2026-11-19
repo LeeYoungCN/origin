@@ -33,7 +33,8 @@ inline const char* recursive_mode_str(bool recursive)
 
 bool dir_exists(std::string_view path)
 {
-    EntryType const type = get_entry_type(path);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(path, type);
     bool result = false;
     switch (type) {
         case EntryType::DIRECTORY:
@@ -52,7 +53,8 @@ bool dir_exists(std::string_view path)
 
 ErrorCode create_dir(std::string_view path, bool recursive)
 {
-    auto type = get_entry_type(path);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(path, type);
     if (type == EntryType::DIRECTORY) {
         set_thread_last_err(ERR_UTILS_ALREADY_EXISTS);
         ORIGIN_DEBUG_TRACE("Create dir success. dir: \"{}\", mode: {}. message: \"already exist\".",

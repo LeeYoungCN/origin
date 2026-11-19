@@ -8,11 +8,59 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
+inline std::string fs_join(const std::vector<std::string>& parts)
+{
+    std::string out;
+    (void)origin::filesystem::join_paths(parts, out);
+    return out;
+}
+inline std::string fs_join(std::initializer_list<std::string> parts)
+{
+    return fs_join(std::vector<std::string>(parts));
+}
+inline FileSize fs_size(std::string_view path)
+{
+    FileSize out = 0;
+    (void)origin::filesystem::get_file_size(path, out);
+    return out;
+}
+inline std::string fs_read_text(std::string_view path)
+{
+    std::string out;
+    (void)origin::filesystem::read_text_file(path, out);
+    return out;
+}
+inline std::string fs_abs(std::string_view relPath, std::string_view baseDir = "")
+{
+    std::string out;
+    (void)origin::filesystem::to_absolute_path(relPath, baseDir, out);
+    return out;
+}
+inline std::string fs_cwd()
+{
+    std::string out;
+    (void)origin::filesystem::get_curr_working_dir(out);
+    return out;
+}
+inline EntryType fs_type(std::string_view path)
+{
+    EntryType out = EntryType::UNKNOWN;
+    (void)origin::filesystem::get_entry_type(path, out);
+    return out;
+}
+inline std::string fs_normalize(std::string_view path)
+{
+    std::string out;
+    (void)origin::filesystem::normalize_path(path, out);
+    return out;
+}
 
 namespace origin::logging {
 class TaskPool;

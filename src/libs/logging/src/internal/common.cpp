@@ -21,8 +21,11 @@ using namespace origin::date_time;
 std::string get_default_log_file(const std::string_view suffix)
 {
     const std::string process = get_proc_path();
-    return join_paths(
-        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
+    std::string file;
+    (void)join_paths(
+        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)},
+        file);
+    return file;
 }
 
 bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)

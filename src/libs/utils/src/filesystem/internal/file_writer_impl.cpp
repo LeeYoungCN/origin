@@ -25,7 +25,7 @@
 namespace origin::filesystem {
 using namespace origin::thread;
 
-FileWriterImpl::FileWriterImpl(std::string_view file) : _file(to_absolute_path(file))
+FileWriterImpl::FileWriterImpl(std::string_view file) : _file()
 {
     if (file.empty()) {
         _errcode = ERR_COMM_PARAM_EMPTY;
@@ -33,6 +33,7 @@ FileWriterImpl::FileWriterImpl(std::string_view file) : _file(to_absolute_path(f
         throw std::invalid_argument("Create FileWriterImpl failed. File path is empty.");
         return;
     }
+    (void)to_absolute_path(file, "", _file);
 }
 
 ErrorCode FileWriterImpl::open_it(bool overwrite)

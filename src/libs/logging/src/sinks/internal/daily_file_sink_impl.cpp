@@ -194,7 +194,9 @@ std::string DailyFileSinkImpl::calc_log_file(TimestampMs time)
                                 dateTime.month,
                                 dateTime.day,
                                 _extension);
-    return join_paths({_directory, filename});
+    std::string file;
+    (void)join_paths({_directory, filename}, file);
+    return file;
 }
 
 void DailyFileSinkImpl::init_file_queue()

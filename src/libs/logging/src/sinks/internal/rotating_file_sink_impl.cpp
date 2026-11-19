@@ -34,7 +34,7 @@ struct LogFileInfo {
     LogFileInfo(uint32_t i, std::string_view f) : idx(i), file(f)
     {
         (void)get_file_modify_time(f, modifyTime);
-        fileSize = get_file_size(f);
+        (void)get_file_size(f, fileSize);
     }
 
     [[nodiscard]] std::string to_string() const
@@ -159,7 +159,9 @@ void RotatingFileSinkImpl::init_file_queue()
 std::string RotatingFileSinkImpl::get_next_file()
 {
     auto filename = std::format("{}{}{}{}", _filenameStem, SPLIT_CHAR, get_next_idx(), _extension);
-    return join_paths({_directory, filename});
+    std::string file;
+    (void)join_paths({_directory, filename}, file);
+    return file;
 }
 
 void RotatingFileSinkImpl::set_next_idx(const uint32_t idx)

@@ -158,7 +158,7 @@ void TestLoggingMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt,
 void TestLoggingMPMC::init_logger(const testing::TestInfo *test_info, uint32_t consumerCnt)
 {
     const std::string name = get_logger_name(test_info);
-    const std::string logFile = join_paths({_dir, name + ".log"});
+    const std::string logFile = fs_join({_dir, name + ".log"});
     std::shared_ptr<Sink> const logSink = create_sink<BasicFileSink>(logFile);
     if (consumerCnt > 0) {
         _taskPool = create_task_pool(1024, consumerCnt);

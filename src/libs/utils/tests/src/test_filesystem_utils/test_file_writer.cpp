@@ -10,6 +10,7 @@
 #include "origin/filesystem/file_writer.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
+#include "test_filesystem_utils_base.h"
 
 namespace utils_test::test_file_writer {
 using namespace origin::filesystem;
@@ -32,9 +33,9 @@ protected:
 
 void TestFileWriter::SetUp()
 {
-    m_directory = join_paths(
+    m_directory = utils_test::filesystem_test::fs_join(
         {get_proc_directory(), "test_file_writer_" + std::to_string(get_curr_proc_id())});
-    m_testFile = join_paths({m_directory, m_filename + m_suffix});
+    m_testFile = utils_test::filesystem_test::fs_join({m_directory, m_filename + m_suffix});
 }
 
 void TestFileWriter::TearDown()
@@ -81,11 +82,11 @@ TEST_F(TestFileWriter, append_size)
         m_fileWriter->write(line);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
-        EXPECT_GE(m_fileWriter->size(), get_file_size(m_testFile));
+        EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
     m_fileWriter->flush();
     m_fileWriter->close();
-    EXPECT_EQ(m_fileWriter->size(), get_file_size(m_testFile));
+    EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
 }
 
 TEST_F(TestFileWriter, append_line_size)
@@ -103,12 +104,12 @@ TEST_F(TestFileWriter, append_line_size)
         m_fileWriter->write_line(line);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
-        EXPECT_GE(m_fileWriter->size(), get_file_size(m_testFile));
+        EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
     m_fileWriter->flush();
-    EXPECT_EQ(m_fileWriter->size(), get_file_size(m_testFile));
+    EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     m_fileWriter->close();
-    EXPECT_EQ(m_fileWriter->size(), get_file_size(m_testFile));
+    EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
 }
 
 TEST_F(TestFileWriter, append_mode)
@@ -129,12 +130,12 @@ TEST_F(TestFileWriter, append_mode)
         m_fileWriter->reopen(false);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
-        EXPECT_GE(m_fileWriter->size(), get_file_size(m_testFile));
+        EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
     m_fileWriter->flush();
-    EXPECT_EQ(m_fileWriter->size(), get_file_size(m_testFile));
+    EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     m_fileWriter->close();
-    EXPECT_EQ(m_fileWriter->size(), get_file_size(m_testFile));
+    EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
 }
 
 }  // namespace utils_test::test_file_writer

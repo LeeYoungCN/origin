@@ -65,12 +65,6 @@ namespace origin::filesystem {
  *       而非链接指向的目标类型。如需获取目标类型，需先解析链接。
  */
 ErrorCode get_entry_type(std::string_view path, EntryType& out);
-inline EntryType get_entry_type(std::string_view path)
-{
-    EntryType out = EntryType::UNKNOWN;
-    (void)get_entry_type(path, out);
-    return out;
-}
 
 const char* get_entry_type_str(EntryType type);
 
@@ -85,12 +79,6 @@ inline const char* get_file_mode_str(bool overwrite)
  * @return 工作路径
  */
 ErrorCode get_curr_working_dir(std::string& out);
-inline std::string get_curr_working_dir()
-{
-    std::string out;
-    (void)get_curr_working_dir(out);
-    return out;
-}
 
 /**
  * @brief 拼接多个路径片段为完整路径
@@ -101,12 +89,6 @@ inline std::string get_curr_working_dir()
  *       会替换掉前面已拼接的部分（std::filesystem::operator/= 语义）
  */
 ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
-inline std::string join_paths(const std::vector<std::string>& parts)
-{
-    std::string out;
-    (void)join_paths(parts, out);
-    return out;
-}
 
 /**
  * @brief 纯词法规范化路径（不访问磁盘）
@@ -122,12 +104,6 @@ inline std::string join_paths(const std::vector<std::string>& parts)
  * @see to_absolute_path 需要绝对路径时使用
  */
 ErrorCode normalize_path(std::string_view path, std::string& out);
-inline std::string normalize_path(std::string_view path)
-{
-    std::string out;
-    (void)normalize_path(path, out);
-    return out;
-}
 
 /**
  * @brief 将路径拼到基准目录后转为绝对路径
@@ -147,12 +123,6 @@ inline std::string normalize_path(std::string_view path)
  * @see normalize_path 只做词法规范化、不转绝对路径
  */
 ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out);
-inline std::string to_absolute_path(std::string_view relPath, std::string_view baseDir = "")
-{
-    std::string out;
-    (void)to_absolute_path(relPath, baseDir, out);
-    return out;
-}
 
 /**
  * @brief 获取路径中的目录部分（父目录路径）
@@ -250,12 +220,6 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
  * @return 文件内容字符串，读取失败返回空字符串
  */
 ErrorCode read_text_file(std::string_view path, std::string& out);
-inline std::string read_text_file(std::string_view path)
-{
-    std::string out;
-    (void)read_text_file(path, out);
-    return out;
-}
 
 /**
  * @brief 读取二进制文件内容
@@ -279,12 +243,6 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
  * @return 文件大小（字节），获取失败返回0
  */
 ErrorCode get_file_size(std::string_view path, FileSize& out);
-inline FileSize get_file_size(std::string_view path)
-{
-    FileSize out = 0;
-    (void)get_file_size(path, out);
-    return out;
-}
 
 ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
 

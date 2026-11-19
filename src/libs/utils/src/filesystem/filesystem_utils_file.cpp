@@ -80,7 +80,8 @@ namespace fs = std::filesystem;
 
 bool file_exists(std::string_view path)
 {
-    auto entrType = get_entry_type(path);
+    EntryType entrType = EntryType::UNKNOWN;
+    (void)get_entry_type(path, entrType);
     bool exists = false;
     switch (entrType) {
         case EntryType::FILE:
@@ -99,7 +100,8 @@ bool file_exists(std::string_view path)
 
 ErrorCode create_file(std::string_view path)
 {
-    EntryType const type = get_entry_type(path);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(path, type);
     if (type == EntryType::FILE) {
         set_thread_last_err(ERR_UTILS_ALREADY_EXISTS);
         ORIGIN_DEBUG_TRACE("File already exist: {}", path);
@@ -149,8 +151,8 @@ ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite)
         return get_thread_last_err();
     }
 
-    EntryType type = get_entry_type(dest);
-    type = get_entry_type(dest);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(dest, type);
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
         ORIGIN_DEBUG_ERR("Copy file failed. file: {}, dest invalid: {}, type: {}",
                          src,
@@ -184,7 +186,8 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
         return get_thread_last_err();
     }
 
-    EntryType const type = get_entry_type(dest);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(dest, type);
     // 类型错误
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
         set_thread_last_err(ERR_UTILS_NOT_FILE);
@@ -414,7 +417,9 @@ ErrorCode get_file_info(std::string_view path, FileInfo& out)
 {
     FileInfo fileInfo{};
     fileInfo.path = path;
-    fileInfo.type = get_entry_type(path);
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(path, type);
+    fileInfo.type = type;
 
     if (fileInfo.type == EntryType::NONEXISTENT) {
         out = fileInfo;

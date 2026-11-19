@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+#include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
@@ -26,7 +27,7 @@ std::string get_default_log_file(const std::string_view suffix)
 bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
-        if (delete_file(file)) {
+        if (delete_file(file) == ERR_COMM_SUCCESS) {
             ORIGIN_DEBUG_TRACE("Delete file success. file: \"{}\".", file);
             return true;
         }
@@ -42,7 +43,7 @@ bool rename_file_retry(const std::string_view src, std::string_view dest, const 
                        const uint32_t maxRetry, const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
-        if (rename_file(src, dest, overwrite)) {
+        if (rename_file(src, dest, overwrite) == ERR_COMM_SUCCESS) {
             ORIGIN_DEBUG_TRACE("Rename file success. file: \"{}\".", dest);
             return true;
         }

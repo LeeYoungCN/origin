@@ -50,7 +50,7 @@ bool dir_exists(std::string_view path)
     return result;
 }
 
-bool create_dir(std::string_view path, bool recursive)
+ErrorCode create_dir(std::string_view path, bool recursive)
 {
     auto type = get_entry_type(path);
     if (type == EntryType::DIRECTORY) {
@@ -58,7 +58,7 @@ bool create_dir(std::string_view path, bool recursive)
         ORIGIN_DEBUG_TRACE("Create dir success. dir: \"{}\", mode: {}. message: \"already exist\".",
                            path.data(),
                            recursive_mode_str(recursive));
-        return true;
+        return ERR_COMM_SUCCESS;
     }
     if (type != EntryType::NONEXISTENT) {
         set_thread_last_err(ERR_UTILS_NOT_DIRECTORY);
@@ -66,7 +66,7 @@ bool create_dir(std::string_view path, bool recursive)
                          path.data(),
                          recursive_mode_str(recursive),
                          get_entry_type_str(type));
-        return false;
+        return get_thread_last_err();
     }
 
     try {
@@ -78,25 +78,25 @@ bool create_dir(std::string_view path, bool recursive)
         ORIGIN_DEBUG_TRACE(
             "Create dir {} success. dir: \"{}\".", recursive_mode_str(recursive), path.data());
         set_thread_last_err(ERR_COMM_SUCCESS);
-        return true;
+        return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Create dir {} failed. dir: \"{}\". msg: \"{}\".",
                          recursive_mode_str(recursive),
                          path.data(),
                          get_thread_last_err_msg());
-        return false;
+        return get_thread_last_err();
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Create dir {} failed. dir: \"{}\". msg: \"{}\".",
                          recursive_mode_str(recursive),
                          path.data(),
                          get_thread_last_err_msg());
-        return false;
+        return get_thread_last_err();
     }
 }
 
-bool delete_dir(std::string_view path, bool recursive)
+ErrorCode delete_dir(std::string_view path, bool recursive)
 {
     if (!dir_exists(path)) {
         bool const rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
@@ -111,7 +111,7 @@ bool delete_dir(std::string_view path, bool recursive)
                                path.data(),
                                get_thread_last_err_msg());
         }
-        return rst;
+        return rst ? ERR_COMM_SUCCESS : get_thread_last_err();
     }
     try {
         bool result = false;
@@ -125,21 +125,21 @@ bool delete_dir(std::string_view path, bool recursive)
                            recursive ? "recursive" : "not recursive",
                            path.data(),
                            get_thread_last_err_msg());
-        return true;
+        return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Delete dir {} failed. dir: \"{}\". msg: \"{}\".",
                          recursive ? "recursive" : "not recursive",
                          path.data(),
                          get_thread_last_err_msg());
-        return false;
+        return get_thread_last_err();
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Delete dir {} failed. dir: \"{}\". msg: \"{}\".",
                          recursive ? "recursive" : "not recursive",
                          path.data(),
                          get_thread_last_err_msg());
-        return false;
+        return get_thread_last_err();
     }
 }
 

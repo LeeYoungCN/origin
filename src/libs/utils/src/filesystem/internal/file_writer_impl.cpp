@@ -95,7 +95,7 @@ ErrorCode FileWriterImpl::open(bool overwrite)
         return _errcode;
     }
 
-    if (!create_dir(get_directory(_file))) {
+    if (create_dir(get_directory(_file)) != ERR_COMM_SUCCESS) {
         _errcode = get_thread_last_err();
         return _errcode;
     }

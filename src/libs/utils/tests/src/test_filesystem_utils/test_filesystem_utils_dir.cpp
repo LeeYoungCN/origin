@@ -28,13 +28,13 @@ void TestFilesystemUtilsDir::SetUp()
 
     m_testDir1 = to_absolute_path("./test_dir1_" + std::to_string(m_pid), m_processDir);
     m_testDir2 = to_absolute_path("./test_dir2_" + std::to_string(m_pid), m_testDir1);
-    EXPECT_TRUE(delete_dir(m_testDir1, true));
+    EXPECT_EQ(delete_dir(m_testDir1, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(m_testDir1));
 }
 
 void TestFilesystemUtilsDir::TearDown()
 {
-    EXPECT_TRUE(delete_dir(m_testDir1, true));
+    EXPECT_EQ(delete_dir(m_testDir1, true), ERR_COMM_SUCCESS);
 }
 
 TEST_F(TestFilesystemUtilsDir, DirExists_Exist)
@@ -57,36 +57,36 @@ TEST_F(TestFilesystemUtilsDir, DirExists_TargetInvalid)
 
 TEST_F(TestFilesystemUtilsDir, DeleteDir_NotExist)
 {
-    EXPECT_TRUE(delete_dir(m_testDir1));
+    EXPECT_EQ(delete_dir(m_testDir1), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_FOUND);
-    EXPECT_TRUE(delete_dir(m_process + "/nonexistent"));
+    EXPECT_EQ(delete_dir(m_process + "/nonexistent"), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_FOUND);
 }
 
 TEST_F(TestFilesystemUtilsDir, DeleteDir_TypeInvalid)
 {
-    EXPECT_FALSE(delete_dir(m_process));
+    EXPECT_NE(delete_dir(m_process), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_DIRECTORY);
 }
 
 TEST_F(TestFilesystemUtilsDir, CreateDir_TypeInvalid)
 {
-    EXPECT_FALSE(create_dir(m_process));
+    EXPECT_NE(create_dir(m_process), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_DIRECTORY) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsDir, CreateDir_AlreadyExist)
 {
-    EXPECT_TRUE(create_dir(m_processDir));
+    EXPECT_EQ(create_dir(m_processDir), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_ALREADY_EXISTS) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsDir, CreateDir_NotRecursiveSuccess)
 {
-    EXPECT_TRUE(create_dir(m_testDir1, false));
+    EXPECT_EQ(create_dir(m_testDir1, false), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
     EXPECT_FALSE(dir_exists(m_testDir2));
-    EXPECT_TRUE(create_dir(m_testDir2, false));
+    EXPECT_EQ(create_dir(m_testDir2, false), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
     EXPECT_TRUE(dir_exists(m_testDir2));
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
@@ -94,7 +94,7 @@ TEST_F(TestFilesystemUtilsDir, CreateDir_NotRecursiveSuccess)
 
 TEST_F(TestFilesystemUtilsDir, CreateDir_NotRecursiveFalse)
 {
-    EXPECT_FALSE(create_dir(m_testDir2, false));
+    EXPECT_NE(create_dir(m_testDir2, false), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_NOT_FOUND) << get_thread_last_err_msg();
     EXPECT_FALSE(dir_exists(m_testDir2)) << get_thread_last_err_msg();
 }
@@ -102,7 +102,7 @@ TEST_F(TestFilesystemUtilsDir, CreateDir_NotRecursiveFalse)
 TEST_F(TestFilesystemUtilsDir, CreateDir_RecursiveSuccess)
 {
     EXPECT_FALSE(dir_exists(m_testDir1));
-    EXPECT_TRUE(create_dir(m_testDir2, true));
+    EXPECT_EQ(create_dir(m_testDir2, true), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
     EXPECT_TRUE(dir_exists(m_testDir2));
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
@@ -110,11 +110,11 @@ TEST_F(TestFilesystemUtilsDir, CreateDir_RecursiveSuccess)
 
 TEST_F(TestFilesystemUtilsDir, DeleteDir_NotRecursiveFalse)
 {
-    EXPECT_TRUE(create_dir(m_testDir2, true));
+    EXPECT_EQ(create_dir(m_testDir2, true), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(dir_exists(m_testDir2));
 
-    EXPECT_FALSE(delete_dir(m_testDir1, false));
+    EXPECT_NE(delete_dir(m_testDir1, false), ERR_COMM_SUCCESS);
 #if COMPILER_MINGW
     EXPECT_EQ(get_thread_last_err(), ERR_UTILS_PERMISSION_DENIED) << get_thread_last_err_msg();
 #else
@@ -125,26 +125,26 @@ TEST_F(TestFilesystemUtilsDir, DeleteDir_NotRecursiveFalse)
 
 TEST_F(TestFilesystemUtilsDir, DeleteDir_NotRecursiveSuccess)
 {
-    EXPECT_TRUE(create_dir(m_testDir2, true));
+    EXPECT_EQ(create_dir(m_testDir2, true), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(dir_exists(m_testDir2));
 
-    EXPECT_TRUE(delete_dir(m_testDir2, false));
+    EXPECT_EQ(delete_dir(m_testDir2, false), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(m_testDir2));
 
-    EXPECT_TRUE(delete_dir(m_testDir1, false));
+    EXPECT_EQ(delete_dir(m_testDir1, false), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(m_testDir1));
 }
 
 TEST_F(TestFilesystemUtilsDir, DeleteDir_RecursiveSuccess)
 {
-    EXPECT_TRUE(create_dir(m_testDir2, true));
+    EXPECT_EQ(create_dir(m_testDir2, true), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(dir_exists(m_testDir2));
 
-    EXPECT_TRUE(delete_dir(m_testDir2, true));
+    EXPECT_EQ(delete_dir(m_testDir2, true), ERR_COMM_SUCCESS);
     EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(m_testDir2));
 }

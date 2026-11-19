@@ -22,6 +22,9 @@
 
 ### 变更
 
+- **BREAKING**：`filesystem` 的写操作（`create_file` / `delete_file` / `copy_file` /
+  `rename_file` / `write_text_file` / `create_dir` / `delete_dir`）返回值由 `bool`
+  改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）；thread-local 错误状态仅保留为诊断辅助。
 - **BREAKING**：`origin/utils/{filesystem_utils,date_time_utils,thread_utils,process_utils,
   string_utils}.h` 迁移为 `origin/<domain>/<domain>.h`（如 `origin/filesystem/filesystem.h`），
   `file_writer.h` 移到 `origin/filesystem/file_writer.h`；旧路径直接删除，下游需更新 include。

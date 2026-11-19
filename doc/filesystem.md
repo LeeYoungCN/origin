@@ -114,10 +114,12 @@ public:
 
 ## 错误处理
 
-- 接口失败返回 `false` / 空字符串 / `0`；
-- 错误码写入 thread-local 状态，用 `origin/thread/thread.h` 里的
-  `get_thread_last_err()` 和 `get_thread_last_err_msg()` 读取；
-- 成功时错误码为 `ERR_COMM_SUCCESS`。
+- 修改类接口（`create_file` / `delete_file` / `copy_file` / `rename_file` /
+  `write_text_file` / `create_dir` / `delete_dir`）返回 `ErrorCode`：成功为
+  `ERR_COMM_SUCCESS`，失败为具体错误码；
+- 查询类接口失败返回 `false` / 空字符串 / `0`；
+- 错误码同时写入 thread-local 状态，可用 `origin/thread/thread.h` 里的
+  `get_thread_last_err()` 和 `get_thread_last_err_msg()` 读取（诊断用途）。
 
 ```cpp
 #include <origin/thread/thread.h>

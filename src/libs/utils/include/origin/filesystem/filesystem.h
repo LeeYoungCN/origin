@@ -25,7 +25,8 @@
  *   （Windows 为 `\`，POSIX 为 `/`）。
  * - 未特别说明时，相对路径相对于**当前工作目录**。
  * - 只有明确写了"要求存在"的接口才访问磁盘，其余是纯词法操作。
- * - 失败返回空字符串 / false / 0，错误码留在 thread-local 状态里。
+ * - 失败返回错误码（`ErrorCode`）或空字符串 / 0，具体见各接口说明；
+ *   thread-local 错误状态（get_thread_last_err）保留作为诊断辅助。
  */
 #ifndef ORIGIN_FILESYSTEM_FILESYSTEM_H
 #define ORIGIN_FILESYSTEM_FILESYSTEM_H
@@ -36,6 +37,7 @@
 #include <vector>
 
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/filesystem_types.h"
 
 namespace origin::filesystem {
@@ -182,35 +184,35 @@ bool file_exists(std::string_view path);
 /**
  * @brief 创建空文件
  * @param path 要创建的文件路径
- * @return 创建成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @note 若文件已存在，将被截断为0字节
  */
-bool create_file(std::string_view path);
+ErrorCode create_file(std::string_view path);
 
 /**
  * @brief 删除文件
  * @param path 要删除的文件路径
- * @return 删除成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool delete_file(std::string_view path);
+ErrorCode delete_file(std::string_view path);
 
 /**
  * @brief 复制文件
  * @param src 源文件路径
  * @param dest 目标文件路径
  * @param overwrite 若目标已存在，是否覆盖（默认为false）
- * @return 复制成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool copy_file(std::string_view src, std::string_view dest, bool overwrite = false);
+ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite = false);
 
 /**
  * @brief 移动文件
  * @param src 源文件路径
  * @param dest 目标文件路径
  * @param overwrite 若目标已存在，是否覆盖（默认为false）
- * @return 复制成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool rename_file(std::string_view src, std::string_view dest, bool overwrite = false);
+ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrite = false);
 
 /**
  * @brief 读取文本文件内容
@@ -231,9 +233,9 @@ std::vector<uint8_t> read_binary_file(std::string_view path);
  * @param path 目标文件路径
  * @param content 要写入的文本内容
  * @param overwrite 是否以覆盖模式写入（默认为false，追加模式）
- * @return 写入成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool write_text_file(std::string_view path, std::string_view content, bool overwrite = false);
+ErrorCode write_text_file(std::string_view path, std::string_view content, bool overwrite = false);
 
 /**
  * @brief 获取文件大小（字节数）
@@ -262,17 +264,17 @@ bool dir_exists(std::string_view path);
  * @brief 创建目录
  * @param path 要创建的目录路径
  * @param recursive 是否递归创建父目录（默认为false）
- * @return 创建成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool create_dir(std::string_view path, bool recursive = true);
+ErrorCode create_dir(std::string_view path, bool recursive = true);
 
 /**
  * @brief 删除目录
  * @param path 要删除的目录路径
  * @param recursive 是否递归删除非空目录（默认为false）
- * @return 删除成功返回true，否则返回false
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-bool delete_dir(std::string_view path, bool recursive = true);
+ErrorCode delete_dir(std::string_view path, bool recursive = true);
 
 }  // namespace origin::filesystem
 #endif  // ORIGIN_FILESYSTEM_FILESYSTEM_H

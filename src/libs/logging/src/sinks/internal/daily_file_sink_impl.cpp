@@ -91,13 +91,12 @@ DailyFileSinkImpl::DailyFileSinkImpl(const std::string_view file,
     }
 
     TimestampMs const now = get_now_timestamp_ms();
-    DateTimeSt dateTime{};
-    (void)timestamp_to_date_time(now, TimeZone::LOCAL, dateTime);
+    DateTimeSt dateTime = timestamp_to_date_time(now);
     dateTime.hour = _hour;
     dateTime.minute = _minute;
     dateTime.second = 0;
     dateTime.millis = 0;
-    (void)date_time_to_timestamp(dateTime, _rotateTime);
+    _rotateTime = date_time_to_timestamp(dateTime);
 
     if (_rotateTime < now) {
         _rotateTime += MILLIS_PER_DAY;
@@ -177,7 +176,7 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(const std::string_view filena
     TimestampMs timestamp = 0;
     if (parse_number(4, dateTime.year) && parse_number(2, dateTime.month) &&
         parse_number(2, dateTime.day)) {
-        (void)date_time_to_timestamp(dateTime, timestamp);
+        timestamp = date_time_to_timestamp(dateTime);
     }
 
     return timestamp;
@@ -185,8 +184,7 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(const std::string_view filena
 
 std::string DailyFileSinkImpl::calc_log_file(TimestampMs time)
 {
-    DateTimeSt dateTime{};
-    (void)timestamp_to_date_time(time, TimeZone::LOCAL, dateTime);
+    const DateTimeSt dateTime = timestamp_to_date_time(time);
     auto filename = std::format("{}{}{:04}{:02}{:02}{}",
                                 _filenameStem,
                                 SPLIT_CHAR,
@@ -194,9 +192,7 @@ std::string DailyFileSinkImpl::calc_log_file(TimestampMs time)
                                 dateTime.month,
                                 dateTime.day,
                                 _extension);
-    std::string file;
-    (void)join_paths({_directory, filename}, file);
-    return file;
+    return join_paths({_directory, filename});
 }
 
 void DailyFileSinkImpl::init_file_queue()

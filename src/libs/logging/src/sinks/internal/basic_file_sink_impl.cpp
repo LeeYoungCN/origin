@@ -18,9 +18,7 @@ namespace origin::logging {
 namespace {
 std::string to_abs_path(std::string_view file)
 {
-    std::string out;
-    (void)origin::filesystem::to_absolute_path(file, "", out);
-    return out;
+    return origin::filesystem::to_absolute_path(file);
 }
 }  // namespace
 using namespace origin::filesystem;

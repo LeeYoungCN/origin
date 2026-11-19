@@ -47,8 +47,7 @@ void PatternFormatterImpl::format(const LogMsg& logMsg, std::string& content)
 
 void PatternFormatterImpl::format_time(const LogMsg& logMsg, std::string& logContent)
 {
-    DateTimeSt datetime{};
-    (void)timestamp_to_date_time(logMsg.timestamp, TimeZone::LOCAL, datetime);
+    const DateTimeSt datetime = timestamp_to_date_time(logMsg.timestamp);
     std::format_to(std::back_insert_iterator(logContent),
                    "{:04}-{:02}-{:02} {:02}:{:02}:{:02}.{:03}",
                    datetime.year,

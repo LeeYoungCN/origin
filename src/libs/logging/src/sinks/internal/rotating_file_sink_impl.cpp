@@ -31,17 +31,18 @@ struct LogFileInfo {
     std::string file;
     TimestampMs modifyTime{0};
     FileSize fileSize{0};
-    LogFileInfo(uint32_t i, std::string_view f) : idx(i), file(f)
+    LogFileInfo(uint32_t i, std::string_view f)
+        : idx(i),
+          file(f),
+          modifyTime(get_file_modify_time(f)),
+          fileSize(get_file_size(f))
     {
-        (void)get_file_modify_time(f, modifyTime);
-        (void)get_file_size(f, fileSize);
     }
 
     [[nodiscard]] std::string to_string() const
     {
-        std::string timeStr;
-        (void)origin::date_time::format_time_string(
-            modifyTime, "%Y-%m-%d %H:%M:%S.%3f", TimeZone::LOCAL, timeStr);
+        const std::string timeStr = origin::date_time::format_time_string(
+            modifyTime, "%Y-%m-%d %H:%M:%S.%3f", TimeZone::LOCAL);
         return std::format(
             "idx: {}, time: [{}], size: {}, file: \"{}\"", idx, timeStr, fileSize, file);
     }
@@ -159,9 +160,7 @@ void RotatingFileSinkImpl::init_file_queue()
 std::string RotatingFileSinkImpl::get_next_file()
 {
     auto filename = std::format("{}{}{}{}", _filenameStem, SPLIT_CHAR, get_next_idx(), _extension);
-    std::string file;
-    (void)join_paths({_directory, filename}, file);
-    return file;
+    return join_paths({_directory, filename});
 }
 
 void RotatingFileSinkImpl::set_next_idx(const uint32_t idx)

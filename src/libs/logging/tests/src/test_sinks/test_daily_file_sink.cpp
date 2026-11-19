@@ -9,7 +9,6 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/common/common_error_code.h"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/logging/log_level.hpp"
@@ -18,13 +17,11 @@
 #include "origin/logging/sinks/daily_file_sink.hpp"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 namespace logging_test {
 using namespace origin::date_time;
 using namespace origin::logging;
 using namespace origin::filesystem;
-using namespace origin::thread;
 
 class TestDailyFileSink : public ::testing::Test {
 protected:
@@ -60,8 +57,7 @@ std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, Ti
 {
     std::string filenameStem = get_filename_stem(baseFile);
     std::string extension = get_extension(baseFile);
-    std::string dateStr;
-    (void)format_time_string(time, "%Y%m%d", TimeZone::LOCAL, dateStr);
+    const std::string dateStr = format_time_string(time, "%Y%m%d", TimeZone::LOCAL);
     std::string const filename = std::format("{}.{}{}", filenameStem, dateStr, extension);
     return fs_join({_dir, filename});
 }
@@ -70,8 +66,7 @@ void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t h
                                    uint32_t minute, uint32_t rotationDays, uint32_t dayInterval)
 {
     TimestampMs const now = get_now_timestamp_ms();
-    DateTimeSt nowDateTime{};
-    (void)timestamp_to_date_time(now, TimeZone::LOCAL, nowDateTime);
+    const DateTimeSt nowDateTime = timestamp_to_date_time(now);
     DateTimeSt rotationDateTime = nowDateTime;
     rotationDateTime.hour = hour;
     rotationDateTime.minute = minute;

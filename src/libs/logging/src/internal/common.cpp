@@ -10,23 +10,17 @@
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
-#include "origin/thread/thread.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;
 using namespace origin::process;
-using namespace origin::thread;
 using namespace origin::date_time;
 
 std::string get_default_log_file(const std::string_view suffix)
 {
-    std::string process;
-    (void)get_proc_path(process);
-    std::string file;
-    (void)join_paths(
-        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)},
-        file);
-    return file;
+    const std::string process = get_proc_path();
+    return join_paths(
+        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
 }
 
 bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)

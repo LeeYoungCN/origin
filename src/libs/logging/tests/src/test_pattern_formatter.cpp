@@ -57,8 +57,8 @@ TEST_F(TestPatternFormatter, date_time)
     msg.timestamp = get_now_timestamp_ms();
     std::string content;
     formatter.format(msg, content);
-    std::string expected;
-    (void)format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL, expected);
+    const std::string expected =
+        format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL);
     EXPECT_EQ(content, expected);
 }
 
@@ -186,9 +186,8 @@ TEST_F(TestPatternFormatter, default_pattern)
     std::string content;
     formatter.format(msg, content);
     // "[%d][%L][%s:%#]: %v"
-    std::string timestampStr;
-    (void)format_time_string(
-        msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL, timestampStr);
+    const std::string timestampStr =
+        format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL);
     const std::string expect =
         std::format("[{}][{}][{}:{}]: {}",
                     timestampStr,

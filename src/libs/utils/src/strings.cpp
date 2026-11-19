@@ -1,4 +1,5 @@
 #include "origin/strings/strings.h"
+#include "origin/common/common_error_code.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -14,7 +15,7 @@ bool string_is_null_or_empty(const char *str)
     return (str == nullptr || strlen(str) == 0);
 }
 
-std::string va_list_to_string(const char *format, va_list args)
+ErrorCode va_list_to_string(const char *format, va_list args, std::string& out)
 {
     va_list argsCopy;
 
@@ -23,11 +24,12 @@ std::string va_list_to_string(const char *format, va_list args)
     va_end(argsCopy);
 
     if (len < 0) {
-        throw std::runtime_error("vsnprintf failed.");
+        return ERR_COMM_SYSTEM_ERROR;
     }
 
     std::string message(static_cast<uint32_t>(len), '\0');
     vsnprintf(message.data(), static_cast<uint32_t>(len) + 1, format, args);
-    return message;
+    out = std::move(message);
+    return ERR_COMM_SUCCESS;
 }
 }  // namespace origin::strings

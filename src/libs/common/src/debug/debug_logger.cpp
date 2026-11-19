@@ -122,7 +122,6 @@ std::string va_list_to_string(const char* format, va_list args)
     vsnprintf(message.data(), static_cast<uint32_t>(len) + 1, format, args);
     return message;
 }
-
 const char* get_debug_log_lvl_str(OriginDbgLvl level)
 {
     switch (level) {

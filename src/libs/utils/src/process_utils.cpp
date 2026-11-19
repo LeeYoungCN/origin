@@ -39,7 +39,7 @@ namespace origin::process {
 using namespace origin::filesystem;
 using namespace origin::thread;
 
-std::string get_proc_path()
+ErrorCode get_proc_path(std::string& out)
 {
     char path[MAX_PATH_STD] = {'\0'};
 #if OS_WINDOWS
@@ -47,14 +47,14 @@ std::string get_proc_path()
     if (length == 0 || length >= MAX_PATH_STD) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[WIN32] Get process path failed, length: {}", length);
-        length = 0;
+        return get_thread_last_err();
     }
 #elif OS_LINUX
     auto length = readlink("/proc/self/exe", path, MAX_PATH_STD - 1);
     if (length == -1) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[Linux] Get process path failed.");
-        length = 0;
+        return get_thread_last_err();
     }
     path[length] = '\0';
 #elif OS_MACOS
@@ -62,25 +62,39 @@ std::string get_proc_path()
     if (_NSGetExecutablePath(path, &size) != 0) {
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[Macos] Get process path failed.");
+        return get_thread_last_err();
     }
 #else
 #error "Unsupport system."
 #endif
+    out = path;
     set_thread_last_err(ERR_COMM_SUCCESS);
     ORIGIN_DEBUG_TRACE("Get process path: {}", path);
-    return path;
+    return ERR_COMM_SUCCESS;
 }
 
-std::string get_proc_directory()
+ErrorCode get_proc_directory(std::string& out)
 {
+    std::string path;
+    const ErrorCode rc = get_proc_path(path);
+    if (rc != ERR_COMM_SUCCESS) {
+        return rc;
+    }
+    out = get_directory(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return get_directory(get_proc_path());
+    return ERR_COMM_SUCCESS;
 }
 
-std::string get_proc_filename_stem()
+ErrorCode get_proc_filename_stem(std::string& out)
 {
+    std::string path;
+    const ErrorCode rc = get_proc_path(path);
+    if (rc != ERR_COMM_SUCCESS) {
+        return rc;
+    }
+    out = get_filename_stem(path);
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return get_filename_stem(get_proc_path());
+    return ERR_COMM_SUCCESS;
 }
 
 ProcessId get_curr_proc_id()

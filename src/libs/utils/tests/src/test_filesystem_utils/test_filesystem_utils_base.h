@@ -74,7 +74,7 @@ protected:
     static void TearDownTestSuite() {}
     void SetUp() override
     {
-        m_process = get_proc_path();
+        (void)get_proc_path(m_process);
         EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
         m_processDir = get_directory(m_process);
         EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);

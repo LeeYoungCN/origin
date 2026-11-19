@@ -20,7 +20,8 @@ using namespace origin::date_time;
 
 std::string get_default_log_file(const std::string_view suffix)
 {
-    const std::string process = get_proc_path();
+    std::string process;
+    (void)get_proc_path(process);
     std::string file;
     (void)join_paths(
         {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)},

@@ -10,6 +10,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "origin/common/common_error_code.h"
 #include "origin/thread/thread.h"
 using namespace origin::thread;
 TEST(TestThreadUtils, ThreadId)
@@ -19,7 +20,10 @@ TEST(TestThreadUtils, ThreadId)
 
 TEST(TestThreadUtils, ThreadName)
 {
-    EXPECT_STREQ(get_curr_thread_name(), "");
-    set_curr_thread_name("main");
-    EXPECT_STREQ(get_curr_thread_name(), "main");
+    std::string name;
+    ASSERT_EQ(get_curr_thread_name(name), ERR_COMM_SUCCESS);
+    EXPECT_STREQ(name.c_str(), "");
+    ASSERT_EQ(set_curr_thread_name("main"), ERR_COMM_SUCCESS);
+    ASSERT_EQ(get_curr_thread_name(name), ERR_COMM_SUCCESS);
+    EXPECT_STREQ(name.c_str(), "main");
 }

@@ -83,8 +83,9 @@ std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt *const sinks[],
 void origin_force_log_it(const std::shared_ptr<Logger> &logger, const char *file, const int line,
                          const char *func, const LogLevel level, const char *format, va_list args)
 {
-    logger->force_log(
-        LogSource(file, line, func), level, origin::strings::va_list_to_string(format, args));
+    std::string message;
+    (void)origin::strings::va_list_to_string(format, args, message);
+    logger->force_log(LogSource(file, line, func), level, message);
 }
 
 void origin_log_it(const std::shared_ptr<Logger> &logger, const char *file, const int line,

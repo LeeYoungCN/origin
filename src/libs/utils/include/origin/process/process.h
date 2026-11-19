@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/process_types.h"
 
 namespace origin::process {
@@ -24,21 +25,21 @@ namespace origin::process {
  *       - Windows: 通过GetModuleFileName获取
  *       - Linux/macOS: 通过/proc/self/exe符号链接获取
  */
-std::string get_proc_path();
+ErrorCode get_proc_path(std::string& out);
 
 /**
  * @brief 获取当前进程所在目录
  *
  * @return 目录的绝对路径
  */
-std::string get_proc_directory();
+ErrorCode get_proc_directory(std::string& out);
 
 /**
  * @brief 获取当前进程名称
  *
  * @return std::string Process file name.
  */
-std::string get_proc_filename_stem();
+ErrorCode get_proc_filename_stem(std::string& out);
 
 /**
  * @brief 获取当前进程ID

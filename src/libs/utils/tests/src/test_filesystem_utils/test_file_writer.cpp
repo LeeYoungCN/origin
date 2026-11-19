@@ -33,8 +33,10 @@ protected:
 
 void TestFileWriter::SetUp()
 {
+    std::string procDir;
+    (void)get_proc_directory(procDir);
     m_directory = utils_test::filesystem_test::fs_join(
-        {get_proc_directory(), "test_file_writer_" + std::to_string(get_curr_proc_id())});
+        {procDir, "test_file_writer_" + std::to_string(get_curr_proc_id())});
     m_testFile = utils_test::filesystem_test::fs_join({m_directory, m_filename + m_suffix});
 }
 

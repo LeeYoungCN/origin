@@ -64,14 +64,16 @@ ThreadId get_curr_thread_id()
     return tid;
 }
 
-void set_curr_thread_name(const char *name)
+ErrorCode set_curr_thread_name(const char *name)
 {
-    g_threadName = name;
+    g_threadName = name == nullptr ? "" : name;
+    return ERR_COMM_SUCCESS;
 }
 
-const char *get_curr_thread_name()
+ErrorCode get_curr_thread_name(std::string& out)
 {
-    return g_threadName.c_str();
+    out = g_threadName;
+    return ERR_COMM_SUCCESS;
 }
 
 void set_thread_last_err(const ErrorCode errcode)

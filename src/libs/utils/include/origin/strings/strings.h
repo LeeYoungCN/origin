@@ -5,10 +5,11 @@
 #include <string>
 #include <type_traits>
 
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/type_traits.h"
 
 namespace origin::strings {
-std::string va_list_to_string(const char* format, va_list args);
+ErrorCode va_list_to_string(const char* format, va_list args, std::string& out);
 bool string_is_null_or_empty(const char* str);
 
 template <typename T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>

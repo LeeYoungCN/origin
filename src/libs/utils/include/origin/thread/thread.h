@@ -11,6 +11,8 @@
 #ifndef ORIGIN_THREAD_THREAD_H
 #define ORIGIN_THREAD_THREAD_H
 
+#include <string>
+
 #include "origin/common/types/error_code_types.h"
 #include "origin/common/types/thread_types.h"
 
@@ -28,14 +30,14 @@ ThreadId get_curr_thread_id();
  *
  * @param name 线程名称
  */
-void set_curr_thread_name(const char *name);
+ErrorCode set_curr_thread_name(const char* name);
 
 /**
  * @brief 获取当前线程名称
  *
  * @return 当前线程名称，未设置则为空
  */
-const char *get_curr_thread_name();
+ErrorCode get_curr_thread_name(std::string& out);
 
 void set_thread_last_err(ErrorCode errcode);
 ErrorCode get_thread_last_err();

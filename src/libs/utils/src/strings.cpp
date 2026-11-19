@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <stdexcept>
 #include <string>
 
 #include "origin/common/common_error_code.h"

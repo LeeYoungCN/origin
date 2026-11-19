@@ -56,12 +56,12 @@ struct FileInfo {
 
 | 接口 | 说明 |
 |---|---|
-| `get_entry_type(path)` | `EntryType`；符号链接返回链接本身 |
+| `get_entry_type(path, out)` | 出参 `EntryType`；符号链接返回链接本身 |
 | `get_entry_type_str(type)` | 枚举转字符串 |
-| `get_curr_working_dir()` | 当前工作目录 |
-| `join_paths(parts)` | 拼接路径；空列表返回空串并置错误码 |
-| `normalize_path(path)` | `lexically_normal`：折叠 `.`、`..`、重复分隔符 |
-| `to_absolute_path(relPath, baseDir = "")` | 拼到 `baseDir`（默认 cwd）后转绝对路径 |
+| `get_curr_working_dir(out)` | 当前工作目录 |
+| `join_paths(parts, out)` | 拼接路径；空列表返回 `ERR_UTILS_PATH_INVALID` |
+| `normalize_path(path, out)` | `lexically_normal`：折叠 `.`、`..`、重复分隔符 |
+| `to_absolute_path(relPath, baseDir, out)` | 拼到 `baseDir`（传空串表示 cwd）后转绝对路径 |
 | `get_directory(path)` | 父目录；`a/b/` → `a` |
 | `get_filename(path)` | 文件名；`a/b/` → 空串 |
 | `get_filename_stem(path)` | 去掉最后一段扩展名；`a.tar.gz` → `a.tar` |
@@ -75,15 +75,15 @@ struct FileInfo {
 |---|---|
 | `file_exists(path)` | 存在且为普通文件 |
 | `create_file(path)` | 创建空文件；已存在则截断为 0 字节 |
-| `delete_file(path)` | 删除文件 |
+| `delete_file(path)` | 删除文件；不存在视为成功 |
 | `copy_file(src, dest, overwrite = false)` | 复制文件 |
 | `rename_file(src, dest, overwrite = false)` | 移动/重命名 |
-| `read_text_file(path)` | 读文本；失败返回空串 |
-| `read_binary_file(path)` | 读二进制；失败返回空容器 |
+| `read_text_file(path, out)` | 读文本到 `out` |
+| `read_binary_file(path, out)` | 读二进制到 `out` |
 | `write_text_file(path, content, overwrite = false)` | 写文本；`overwrite=false` 为追加 |
-| `get_file_size(path)` | 字节数；失败返回 0 |
-| `get_file_modify_time(path)` | 最后修改时间戳（毫秒） |
-| `get_file_info(path)` | `FileInfo`；失败返回默认值 |
+| `get_file_size(path, out)` | 出参为字节数 |
+| `get_file_modify_time(path, out)` | 出参为最后修改时间戳（毫秒） |
+| `get_file_info(path, out)` | 出参为 `FileInfo` |
 
 ### 目录操作
 

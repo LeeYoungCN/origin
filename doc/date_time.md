@@ -44,8 +44,8 @@ typedef enum {
 
 | 常量 | 值 | 说明 |
 |---|---|---|
-| `DEFAULT_TIME_FMT` | `"%Y-%m-%d %H:%M:%S"` | 默认格式 |
-| `DEFAULT_TIME_FMT_MS` | `"%Y-%m-%d %H:%M:%S.%3f"` | 带毫秒的默认格式 |
+| `DEFAULT_TIME_FMT` | `"%Y-%m-%d %H:%M:%S"` | 常用格式，需显式传给格式化接口 |
+| `DEFAULT_TIME_FMT_MS` | `"%Y-%m-%d %H:%M:%S.%3f"` | 带毫秒的常用格式，需显式传入 |
 | `MAX_TIME_STR_LEN` | `256` | 时间字符串建议缓冲长度 |
 | `MILLIS_PER_SEC` | `1000` | 单位换算 |
 | `UNIX_EPOCH_MS` | `0` | Unix epoch 毫秒值 |
@@ -54,6 +54,8 @@ typedef enum {
 与范围常量（`MIN_MONTH`、`MAX_MONTH`、`MIN_WEEKDAY`、`MAX_WEEKDAY` 等）见头文件。
 
 ## 接口
+
+可失败接口统一返回 `ErrorCode`，需要产出值的接口用末尾出参。
 
 ### 获取当前时间
 
@@ -66,10 +68,10 @@ typedef enum {
 
 | 接口 | 说明 |
 |---|---|
-| `DateTimeSt local_date_time(TimestampMs)` | 时间戳 → 本地时间组件 |
-| `DateTimeSt utc_date_time(TimestampMs)` | 时间戳 → UTC 时间组件 |
-| `DateTimeSt timestamp_to_date_time(TimestampMs, TimeZone = LOCAL)` | 指定时区 |
-| `TimestampMs date_time_to_timestamp(const DateTimeSt&)` | 本地时间组件 → 时间戳 |
+| `ErrorCode local_date_time(TimestampMs, DateTimeSt& out)` | 时间戳 → 本地时间组件 |
+| `ErrorCode utc_date_time(TimestampMs, DateTimeSt& out)` | 时间戳 → UTC 时间组件 |
+| `ErrorCode timestamp_to_date_time(TimestampMs, TimeZone, DateTimeSt& out)` | 指定时区转换（`timeZone` 无默认值） |
+| `ErrorCode date_time_to_timestamp(const DateTimeSt&, TimestampMs& out)` | 本地时间组件 → 时间戳；失败时 `out = -1` |
 
 ### 计算与等待
 
@@ -83,27 +85,32 @@ typedef enum {
 
 | 接口 | 说明 |
 |---|---|
-| `get_month_full_name(uint32_t month)` | `"January"` …；参数越界返回空 `string_view` |
-| `get_month_abbr_name(uint32_t month)` | `"Jan"` … |
-| `get_weekday_full_name(uint32_t weekday)` | `"Monday"` … |
-| `get_weekday_abbr_name(uint32_t weekday)` | `"Mon"` … |
+| `ErrorCode get_month_full_name(uint32_t month, std::string_view& out)` | `"January"` …；越界返回 `ERR_UTILS_MONTH_INVALID` |
+| `ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out)` | `"Jan"` … |
+| `ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out)` | `"Monday"` …；越界返回 `ERR_UTILS_WEEKDAY_INVALID` |
+| `ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out)` | `"Mon"` … |
 
 ### 格式化
 
 ```cpp
-std::string format_time_string(TimestampMs timestamp, const std::string_view& format);
-std::string format_time_string(const DateTimeSt& dateTime, const std::string_view& format);
+ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
+                             TimeZone timeZone, std::string& out);
+ErrorCode format_time_string(const DateTimeSt& dateTime, const std::string_view& format,
+                             std::string& out);
 
-void append_time_string(std::string& timeString, TimestampMs timestamp,
-                        const std::string_view& format);
-void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
-                        const std::string_view& format);
+ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone);
+ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+                             const std::string_view& format);
 
-size_t format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                          const std::string_view& format);
-size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                          const std::string_view& format);
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone, size_t& outLen);
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                             const std::string_view& format, size_t& outLen);
 ```
+
+> 注意：`format`、`timeZone` 都没有默认值，必须显式传入；常用格式直接用
+> `DEFAULT_TIME_FMT` / `DEFAULT_TIME_FMT_MS` 常量即可。
 
 | 占位符 | 含义 | 示例 |
 |---|---|---|
@@ -125,32 +132,51 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
 
 ```cpp
 #include <cstdio>
+#include <string>
 
+#include <origin/common/constants/date_time_constants.h>
 #include <origin/date_time/date_time.h>
+#include <origin/utils/utils_error_code.h>
 
 int main()
 {
     const TimestampMs now = origin::date_time::get_now_timestamp_ms();
-    const DateTimeSt dt = origin::date_time::local_date_time(now);
 
-    const auto text = origin::date_time::format_time_string(dt, "%Y-%m-%d %H:%M:%S.%3f");
+    DateTimeSt dt{};
+    if (origin::date_time::local_date_time(now, dt) != ERR_COMM_SUCCESS) {
+        return 1;
+    }
+
+    std::string text;
+    const ErrorCode rc = origin::date_time::format_time_string(
+        dt, origin::date_time::DEFAULT_TIME_FMT_MS, text);
+    if (rc != ERR_COMM_SUCCESS) {
+        std::printf("format failed: %s\n", get_utils_err_msg(rc));
+        return 1;
+    }
     std::printf("%s\n", text.c_str());
 
     char buffer[origin::date_time::MAX_TIME_STR_LEN];
-    const size_t len =
-        origin::date_time::format_time_buffer(buffer, sizeof(buffer), dt, "%Y/%m/%d %H:%M");
-    if (len > 0) {
-        std::printf("%s\n", buffer);
+    size_t len = 0;
+    const ErrorCode bufRc = origin::date_time::format_time_buffer(
+        buffer, sizeof(buffer), dt, "%Y/%m/%d %H:%M", len);
+    if (bufRc != ERR_COMM_SUCCESS) {
+        std::printf("format buffer failed: %s\n", get_utils_err_msg(bufRc));
+        return 1;
     }
+    std::printf("%s\n", buffer);
     return 0;
 }
 ```
 
 ## 注意事项
 
-- 格式化失败返回空字符串（`format_time_buffer` 返回 `0`）；
+- 可失败接口返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
+- 格式化失败返回错误码（如 `ERR_COMM_BUFFER_OVERFLOW`、`ERR_COMM_PARAM_INVALID`），
+  不再用空字符串或 `0` 表示失败；
 - `format_time_buffer` 的 `buffer` 不能为 `nullptr`，`bufferSize` 必须大于 0，
   建议至少 `MAX_TIME_STR_LEN`；
-- `local_date_time` 转换失败时返回字段全为 0 的 `DateTimeSt`（`year == 0` 可判定）；
+- `local_date_time` 转换失败返回 `ERR_UTILS_TIMESTAMP_INVALID`，`out` 字段全为 0
+  （`year == 0` 可判定）；
 - 日期名称固定为英文，不做本地化；
 - `wday` / `yday` 的取值来自底层系统实现，跨平台使用时以实际测试为准。

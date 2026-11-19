@@ -9,8 +9,6 @@
 #include <synchapi.h>
 #include <sysinfoapi.h>
 
-#include "origin/common/constants/date_time_constants.h"
-
 #else
 #include <cerrno>
 #include <chrono>

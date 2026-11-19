@@ -284,6 +284,82 @@ inline ErrorCode format_time_buffer(char* buffer,
         buffer, bufferSize, dateTime, origin::date_time::DEFAULT_TIME_FMT, outLen);
 }
 
+// ------------------------------ 值返回便捷接口（忽略错误码） ------------------------------
+// 以下重载直接返回值，适合不需要区分错误原因的场景；失败时返回空串 / 0。
+// 需要错误码时请使用上面的 ErrorCode 版本。
+
+/**
+ * @brief 将时间戳按指定格式转换为字符串（值返回）
+ * @param[in] timestamp 待格式化的毫秒级时间戳
+ * @param[in] format 格式字符串，默认 DEFAULT_TIME_FMT（"%Y-%m-%d %H:%M:%S"）
+ * @param[in] timeZone 时区，默认 LOCAL
+ * @return 格式化结果；失败时返回空串
+ */
+inline std::string format_time_string(
+    TimestampMs timestamp,
+    const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
+    TimeZone timeZone = TimeZone::LOCAL)
+{
+    std::string out;
+    (void)format_time_string(timestamp, format, timeZone, out);
+    return out;
+}
+
+/**
+ * @brief 将时间组件按指定格式转换为字符串（值返回）
+ * @param[in] dateTime 待格式化的时间组件
+ * @param[in] format 格式字符串，默认 DEFAULT_TIME_FMT（"%Y-%m-%d %H:%M:%S"）
+ * @return 格式化结果；失败时返回空串
+ */
+inline std::string format_time_string(
+    const DateTimeSt& dateTime,
+    const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT)
+{
+    std::string out;
+    (void)format_time_string(dateTime, format, out);
+    return out;
+}
+
+/**
+ * @brief 将时间戳按指定格式写入字符缓冲区（值返回）
+ * @param[out] buffer 目标缓冲区（不可为nullptr）
+ * @param[in] bufferSize 缓冲区大小（字节）
+ * @param[in] timestamp 待格式化的毫秒级时间戳
+ * @param[in] format 格式字符串，默认 DEFAULT_TIME_FMT
+ * @param[in] timeZone 时区，默认 LOCAL
+ * @return 实际写入的字符数（不含终止符'\0'）；失败（参数无效/缓冲区不足）返回 0
+ */
+inline size_t format_time_buffer(
+    char* buffer,
+    size_t bufferSize,
+    TimestampMs timestamp,
+    const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
+    TimeZone timeZone = TimeZone::LOCAL)
+{
+    size_t outLen = 0;
+    (void)format_time_buffer(buffer, bufferSize, timestamp, format, timeZone, outLen);
+    return outLen;
+}
+
+/**
+ * @brief 将时间组件按指定格式写入字符缓冲区（值返回）
+ * @param[out] buffer 目标缓冲区（不可为nullptr）
+ * @param[in] bufferSize 缓冲区大小（字节）
+ * @param[in] dateTime 待格式化的时间组件
+ * @param[in] format 格式字符串，默认 DEFAULT_TIME_FMT
+ * @return 实际写入的字符数（不含终止符'\0'）；失败（参数无效/缓冲区不足）返回 0
+ */
+inline size_t format_time_buffer(
+    char* buffer,
+    size_t bufferSize,
+    const DateTimeSt& dateTime,
+    const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT)
+{
+    size_t outLen = 0;
+    (void)format_time_buffer(buffer, bufferSize, dateTime, format, outLen);
+    return outLen;
+}
+
 // ------------------------------ 系统时间操作 ------------------------------
 
 /**

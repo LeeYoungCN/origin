@@ -28,8 +28,9 @@
 - `date_time` 的可失败接口改为 `ErrorCode` + 出参：`local_date_time`、
   `utc_date_time`、`timestamp_to_date_time`、`date_time_to_timestamp`、
   `get_month_*` / `get_weekday_*`、`format_time_string`、`append_time_string`、
-  `format_time_buffer`；兼容重载已删除。格式化接口另提供省略 `format` 的便捷重载
-  （等价于 `DEFAULT_TIME_FMT`），`timeZone` 始终显式传入。
+  `format_time_buffer`；兼容重载已删除。格式化接口保留两套用法：值返回版
+  （直接返回 `std::string` / `size_t`，`format` 与 `timeZone` 有默认值，失败返回
+  空串/0）与 ErrorCode 版（完整版无默认参数，另有省略 `format` 的便捷重载）。
 - `filesystem` 的读/路径接口改为 `ErrorCode` + 出参：`read_text_file`、
   `get_file_size`、`get_entry_type`、`get_curr_working_dir`、`join_paths`、
   `normalize_path`、`to_absolute_path`；兼容重载已删除。

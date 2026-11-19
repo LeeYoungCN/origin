@@ -180,4 +180,31 @@ TEST(DateTimeErrorCodeApi, DefaultFormatOverloads)
     EXPECT_EQ(dateTimeLength, length);
 }
 
+TEST(DateTimeErrorCodeApi, ValueReturningOverloads)
+{
+    constexpr TimestampMs timestamp = 0;  // 1970-01-01 00:00:00 UTC
+    DateTimeSt utc{};
+    ASSERT_EQ(utc_date_time(timestamp, utc), ERR_COMM_SUCCESS);
+
+    // 值返回版：直接拿结果，不关心错误码
+    EXPECT_EQ(format_time_string(utc), "1970-01-01 00:00:00");
+    EXPECT_EQ(format_time_string(timestamp),
+              format_time_string(timestamp, origin::date_time::DEFAULT_TIME_FMT, TimeZone::LOCAL));
+    EXPECT_EQ(format_time_string(timestamp, "%Y", TimeZone::UTC), "1970");
+    EXPECT_EQ(format_time_string(utc, "%Y/%m/%d"), "1970/01/01");
+
+    char buffer[origin::date_time::MAX_TIME_STR_LEN] = {};
+    EXPECT_EQ(format_time_buffer(buffer, sizeof(buffer), utc),
+              std::string("1970-01-01 00:00:00").size());
+    EXPECT_STREQ(buffer, "1970-01-01 00:00:00");
+
+    char utcBuffer[origin::date_time::MAX_TIME_STR_LEN] = {};
+    EXPECT_EQ(format_time_buffer(utcBuffer, sizeof(utcBuffer), timestamp, "%Y", TimeZone::UTC), 4u);
+    EXPECT_STREQ(utcBuffer, "1970");
+
+    // 缓冲区不足时值返回版返回 0（错误码版会返回 ERR_COMM_BUFFER_OVERFLOW）
+    char small[2] = {};
+    EXPECT_EQ(format_time_buffer(small, sizeof(small), utc), 0u);
+}
+
 }  // namespace

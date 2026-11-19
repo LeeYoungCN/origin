@@ -18,7 +18,7 @@
 | 修复 bug、改实现 | patch | 不变 |
 | 删除接口、改签名、改虚函数布局 | major | 变化，依赖方需重编 |
 
-## [1.1.0] - 未发布
+## [2.0.0] - 未发布
 
 ### 变更
 
@@ -93,6 +93,38 @@
 - `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
   把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），
   之后可直接 `cmake --preset=msvc_x64_debug`；bash 侧继续用 `load_msvc_env.sh`。
+
+### 升级指南（1.0.x → 2.0.0）
+
+本版含源码级不兼容变更（1.1.0 未发布，直接从 1.0.x 升到 2.0.0），升级时按下面几项调整：
+
+1. **头文件路径**
+   - `origin/utils/{filesystem_utils,date_time_utils,thread_utils,process_utils,string_utils}.h`
+     改为 `origin/<domain>/<domain>.h`（如 `origin/filesystem/filesystem.h`）；
+   - `file_writer.h` 改为 `origin/filesystem/file_writer.h`。
+2. **命名空间**：`origin::string` 改为 `origin::strings`（头文件 `origin/strings/strings.h`）。
+3. **错误返回**：可失败接口统一返回 `ErrorCode`，需要产出值的接口用末尾出参：
+
+   ```cpp
+   // 1.0.x
+   const std::string text = origin::filesystem::read_text_file(path);
+
+   // 2.0.0：ErrorCode 版
+   std::string content;
+   if (origin::filesystem::read_text_file(path, content) != ERR_COMM_SUCCESS) { /* ... */ }
+
+   // 2.0.0：值返回便捷版（失败返回空串，不需要错误详情时用）
+   const std::string text2 = origin::filesystem::read_text_file(path);
+   ```
+
+4. **filesystem 写操作**：`create_file` / `delete_file` / `copy_file` / `rename_file` /
+   `write_text_file` / `create_dir` / `delete_dir` 由 `bool` 改为 `ErrorCode`，
+   `if (delete_file(p))` 改成 `if (delete_file(p) == ERR_COMM_SUCCESS)`。
+5. **移除的接口**：公共 `get_thread_last_err*`（线程局部错误状态）已删除，错误码只随返回值传递。
+6. **date_time 默认参数**：`ErrorCode` 版格式化接口没有默认参数，需显式传 `format` / `timeZone`；
+   不想写这些参数时用值返回重载（保留 `format = DEFAULT_TIME_FMT`、`timeZone = LOCAL`）。
+7. **版本匹配**：`OriginConfigVersion.cmake` 使用 `SameMinorVersion`，下游改为
+   `find_package(Origin 2.0 CONFIG REQUIRED)`；SOVERSION 从 1 变为 2（Linux/macOS 为 `.so.2`）。
 
 ## [1.0.1] - 2026-11-14
 

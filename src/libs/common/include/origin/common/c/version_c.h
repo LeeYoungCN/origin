@@ -24,7 +24,7 @@ extern "C" {
 COMMON_API uint32_t origin_c_abi_version(void);
 
 /**
- * @brief 完整版本：发布版 "1.0.1"，开发版 "1.0.1-dev+g7b4ef62"。
+ * @brief 完整版本：发布版 "2.0.0"，开发版 "2.0.0-dev+g7b4ef62"。
  *
  * 开发版工作区有未提交修改时，串尾会带 "-dirty"。
  * 返回库内静态存储，进程生命周期内有效，调用方不需要释放。

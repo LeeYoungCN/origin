@@ -2,7 +2,7 @@
 # 版本号解析（在 project() 之前 include）
 #
 # 调用方约定：
-#   set(ORIGIN_VERSION_FILE "1.0.1")          # 树内唯一来源，发版时改这一行
+#   set(ORIGIN_VERSION_FILE "2.0.0")          # 树内唯一来源，发版时改这一行
 #   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
 #   project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
 #
@@ -11,8 +11,8 @@
 #   -DORIGIN_DEV_SUFFIX=OFF  关闭开发版后缀（发布构建用）
 #
 # 输出变量：
-#   ORIGIN_VERSION          语义化版本，形如 1.0.1（进 version.h，不随提交变化）
-#   ORIGIN_VERSION_FULL     开发版完整串，形如 1.0.1-dev+g7b4ef62-dirty（只进 build_info.h）
+#   ORIGIN_VERSION          语义化版本，形如 2.0.0（进 version.h，不随提交变化）
+#   ORIGIN_VERSION_FULL     开发版完整串，形如 2.0.0-dev+g7b4ef62-dirty（只进 build_info.h）
 #   ORIGIN_VERSION_NUMERIC  纯数字部分，供 project(VERSION) / SOVERSION 使用
 #   ORIGIN_VERSION_COMMIT   短 sha，发布构建为空
 #   ORIGIN_VERSION_DIRTY    工作区是否脏（0/1）

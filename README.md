@@ -4,7 +4,7 @@
 面向 Windows（MSVC / MinGW / clang-cl）、Linux 和 macOS，支持作为独立项目构建，
 也可以被其他项目通过 `find_package` 或 `FetchContent` 集成。
 
-当前版本：**1.1.0**（开发中，见 [CHANGELOG.md](CHANGELOG.md)）
+当前版本：**2.0.0**（开发中，见 [CHANGELOG.md](CHANGELOG.md)）
 
 ## 特性
 
@@ -144,7 +144,7 @@ Windows 下 DLL 与可执行文件同在 `bin/`；Linux/macOS 需要可执行文
 **安装包方式（推荐正式项目）**：
 
 ```cmake
-find_package(Origin 1.1.0 CONFIG REQUIRED)
+find_package(Origin 2.0.0 CONFIG REQUIRED)
 target_link_libraries(app PRIVATE Origin::Logging)
 ```
 
@@ -154,7 +154,7 @@ target_link_libraries(app PRIVATE Origin::Logging)
 include(FetchContent)
 FetchContent_Declare(origin
     GIT_REPOSITORY https://github.com/LeeYoungCN/origin.git
-    GIT_TAG        v1.1.0
+    GIT_TAG        v2.0.0
     GIT_SHALLOW    TRUE)
 set(ORIGIN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(origin)
@@ -168,7 +168,7 @@ target_link_libraries(app PRIVATE Origin::Logging)
 
 - 版本号唯一来源：`CMakeLists.txt` 里的 `ORIGIN_VERSION_FILE`；
 - 发版流程：改版本号 → 更新 `CHANGELOG.md` → 打 tag `v<版本号>` → CI 校验两者一致；
-- 非 tag 构建自动追加开发后缀：`1.1.0-dev+g<sha>[-dirty]`；
+- 非 tag 构建自动追加开发后缀：`2.0.0-dev+g<sha>[-dirty]`；
 - 安装包的版本兼容策略为 `SameMinorVersion`：只有 `major.minor` 相同才视为兼容，
   破坏性变更会放在新的 minor；
 - 运行期可查询：

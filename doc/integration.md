@@ -6,8 +6,8 @@
 
 | 方式 | 适用场景 | 版本表达 | 是否能看到/改 Origin 源码 |
 |---|---|---|---|
-| `find_package` | 正式项目、CI 发布 | `find_package(Origin 1.1.0 CONFIG REQUIRED)` | 否 |
-| `FetchContent` | 内部联调、需要单步进库代码 | `GIT_TAG v1.1.0` | 是（构建时下载） |
+| `find_package` | 正式项目、CI 发布 | `find_package(Origin 2.0.0 CONFIG REQUIRED)` | 否 |
+| `FetchContent` | 内部联调、需要单步进库代码 | `GIT_TAG v2.0.0` | 是（构建时下载） |
 | `add_subdirectory` | 直接 vendor 源码到仓库 | 由目录内容决定 | 是 |
 | vcpkg / Conan / 制品库 | 统一依赖管理 | 各自 recipe / manifest | 否 |
 
@@ -35,7 +35,7 @@ cpack --preset=msvc_x64_debug_pkg
 ### 2. 在下游工程里查找
 
 ```cmake
-find_package(Origin 1.1.0 CONFIG REQUIRED)
+find_package(Origin 2.0.0 CONFIG REQUIRED)
 
 target_link_libraries(app PRIVATE Origin::Logging)
 ```
@@ -44,9 +44,9 @@ target_link_libraries(app PRIVATE Origin::Logging)
 
 | 写法 | 接受的版本 |
 |---|---|
-| `find_package(Origin 1.1.0 CONFIG REQUIRED)` | `>= 1.1.0` 且 `< 1.2` |
-| `find_package(Origin 1.1.0 CONFIG REQUIRED EXACT)` | **只接受 1.1.0** |
-| `find_package(Origin 1.0 CONFIG REQUIRED)` | 不匹配 1.1（要求 `major.minor` 相同） |
+| `find_package(Origin 2.0.0 CONFIG REQUIRED)` | `>= 2.0.0` 且 `< 2.1`（同一 major.minor） |
+| `find_package(Origin 2.0.0 CONFIG REQUIRED EXACT)` | **只接受 2.0.0** |
+| `find_package(Origin 1.0 CONFIG REQUIRED)` | 不匹配 2.0（要求 `major.minor` 相同） |
 
 安装树不在默认搜索路径时，用下面任意一种方式指定：
 
@@ -86,7 +86,7 @@ endif()
 include(FetchContent)
 FetchContent_Declare(origin
     GIT_REPOSITORY https://github.com/LeeYoungCN/origin.git
-    GIT_TAG        v1.1.0        # 永远钉 tag 或 commit，不要用 master
+    GIT_TAG        v2.0.0        # 永远钉 tag 或 commit，不要用 master
     GIT_SHALLOW    TRUE)
 
 # 嵌入时 Origin 的测试默认关闭；如需打开用 ORIGIN_BUILD_TESTS
@@ -114,7 +114,7 @@ FetchContent_Declare(origin
 | **ASan 开关** | 嵌入时使用 `ORIGIN_ENABLE_ASAN` |
 | **不要混用** | 同一工程里既 `find_package` 又 `FetchContent` 会因 `Origin::*` 目标重复而失败 |
 | **DLL 位置** | Origin 的 `CMAKE_RUNTIME_OUTPUT_DIRECTORY` 只作用于自己的目标，DLL 输出到 `<父项目 build>/bin`；父项目的 exe 默认在 build 根目录，运行前需要把 bin 加进 `PATH`，或用 `$<TARGET_RUNTIME_DLLS>` 拷贝 |
-| **版本号** | 从源码嵌入时显示为 `1.1.0-dev+g<sha>`（开发版）；钉 tag 构建才是干净的 `1.1.0` |
+| **版本号** | 从源码嵌入时显示为 `2.0.0-dev+g<sha>`（开发版）；钉 tag 构建才是干净的 `2.0.0` |
 | **升级方式** | 改 `GIT_TAG` 即可，不需要 clean（CMake 会重新拉取） |
 
 ### 嵌入时 Origin 对父项目的影响（已收敛）
@@ -149,8 +149,8 @@ target_link_libraries(app PRIVATE Origin::Logging)
 
 ## 方式四：vcpkg / Conan / 内部制品库
 
-- **vcpkg overlay port**：`version` 写 `1.1.0`，`REF`/`SHA512` 指到 `v1.1.0`；
-- **Conan**：recipe 里 `version = "1.1.0"`，`sources` 钉 tag/SHA；
+- **vcpkg overlay port**：`version` 写 `2.0.0`，`REF`/`SHA512` 指到 `v2.0.0`；
+- **Conan**：recipe 里 `version = "2.0.0"`，`sources` 钉 tag/SHA；
 - **内部制品库**：上传 `origin-<version>-<preset>.zip`，下游按版本下载解压后设置 `CMAKE_PREFIX_PATH`。
 
 无论哪种，原则都是：**版本号 + 不可变引用（tag/SHA）**，不要依赖"环境里碰巧装的那个 Origin"。
@@ -159,13 +159,13 @@ target_link_libraries(app PRIVATE Origin::Logging)
 
 ## 版本策略
 
-- Origin 使用语义化版本：`MAJOR.MINOR.PATCH`，tag 为 `v<版本号>`（如 `v1.1.0`）；
+- Origin 使用语义化版本：`MAJOR.MINOR.PATCH`，tag 为 `v<版本号>`（如 `v2.0.0`）；
 - `OriginConfigVersion.cmake` 采用 `SameMinorVersion`：只有 `major.minor` 相同的版本才视为兼容，
-  破坏性变更放在新的 minor（如 1.1 与 1.0 不兼容），补丁号 1.1.x 之间保持兼容；
+  破坏性变更放在新的 major（如 2.0 与 1.x 不兼容），同一 `major.minor` 的补丁号之间保持兼容；
 - **正式项目建议 `EXACT` 锁定**，或在下游集中管理一个变量：
 
 ```cmake
-set(ORIGIN_VERSION_REQUIRED "1.1.0" CACHE STRING "Origin version to use")
+set(ORIGIN_VERSION_REQUIRED "2.0.0" CACHE STRING "Origin version to use")
 find_package(Origin ${ORIGIN_VERSION_REQUIRED} CONFIG REQUIRED)
 ```
 
@@ -199,5 +199,5 @@ if (std::string_view(origin::version()).find("-dev") != std::string_view::npos) 
 | `target already exists: Origin::Common` | 同时用了 `find_package` 和 `FetchContent`/`add_subdirectory`，只保留一种 |
 | `LNK2038: RuntimeLibrary mismatch` | Debug / Release 库混链，或 CRT 设置不一致 |
 | 运行时报找不到 `OriginLogging.dll` | DLL 不在 exe 目录或 PATH 中，用 `$<TARGET_RUNTIME_DLLS>` 拷贝 |
-| 版本显示 `1.1.0-dev+g...` | 从源码嵌入且工作区有改动；发布构建请钉 tag 并用干净工作区 |
+| 版本显示 `2.0.0-dev+g...` | 从源码嵌入且工作区有改动；发布构建请钉 tag 并用干净工作区 |
 | 下游是 C++17 | Origin 头文件需要 C++20，无法降级使用 |

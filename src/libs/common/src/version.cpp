@@ -36,7 +36,7 @@ BuildInfo build_info() noexcept
 
 bool headers_match_binary() noexcept
 {
-    // 头文件里是语义化版本（1.0.1），运行期可能是开发版完整串（1.0.1-dev+g...）；
+    // 头文件里是语义化版本（2.0.0），运行期可能是开发版完整串（2.0.0-dev+g...）；
     // 判据：运行时版本以头文件版本为前缀，且后面紧跟结尾或 '-'
     const std::string_view header_version = compiled_version().string;
     const std::string_view runtime_version = version();

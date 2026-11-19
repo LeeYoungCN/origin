@@ -37,7 +37,7 @@ struct Version
  */
 struct BuildInfo
 {
-    std::string_view version;  ///< 完整版本，形如 "1.0.1-dev+g7b4ef62"
+    std::string_view version;  ///< 完整版本，形如 "2.0.0-dev+g7b4ef62"
     std::string_view commit;   ///< 短 git sha；发布构建或无 git 时为空
     bool dirty = false;        ///< 开发版构建时工作区是否有未提交修改
 };

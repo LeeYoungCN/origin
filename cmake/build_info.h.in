@@ -7,7 +7,7 @@
 // 它们随提交变化，放进 version.h 会让所有依赖版本头的编译单元重编。
 // 这里只有 Common 的 version.cpp 引用它。
 
-// 开发版完整版本串，形如 "1.0.1-dev+g7b4ef62-dirty"；发布构建等于 ORIGIN_VERSION_STRING
+// 开发版完整版本串，形如 "2.0.0-dev+g7b4ef62-dirty"；发布构建等于 ORIGIN_VERSION_STRING
 #define ORIGIN_VERSION_FULL "@ORIGIN_VERSION_FULL@"
 
 // 开发版构建的短提交号；发布构建（tag）或没有 git 时为空

@@ -408,8 +408,8 @@ C++ 侧版本信息：
 ```cpp
 #include "origin/common/version.h"
 
-constexpr auto v = origin::compiled_version();   // 编译期版本（语义化，形如 1.1.0）
-std::string_view runtime = origin::version();    // 运行期完整版本：发布版 1.1.0，开发版 1.1.0-dev+g<sha>
+constexpr auto v = origin::compiled_version();   // 编译期版本（语义化，形如 2.0.0）
+std::string_view runtime = origin::version();    // 运行期完整版本：发布版 2.0.0，开发版 2.0.0-dev+g<sha>
 
 // 需要把字段分开上报时用结构化版本
 auto bi = origin::build_info();   // { version, commit, dirty }

@@ -1,13 +1,12 @@
-#include <cstdint>
-#include <string>
-#include <string_view>
-
 #include <gtest/gtest.h>
-
 #include <origin/common/common_error_code.h>
 #include <origin/date_time/date_time.h>
 #include <origin/filesystem/filesystem.h>
 #include <origin/utils/utils_error_code.h>
+
+#include <cstdint>
+#include <string>
+#include <string_view>
 
 namespace {
 
@@ -138,6 +137,47 @@ TEST(DateTimeErrorCodeApi, NamesAndFormatting)
     size_t smallLength = 0;
     EXPECT_EQ(format_time_buffer(small, sizeof(small), utc, "%Y", smallLength),
               ERR_COMM_BUFFER_OVERFLOW);
+}
+
+TEST(DateTimeErrorCodeApi, DefaultFormatOverloads)
+{
+    constexpr TimestampMs timestamp = 0;  // 1970-01-01 00:00:00 UTC
+    DateTimeSt utc{};
+    ASSERT_EQ(utc_date_time(timestamp, utc), ERR_COMM_SUCCESS);
+
+    std::string explicitText;
+    ASSERT_EQ(format_time_string(
+                  timestamp, origin::date_time::DEFAULT_TIME_FMT, TimeZone::UTC, explicitText),
+              ERR_COMM_SUCCESS);
+    EXPECT_EQ(explicitText, "1970-01-01 00:00:00");
+
+    // 便捷重载：省略 format，timeZone 仍显式传入
+    std::string timestampText;
+    ASSERT_EQ(format_time_string(timestamp, TimeZone::UTC, timestampText), ERR_COMM_SUCCESS);
+    EXPECT_EQ(timestampText, explicitText);
+
+    std::string dateTimeText;
+    ASSERT_EQ(format_time_string(utc, dateTimeText), ERR_COMM_SUCCESS);
+    EXPECT_EQ(dateTimeText, explicitText);
+
+    std::string appended;
+    ASSERT_EQ(append_time_string(appended, timestamp, TimeZone::UTC), ERR_COMM_SUCCESS);
+    ASSERT_EQ(append_time_string(appended, utc), ERR_COMM_SUCCESS);
+    EXPECT_EQ(appended, explicitText + explicitText);
+
+    char buffer[origin::date_time::MAX_TIME_STR_LEN] = {};
+    size_t length = 0;
+    ASSERT_EQ(format_time_buffer(buffer, sizeof(buffer), timestamp, TimeZone::UTC, length),
+              ERR_COMM_SUCCESS);
+    EXPECT_STREQ(buffer, explicitText.c_str());
+    EXPECT_EQ(length, explicitText.size());
+
+    char dateTimeBuffer[origin::date_time::MAX_TIME_STR_LEN] = {};
+    size_t dateTimeLength = 0;
+    ASSERT_EQ(format_time_buffer(dateTimeBuffer, sizeof(dateTimeBuffer), utc, dateTimeLength),
+              ERR_COMM_SUCCESS);
+    EXPECT_EQ(std::string(dateTimeBuffer), explicitText);
+    EXPECT_EQ(dateTimeLength, length);
 }
 
 }  // namespace

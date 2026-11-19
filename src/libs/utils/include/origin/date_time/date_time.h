@@ -15,6 +15,7 @@
 #include <string>
 #include <string_view>
 
+#include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/common/types/error_code_types.h"
 
@@ -141,6 +142,27 @@ ErrorCode format_time_string(const DateTimeSt& dateTime,
                              std::string& out);
 
 /**
+ * @brief 将时间戳按默认格式转换为字符串（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @note timeZone 仍须显式传入，避免隐式本地时区。
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
+inline ErrorCode format_time_string(TimestampMs timestamp, TimeZone timeZone, std::string& out)
+{
+    return format_time_string(timestamp, origin::date_time::DEFAULT_TIME_FMT, timeZone, out);
+}
+
+/**
+ * @brief 将时间组件按默认格式转换为字符串（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
+inline ErrorCode format_time_string(const DateTimeSt& dateTime, std::string& out)
+{
+    return format_time_string(dateTime, origin::date_time::DEFAULT_TIME_FMT, out);
+}
+
+/**
  * @brief 将时间戳按指定格式转换为字符串并追加到已有字符串中
  * @details 适用于高频调用场景，避免频繁内存分配
  * @param[in,out] timeString 已存在的字符串，格式化结果追加到末尾
@@ -169,6 +191,29 @@ ErrorCode append_time_string(std::string& timeString,
 ErrorCode append_time_string(std::string& timeString,
                              const DateTimeSt& dateTime,
                              const std::string_view& format);
+
+/**
+ * @brief 将时间戳按默认格式追加为字符串（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @note timeZone 仍须显式传入，避免隐式本地时区。
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
+inline ErrorCode append_time_string(std::string& timeString,
+                                    TimestampMs timestamp,
+                                    TimeZone timeZone)
+{
+    return append_time_string(timeString, timestamp, origin::date_time::DEFAULT_TIME_FMT, timeZone);
+}
+
+/**
+ * @brief 将时间组件按默认格式追加为字符串（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
+inline ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime)
+{
+    return append_time_string(timeString, dateTime, origin::date_time::DEFAULT_TIME_FMT);
+}
 
 /**
  * @brief 将时间戳按指定格式写入字符缓冲区（高性能）
@@ -209,6 +254,35 @@ ErrorCode format_time_buffer(char* buffer,
                              const DateTimeSt& dateTime,
                              const std::string_view& format,
                              size_t& outLen);
+
+/**
+ * @brief 将时间戳按默认格式写入字符缓冲区（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @note timeZone 仍须显式传入，避免隐式本地时区。
+ * @return 成功返回 ERR_COMM_SUCCESS；参数无效返回 ERR_COMM_PARAM_INVALID，
+ *         缓冲区不足返回 ERR_COMM_BUFFER_OVERFLOW
+ */
+inline ErrorCode format_time_buffer(
+    char* buffer, size_t bufferSize, TimestampMs timestamp, TimeZone timeZone, size_t& outLen)
+{
+    return format_time_buffer(
+        buffer, bufferSize, timestamp, origin::date_time::DEFAULT_TIME_FMT, timeZone, outLen);
+}
+
+/**
+ * @brief 将时间组件按默认格式写入字符缓冲区（便捷重载）
+ * @details 等价于传入 origin::constants::date_time::DEFAULT_TIME_FMT。
+ * @return 成功返回 ERR_COMM_SUCCESS；参数无效返回 ERR_COMM_PARAM_INVALID，
+ *         缓冲区不足返回 ERR_COMM_BUFFER_OVERFLOW
+ */
+inline ErrorCode format_time_buffer(char* buffer,
+                                    size_t bufferSize,
+                                    const DateTimeSt& dateTime,
+                                    size_t& outLen)
+{
+    return format_time_buffer(
+        buffer, bufferSize, dateTime, origin::date_time::DEFAULT_TIME_FMT, outLen);
+}
 
 // ------------------------------ 系统时间操作 ------------------------------
 

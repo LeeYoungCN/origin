@@ -92,6 +92,8 @@ typedef enum {
 
 ### 格式化
 
+完整版没有默认参数，所有参数必须显式传入：
+
 ```cpp
 ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
                              TimeZone timeZone, std::string& out);
@@ -109,8 +111,24 @@ ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& 
                              const std::string_view& format, size_t& outLen);
 ```
 
-> 注意：`format`、`timeZone` 都没有默认值，必须显式传入；常用格式直接用
-> `DEFAULT_TIME_FMT` / `DEFAULT_TIME_FMT_MS` 常量即可。
+另外提供省略 `format` 的便捷重载（等价于传入 `DEFAULT_TIME_FMT`）：
+
+```cpp
+inline ErrorCode format_time_string(TimestampMs timestamp, TimeZone timeZone, std::string& out);
+inline ErrorCode format_time_string(const DateTimeSt& dateTime, std::string& out);
+
+inline ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
+                                    TimeZone timeZone);
+inline ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime);
+
+inline ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
+                                    TimeZone timeZone, size_t& outLen);
+inline ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                                    size_t& outLen);
+```
+
+> `format` 有默认值（通过重载实现），但 `timeZone` 始终要显式传入，
+> 不提供隐式本地时区。需要 `DEFAULT_TIME_FMT_MS` 等其他格式时，用完整版显式传入。
 
 | 占位符 | 含义 | 示例 |
 |---|---|---|
@@ -148,13 +166,21 @@ int main()
     }
 
     std::string text;
-    const ErrorCode rc = origin::date_time::format_time_string(
-        dt, origin::date_time::DEFAULT_TIME_FMT_MS, text);
+    // 便捷重载：使用 DEFAULT_TIME_FMT
+    const ErrorCode rc = origin::date_time::format_time_string(dt, text);
     if (rc != ERR_COMM_SUCCESS) {
         std::printf("format failed: %s\n", get_utils_err_msg(rc));
         return 1;
     }
     std::printf("%s\n", text.c_str());
+
+    // 完整版：显式指定格式与毫秒
+    std::string textMs;
+    if (origin::date_time::format_time_string(
+            dt, origin::date_time::DEFAULT_TIME_FMT_MS, textMs) != ERR_COMM_SUCCESS) {
+        return 1;
+    }
+    std::printf("%s\n", textMs.c_str());
 
     char buffer[origin::date_time::MAX_TIME_STR_LEN];
     size_t len = 0;
@@ -172,6 +198,8 @@ int main()
 ## 注意事项
 
 - 可失败接口返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
+- 格式化接口的 `format` 可通过便捷重载省略（默认 `DEFAULT_TIME_FMT`）；
+  `timeZone` 始终显式传入，不提供隐式本地时区；
 - 格式化失败返回错误码（如 `ERR_COMM_BUFFER_OVERFLOW`、`ERR_COMM_PARAM_INVALID`），
   不再用空字符串或 `0` 表示失败；
 - `format_time_buffer` 的 `buffer` 不能为 `nullptr`，`bufferSize` 必须大于 0，

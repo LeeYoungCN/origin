@@ -1,7 +1,8 @@
 # 文件系统工具（`origin::filesystem`）
 
 `std::filesystem` 的薄封装层：对外只暴露 `std::string`（UTF-8），可失败接口统一
-返回 `ErrorCode`，不向调用方抛异常。
+返回 `ErrorCode`，不向调用方抛异常。数据返回接口同时提供同名的值返回重载
+（忽略错误码，失败返回默认值），见“值返回便捷重载”一节。
 
 设计说明与完整约定见头文件 `origin/filesystem/filesystem.h` 顶部注释。
 

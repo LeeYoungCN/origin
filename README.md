@@ -14,6 +14,8 @@
 - **可安装、可打包**：标准 CMake 安装树 + CPack（ZIP / TGZ），下游可 `find_package`
 - **可嵌入**：支持 `FetchContent` / `add_subdirectory`，不会污染父项目的全局设置
 - **稳定 ABI 边界**：公共接口只暴露 `std::string` 等标准类型，不泄漏 `std::filesystem::path`
+- **错误处理**：可失败接口返回 `ErrorCode` + 纯函数错误文本；数据返回接口另有同名值返回
+  重载，不关心错误原因时可直接取结果
 - **C ABI**：日志与版本信息提供 C 接口，便于 C# / Python 等绑定
 
 ## 组件

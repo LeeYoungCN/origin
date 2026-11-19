@@ -3,6 +3,8 @@
 ## 1. 概述
 
 `Logging` 是 `origin` 的日志组件，源码在 `src/libs/logging`，依赖 `Common`、`Container`、`Utils` 三个组件。
+内部对 Utils 的调用使用值返回接口（`format_time_string`、`join_paths`、`to_absolute_path` 等），
+不引入 `ErrorCode` 出参。
 
 | 项 | 值 |
 |---|---|

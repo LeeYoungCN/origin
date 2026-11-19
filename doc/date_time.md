@@ -55,7 +55,8 @@ typedef enum {
 
 ## 接口
 
-可失败接口统一返回 `ErrorCode`，需要产出值的接口用末尾出参。
+可失败接口统一返回 `ErrorCode`，需要产出值的接口用末尾出参；同时为数据返回接口提供
+了同名的**值返回重载**（忽略错误码，失败返回默认值），见各小节的“值返回便捷重载”。
 
 ### 获取当前时间
 
@@ -214,11 +215,11 @@ int main()
 - 可失败接口返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
 - 格式化接口有两套：值返回版（`format` 默认 `DEFAULT_TIME_FMT`、`timeZone` 默认
   `LOCAL`，失败返回空串/`0`）；ErrorCode 版（所有参数显式传入）；
-- 格式化失败返回错误码（如 `ERR_COMM_BUFFER_OVERFLOW`、`ERR_COMM_PARAM_INVALID`），
-  不再用空字符串或 `0` 表示失败；
+- ErrorCode 版格式化失败返回错误码（如 `ERR_COMM_BUFFER_OVERFLOW`、
+  `ERR_COMM_PARAM_INVALID`）；值返回版失败时返回空串 / `0`，无法区分原因；
 - `format_time_buffer` 的 `buffer` 不能为 `nullptr`，`bufferSize` 必须大于 0，
   建议至少 `MAX_TIME_STR_LEN`；
 - `local_date_time` 转换失败返回 `ERR_UTILS_TIMESTAMP_INVALID`，`out` 字段全为 0
-  （`year == 0` 可判定）；
+  （`year == 0` 可判定）；值返回版此时返回全 0 结构；
 - 日期名称固定为英文，不做本地化；
 - `wday` / `yday` 的取值来自底层系统实现，跨平台使用时以实际测试为准。

@@ -73,6 +73,8 @@ const char* text = get_comm_err_msg(errCode);   // 常见错误码 → 可读文
 utils 的可失败接口统一返回 `ErrorCode`，错误文本用纯函数获取：
 
 ```cpp
+#include <cstdio>
+
 #include <origin/filesystem/filesystem.h>
 #include <origin/utils/utils_error_code.h>
 
@@ -83,6 +85,23 @@ if (rc != ERR_COMM_SUCCESS) {
                 static_cast<unsigned long long>(rc));
 }
 ```
+
+需要产出值的接口有两套用法（双 API）：
+
+```cpp
+// 1) ErrorCode 版：完整错误信息由返回值给出
+std::string text;
+if (origin::filesystem::read_text_file("app.conf", text) != ERR_COMM_SUCCESS) {
+    // 处理错误
+}
+
+// 2) 值返回版：直接拿结果，失败时返回默认值（空串 / 0 / UNKNOWN 等）
+const std::string text2 = origin::filesystem::read_text_file("app.conf");
+```
+
+同名重载按参数区分：值返回版没有出参，失败语义是"返回默认值"，无法区分具体错误原因；
+需要区分时用 `ErrorCode` 版。格式化接口（`format_time_string` 等）同理，值返回版还保留
+了 `format` / `timeZone` 的默认值。
 
 注意：
 
@@ -127,7 +146,7 @@ if (ec == std::errc::permission_denied) { ... }   // 跨平台
 
 Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系统封装把
 `std::error_code` / 异常转换成 `ERR_UTILS_*`），对外统一用 `ErrorCode` 返回值
-传递。因此：
+传递（数据返回接口另提供同名的值返回重载）。因此：
 
 - 使用 Origin 的工具接口时，直接读取/比较返回的 `ErrorCode`，不需要自己处理
   `std::error_code`；
@@ -151,6 +170,8 @@ Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系�
 ## 四、最佳实践
 
 - **对外统一用 `ErrorCode`**，避免把 `std::error_code` 泄漏到公共接口；
+- **不关心错误原因时可用值返回重载**（失败返回空串 / `0` / `UNKNOWN`）；
+  需要区分错误原因时用 `ErrorCode` 版；
 - **跨平台比较用 `std::errc`**，不要直接比较 Windows 的 Win32 错误码；
 - **错误信息只用于展示**，逻辑判断用错误码本身；
 - 在异步/线程池场景下，错误码随返回值传递，不需要额外保存上下文。

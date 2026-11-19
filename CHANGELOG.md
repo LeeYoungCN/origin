@@ -39,6 +39,8 @@
 - `date_time` / `filesystem` / `process` / `strings` / `thread` 的数据返回接口补充
   值返回便捷重载：直接返回结果，失败时返回空串 / `0` / `UNKNOWN`，不需要写
   `ErrorCode` + 出参；需要区分错误原因时仍用原接口。
+- `logging` 内部继续使用 utils 的值返回便捷接口（`format_time_string`、`join_paths`、
+  `to_absolute_path` 等），不引入 `ErrorCode` 出参；文件重试失败的日志只记录文件路径。
 - **BREAKING**：`filesystem` 的写操作（`create_file` / `delete_file` / `copy_file` /
   `rename_file` / `write_text_file` / `create_dir` / `delete_dir`）返回值由 `bool`
   改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）。

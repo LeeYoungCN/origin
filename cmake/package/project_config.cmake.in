@@ -1,5 +1,9 @@
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+# 导出的 Origin 目标 PUBLIC 链接 Threads::Threads，下游必须先找到它
+find_dependency(Threads)
+
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Target.cmake")
 
 check_required_components(@PROJECT_NAME@)

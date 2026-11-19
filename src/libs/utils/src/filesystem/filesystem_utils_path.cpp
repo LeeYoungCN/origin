@@ -10,7 +10,6 @@
  */
 
 #include <cstddef>
-#include "../internal/last_error.h"
 #include <exception>
 #include <filesystem>
 #include <string>
@@ -36,16 +35,15 @@ ErrorCode get_curr_working_dir(std::string& out)
 {
     try {
         out = fs::current_path().string();
-        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        ORIGIN_DEBUG_ERR("Get current working dir failed.");
-        set_last_error(ConvertSysEcToErrorCode(e.code()));
-        return get_last_error();
+        const ErrorCode code = ConvertSysEcToErrorCode(e.code());
+        ORIGIN_DEBUG_ERR("Get current working dir failed: {}", get_utils_err_msg(code));
+        return code;
     } catch (const std::exception& e) {
-        ORIGIN_DEBUG_ERR("Get current working dir failed.");
-        set_last_error(ConvertExceptionToErrorCode(e));
-        return get_last_error();
+        const ErrorCode code = ConvertExceptionToErrorCode(e);
+        ORIGIN_DEBUG_ERR("Get current working dir failed: {}", get_utils_err_msg(code));
+        return code;
     }
 }
 
@@ -53,8 +51,7 @@ ErrorCode get_curr_working_dir(std::string& out)
 ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out)
 {
     if (parts.empty()) {
-        set_last_error(ERR_UTILS_PATH_INVALID);
-        ORIGIN_DEBUG_WARN("Join paths failed. list empty: {}", get_last_error_msg());
+        ORIGIN_DEBUG_WARN("Join paths failed: empty list.");
         return ERR_UTILS_PATH_INVALID;
     }
     fs::path result(parts[0]);
@@ -62,7 +59,6 @@ ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out)
         result /= parts[i];  // std::filesystem 自动处理分隔符
     }
     out = result.string();
-    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -70,22 +66,21 @@ ErrorCode normalize_path(std::string_view path, std::string& out)
 {
     try {
         out = fs::path(path).lexically_normal().string();
-        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        set_last_error(ConvertSysEcToErrorCode(e.code()));
-        ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
+        const ErrorCode code = ConvertSysEcToErrorCode(e.code());
+        ORIGIN_DEBUG_ERR("Normalize path failed. path: \"{}\", message: {}. ex: {}",
                          path,
-                         get_last_error_msg(),
+                         get_utils_err_msg(code),
                          e.what());
-        return get_last_error();
+        return code;
     } catch (const std::exception& e) {
-        set_last_error(ConvertExceptionToErrorCode(e));
-        ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
+        const ErrorCode code = ConvertExceptionToErrorCode(e);
+        ORIGIN_DEBUG_ERR("Normalize path failed. path: \"{}\", message: {}. ex: {}",
                          path,
-                         get_last_error_msg(),
+                         get_utils_err_msg(code),
                          e.what());
-        return get_last_error();
+        return code;
     }
 }
 
@@ -109,57 +104,51 @@ ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, s
     fs::path const combined = fs::path(base) / fs::path(relPath);
     try {
         out = fs::absolute(combined).lexically_normal().string();
-        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        set_last_error(ConvertSysEcToErrorCode(e.code()));
+        const ErrorCode code = ConvertSysEcToErrorCode(e.code());
         ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}. ex: {}",
                          relPath,
-                         get_last_error_msg(),
+                         get_utils_err_msg(code),
                          e.what());
-        return get_last_error();
+        return code;
     } catch (const std::exception& e) {
-        set_last_error(ConvertExceptionToErrorCode(e));
-        ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}.ex: {}",
+        const ErrorCode code = ConvertExceptionToErrorCode(e);
+        ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}. ex: {}",
                          relPath,
-                         get_last_error_msg(),
+                         get_utils_err_msg(code),
                          e.what());
-        return get_last_error();
+        return code;
     }
 }
 
 std::string get_directory(std::string_view path)
 {
     fs::path const proc(path);
-    set_last_error(ERR_COMM_SUCCESS);
     return proc.parent_path().string();
 }
 
 std::string get_filename(std::string_view path)
 {
     fs::path const p(path);
-    set_last_error(ERR_COMM_SUCCESS);
     return p.filename().string();
 }
 
 std::string get_filename_stem(std::string_view path)
 {
     fs::path const p(path);
-    set_last_error(ERR_COMM_SUCCESS);
     return p.stem().string();
 }
 
 std::string get_extension(std::string_view path)
 {
     fs::path const p(path);
-    set_last_error(ERR_COMM_SUCCESS);
     return p.extension().string();
 }
 
 bool is_absolute_path(std::string_view path)
 {
     bool const result = fs::path(path).is_absolute();
-    set_last_error(ERR_COMM_SUCCESS);
     return result;
 }
 
@@ -172,7 +161,6 @@ bool is_path_too_long(std::string_view path)
 #else
     result = len > MAX_PATH_STD;
 #endif
-    set_last_error(ERR_COMM_SUCCESS);
     return result;
 }
 

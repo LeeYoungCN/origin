@@ -73,6 +73,16 @@ typedef enum {
 | `ErrorCode timestamp_to_date_time(TimestampMs, TimeZone, DateTimeSt& out)` | 指定时区转换（`timeZone` 无默认值） |
 | `ErrorCode date_time_to_timestamp(const DateTimeSt&, TimestampMs& out)` | 本地时间组件 → 时间戳；失败时 `out = -1` |
 
+**值返回便捷重载（忽略错误码）**：
+
+```cpp
+DateTimeSt local_date_time(TimestampMs timestamp);                       // 失败: 字段全 0
+DateTimeSt utc_date_time(TimestampMs timestamp);                         // 失败: 字段全 0
+DateTimeSt timestamp_to_date_time(TimestampMs timestamp,
+                                  TimeZone timeZone = TimeZone::LOCAL);  // 失败: 字段全 0
+TimestampMs date_time_to_timestamp(const DateTimeSt& dateTime);          // 失败: -1
+```
+
 ### 计算与等待
 
 | 接口 | 说明 |
@@ -89,6 +99,15 @@ typedef enum {
 | `ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out)` | `"Jan"` … |
 | `ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out)` | `"Monday"` …；越界返回 `ERR_UTILS_WEEKDAY_INVALID` |
 | `ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out)` | `"Mon"` … |
+
+**值返回便捷重载（忽略错误码）**：越界或失败时返回空 `string_view`：
+
+```cpp
+std::string_view get_month_full_name(uint32_t month);
+std::string_view get_month_abbr_name(uint32_t month);
+std::string_view get_weekday_full_name(uint32_t weekday);
+std::string_view get_weekday_abbr_name(uint32_t weekday);
+```
 
 ### 格式化
 

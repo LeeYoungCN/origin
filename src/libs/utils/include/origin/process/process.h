@@ -51,5 +51,40 @@ ErrorCode get_proc_filename_stem(std::string& out);
  */
 ProcessId get_curr_proc_id();
 
+// ------------------------------ 值返回便捷重载（忽略错误码） ------------------------------
+
+/**
+ * @brief 获取当前进程的可执行文件路径（值返回）
+ * @return 绝对路径；失败时返回空串
+ */
+inline std::string get_proc_path()
+{
+    std::string out;
+    (void)get_proc_path(out);
+    return out;
+}
+
+/**
+ * @brief 获取当前进程所在目录（值返回）
+ * @return 绝对路径；失败时返回空串
+ */
+inline std::string get_proc_directory()
+{
+    std::string out;
+    (void)get_proc_directory(out);
+    return out;
+}
+
+/**
+ * @brief 获取当前进程名称（值返回）
+ * @return 进程文件名（不含扩展名）；失败时返回空串
+ */
+inline std::string get_proc_filename_stem()
+{
+    std::string out;
+    (void)get_proc_filename_stem(out);
+    return out;
+}
+
 }  // namespace origin::process
 #endif  // ORIGIN_PROCESS_PROCESS_H

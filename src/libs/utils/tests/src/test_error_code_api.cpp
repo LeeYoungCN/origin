@@ -2,16 +2,30 @@
 #include <origin/common/common_error_code.h>
 #include <origin/date_time/date_time.h>
 #include <origin/filesystem/filesystem.h>
+#include <origin/process/process.h>
+#include <origin/strings/strings.h>
+#include <origin/thread/thread.h>
 #include <origin/utils/utils_error_code.h>
 
+#include <cstdarg>
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace {
 
 using namespace origin::date_time;
 using namespace origin::filesystem;
+
+std::string FormatViaVaList(const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    const std::string result = origin::strings::va_list_to_string(format, args);
+    va_end(args);
+    return result;
+}
 
 TEST(FilesystemErrorCodeApi, ReadAndQuery)
 {
@@ -133,9 +147,9 @@ TEST(DateTimeErrorCodeApi, NamesAndFormatting)
     EXPECT_EQ(length, 4u);
     EXPECT_STREQ(buffer, "1970");
 
-    char small[2] = {};
+    char tinyBuffer[2] = {};
     size_t smallLength = 0;
-    EXPECT_EQ(format_time_buffer(small, sizeof(small), utc, "%Y", smallLength),
+    EXPECT_EQ(format_time_buffer(tinyBuffer, sizeof(tinyBuffer), utc, "%Y", smallLength),
               ERR_COMM_BUFFER_OVERFLOW);
 }
 
@@ -162,8 +176,60 @@ TEST(DateTimeErrorCodeApi, ValueReturningOverloads)
     EXPECT_STREQ(utcBuffer, "1970");
 
     // 缓冲区不足时值返回版返回 0（错误码版会返回 ERR_COMM_BUFFER_OVERFLOW）
-    char small[2] = {};
-    EXPECT_EQ(format_time_buffer(small, sizeof(small), utc), 0u);
+    char tinyBuffer[2] = {};
+    EXPECT_EQ(format_time_buffer(tinyBuffer, sizeof(tinyBuffer), utc), 0u);
+}
+
+TEST(UtilsErrorCodeApi, GetterValueReturningOverloads)
+{
+    // date_time：转换与名称查询
+    constexpr TimestampMs epoch = 0;
+    EXPECT_EQ(utc_date_time(epoch).year, 1970u);
+    EXPECT_EQ(timestamp_to_date_time(epoch, TimeZone::UTC).year, 1970u);
+    EXPECT_EQ(date_time_to_timestamp(local_date_time(epoch)), epoch);
+    EXPECT_EQ(get_month_full_name(1), "January");
+    EXPECT_EQ(get_month_abbr_name(1), "Jan");
+    EXPECT_EQ(get_weekday_full_name(1), "Monday");
+    EXPECT_EQ(get_weekday_abbr_name(1), "Mon");
+    EXPECT_TRUE(get_month_full_name(13).empty());
+    EXPECT_TRUE(get_weekday_full_name(9).empty());
+
+    // filesystem：路径与文件查询
+    EXPECT_FALSE(get_curr_working_dir().empty());
+    EXPECT_FALSE(join_paths({"a", "b"}).empty());
+    EXPECT_EQ(normalize_path("a/./b/../c"), normalize_path("a/c"));
+
+    std::string dir;
+    ASSERT_EQ(to_absolute_path("origin_ec_test_value_dir", get_curr_working_dir(), dir),
+              ERR_COMM_SUCCESS);
+    (void)delete_dir(dir, true);
+    ASSERT_EQ(create_dir(dir, true), ERR_COMM_SUCCESS);
+    std::string file;
+    ASSERT_EQ(join_paths({dir, "value.txt"}, file), ERR_COMM_SUCCESS);
+    ASSERT_EQ(create_file(file), ERR_COMM_SUCCESS);
+    ASSERT_EQ(write_text_file(file, "hello", true), ERR_COMM_SUCCESS);
+
+    EXPECT_EQ(get_entry_type(file), EntryType::FILE);
+    EXPECT_EQ(get_entry_type(file + ".missing"), EntryType::NONEXISTENT);
+    EXPECT_EQ(read_text_file(file), "hello");
+    EXPECT_EQ(get_file_size(file), 5u);
+    EXPECT_GT(get_file_modify_time(file), 0);
+    const FileInfo info = get_file_info(file);
+    EXPECT_EQ(info.type, EntryType::FILE);
+    EXPECT_EQ(info.size, 5u);
+    const std::vector<uint8_t> binary = read_binary_file(file);
+    ASSERT_EQ(binary.size(), 5u);
+    EXPECT_EQ(binary[0], static_cast<uint8_t>('h'));
+
+    ASSERT_EQ(delete_dir(dir, true), ERR_COMM_SUCCESS);
+
+    // process / strings / thread
+    EXPECT_FALSE(origin::process::get_proc_path().empty());
+    EXPECT_FALSE(origin::process::get_proc_directory().empty());
+    EXPECT_FALSE(origin::process::get_proc_filename_stem().empty());
+    EXPECT_EQ(FormatViaVaList("%d-%s", 7, "x"), "7-x");
+    ASSERT_EQ(origin::thread::set_curr_thread_name("value-overload"), ERR_COMM_SUCCESS);
+    EXPECT_EQ(origin::thread::get_curr_thread_name(), "value-overload");
 }
 
 }  // namespace

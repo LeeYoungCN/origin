@@ -292,5 +292,121 @@ ErrorCode create_dir(std::string_view path, bool recursive = true);
  */
 ErrorCode delete_dir(std::string_view path, bool recursive = true);
 
+// ------------------------------ 值返回便捷重载（忽略错误码） ------------------------------
+// 以下重载直接返回值，适合不需要区分错误原因的场景；失败时返回默认值
+// （空串 / 0 / UNKNOWN）。需要错误码时请使用上面的 ErrorCode 版本。
+
+/**
+ * @brief 获取路径条目类型（值返回）
+ * @note 路径不存在返回 EntryType::NONEXISTENT；获取失败返回 EntryType::UNKNOWN
+ */
+inline EntryType get_entry_type(std::string_view path)
+{
+    EntryType out = EntryType::UNKNOWN;
+    (void)get_entry_type(path, out);
+    return out;
+}
+
+/**
+ * @brief 获取当前工作路径（值返回）
+ * @return 当前工作路径；失败时返回空串
+ */
+inline std::string get_curr_working_dir()
+{
+    std::string out;
+    (void)get_curr_working_dir(out);
+    return out;
+}
+
+/**
+ * @brief 拼接多个路径片段（值返回）
+ * @return 拼接后的路径；空列表或失败时返回空串
+ */
+inline std::string join_paths(const std::vector<std::string>& parts)
+{
+    std::string out;
+    (void)join_paths(parts, out);
+    return out;
+}
+
+/**
+ * @brief 纯词法规范化路径（值返回）
+ * @return 规范化后的路径；失败时返回空串
+ */
+inline std::string normalize_path(std::string_view path)
+{
+    std::string out;
+    (void)normalize_path(path, out);
+    return out;
+}
+
+/**
+ * @brief 将路径拼到基准目录后转为绝对路径（值返回）
+ * @param relPath 相对路径（也允许传绝对路径）
+ * @param baseDir 基准目录，默认空串表示当前工作目录
+ * @return 绝对路径；失败时返回空串
+ */
+inline std::string to_absolute_path(std::string_view relPath, std::string_view baseDir = "")
+{
+    std::string out;
+    (void)to_absolute_path(relPath, baseDir, out);
+    return out;
+}
+
+/**
+ * @brief 读取文本文件内容（值返回）
+ * @return 文件内容；文件不存在/读取失败时返回空串
+ */
+inline std::string read_text_file(std::string_view path)
+{
+    std::string out;
+    (void)read_text_file(path, out);
+    return out;
+}
+
+/**
+ * @brief 读取二进制文件内容（值返回）
+ * @return 文件内容；文件不存在/读取失败时返回空容器
+ */
+inline std::vector<uint8_t> read_binary_file(std::string_view path)
+{
+    std::vector<uint8_t> out;
+    (void)read_binary_file(path, out);
+    return out;
+}
+
+/**
+ * @brief 获取文件大小（值返回）
+ * @return 文件大小（字节）；失败时返回 0
+ */
+inline FileSize get_file_size(std::string_view path)
+{
+    FileSize out = 0;
+    (void)get_file_size(path, out);
+    return out;
+}
+
+/**
+ * @brief 获取文件的最后修改时间（值返回）
+ * @return 毫秒级时间戳；失败时返回 0
+ */
+inline TimestampMs get_file_modify_time(std::string_view path)
+{
+    TimestampMs out = 0;
+    (void)get_file_modify_time(path, out);
+    return out;
+}
+
+/**
+ * @brief 获取文件的详细信息（值返回）
+ * @return 文件信息；路径不存在时 type 为 NONEXISTENT，size/modifyTime 为 0
+ */
+inline FileInfo get_file_info(std::string_view path)
+{
+    FileInfo out{};
+    (void)get_file_info(path, out);
+    return out;
+}
+
 }  // namespace origin::filesystem
 #endif  // ORIGIN_FILESYSTEM_FILESYSTEM_H

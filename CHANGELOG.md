@@ -36,6 +36,9 @@
   `normalize_path`、`to_absolute_path`；兼容重载已删除。
 - `process` / `strings` / `thread` 的可失败接口改为 `ErrorCode` + 出参：
   `get_proc_*`、`va_list_to_string`、`set_curr_thread_name`、`get_curr_thread_name`。
+- `date_time` / `filesystem` / `process` / `strings` / `thread` 的数据返回接口补充
+  值返回便捷重载：直接返回结果，失败时返回空串 / `0` / `UNKNOWN`，不需要写
+  `ErrorCode` + 出参；需要区分错误原因时仍用原接口。
 - **BREAKING**：`filesystem` 的写操作（`create_file` / `delete_file` / `copy_file` /
   `rename_file` / `write_text_file` / `create_dir` / `delete_dir`）返回值由 `bool`
   改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）。

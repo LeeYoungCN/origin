@@ -112,11 +112,28 @@ public:
 
 适合高频写入场景（内部缓冲，减少系统调用）。
 
+### 值返回便捷重载（忽略错误码）
+
+不需要区分错误原因时，可以直接取返回值，失败时返回默认值：
+
+| 接口 | 失败时 |
+|---|---|
+| `EntryType get_entry_type(path)` | 不存在 `NONEXISTENT`；读取失败 `UNKNOWN` |
+| `std::string get_curr_working_dir()` | 空串 |
+| `std::string join_paths(parts)` | 空串（空列表也返回空串） |
+| `std::string normalize_path(path)` | 空串 |
+| `std::string to_absolute_path(relPath, baseDir = "")` | 空串 |
+| `std::string read_text_file(path)` | 空串 |
+| `std::vector<uint8_t> read_binary_file(path)` | 空容器 |
+| `FileSize get_file_size(path)` | `0` |
+| `TimestampMs get_file_modify_time(path)` | `0` |
+| `FileInfo get_file_info(path)` | `path`/`type` 有效，`size`/`modifyTime` 为 `0` |
+
 ## 错误处理
 
 - 可失败接口统一返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
 - 需要产出值的接口（`read_text_file`、`get_file_size`、`join_paths` 等）用出参返回，
-  失败时出参不被修改；
+  失败时出参不被修改；同名的值返回重载会直接返回结果，失败时返回默认值（见上表）；
 - 错误文本用纯函数获取，不再依赖 thread-local：
 
 ```cpp

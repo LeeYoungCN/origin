@@ -41,6 +41,17 @@ ErrorCode set_curr_thread_name(const char* name);
  */
 ErrorCode get_curr_thread_name(std::string& out);
 
+/**
+ * @brief 获取当前线程名称（值返回）
+ * @return 当前线程名称，未设置或失败时为空串
+ */
+inline std::string get_curr_thread_name()
+{
+    std::string out;
+    (void)get_curr_thread_name(out);
+    return out;
+}
+
 }  // namespace origin::thread
 
 #endif  // ORIGIN_THREAD_THREAD_H

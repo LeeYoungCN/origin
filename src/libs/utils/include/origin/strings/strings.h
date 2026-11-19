@@ -12,6 +12,17 @@ namespace origin::strings {
 ErrorCode va_list_to_string(const char* format, va_list args, std::string& out);
 bool string_is_null_or_empty(const char* str);
 
+/**
+ * @brief 将 va_list 按格式串格式化为字符串（值返回）
+ * @return 格式化结果；失败时返回空串
+ */
+inline std::string va_list_to_string(const char* format, va_list args)
+{
+    std::string out;
+    (void)va_list_to_string(format, args, out);
+    return out;
+}
+
 template <typename T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
 std::string type_to_string(const T& type)
 {

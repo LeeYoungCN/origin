@@ -287,6 +287,95 @@ inline size_t format_time_buffer(
     return outLen;
 }
 
+/**
+ * @brief 将毫秒级时间戳转换为本地时间组件（值返回）
+ * @return 转换结果；失败时所有字段为 0
+ */
+inline DateTimeSt local_date_time(TimestampMs timestamp)
+{
+    DateTimeSt out{};
+    (void)local_date_time(timestamp, out);
+    return out;
+}
+
+/**
+ * @brief 将毫秒级时间戳转换为UTC时间组件（值返回）
+ * @return 转换结果；失败时所有字段为 0
+ */
+inline DateTimeSt utc_date_time(TimestampMs timestamp)
+{
+    DateTimeSt out{};
+    (void)utc_date_time(timestamp, out);
+    return out;
+}
+
+/**
+ * @brief 将毫秒级时间戳转换为时间组件（值返回）
+ * @param[in] timeZone 时区，默认 LOCAL
+ * @return 转换结果；失败时所有字段为 0
+ */
+inline DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone = TimeZone::LOCAL)
+{
+    DateTimeSt out{};
+    (void)timestamp_to_date_time(timestamp, timeZone, out);
+    return out;
+}
+
+/**
+ * @brief 将时间组件转换为毫秒级时间戳（值返回）
+ * @return 毫秒级时间戳；失败时返回 -1
+ */
+inline TimestampMs date_time_to_timestamp(const DateTimeSt& dateTime)
+{
+    TimestampMs out = 0;
+    (void)date_time_to_timestamp(dateTime, out);
+    return out;
+}
+
+/**
+ * @brief 获取月份的完整英文名称（值返回）
+ * @return 完整月份名称（如"January"）；参数越界时返回空字符串视图
+ */
+inline std::string_view get_month_full_name(uint32_t month)
+{
+    std::string_view out{};
+    (void)get_month_full_name(month, out);
+    return out;
+}
+
+/**
+ * @brief 获取月份的缩写英文名称（值返回）
+ * @return 缩写月份名称（如"Jan"）；参数越界时返回空字符串视图
+ */
+inline std::string_view get_month_abbr_name(uint32_t month)
+{
+    std::string_view out{};
+    (void)get_month_abbr_name(month, out);
+    return out;
+}
+
+/**
+ * @brief 获取星期的完整英文名称（值返回）
+ * @return 完整星期名称（如"Monday"）；参数越界时返回空字符串视图
+ */
+inline std::string_view get_weekday_full_name(uint32_t weekday)
+{
+    std::string_view out{};
+    (void)get_weekday_full_name(weekday, out);
+    return out;
+}
+
+/**
+ * @brief 获取星期的缩写英文名称（值返回）
+ * @return 缩写星期名称（如"Mon"）；参数越界时返回空字符串视图
+ */
+inline std::string_view get_weekday_abbr_name(uint32_t weekday)
+{
+    std::string_view out{};
+    (void)get_weekday_abbr_name(weekday, out);
+    return out;
+}
+
 // ------------------------------ 系统时间操作 ------------------------------
 
 /**

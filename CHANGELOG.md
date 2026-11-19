@@ -22,6 +22,9 @@
 
 ### 变更
 
+- 错误处理长期方向：可失败接口统一返回 `ErrorCode`，错误文本用
+  `get_utils_err_msg(code)` / `get_comm_err_msg(code)` 获取；thread-local 的
+  `get_thread_last_err*` 降级为诊断辅助，待剩余接口迁移完成后移除。
 - **BREAKING**：`filesystem` 的写操作（`create_file` / `delete_file` / `copy_file` /
   `rename_file` / `write_text_file` / `create_dir` / `delete_dir`）返回值由 `bool`
   改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）；thread-local 错误状态仅保留为诊断辅助。

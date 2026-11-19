@@ -31,6 +31,9 @@
 - **BREAKING**：`origin::string` 命名空间改为 `origin::strings`，头文件
   `origin/string/string.h` 改为 `origin/strings/strings.h`，源文件改为 `strings.cpp`
   （复数形式表示工具集合，与 abseil 的 `absl::strings` 一致）。
+- 文档整理：`doc/` 下文件名统一为小写下划线（`date_time.md`、`filesystem.md`、
+  `system_error_code.md`、`windows_sandbox_label.md`），并刷新过期的命名空间、
+  头文件路径与示例。
 - 构建选项统一为 `ORIGIN_BUILD_TESTS` / `ORIGIN_ENABLE_ASAN`（原 `BUILD_TESTS` /
   `ENABLE_ASAN` 已移除），presets 与 `cmake_tools.sh` 同步更新。
 - 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；

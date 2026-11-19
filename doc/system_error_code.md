@@ -1,0 +1,162 @@
+# 错误码与错误类别
+
+本文分两部分：
+
+1. Origin 自己的错误码体系（`ErrorCode` + 模块化宏 + thread-local 错误状态）；
+2. C++ 标准库的 `std::error_category`（`generic_category` / `system_category`），
+   以及它们与 Origin 错误码的对应关系。
+
+## 一、Origin 错误码
+
+### 1.1 位布局
+
+`ErrorCode` 是 64 位无符号整数，按位拆成四段：
+
+| 字段 | 位 | 掩码 | 说明 |
+|---|---|---|---|
+| severity | 63–48 | `ERR_SEVERITY_MASK` | 错误级别 |
+| module | 47–32 | `ERR_MODULE_MASK` | 模块 ID |
+| type | 31–16 | `ERR_TYPE_MASK` | 模块内错误类别 |
+| id | 15–0 | `ERR_ID_MASK` | 具体错误编号 |
+
+```cpp
+typedef uint64_t ErrorCode;
+typedef uint16_t ErrModuleId;
+typedef uint16_t ErrorType;
+typedef uint16_t ErrorId;
+
+#define MAKE_ERROR(severity, module, type, errId)                                  \
+    ((ErrorCode)(((uint64_t)(severity) << ERR_SEVERITY_SHIFT) |                    \
+                 ((uint64_t)(module) << ERR_MODULE_SHIFT) |                        \
+                 ((uint64_t)(type) << ERR_TYPE_SHIFT) |                            \
+                 ((uint64_t)(errId) << ERR_ID_SHIFT)))
+```
+
+### 1.2 错误级别
+
+| 枚举 | 值 | 含义 |
+|---|---|---|
+| `ERR_SEV_SUCCESS` | 0 | 成功 |
+| `ERR_SEV_INFO` | 1 | 提示，不影响流程 |
+| `ERR_SEV_WARN` | 2 | 警告，可能有风险 |
+| `ERR_SEV_ERROR` | 3 | 错误，功能失败但可恢复 |
+| `ERR_SEV_FATAL` | 4 | 严重错误，不可恢复 |
+
+### 1.3 模块 ID
+
+| 宏 | 值 |
+|---|---|
+| `COMMON_MODULE_ID` | 1 |
+| `UTILS_MODULE_ID` | 2 |
+| `CONTAINER_MODULE_ID` | 3 |
+
+### 1.4 各模块的错误码宏
+
+| 头文件 | 构造宏 | 示例 |
+|---|---|---|
+| `origin/common/common_error_code.h` | `MAKE_COMMON_ERROR(id)` | `ERR_COMM_PARAM_INVALID`、`ERR_COMM_MALLOC_FAILED`、`ERR_COMM_SUCCESS` |
+| `origin/utils/utils_error_code.h` | `MAKE_DATE_TIME_ERROR(id)` / `MAKE_FILESYS_ERROR(id)` | `ERR_UTILS_MONTH_INVALID`、`ERR_UTILS_NOT_FOUND`、`ERR_UTILS_PERMISSION_DENIED` |
+| `origin/container/container_error_code.h` | `MAKE_CONTAINER_ERROR(id)` | `ERR_CONTAINER_OVERFLOW` |
+
+`ERR_COMM_SUCCESS` 的值为 `0`，所有非零值都表示某种错误。
+
+### 1.5 错误信息
+
+```cpp
+#include <origin/common/common_error_code.h>
+
+const char* text = get_comm_err_msg(errCode);   // 常见错误码 → 可读文本
+```
+
+### 1.6 thread-local 错误状态
+
+大多数工具接口不抛异常、不返回 `ErrorCode`，而是把错误写进 thread-local 状态：
+
+```cpp
+#include <origin/thread/thread.h>
+
+void set_thread_last_err(ErrorCode errcode);
+ErrorCode get_thread_last_err();
+const char* get_thread_last_err_msg();
+```
+
+使用方式：
+
+```cpp
+if (!origin::filesystem::create_dir("logs/app")) {
+    std::printf("failed: %s (code=0x%llx)\n",
+                get_thread_last_err_msg(),
+                static_cast<unsigned long long>(get_thread_last_err()));
+}
+```
+
+注意：
+
+- 状态是 **thread-local** 的，异步/协程切换后不保证还是同一个上下文；
+- 成功路径一般会把错误码重置为 `ERR_COMM_SUCCESS`；
+- 需要精确区分"文件不存在"和"权限不足"时，读取 `get_thread_last_err()` 的原始值。
+
+## 二、C++ 标准库的错误类别
+
+### 2.1 三个内置类别
+
+| 类别 | 错误码来源 | 跨平台性 | 典型场景 |
+|---|---|---|---|
+| `std::generic_category` | C 标准库（`<cerrno>` / `std::errc`） | 完全一致 | 参数无效、文件不存在等通用错误 |
+| `std::system_category` | 操作系统（`errno` / `GetLastError()`） | 平台相关 | 系统调用、Win32 API 失败 |
+| `std::iostream_category` | I/O 流（`std::io_errc`） | 标准一致 | 流状态错误 |
+
+```cpp
+#include <cerrno>
+#include <system_error>
+
+std::error_code ec = std::make_error_code(std::errc::no_such_file_or_directory);
+if (ec == std::errc::no_such_file_or_directory) {
+    // 跨平台比较：推荐用 std::errc 而不是具体 errno 值
+}
+```
+
+### 2.2 `generic_category` 与 `system_category` 的区别
+
+- `generic_category`：错误码在所有平台含义一致，适合做**跨平台判断**；
+- `system_category`：错误码来自底层系统，适合在调用系统 API 后**原样上报**；
+- Windows 上 `std::system_category()` 的错误码是 Win32 错误码（如
+  `ERROR_FILE_NOT_FOUND` = 2），Unix 上通常是 `errno`。
+
+比较错误时优先用 `std::errc`：
+
+```cpp
+if (ec == std::errc::permission_denied) { ... }   // 跨平台
+```
+
+### 2.3 与 Origin 错误码的关系
+
+Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系统封装把
+`std::error_code` / 异常转换成 `ERR_UTILS_*`），对外统一用 `ErrorCode` +
+thread-local 状态。因此：
+
+- 使用 Origin 的工具接口时，读 `get_thread_last_err()`，不需要自己处理
+  `std::error_code`；
+- 直接调用标准库 / 系统 API 时，仍按标准方式使用 `std::error_code`。
+
+## 三、添加新错误码
+
+1. 在对应模块的 `*_error_code.h` 里定义 `ErrorId` 枚举值；
+2. 用模块宏构造宏：
+
+```cpp
+#define MAKE_MYMOD_ERROR(errId) \
+    MAKE_ERROR(ERR_SEV_ERROR, MYMOD_MODULE_ID, MYMOD_ERR_TYPE_GENERAL, errId)
+
+#define ERR_MYMOD_BAD_CONFIG MAKE_MYMOD_ERROR(MYMOD_ERR_ID_BAD_CONFIG)
+```
+
+3. 新模块的 `MODULE_ID` 选一个未占用的值（当前 1/2/3 已用）；
+4. 如需可读文本，在模块内提供类似 `get_comm_err_msg` 的转换函数。
+
+## 四、最佳实践
+
+- **对外统一用 `ErrorCode`**，避免把 `std::error_code` 泄漏到公共接口；
+- **跨平台比较用 `std::errc`**，不要直接比较 Windows 的 Win32 错误码；
+- **错误信息只用于展示**，逻辑判断用错误码本身；
+- 在异步/线程池场景下，及时把 thread-local 错误码复制到自己的上下文再使用。

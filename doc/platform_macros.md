@@ -226,3 +226,61 @@ int main() {
 
 
 通过上述宏和示例，可高效实现跨平台代码的条件编译，确保在不同环境下的兼容性，特别是系统相关的API调用（如线程ID、进程路径）。实际开发中，建议将这些逻辑封装为工具类，减少重复代码。
+
+## 六、Origin 内置的平台/编译器宏
+
+上面的判断在 `origin` 里已经封装好，不需要再手写一遍。
+
+### 6.1 平台与编译器（`origin/common/macros/compiler.h`）
+
+三个平台宏和四个编译器宏都是 **0/1 值**，可以直接用在 `#if` 里：
+
+| 宏 | 说明 |
+|---|---|
+| `OS_WINDOWS` | Windows（32/64 位均为 1） |
+| `OS_LINUX` | Linux |
+| `OS_MACOS` | macOS |
+| `COMPILER_MSVC` | MSVC（cl.exe） |
+| `COMPILER_MINGW` | MinGW（Windows 上的 GCC） |
+| `COMPILER_GCC` | GCC |
+| `COMPILER_CLANG` | Clang（含 clang-cl） |
+
+```cpp
+#include "origin/common/macros/compiler.h"
+
+#if OS_WINDOWS
+    // Windows 专属实现
+#elif OS_LINUX
+    // Linux 专属实现
+#endif
+
+#if COMPILER_MSVC
+    // MSVC 专属代码
+#endif
+```
+
+### 6.2 编译器属性（`origin/common/macros/attributes.h`）
+
+常用属性被封装成 `ATTR_*` 宏，屏蔽 `__declspec` 与 `__attribute__` 的差异：
+
+| 宏 | 作用 |
+|---|---|
+| `ATTR_FORCE_INLINE` | 强制内联 |
+| `ATTR_NOINLINE` | 禁止内联 |
+| `ATTR_PURE` | 无副作用（可缓存返回值） |
+| `ATTR_CONST` | 结果只依赖参数 |
+| `ATTR_WEAK` | 弱符号 |
+
+### 6.3 特性探测（`origin/common/macros/feature.h`）
+
+`SUPPORTS_*` 系列是 0/1 值，用于按编译器能力分支：
+
+| 宏 | 说明 |
+|---|---|
+| `SUPPORTS_THREAD_LOCAL` | `thread_local` |
+| `SUPPORTS_CONSTEXPR` | `constexpr` |
+| `SUPPORTS_STRUCTURED_BINDINGS` | 结构化绑定 |
+| `SUPPORTS_FOLD_EXPRESSIONS` | 折叠表达式 |
+
+> 项目要求 C++20，这些特性在目标编译器上都可用，`feature.h` 主要用于兼容旧代码或第三方环境。
+

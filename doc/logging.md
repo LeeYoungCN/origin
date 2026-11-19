@@ -7,7 +7,7 @@
 | 项 | 值 |
 |---|---|
 | CMake 目标名 | `Logging` |
-| 产物名 | `originLogging`（Debug 构建带 `d` 后缀，如 `originLoggingd.dll`） |
+| 产物名 | `OriginLogging`（Debug 构建带 `d` 后缀，如 `OriginLoggingd.dll`） |
 | 语言标准 | C++20（消息格式化使用 `std::format`） |
 | 对外头文件 | `#include "origin/logging/logging.hpp"` |
 | C 接口 | `#include "origin/logging/c/logging_c.h"` |
@@ -51,7 +51,7 @@ int main()
 CMake 里链接组件即可（头文件路径由组件自动带出）：
 
 ```cmake
-target_link_libraries(your_target PRIVATE Logging)
+target_link_libraries(your_target PRIVATE Origin::Logging)
 ```
 
 ## 3. 核心概念
@@ -406,8 +406,8 @@ C++ 侧版本信息：
 ```cpp
 #include "origin/common/version.h"
 
-constexpr auto v = origin::compiled_version();   // 编译期版本（语义化，形如 1.0.1）
-std::string_view runtime = origin::version();    // 运行期完整版本：发布版 1.0.1，开发版 1.0.1-dev+g<sha>
+constexpr auto v = origin::compiled_version();   // 编译期版本（语义化，形如 1.1.0）
+std::string_view runtime = origin::version();    // 运行期完整版本：发布版 1.1.0，开发版 1.1.0-dev+g<sha>
 
 // 需要把字段分开上报时用结构化版本
 auto bi = origin::build_info();   // { version, commit, dirty }
@@ -432,5 +432,5 @@ if (!origin::headers_match_binary()) { /* 记日志或直接终止 */ }
 
 ## 15. 相关文档
 
-- 日期时间工具（`%d` 依赖的格式化能力）：`doc/DateTimeUtils_UsageGuide.md`
-- 文件工具（文件 sink 的读写基础）：`doc/FilesystemUtils.md`
+- 日期时间工具（`%d` 依赖的格式化能力）：`doc/date_time.md`
+- 文件工具（文件 sink 的读写基础）：`doc/filesystem.md`

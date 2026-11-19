@@ -109,7 +109,7 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
                           const std::string_view& format = DEFAULT_TIME_FMT);
 ```
 
-**ErrorCode 版（需要区分错误原因时）**：完整版没有默认参数，所有参数必须显式传入：
+**ErrorCode 版（需要区分错误原因时）**：没有默认参数，所有参数必须显式传入：
 
 ```cpp
 ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
@@ -126,23 +126,6 @@ ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timest
                              const std::string_view& format, TimeZone timeZone, size_t& outLen);
 ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
                              const std::string_view& format, size_t& outLen);
-```
-
-另外提供省略 `format` 的 ErrorCode 便捷重载（等价于传入 `DEFAULT_TIME_FMT`，
-`timeZone` 仍显式）：
-
-```cpp
-inline ErrorCode format_time_string(TimestampMs timestamp, TimeZone timeZone, std::string& out);
-inline ErrorCode format_time_string(const DateTimeSt& dateTime, std::string& out);
-
-inline ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
-                                    TimeZone timeZone);
-inline ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime);
-
-inline ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                                    TimeZone timeZone, size_t& outLen);
-inline ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                                    size_t& outLen);
 ```
 
 > 选择建议：只想要结果就用值返回版；需要区分“参数错误 / 缓冲区不足”时用 ErrorCode 版。
@@ -211,8 +194,7 @@ int main()
 
 - 可失败接口返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
 - 格式化接口有两套：值返回版（`format` 默认 `DEFAULT_TIME_FMT`、`timeZone` 默认
-  `LOCAL`，失败返回空串/`0`）；ErrorCode 版（完整版参数全显式，或省略 `format`
-  的便捷重载，`timeZone` 始终显式）；
+  `LOCAL`，失败返回空串/`0`）；ErrorCode 版（所有参数显式传入）；
 - 格式化失败返回错误码（如 `ERR_COMM_BUFFER_OVERFLOW`、`ERR_COMM_PARAM_INVALID`），
   不再用空字符串或 `0` 表示失败；
 - `format_time_buffer` 的 `buffer` 不能为 `nullptr`，`bufferSize` 必须大于 0，

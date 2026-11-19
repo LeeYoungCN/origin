@@ -1,7 +1,5 @@
-#include "origin/date_time/date_time.h"
-#include "../internal/last_error.h"
-
 #include "origin/common/macros/compiler.h"
+#include "origin/date_time/date_time.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -26,11 +24,9 @@
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
-#include "origin/thread/thread.h"
 #include "origin/utils/utils_error_code.h"
 
 namespace {
-using namespace origin::thread;
 using namespace origin::date_time;
 #if OS_WINDOWS
 #endif  // OS_WINDOWS
@@ -40,7 +36,6 @@ bool safe_localtime(time_t timer, tm& timeInfo)
 #if OS_WINDOWS
     // Windows 使用 localtime_s
     if (auto err = localtime_s(&timeInfo, &timer); err != 0) {
-        set_last_error(ERR_UTILS_TIMESTAMP_INVALID);
         // 特别处理负数时间戳的错误提示
         if (timer < 0) {
             ORIGIN_DEBUG_WARN(
@@ -53,12 +48,10 @@ bool safe_localtime(time_t timer, tm& timeInfo)
 #else
     // Linux/macOS 使用 localtime_r
     if (localtime_r(&timer, &timeInfo) == nullptr) {
-        set_last_error(ERR_UTILS_TIMESTAMP_INVALID);
         ORIGIN_DEBUG_ERR("localtime_r time failed. {}, errno: {}", timer, errno);
         return false;
     }
 #endif
-    set_last_error(ERR_COMM_SUCCESS);
     return true;
 }
 
@@ -67,7 +60,6 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
 #if OS_WINDOWS
     // Windows下使用gmtime_s，增加负数时间戳检查
     if (errno_t err = gmtime_s(&timeInfo, &timer); err != 0) {
-        set_last_error(ERR_UTILS_TIMESTAMP_INVALID);
         // 针对负数时间戳的错误做特殊提示
         if (timer < 0) {
             ORIGIN_DEBUG_WARN("gmtime_s may not support negative time: {}, err: {}", timer, err);
@@ -79,12 +71,10 @@ bool safe_gmtime(time_t timer, tm& timeInfo)
 #else
     // Linux/macOS使用gmtime_r（对负数时间戳支持更完善）
     if (gmtime_r(&timer, &timeInfo) == nullptr) {
-        set_last_error(ERR_UTILS_TIMESTAMP_INVALID);
         ORIGIN_DEBUG_ERR("gmtime_r time failed. {}, errno: {}.", timer, errno);
         return false;
     }
 #endif
-    set_last_error(ERR_COMM_SUCCESS);
     return true;
 }
 
@@ -119,7 +109,6 @@ namespace origin::date_time {
 
 TimestampMs get_now_timestamp_ms()
 {
-    set_last_error(ERR_COMM_SUCCESS);
 #if OS_WINDOWS
     FILETIME ft;
     // 获取当前系统时间，以FILETIME格式存储（从Windows纪元1601-01-01 00:00:00开始的100纳秒间隔数）
@@ -177,15 +166,15 @@ ErrorCode timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone, DateT
     }
 
     if (!rst) {
+        const ErrorCode code = ERR_UTILS_TIMESTAMP_INVALID;
         ORIGIN_DEBUG_ERR("Get time info failed. zone: {}, msg: {}.",
                          GetTimeZoneString(timeZone),
-                         get_last_error_msg());
+                         get_utils_err_msg(code));
         out = DateTimeSt{};
-        return get_last_error();
+        return code;
     }
 
     std_tm_2_date_time_st(timeInfo, millis, out);
-    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -195,12 +184,10 @@ ErrorCode date_time_to_timestamp(const DateTimeSt& dateTime, TimestampMs& out)
     date_time_st_to_std_tm(dateTime, tm);
     std::time_t const secStamp = std::mktime(&tm);
     if (secStamp == -1) {
-        set_last_error(ERR_UTILS_TIMESTAMP_INVALID);
         out = -1;
-        return get_last_error();
+        return ERR_UTILS_TIMESTAMP_INVALID;
     }
     out = static_cast<TimestampMs>(secStamp) * MILLIS_PER_SEC + dateTime.millis;
-    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 

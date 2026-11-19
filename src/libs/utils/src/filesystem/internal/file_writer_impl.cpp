@@ -1,5 +1,4 @@
 #include "filesystem/internal/file_writer_impl.hpp"
-#include "../../internal/last_error.h"
 
 #include <cerrno>
 #include <fstream>
@@ -52,12 +51,11 @@ ErrorCode FileWriterImpl::open_it(bool overwrite)
 
     if (!_stream.is_open()) {
         std::error_code const ec(errno, std::generic_category());
-        origin::utils::detail::set_last_error(ConvertSysEcToErrorCode(ec));
+        _errcode = ConvertSysEcToErrorCode(ec);
         ORIGIN_DEBUG_ERR("Open file failed. file: \"{}\", mode: {}, msg: {}",
                          _file.data(),
                          MODE_STR(overwrite),
-                         origin::utils::detail::get_last_error_msg());
-        _errcode = origin::utils::detail::get_last_error();
+                         get_utils_err_msg(_errcode));
         return _errcode;
     }
 
@@ -71,7 +69,6 @@ ErrorCode FileWriterImpl::open_it(bool overwrite)
     ORIGIN_DEBUG_TRACE(
         "Open file success. file: \"{}\", mode: {}.", _file.data(), MODE_STR(overwrite));
     _errcode = ERR_COMM_SUCCESS;
-    origin::utils::detail::set_last_error(_errcode);
     return _errcode;
 }
 
@@ -98,16 +95,14 @@ FileSize FileWriterImpl::get_file_size_it()
 ErrorCode FileWriterImpl::open(bool overwrite)
 {
     close();
-    if (!file_exists(_file) && get_last_error() == ERR_UTILS_NOT_FILE) {
+    if (!file_exists(_file) && _errcode == ERR_UTILS_NOT_FILE) {
         ORIGIN_DEBUG_ERR("Write to text file failed. file: \"{}\". message: \"{}\".",
                          _file,
-                         origin::utils::detail::get_last_error_msg());
-        _errcode = origin::utils::detail::get_last_error();
+                         get_utils_err_msg(_errcode));
         return _errcode;
     }
 
     if (create_dir(get_directory(_file)) != ERR_COMM_SUCCESS) {
-        _errcode = origin::utils::detail::get_last_error();
         return _errcode;
     }
 
@@ -122,7 +117,6 @@ ErrorCode FileWriterImpl::reopen(bool overwrite)
 void FileWriterImpl::close()
 {
     _errcode = ERR_COMM_SUCCESS;
-    origin::utils::detail::set_last_error(_errcode);
     if (_stream.is_open()) {
         _stream.flush();
         _stream.close();
@@ -142,7 +136,6 @@ void FileWriterImpl::write(std::string_view str)
         _stream << str;
         _currSize += str.length();
     }
-    origin::utils::detail::set_last_error(_errcode);
 }
 
 void FileWriterImpl::write_line(std::string_view str)
@@ -157,7 +150,6 @@ void FileWriterImpl::write_line(std::string_view str)
         _stream << str << '\n';
         _currSize += str.length() + origin::filesystem::LF_LENGTH;
     }
-    origin::utils::detail::set_last_error(_errcode);
 }
 
 void FileWriterImpl::flush()

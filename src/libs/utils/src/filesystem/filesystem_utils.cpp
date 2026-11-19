@@ -25,11 +25,12 @@ namespace origin::filesystem {
 namespace fs = std::filesystem;
 using namespace origin::thread;
 
-EntryType get_entry_type(std::string_view path)
+ErrorCode get_entry_type(std::string_view path, EntryType& out)
 {
     if (!fs::exists(path)) {
         set_thread_last_err(ERR_UTILS_NOT_FOUND);
-        return EntryType::NONEXISTENT;
+        out = EntryType::NONEXISTENT;
+        return ERR_UTILS_NOT_FOUND;
     }
     // 获取文件状态（使用symlink_status而非status，保留符号链接本身的类型）
     std::error_code ec;  // 用于非抛出式错误处理
@@ -37,27 +38,36 @@ EntryType get_entry_type(std::string_view path)
     if (ec) {
         ORIGIN_DEBUG_ERR("Failed to get symlink status. errCode: {}", ec.value());
         set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
-        return EntryType::UNKNOWN;
+        out = EntryType::UNKNOWN;
+        return ERR_COMM_SYSTEM_ERROR;
     }
     set_thread_last_err(ERR_COMM_SUCCESS);
     switch (status.type()) {
         case fs::file_type::regular:  // 普通文件
-            return EntryType::FILE;
+            out = EntryType::FILE;
+            break;
         case fs::file_type::directory:
-            return EntryType::DIRECTORY;
+            out = EntryType::DIRECTORY;
+            break;
         case fs::file_type::symlink:
-            return EntryType::SYMBOL_LINK;
+            out = EntryType::SYMBOL_LINK;
+            break;
         case fs::file_type::character:  // 字符设备
-            return EntryType::CHARACTER_DEVICE;
+            out = EntryType::CHARACTER_DEVICE;
+            break;
         case fs::file_type::block:
-            return EntryType::BLOCK_DEVICE;
+            out = EntryType::BLOCK_DEVICE;
+            break;
         case fs::file_type::fifo:
-            return EntryType::SOCKET;
+            out = EntryType::SOCKET;
+            break;
         case fs::file_type::unknown:
         default:
             ORIGIN_DEBUG_WARN("Unknown entry type: {}", path);
-            return EntryType::UNKNOWN;
+            out = EntryType::UNKNOWN;
+            break;
     }
+    return ERR_COMM_SUCCESS;
 }
 
 const char* get_entry_type_str(EntryType type)

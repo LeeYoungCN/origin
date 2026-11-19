@@ -218,12 +218,12 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
     }
 }
 
-std::string read_text_file(std::string_view path)
+ErrorCode read_text_file(std::string_view path, std::string& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
             "Read file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return "";
+        return get_thread_last_err();
     }
 
     std::ifstream file(path.data(), std::ios::in);
@@ -232,9 +232,13 @@ std::string read_text_file(std::string_view path)
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
             "Read file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return "";
+        return get_thread_last_err();
     }
-    return {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+
+    std::string content{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+    out = std::move(content);
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out)
@@ -321,17 +325,26 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
     return get_thread_last_err();
 }
 
-FileSize get_file_size(std::string_view path)
+ErrorCode get_file_size(std::string_view path, FileSize& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
             "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_thread_last_err_msg());
-        return 0;
+        return get_thread_last_err();
     }
+
     std::error_code ec;
-    const auto& size = fs::file_size(path, ec);
-    set_thread_last_err(ConvertSysEcToErrorCode(ec));
-    return size;
+    const FileSize size = static_cast<FileSize>(fs::file_size(path, ec));
+    if (ec) {
+        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        ORIGIN_DEBUG_ERR(
+            "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_thread_last_err_msg());
+        return get_thread_last_err();
+    }
+
+    out = size;
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)

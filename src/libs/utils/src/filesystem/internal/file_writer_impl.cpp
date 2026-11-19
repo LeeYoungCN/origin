@@ -59,7 +59,12 @@ ErrorCode FileWriterImpl::open_it(bool overwrite)
         return _errcode;
     }
 
-    _currSize = get_file_size(_file);
+    FileSize size = 0;
+    _errcode = get_file_size(_file, size);
+    if (_errcode != ERR_COMM_SUCCESS) {
+        return _errcode;
+    }
+    _currSize = size;
 
     ORIGIN_DEBUG_TRACE(
         "Open file success. file: \"{}\", mode: {}.", _file.data(), MODE_STR(overwrite));
@@ -71,7 +76,11 @@ ErrorCode FileWriterImpl::open_it(bool overwrite)
 FileSize FileWriterImpl::get_file_size_it()
 {
 #if OS_WINDOWS
-    return get_file_size(_file);
+    FileSize size = 0;
+    if (get_file_size(_file, size) != ERR_COMM_SUCCESS) {
+        return 0;
+    }
+    return size;
 #else
     // tellp() returns a signed position type (std::streampos); handle possible -1 and avoid
     // implicit conversion to unsigned size_t which would change signedness.
@@ -158,7 +167,12 @@ void FileWriterImpl::flush()
 
 FileSize FileWriterImpl::size()
 {
-    return _stream.is_open() ? _currSize : get_file_size(_file);
+    if (_stream.is_open()) {
+        return _currSize;
+    }
+    FileSize size = 0;
+    (void)get_file_size(_file, size);
+    return size;
 }
 
 std::string FileWriterImpl::filename_stem() const

@@ -31,89 +31,99 @@ using namespace origin::thread;
 
 // ------------------------------ 系统路径接口 ------------------------------
 
-std::string get_curr_working_dir()
+ErrorCode get_curr_working_dir(std::string& out)
 {
     try {
-        auto p = fs::current_path();
+        out = fs::current_path().string();
         set_thread_last_err(ERR_COMM_SUCCESS);
-        return p.string();
+        return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
         ORIGIN_DEBUG_ERR("Get current working dir failed.");
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
-        return "";
+        return get_thread_last_err();
     } catch (const std::exception& e) {
         ORIGIN_DEBUG_ERR("Get current working dir failed.");
         set_thread_last_err(ConvertExceptionToErrorCode(e));
-        return "";
+        return get_thread_last_err();
     }
 }
 
 // ------------------------------ 路径处理接口 ------------------------------
-std::string join_paths(const std::vector<std::string>& parts)
+ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out)
 {
     if (parts.empty()) {
         set_thread_last_err(ERR_UTILS_PATH_INVALID);
         ORIGIN_DEBUG_WARN("Join paths failed. list empty: {}", get_thread_last_err_msg());
-        return "";
+        return ERR_UTILS_PATH_INVALID;
     }
     fs::path result(parts[0]);
     for (size_t i = 1; i < parts.size(); ++i) {
         result /= parts[i];  // std::filesystem 自动处理分隔符
     }
+    out = result.string();
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return result.string();
+    return ERR_COMM_SUCCESS;
 }
 
-std::string normalize_path(std::string_view path)
+ErrorCode normalize_path(std::string_view path, std::string& out)
 {
     try {
-        auto normalized = fs::path(path).lexically_normal();
+        out = fs::path(path).lexically_normal().string();
         set_thread_last_err(ERR_COMM_SUCCESS);
-        return normalized.string();
+        return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
-        return "";
+        return get_thread_last_err();
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Normalized path failed. path: \"{}\", message: {}. ex: {}",
                          path,
                          get_thread_last_err_msg(),
                          e.what());
-        return "";
+        return get_thread_last_err();
     }
 }
 
-std::string to_absolute_path(std::string_view relPath, std::string_view baseDir)
+ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out)
 {
     if (relPath.empty()) {
-        return "";
+        out.clear();
+        return ERR_COMM_SUCCESS;
     }
-    fs::path const base = fs::path(baseDir.empty() ? get_curr_working_dir() : baseDir);
-    fs::path const relative(relPath);
-    fs::path const combined = base / relative;
 
+    std::string base;
+    if (baseDir.empty()) {
+        const ErrorCode rc = get_curr_working_dir(base);
+        if (rc != ERR_COMM_SUCCESS) {
+            return rc;
+        }
+    } else {
+        base.assign(baseDir);
+    }
+
+    fs::path const combined = fs::path(base) / fs::path(relPath);
     try {
-        auto absPath = fs::absolute(combined).lexically_normal();
+        out = fs::absolute(combined).lexically_normal().string();
         set_thread_last_err(ERR_COMM_SUCCESS);
-        return absPath.string();
+        return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
         set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}. ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());
-        return "";
+        return get_thread_last_err();
     } catch (const std::exception& e) {
         set_thread_last_err(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Absolute path failed. path: \"{}\", message: {}.ex: {}",
                          relPath,
                          get_thread_last_err_msg(),
                          e.what());
-        return "";
+        return get_thread_last_err();
     }
 }
 

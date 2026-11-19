@@ -64,7 +64,15 @@ namespace origin::filesystem {
  * @note 函数内部处理了符号链接的特殊情况：返回链接本身的类型，
  *       而非链接指向的目标类型。如需获取目标类型，需先解析链接。
  */
-EntryType get_entry_type(std::string_view path);
+ErrorCode get_entry_type(std::string_view path, EntryType& out);
+
+// Convenience overload (transitional): returns UNKNOWN on failure.
+inline EntryType get_entry_type(std::string_view path)
+{
+    EntryType out = EntryType::UNKNOWN;
+    (void)get_entry_type(path, out);
+    return out;
+}
 
 const char* get_entry_type_str(EntryType type);
 
@@ -78,7 +86,15 @@ inline const char* get_file_mode_str(bool overwrite)
  *
  * @return 工作路径
  */
-std::string get_curr_working_dir();
+ErrorCode get_curr_working_dir(std::string& out);
+
+// Convenience overload (transitional): returns empty string on failure.
+inline std::string get_curr_working_dir()
+{
+    std::string out;
+    (void)get_curr_working_dir(out);
+    return out;
+}
 
 /**
  * @brief 拼接多个路径片段为完整路径
@@ -88,7 +104,15 @@ std::string get_curr_working_dir();
  * @note 空列表返回空串并设置 ERR_UTILS_PATH_INVALID；片段中若出现绝对路径，
  *       会替换掉前面已拼接的部分（std::filesystem::operator/= 语义）
  */
-std::string join_paths(const std::vector<std::string>& parts);
+ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
+
+// Convenience overload (transitional): returns empty string on failure.
+inline std::string join_paths(const std::vector<std::string>& parts)
+{
+    std::string out;
+    (void)join_paths(parts, out);
+    return out;
+}
 
 /**
  * @brief 纯词法规范化路径（不访问磁盘）
@@ -103,7 +127,15 @@ std::string join_paths(const std::vector<std::string>& parts);
  * @return 规范化后的路径；失败返回空串并设置错误码
  * @see to_absolute_path 需要绝对路径时使用
  */
-std::string normalize_path(std::string_view path);
+ErrorCode normalize_path(std::string_view path, std::string& out);
+
+// Convenience overload (transitional): returns empty string on failure.
+inline std::string normalize_path(std::string_view path)
+{
+    std::string out;
+    (void)normalize_path(path, out);
+    return out;
+}
 
 /**
  * @brief 将路径拼到基准目录后转为绝对路径
@@ -122,7 +154,15 @@ std::string normalize_path(std::string_view path);
  * @return 绝对路径；失败返回空串并设置错误码
  * @see normalize_path 只做词法规范化、不转绝对路径
  */
-std::string to_absolute_path(std::string_view relPath, std::string_view baseDir = "");
+ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out);
+
+// Convenience overload (transitional): returns empty string on failure.
+inline std::string to_absolute_path(std::string_view relPath, std::string_view baseDir = "")
+{
+    std::string out;
+    (void)to_absolute_path(relPath, baseDir, out);
+    return out;
+}
 
 /**
  * @brief 获取路径中的目录部分（父目录路径）
@@ -219,7 +259,15 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
  * @param path 文本文件路径
  * @return 文件内容字符串，读取失败返回空字符串
  */
-std::string read_text_file(std::string_view path);
+ErrorCode read_text_file(std::string_view path, std::string& out);
+
+// Convenience overload (transitional): returns empty string on failure.
+inline std::string read_text_file(std::string_view path)
+{
+    std::string out;
+    (void)read_text_file(path, out);
+    return out;
+}
 
 /**
  * @brief 读取二进制文件内容
@@ -242,7 +290,15 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
  * @param path 文件路径
  * @return 文件大小（字节），获取失败返回0
  */
-FileSize get_file_size(std::string_view path);
+ErrorCode get_file_size(std::string_view path, FileSize& out);
+
+// Convenience overload (transitional): returns 0 on failure.
+inline FileSize get_file_size(std::string_view path)
+{
+    FileSize out = 0;
+    (void)get_file_size(path, out);
+    return out;
+}
 
 ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
 

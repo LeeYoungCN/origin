@@ -237,12 +237,12 @@ std::string read_text_file(std::string_view path)
     return {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
 }
 
-std::vector<uint8_t> read_binary_file(std::string_view path)
+ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
             "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return {};
+        return get_thread_last_err();
     }
 
     std::ifstream file(path.data(), std::ios::in);
@@ -251,15 +251,29 @@ std::vector<uint8_t> read_binary_file(std::string_view path)
         set_thread_last_err(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
             "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return {};
+        return get_thread_last_err();
     }
-    FileSize const fileSize = fs::file_size(path);
+
+    std::error_code ec;
+    const FileSize fileSize = fs::file_size(path, ec);
+    if (ec) {
+        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        ORIGIN_DEBUG_ERR("Read binary file failed. file: \"{}\". msg: \"{}\".",
+                         path,
+                         get_thread_last_err_msg());
+        return get_thread_last_err();
+    }
+
     std::vector<uint8_t> buffer(fileSize);
     file.read(reinterpret_cast<char*>(buffer.data()), static_cast<int64_t>(fileSize));
     if (static_cast<size_t>(file.gcount()) != fileSize) {
-        return {};
+        set_thread_last_err(ERR_UTILS_IO_ERROR);
+        return get_thread_last_err();
     }
-    return buffer;
+
+    out = std::move(buffer);
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode write_text_file(std::string_view path, std::string_view content, bool overwrite)
@@ -320,7 +334,7 @@ FileSize get_file_size(std::string_view path)
     return size;
 }
 
-TimestampMs get_file_modify_time(std::string_view path)
+ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
 {
 #if OS_WINDOWS
     WIN32_FILE_ATTRIBUTE_DATA fileAttr{};
@@ -336,7 +350,14 @@ TimestampMs get_file_modify_time(std::string_view path)
         }
     }
     BOOL ok = GetFileAttributesExW(wpath.c_str(), GetFileExInfoStandard, &fileAttr);
-    if (!ok) return 0;
+    if (!ok) {
+        set_thread_last_err(ConvertSysEcToErrorCode(
+            std::error_code(static_cast<int>(GetLastError()), std::system_category())));
+        ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
+                         path,
+                         get_thread_last_err_msg());
+        return get_thread_last_err();
+    }
 
     FILETIME ftCreate = fileAttr.ftCreationTime;
     ULARGE_INTEGER ul;
@@ -346,32 +367,68 @@ TimestampMs get_file_modify_time(std::string_view path)
     // FILETIME基准：1601-01-01 单位100ns
     // 转毫秒，再减去1601到1970的毫秒差值 11644473600000
     int64_t totalMs = static_cast<int64_t>(ul.QuadPart) / HUNDRED_NANOSECONDS_PER_MILLISECOND;
-    return totalMs - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS;
+    out = totalMs - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS;
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 #else
-    fs::file_time_type const fileTime = fs::last_write_time(path);
-    auto sysTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-        fileTime - std::filesystem::file_time_type::clock::now() +
-        std::chrono::system_clock::now());
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(sysTime.time_since_epoch());
-    return static_cast<TimestampMs>(ms.count());
+    try {
+        fs::file_time_type const fileTime = fs::last_write_time(path);
+        auto sysTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+            fileTime - std::filesystem::file_time_type::clock::now() +
+            std::chrono::system_clock::now());
+        auto ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(sysTime.time_since_epoch());
+        out = static_cast<TimestampMs>(ms.count());
+        set_thread_last_err(ERR_COMM_SUCCESS);
+        return ERR_COMM_SUCCESS;
+    } catch (const fs::filesystem_error& e) {
+        set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
+        ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
+                         path,
+                         get_thread_last_err_msg());
+        return get_thread_last_err();
+    } catch (const std::exception& e) {
+        set_thread_last_err(ConvertExceptionToErrorCode(e));
+        ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
+                         path,
+                         get_thread_last_err_msg());
+        return get_thread_last_err();
+    }
 #endif
 }
 
-FileInfo get_file_info(std::string_view path)
+ErrorCode get_file_info(std::string_view path, FileInfo& out)
 {
     FileInfo fileInfo{};
     fileInfo.path = path;
     fileInfo.type = get_entry_type(path);
 
     if (fileInfo.type == EntryType::NONEXISTENT) {
-        return fileInfo;
+        out = fileInfo;
+        const ErrorCode code = get_thread_last_err();
+        return code != ERR_COMM_SUCCESS ? code : ERR_UTILS_NOT_FOUND;
     }
     if (fileInfo.type == EntryType::FILE) {
-        fileInfo.size = fs::file_size(path);
+        std::error_code ec;
+        fileInfo.size = fs::file_size(path, ec);
+        if (ec) {
+            set_thread_last_err(ConvertSysEcToErrorCode(ec));
+            out = fileInfo;
+            return get_thread_last_err();
+        }
     }
-    fileInfo.modifyTime = get_file_modify_time(path);
 
-    return fileInfo;
+    TimestampMs modifyTime = 0;
+    const ErrorCode rc = get_file_modify_time(path, modifyTime);
+    if (rc != ERR_COMM_SUCCESS) {
+        out = fileInfo;
+        return rc;
+    }
+    fileInfo.modifyTime = modifyTime;
+
+    out = fileInfo;
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
 }  // namespace origin::filesystem

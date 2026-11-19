@@ -31,9 +31,10 @@ struct LogFileInfo {
     std::string file;
     TimestampMs modifyTime{0};
     FileSize fileSize{0};
-    LogFileInfo(uint32_t i, std::string_view f)
-        : idx(i), file(f), modifyTime(get_file_modify_time(f)), fileSize(get_file_size(f))
+    LogFileInfo(uint32_t i, std::string_view f) : idx(i), file(f)
     {
+        (void)get_file_modify_time(f, modifyTime);
+        fileSize = get_file_size(f);
     }
 
     [[nodiscard]] std::string to_string() const

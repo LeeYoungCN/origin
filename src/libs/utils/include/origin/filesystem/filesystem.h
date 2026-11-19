@@ -226,7 +226,7 @@ std::string read_text_file(std::string_view path);
  * @param path 二进制文件路径
  * @return 二进制数据容器，读取失败返回空容器
  */
-std::vector<uint8_t> read_binary_file(std::string_view path);
+ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out);
 
 /**
  * @brief 写入文本内容到文件
@@ -244,14 +244,14 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
  */
 FileSize get_file_size(std::string_view path);
 
-TimestampMs get_file_modify_time(std::string_view path);
+ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
 
 /**
  * @brief 获取文件的详细信息
  * @param path 文件路径
  * @return 包含文件信息的FileInfo结构体，获取失败返回默认初始化的结构体
  */
-FileInfo get_file_info(std::string_view path);
+ErrorCode get_file_info(std::string_view path, FileInfo& out);
 
 /**
  * @brief 判断目录是否存在且为目录

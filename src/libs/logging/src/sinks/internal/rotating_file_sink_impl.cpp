@@ -32,19 +32,18 @@ struct LogFileInfo {
     TimestampMs modifyTime{0};
     FileSize fileSize{0};
     LogFileInfo(uint32_t i, std::string_view f)
-        : idx(i),
-          file(f),
-          modifyTime(get_file_modify_time(f)),
-          fileSize(get_file_size(f))
+        : idx(i), file(f), modifyTime(get_file_modify_time(f)), fileSize(get_file_size(f))
     {
     }
 
     [[nodiscard]] std::string to_string() const
     {
-        const std::string timeStr = origin::date_time::format_time_string(
-            modifyTime, "%Y-%m-%d %H:%M:%S.%3f", TimeZone::LOCAL);
         return std::format(
-            "idx: {}, time: [{}], size: {}, file: \"{}\"", idx, timeStr, fileSize, file);
+            "idx: {}, time: [{}], size: {}, file: \"{}\"",
+            idx,
+            origin::date_time::format_time_string(modifyTime, "%Y-%m-%d %H:%M:%S.%3f"),
+            fileSize,
+            file);
     }
 };
 }  // namespace

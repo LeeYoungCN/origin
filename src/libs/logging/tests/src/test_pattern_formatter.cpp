@@ -57,9 +57,7 @@ TEST_F(TestPatternFormatter, date_time)
     msg.timestamp = get_now_timestamp_ms();
     std::string content;
     formatter.format(msg, content);
-    const std::string expected =
-        format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL);
-    EXPECT_EQ(content, expected);
+    EXPECT_EQ(content, format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN));
 }
 
 TEST_F(TestPatternFormatter, logger_name)
@@ -186,11 +184,9 @@ TEST_F(TestPatternFormatter, default_pattern)
     std::string content;
     formatter.format(msg, content);
     // "[%d][%L][%s:%#]: %v"
-    const std::string timestampStr =
-        format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN, TimeZone::LOCAL);
     const std::string expect =
         std::format("[{}][{}][{}:{}]: {}",
-                    timestampStr,
+                    format_time_string(msg.timestamp, FORMATTER_DEFAULT_TIME_PATTERN),
                     log_level_abbr_name(msg.level),
                     get_filename(msg.source.file),
                     msg.source.line,

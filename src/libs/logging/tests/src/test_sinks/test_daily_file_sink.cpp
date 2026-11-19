@@ -9,6 +9,7 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
+#include "origin/common/common_error_code.h"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/logging/log_level.hpp"
@@ -57,22 +58,22 @@ std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, Ti
 {
     std::string filenameStem = get_filename_stem(baseFile);
     std::string extension = get_extension(baseFile);
-    const std::string dateStr = format_time_string(time, "%Y%m%d", TimeZone::LOCAL);
-    std::string const filename = std::format("{}.{}{}", filenameStem, dateStr, extension);
-    return fs_join({_dir, filename});
+    std::string const filename =
+        std::format("{}.{}{}", filenameStem, format_time_string(time, "%Y%m%d"), extension);
+    return join_paths({_dir, filename});
 }
 
 void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t hour,
                                    uint32_t minute, uint32_t rotationDays, uint32_t dayInterval)
 {
     TimestampMs const now = get_now_timestamp_ms();
-    const DateTimeSt nowDateTime = timestamp_to_date_time(now);
+    DateTimeSt const nowDateTime = timestamp_to_date_time(now);
     DateTimeSt rotationDateTime = nowDateTime;
     rotationDateTime.hour = hour;
     rotationDateTime.minute = minute;
     bool const isAfterNow(diff_date_time(rotationDateTime, nowDateTime) > 0);
 
-    std::string const baseFile = fs_join({_dir, get_logger_name(testInfo) + ".log"});
+    std::string const baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
     DailyFileSink sink(baseFile, hour, minute);
     sink.set_pattern("[%d][%l][%n]: %v");
     sink.set_level(LogLevel::TRACE);
@@ -103,7 +104,7 @@ void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo, u
                                             uint32_t existFiles, uint32_t rotationDays)
 {
     TimestampMs const now = get_now_timestamp_ms();
-    std::string const baseFile = fs_join({_dir, get_logger_name(testInfo) + ".log"});
+    std::string const baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});
 
     std::vector<std::string> allFilesList;
     for (uint32_t i = 0; i < existFiles; i++) {
@@ -145,7 +146,7 @@ void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo, u
 
 TEST_F(TestDailyFileSink, create_normal)
 {
-    std::string const logFile = fs_join({_dir, get_logger_name(test_info_) + ".log"});
+    std::string const logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     DailyFileSink const sink(logFile);
     EXPECT_TRUE(file_exists(sink.file()));
     EXPECT_EQ(sink.file(), logFile);
@@ -153,7 +154,7 @@ TEST_F(TestDailyFileSink, create_normal)
 
 TEST_F(TestDailyFileSink, create_when_param_invalid)
 {
-    std::string const baseFile = fs_join({_dir, get_logger_name(test_info_) + ".log"});
+    std::string const baseFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     EXPECT_THROW(DailyFileSink(""), std::invalid_argument);
 
     EXPECT_THROW(DailyFileSink(baseFile, MAX_HOUR + 1, 0, DailyFileSink::DEFAULT_MAX_FILES),
@@ -171,7 +172,7 @@ TEST_F(TestDailyFileSink, init_with_existing_files)
     EXPECT_TRUE(dir_exists(_dir));
 
     const std::string filenameStem = get_logger_name(test_info_);
-    const std::string baseFile = fs_join({_dir, filenameStem + ".log"});
+    const std::string baseFile = join_paths({_dir, filenameStem + ".log"});
     const TimestampMs now = get_now_timestamp_ms();
     std::vector<std::string> validFiles;
     for (int32_t i = 10; i >= 0; --i) {
@@ -184,11 +185,11 @@ TEST_F(TestDailyFileSink, init_with_existing_files)
 
     create_file(baseFile);
     create_file(baseFile + ".log");
-    create_file(fs_join({_dir, filenameStem + ".2026.log"}));
-    create_file(fs_join({_dir, filenameStem + ".202601.log"}));
-    create_file(fs_join({_dir, filenameStem + ".20260732.log"}));
-    create_file(fs_join({_dir, filenameStem + ".00000000.log"}));
-    create_file(fs_join({_dir, filenameStem + ".test.log"}));
+    create_file(join_paths({_dir, filenameStem + ".2026.log"}));
+    create_file(join_paths({_dir, filenameStem + ".202601.log"}));
+    create_file(join_paths({_dir, filenameStem + ".20260732.log"}));
+    create_file(join_paths({_dir, filenameStem + ".00000000.log"}));
+    create_file(join_paths({_dir, filenameStem + ".test.log"}));
 
     const DailyFileSink sink(baseFile);
     const auto fileList = sink.get_file_list();

@@ -184,7 +184,7 @@ TimestampMs DailyFileSinkImpl::parse_log_timestamp(const std::string_view filena
 
 std::string DailyFileSinkImpl::calc_log_file(TimestampMs time)
 {
-    const DateTimeSt dateTime = timestamp_to_date_time(time);
+    auto dateTime = timestamp_to_date_time(time);
     auto filename = std::format("{}{}{:04}{:02}{:02}{}",
                                 _filenameStem,
                                 SPLIT_CHAR,

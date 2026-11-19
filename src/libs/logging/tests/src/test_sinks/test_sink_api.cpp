@@ -12,11 +12,9 @@
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/logging/sinks/sink.hpp"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
-using namespace origin::thread;
 
 namespace logging_test {
 class TestSinkApi : public ::testing::Test {
@@ -36,7 +34,7 @@ protected:
 void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
 {
     _name = get_logger_name(test_info_);
-    _file = fs_join({_dir, _name + ".log"});
+    _file = join_paths({_dir, _name + ".log"});
     _sink = std::make_shared<BasicFileSink>(_file, true);
     _sink->set_level(LogLevel::TRACE);
     EXPECT_TRUE(file_exists(_file));
@@ -75,7 +73,7 @@ TEST_F(TestSinkApi, set_pattern)
     std::string expected;
     auto formatter = std::make_unique<PatternFormatter>(pattern);
     formatter->format(logMsg, expected);
-    EXPECT_EQ(fs_read_text(_file), expected + '\n');
+    EXPECT_EQ(read_text_file(_file), expected + '\n');
 }
 
 TEST_F(TestSinkApi, set_pattern_failed_when_pattern_empty)
@@ -97,7 +95,7 @@ TEST_F(TestSinkApi, set_formatter)
 
     std::string expected;
     formatter->format(logMsg, expected);
-    EXPECT_EQ(fs_read_text(_file), expected + '\n');
+    EXPECT_EQ(read_text_file(_file), expected + '\n');
 }
 
 TEST_F(TestSinkApi, log_level_filter)

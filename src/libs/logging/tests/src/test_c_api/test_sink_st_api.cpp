@@ -11,11 +11,9 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/sink.hpp"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
-using namespace origin::thread;
 
 namespace logging_test {
 class TestSinkStApi : public ::testing::Test {
@@ -38,7 +36,7 @@ protected:
 void TestSinkStApi::InitSink(const testing::TestInfo* test_info_)
 {
     _name = get_logger_name(test_info_);
-    _file = fs_join({_dir, _name + ".log"});
+    _file = join_paths({_dir, _name + ".log"});
     _sink = origin_create_basic_file_sink(_file.c_str(), true);
     _logger = origin_create_sync_logger(_name.c_str(), &_sink, 1);
     origin_logger_set_level(_logger, LOG_LEVEL_C_TRACE);
@@ -79,7 +77,7 @@ TEST_F(TestSinkStApi, set_pattern)
     std::string expected;
     auto formatter = std::make_unique<PatternFormatter>(_pattern);
     formatter->format(logMsg, expected);
-    EXPECT_EQ(fs_read_text(_file), expected + '\n');
+    EXPECT_EQ(read_text_file(_file), expected + '\n');
 }
 
 TEST_F(TestSinkStApi, set_pattern_failed_when_pattern_empty)
@@ -121,7 +119,7 @@ TEST_F(TestSinkStApi, set_formatter)
     std::string expected;
     auto formatter = std::make_unique<PatternFormatter>(_pattern);
     formatter->format(logMsg, expected);
-    EXPECT_EQ(fs_read_text(_file), expected + '\n');
+    EXPECT_EQ(read_text_file(_file), expected + '\n');
 }
 
 TEST_F(TestSinkStApi, set_formatter_failed_when_sink_nullptr)

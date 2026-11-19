@@ -12,11 +12,9 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
-using namespace origin::thread;
 
 namespace logging_test {
 class TestBasicFileSink : public ::testing::Test {
@@ -55,14 +53,14 @@ TEST_F(TestBasicFileSink, create_file_invalid_path)
 
 TEST_F(TestBasicFileSink, create_file_success)
 {
-    const std::string logFile = fs_join({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     const BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
 }
 
 TEST_F(TestBasicFileSink, sink_log_level)
 {
-    const std::string logFile = fs_join({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
 
@@ -83,10 +81,10 @@ TEST_F(TestBasicFileSink, sink_log_level)
 
 TEST_F(TestBasicFileSink, sink_log_and_flush)
 {
-    const std::string logFile = fs_join({_dir, get_logger_name(test_info_) + ".log"});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + ".log"});
     BasicFileSink sink(logFile);
     EXPECT_TRUE(file_exists(logFile));
-    auto fileSizeBefore = fs_size(logFile);
+    auto fileSizeBefore = get_file_size(logFile);
 
     sink.set_pattern("[%d][%l]: %v");
 
@@ -100,7 +98,7 @@ TEST_F(TestBasicFileSink, sink_log_and_flush)
     for (int i = 0; i < 100; ++i) {
         sink.log(logMsg);
         sink.flush();
-        EXPECT_EQ(fs_size(logFile), fileSizeBefore + messageSize);
+        EXPECT_EQ(get_file_size(logFile), fileSizeBefore + messageSize);
         fileSizeBefore += messageSize;
     }
 }

@@ -14,12 +14,10 @@
 #include "origin/logging/sinks/rotating_file_sink.hpp"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;
 using namespace origin::date_time;
-using namespace origin::thread;
 
 namespace logging_test {
 class TestRotatingFileSink : public ::testing::Test {
@@ -70,7 +68,7 @@ void TestRotatingFileSink::TearDown()
 
 std::string TestRotatingFileSink::calc_log_file(const std::string& str)
 {
-    return fs_join({_dir, _fileNameStem + "." + str + _extension});
+    return join_paths({_dir, _fileNameStem + "." + str + _extension});
 }
 
 std::string TestRotatingFileSink::calc_log_file(uint32_t idx)
@@ -135,7 +133,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
-    const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
     std::vector<uint32_t> existFileIdx;
 
     InitLogFileList(existFileIdx, startIdx, existFileCount);
@@ -149,7 +147,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
     AppendLogFileList(existFileIdx, rotateCount);
 
     EXPECT_TRUE(file_exists(logFile));
-    EXPECT_LT(fs_size(logFile), maxFileSize);
+    EXPECT_LT(get_file_size(logFile), maxFileSize);
 
     const uint32_t totalFileCount = existFileCount + rotateCount;
     ASSERT_TRUE(sink.get_file_list().size() == totalFileCount);
@@ -161,8 +159,8 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
 
         EXPECT_TRUE(file_exists(nextLogFile)) << nextLogFile;
         if (i >= existFileCount) {
-            EXPECT_LT(fs_size(nextLogFile), maxFileSize);
-            EXPECT_GT(fs_size(nextLogFile), maxFileSize - logMsgSize);
+            EXPECT_LT(get_file_size(nextLogFile), maxFileSize);
+            EXPECT_GT(get_file_size(nextLogFile), maxFileSize - logMsgSize);
         }
     }
 }
@@ -176,7 +174,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
-    const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
     constexpr uint32_t maxFileSize = 1024;
 
     std::vector<uint32_t> existFileIdx;
@@ -200,15 +198,15 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
             EXPECT_FALSE(file_exists(file)) << file;
         } else {
             EXPECT_TRUE(file_exists(file)) << file;
-            EXPECT_LT(fs_size(file), maxFileSize);
-            EXPECT_GT(fs_size(file), maxFileSize - logMsgSize);
+            EXPECT_LT(get_file_size(file), maxFileSize);
+            EXPECT_GT(get_file_size(file), maxFileSize - logMsgSize);
         }
     }
 }
 
 TEST_F(TestRotatingFileSink, invalid_param)
 {
-    std::string const logFile = fs_join({_dir, get_logger_name(test_info_) + _extension});
+    std::string const logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     EXPECT_THROW(RotatingFileSink(""), std::invalid_argument);
     EXPECT_THROW(RotatingFileSink(logFile, 0, RotatingFileSink::DEFAULT_MAX_FILES),
                  std::invalid_argument);
@@ -223,7 +221,7 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
     create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info_);
-    const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
+    const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
 
     // valid file
     std::vector<std::uint32_t> validFileIdx;
@@ -262,7 +260,7 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
 
 TEST_F(TestRotatingFileSink, set_and_get_max_file_size)
 {
-    const std::string logFile = fs_join({_dir, get_logger_name(test_info_) + _extension});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     const RotatingFileSink sink(logFile, false);
 
     constexpr uint32_t maxFileSize = 1024;
@@ -275,7 +273,7 @@ TEST_F(TestRotatingFileSink, set_and_get_max_file_size)
 
 TEST_F(TestRotatingFileSink, set_and_get_max_files)
 {
-    const std::string logFile = fs_join({_dir, get_logger_name(test_info_) + _extension});
+    const std::string logFile = join_paths({_dir, get_logger_name(test_info_) + _extension});
     const RotatingFileSink sink(logFile, false);
 
     constexpr uint32_t maxFiles = 5;

@@ -15,12 +15,6 @@
 #include "sinks/internal/sink_impl_base.hpp"
 
 namespace origin::logging {
-namespace {
-std::string to_abs_path(std::string_view file)
-{
-    return origin::filesystem::to_absolute_path(file);
-}
-}  // namespace
 using namespace origin::filesystem;
 
 BasicFileSinkImpl::BasicFileSinkImpl() : BasicFileSinkImpl(get_default_log_file("log"), true) {}
@@ -35,7 +29,7 @@ BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool ove
 BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool overwrite,
                                      const std::string_view paramStr)
     : SinkImplBase(paramStr),
-      _file(to_abs_path(file)),
+      _file(to_absolute_path(file)),
       _directory(get_directory(_file)),
       _filename(get_filename(_file)),
       _filenameStem(get_filename_stem(_file)),

@@ -33,9 +33,8 @@ std::string get_logger_name(const testing::TestInfo* test_info)
 
 std::string get_log_dir()
 {
-    std::string procDir;
-    (void)process::get_proc_directory(procDir);
-    return fs_join({procDir, "logs_" + std::to_string(process::get_curr_proc_id())});
+    return filesystem::join_paths(
+        {process::get_proc_directory(), "logs_" + std::to_string(process::get_curr_proc_id())});
 }
 
 SinkSt* create_mock_sink_st(std::shared_ptr<origin::logging::Sink> sink)

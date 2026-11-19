@@ -8,45 +8,11 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "origin/filesystem/filesystem.h"
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
-
-inline std::string fs_join(const std::vector<std::string>& parts)
-{
-    return origin::filesystem::join_paths(parts);
-}
-inline std::string fs_join(std::initializer_list<std::string> parts)
-{
-    return fs_join(std::vector<std::string>(parts));
-}
-inline FileSize fs_size(std::string_view path)
-{
-    return origin::filesystem::get_file_size(path);
-}
-inline std::string fs_read_text(std::string_view path)
-{
-    return origin::filesystem::read_text_file(path);
-}
-inline std::string fs_abs(std::string_view relPath, std::string_view baseDir = "")
-{
-    return origin::filesystem::to_absolute_path(relPath, baseDir);
-}
-inline std::string fs_cwd()
-{
-    return origin::filesystem::get_curr_working_dir();
-}
-inline EntryType fs_type(std::string_view path)
-{
-    return origin::filesystem::get_entry_type(path);
-}
-inline std::string fs_normalize(std::string_view path)
-{
-    return origin::filesystem::normalize_path(path);
-}
 
 namespace origin::logging {
 class TaskPool;

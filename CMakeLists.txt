@@ -47,16 +47,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-if(ORIGIN_TOP_LEVEL)
-    option(BUILD_TESTS "Build and run tests."   OFF)
-    option(ENABLE_ASAN "Enable asan."           OFF)
-else()
-    # 嵌入父项目时用独立选项名，避免和父项目的 BUILD_TESTS / ENABLE_ASAN 冲突
-    option(ORIGIN_BUILD_TESTS "Build Origin tests when embedded" OFF)
-    option(ORIGIN_ENABLE_ASAN "Enable ASan when embedded"       OFF)
-    set(BUILD_TESTS ${ORIGIN_BUILD_TESTS})
-    set(ENABLE_ASAN ${ORIGIN_ENABLE_ASAN})
-endif()
+option(ORIGIN_BUILD_TESTS "Build and run tests." OFF)
+option(ORIGIN_ENABLE_ASAN "Enable asan."         OFF)
 
 if (MSVC)
     # CMake 默认 flags 带 /W3，目标级再加 /W4 会触发 D9025（overriding /W3 with /W4）；
@@ -110,7 +102,7 @@ if(ORIGIN_TOP_LEVEL)
     endif()
 endif()
 
-if (ENABLE_ASAN)
+if (ORIGIN_ENABLE_ASAN)
     if (MSVC)
         add_compile_options(/fsanitize=address /Zi)
         add_link_options(/fsanitize=address)
@@ -133,7 +125,7 @@ endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_configure_info.cmake)
 
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     enable_testing()
     add_compile_definitions(ORIGIN_ENABLE_TEST)
 endif()

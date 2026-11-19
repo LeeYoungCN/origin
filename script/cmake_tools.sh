@@ -405,8 +405,8 @@ function cmake_configure() {
         -DCPACK_PACKAGE_DIRECTORY="${cpack_package_directory}" \
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
-        -DENABLE_ASAN="${cmake_enable_asan}" \
-        -DBUILD_TESTS="${cmake_enable_test}"; then
+        -DORIGIN_ENABLE_ASAN="${cmake_enable_asan}" \
+        -DORIGIN_BUILD_TESTS="${cmake_enable_test}"; then
         print_log "[${cmake_preset}] configure done." info
         cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     else

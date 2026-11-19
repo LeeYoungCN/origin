@@ -29,6 +29,6 @@ set_target_properties(${LIB_NAME} PROPERTIES
 
 target_link_libraries(${LIB_NAME} PUBLIC Common)
 
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

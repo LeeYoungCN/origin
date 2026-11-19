@@ -51,6 +51,6 @@ origin_add_component(${LIB_NAME})
 target_link_libraries(${LIB_NAME} PUBLIC Common Container Utils)
 
 
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

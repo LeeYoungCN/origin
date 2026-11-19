@@ -31,6 +31,8 @@
 - **BREAKING**：`origin::string` 命名空间改为 `origin::strings`，头文件
   `origin/string/string.h` 改为 `origin/strings/strings.h`，源文件改为 `strings.cpp`
   （复数形式表示工具集合，与 abseil 的 `absl::strings` 一致）。
+- 构建选项统一为 `ORIGIN_BUILD_TESTS` / `ORIGIN_ENABLE_ASAN`（原 `BUILD_TESTS` /
+  `ENABLE_ASAN` 已移除），presets 与 `cmake_tools.sh` 同步更新。
 - 编译选项按语言/目标收敛：删除与默认值重复的 `/MDd`、`/MD`、`-O3`、`-g3 -O0` 追加；
   `/permissive-`、`/Zc:__cplusplus`、`/Zc:preprocessor` 仅对 C++ 生效并排除 clang-cl；
   摘掉 MSVC 默认 flags 里的 `/W3`，避免 D9025（overriding `/W3` with `/W4`）。
@@ -42,15 +44,17 @@
 - ASan 下同时清理 C flags 里的 `/RTC`；去掉置空 `CMAKE_THIRD_PARTY_PATH`。
 - Windows 下 MinGW 产物去掉 `lib` 前缀，DLL 命名与 MSVC 一致。
 - `CMakePresets.json` 与 `cmake_tools.sh` 对齐：显式写出 `CMAKE_INSTALL_PREFIX` /
-  `CPACK_PACKAGE_DIRECTORY` / `ENABLE_ASAN` / `ENV_PARAM_FILE`；`msvc_x86_*` 取消 hidden
+  `CPACK_PACKAGE_DIRECTORY` / `ORIGIN_ENABLE_ASAN` / `ENV_PARAM_FILE`；`msvc_x86_*` 取消 hidden
   并注明需要 32 位工具链环境；补全 `preset_array` 里的 `win_clang_mingw_*` / `win_clang_cl_*`。
 
 ### 修复
 
 - 支持被 `FetchContent` / `add_subdirectory` 嵌入：路径改用 `PROJECT_SOURCE_DIR`，
   `CMAKE_INSTALL_PREFIX` / `CMAKE_THIRD_PARTY_PATH` / `CPACK_PACKAGE_DIRECTORY` / `include(CPack)`
-  只在顶层生效，嵌入时改用 `ORIGIN_BUILD_TESTS` / `ORIGIN_ENABLE_ASAN` 选项，
+  只在顶层生效，测试与 ASan 选项统一使用 `ORIGIN_` 前缀，
   不再覆盖父项目的全局设置。
+- 修复安装出来的 `OriginConfig.cmake` 缺少 `find_dependency(Threads)`，
+  下游 `find_package(Origin)` 时报 `Threads::Threads` 目标找不到。
 - `/W4` 暴露的死代码：`GetCppStandard` / `GetCStandard` 改为 `#elif` 链并补全返回值；
   `logging.cpp` 删除 `throw` 之后不可达的 `return`（9 处）；
   `filesystem_utils_path.cpp` 删除命名空间自引用 `using`。

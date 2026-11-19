@@ -1,4 +1,4 @@
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     set_property(GLOBAL PROPERTY TEST_TIMEOUT 60)
     set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_THIRD_PARTY_PATH}/googletest")
 
@@ -13,7 +13,7 @@ endif()
 set_property(GLOBAL PROPERTY ORIGIN_TEST_OBJ_LIST "")
 add_subdirectory(libs)
 
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     get_property(TEST_OBJ_LIST GLOBAL PROPERTY ORIGIN_TEST_OBJ_LIST)
     message(STATUS "TEST_OBJ_LIST: ${TEST_OBJ_LIST}")
     add_subdirectory(tests)

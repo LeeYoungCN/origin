@@ -14,6 +14,6 @@ install(DIRECTORY include/
         DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
-if (BUILD_TESTS)
+if (ORIGIN_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

@@ -110,7 +110,7 @@ FetchContent_Declare(origin
 |---|---|
 | **C++20** | Origin 的公开头文件用到 `std::format` 等，下游必须 `CXX_STANDARD >= 20` |
 | **`/utf-8`（MSVC）** | Origin 头文件含中文注释；不传 `/utf-8` 会报 `C4819`，甚至 `#if/#endif` 不匹配的 `C1070`。Origin 自身构建会加，但那是目录级选项，**不会传给父项目** |
-| **测试开关** | 嵌入时使用 `ORIGIN_BUILD_TESTS`（默认 `OFF`）。不要用 `BUILD_TESTS`，那是 Origin 顶层选项，会和父项目同名选项互相干扰 |
+| **测试开关** | 统一使用 `ORIGIN_BUILD_TESTS`（默认 `OFF`）。旧名 `BUILD_TESTS` 已移除（CMake 会提示该变量未被使用），避免和父项目同名选项互相干扰 |
 | **ASan 开关** | 嵌入时使用 `ORIGIN_ENABLE_ASAN` |
 | **不要混用** | 同一工程里既 `find_package` 又 `FetchContent` 会因 `Origin::*` 目标重复而失败 |
 | **DLL 位置** | Origin 的 `CMAKE_RUNTIME_OUTPUT_DIRECTORY` 只作用于自己的目标，DLL 输出到 `<父项目 build>/bin`；父项目的 exe 默认在 build 根目录，运行前需要把 bin 加进 `PATH`，或用 `$<TARGET_RUNTIME_DLLS>` 拷贝 |
@@ -126,7 +126,7 @@ Origin 通过 `ORIGIN_TOP_LEVEL`（`CMAKE_SOURCE_DIR == PROJECT_SOURCE_DIR`）�
 | `CMAKE_INSTALL_PREFIX` 默认值 | 设为 `out/install/<preset>` | **完全不动父项目** |
 | `CMAKE_THIRD_PARTY_PATH` / `CPACK_PACKAGE_DIRECTORY` | 设置默认值 | 不设置 |
 | `include(CPack)` | 生成 CPack 配置 | 不生成 |
-| 拉取 googletest | `BUILD_TESTS=ON` 时 | 仅 `ORIGIN_BUILD_TESTS=ON` 时 |
+| 拉取 googletest | `ORIGIN_BUILD_TESTS=ON` 时 | 仅 `ORIGIN_BUILD_TESTS=ON` 时 |
 | `CMAKE_RUNTIME_OUTPUT_DIRECTORY` | `out/build/<preset>/bin` | 父项目的 `bin`（目录级设置，仅影响 Origin 目标） |
 | `install()` 规则 | 安装到 Origin 安装树 | **仍会注册到父项目**（父项目安装时一并安装 Origin） |
 

@@ -11,8 +11,8 @@
                 "CMAKE_PRESET": "${presetName}",
                 "CMAKE_THIRD_PARTY_PATH": "${sourceDir}/third_party/${presetName}",
                 "CPACK_PACKAGE_DIRECTORY": "${sourceDir}/out/pkg/${presetName}",
-                "BUILD_TESTS": "ON",
-                "ENABLE_ASAN": "OFF",
+                "ORIGIN_BUILD_TESTS": "ON",
+                "ORIGIN_ENABLE_ASAN": "OFF",
                 "ENV_PARAM_FILE": ""
             }
         },

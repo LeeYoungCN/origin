@@ -10,6 +10,7 @@
  */
 
 #include "origin/common/macros/compiler.h"
+#include "../internal/last_error.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -58,17 +59,17 @@ bool delete_file_it(std::string_view path)
 {
     try {
         bool const result = fs::remove(path);
-        set_thread_last_err(result ? ERR_COMM_SUCCESS : ERR_UTILS_NOT_FOUND);
+        set_last_error(result ? ERR_COMM_SUCCESS : ERR_UTILS_NOT_FOUND);
         ORIGIN_DEBUG_TRACE(
-            "Delete file success. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
+            "Delete file success. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
         return result;
     } catch (const fs::filesystem_error& e) {
         ORIGIN_DEBUG_ERR("Delete file failed. file: \"{}\". msg: \"{}\".", path, e.what());
-        set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
+        set_last_error(ConvertSysEcToErrorCode(e.code()));
         return false;
     } catch (const std::exception& e) {
         ORIGIN_DEBUG_ERR("Delete file failed. file: \"{}\". msg: \"{}\".", path, e.what());
-        set_thread_last_err(ConvertExceptionToErrorCode(e));
+        set_last_error(ConvertExceptionToErrorCode(e));
         return false;
     }
 }
@@ -86,13 +87,13 @@ bool file_exists(std::string_view path)
     switch (entrType) {
         case EntryType::FILE:
             exists = true;
-            set_thread_last_err(ERR_COMM_SUCCESS);
+            set_last_error(ERR_COMM_SUCCESS);
             break;
         case EntryType::NONEXISTENT:
-            set_thread_last_err(ERR_UTILS_NOT_FOUND);
+            set_last_error(ERR_UTILS_NOT_FOUND);
             break;
         default:
-            set_thread_last_err(ERR_UTILS_NOT_FILE);
+            set_last_error(ERR_UTILS_NOT_FILE);
             break;
     }
     return exists;
@@ -103,52 +104,52 @@ ErrorCode create_file(std::string_view path)
     EntryType type = EntryType::UNKNOWN;
     (void)get_entry_type(path, type);
     if (type == EntryType::FILE) {
-        set_thread_last_err(ERR_UTILS_ALREADY_EXISTS);
+        set_last_error(ERR_UTILS_ALREADY_EXISTS);
         ORIGIN_DEBUG_TRACE("File already exist: {}", path);
         return ERR_COMM_SUCCESS;
     }
     if (type != EntryType::NONEXISTENT) {
-        set_thread_last_err(ERR_UTILS_NOT_FILE);
+        set_last_error(ERR_UTILS_NOT_FILE);
         ORIGIN_DEBUG_ERR(
-            "Create file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Create file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::ofstream file(path.data(), std::ios::app | std::ios::binary);
     if (file.is_open()) {
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     }
     std::error_code const ec(errno, std::generic_category());
-    set_thread_last_err(ConvertSysEcToErrorCode(ec));
+    set_last_error(ConvertSysEcToErrorCode(ec));
     ORIGIN_DEBUG_ERR(
-        "Create file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-    return get_thread_last_err();
+        "Create file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+    return get_last_error();
 }
 
 ErrorCode delete_file(std::string_view path)
 {
     if (!file_exists(path)) {
-        bool const rst = (get_thread_last_err() == ERR_UTILS_NOT_FOUND);
-        if (get_thread_last_err() == ERR_UTILS_NOT_FOUND) {
+        bool const rst = (get_last_error() == ERR_UTILS_NOT_FOUND);
+        if (get_last_error() == ERR_UTILS_NOT_FOUND) {
             ORIGIN_DEBUG_TRACE(
-                "Delete file success. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
+                "Delete file success. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
         } else {
             ORIGIN_DEBUG_ERR(
-                "Delete file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
+                "Delete file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
         }
-        return rst ? ERR_COMM_SUCCESS : get_thread_last_err();
+        return rst ? ERR_COMM_SUCCESS : get_last_error();
     }
 
-    const bool ok = delete_file_it(path); return ok ? ERR_COMM_SUCCESS : get_thread_last_err();
+    const bool ok = delete_file_it(path); return ok ? ERR_COMM_SUCCESS : get_last_error();
 }
 
 ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite)
 {
     if (!file_exists(src)) {
         ORIGIN_DEBUG_ERR(
-            "Copy file failed. file: {}, msg: \"{}\".", src, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Copy file failed. file: {}, msg: \"{}\".", src, get_last_error_msg());
+        return get_last_error();
     }
 
     EntryType type = EntryType::UNKNOWN;
@@ -158,23 +159,23 @@ ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite)
                          src,
                          dest,
                          get_entry_type_str(type));
-        set_thread_last_err(ERR_UTILS_NOT_FILE);
-        return get_thread_last_err();
+        set_last_error(ERR_UTILS_NOT_FILE);
+        return get_last_error();
     }
     fs::copy_options const option =
         (overwrite ? fs::copy_options::overwrite_existing : fs::copy_options::none);
     try {
         fs::copy_file(src, dest, option);
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
+        set_last_error(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Copy file failed. file: {}, msg: \"{}\".", src, e.what());
-        return get_thread_last_err();
+        return get_last_error();
     } catch (const std::exception& e) {
-        set_thread_last_err(ConvertExceptionToErrorCode(e));
+        set_last_error(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Copy file failed. file: {}, msg: \"{}\".", src, e.what());
-        return get_thread_last_err();
+        return get_last_error();
     }
 }
 
@@ -182,42 +183,42 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
 {
     if (!file_exists(src)) {
         ORIGIN_DEBUG_ERR(
-            "Rename file failed. file: {}, msg: \"{}\".", src, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Rename file failed. file: {}, msg: \"{}\".", src, get_last_error_msg());
+        return get_last_error();
     }
 
     EntryType type = EntryType::UNKNOWN;
     (void)get_entry_type(dest, type);
     // 类型错误
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
-        set_thread_last_err(ERR_UTILS_NOT_FILE);
+        set_last_error(ERR_UTILS_NOT_FILE);
         ORIGIN_DEBUG_ERR("Rename file failed. file: {}. dest invalid: {}, type: {}",
                          (overwrite ? "overwrite " : "not overwrite"),
                          dest,
                          get_entry_type_str(type));
-        return get_thread_last_err();
+        return get_last_error();
     }
     // 已存在
     if (!overwrite && type == EntryType::FILE) {
-        set_thread_last_err(ERR_UTILS_ALREADY_EXISTS);
+        set_last_error(ERR_UTILS_ALREADY_EXISTS);
         ORIGIN_DEBUG_ERR("Rename file failed. file: {}. dest already exist: {}.",
                          (overwrite ? "overwrite " : "not overwrite"),
                          dest);
-        return get_thread_last_err();
+        return get_last_error();
     }
 
     try {
         fs::rename(src, dest);
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
+        set_last_error(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Rename file failed. file: {}, msg: \"{}\".", src, e.what());
-        return get_thread_last_err();
+        return get_last_error();
     } catch (const std::exception& e) {
-        set_thread_last_err(ConvertExceptionToErrorCode(e));
+        set_last_error(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Rename file failed. file: {}, msg: \"{}\".", src, e.what());
-        return get_thread_last_err();
+        return get_last_error();
     }
 }
 
@@ -225,22 +226,22 @@ ErrorCode read_text_file(std::string_view path, std::string& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
-            "Read file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Read file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::ifstream file(path.data(), std::ios::in);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
-        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        set_last_error(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
-            "Read file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Read file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::string content{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
     out = std::move(content);
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -248,38 +249,38 @@ ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
-            "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::ifstream file(path.data(), std::ios::in);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
-        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        set_last_error(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
-            "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Read binary file failed. file: \"{}\". msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::error_code ec;
     const FileSize fileSize = fs::file_size(path, ec);
     if (ec) {
-        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        set_last_error(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR("Read binary file failed. file: \"{}\". msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     }
 
     std::vector<uint8_t> buffer(fileSize);
     file.read(reinterpret_cast<char*>(buffer.data()), static_cast<int64_t>(fileSize));
     if (static_cast<size_t>(file.gcount()) != fileSize) {
-        set_thread_last_err(ERR_UTILS_IO_ERROR);
-        return get_thread_last_err();
+        set_last_error(ERR_UTILS_IO_ERROR);
+        return get_last_error();
     }
 
     out = std::move(buffer);
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -288,8 +289,8 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR("Write to text file failed. file: \"{}\". msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     }
 
     std::ios::openmode mode = std::ios::out;
@@ -301,52 +302,52 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
     std::ofstream file(path.data(), mode);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
-        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        set_last_error(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR("Write to text file failed. file: \"{}\". msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     }
 
     if (file << content) {
         file.close();
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         ORIGIN_DEBUG_TRACE("Write to text file succeeded. file: \"{}\". msg: \"{}\".",
                            get_file_mode_str(overwrite),
                            path,
-                           get_thread_last_err_msg());
+                           get_last_error_msg());
         return ERR_COMM_SUCCESS;
     }
 
     std::error_code const ec(errno, std::system_category());
-    set_thread_last_err(ConvertSysEcToErrorCode(ec));
+    set_last_error(ConvertSysEcToErrorCode(ec));
 
     ORIGIN_DEBUG_ERR("Write text failed. file {}: {}, msg: \"{}\".",
                      get_file_mode_str(overwrite),
                      path,
-                     get_thread_last_err_msg());
-    return get_thread_last_err();
+                     get_last_error_msg());
+    return get_last_error();
 }
 
 ErrorCode get_file_size(std::string_view path, FileSize& out)
 {
     if (!file_exists(path)) {
         ORIGIN_DEBUG_ERR(
-            "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     std::error_code ec;
     const FileSize size = static_cast<FileSize>(fs::file_size(path, ec));
     if (ec) {
-        set_thread_last_err(ConvertSysEcToErrorCode(ec));
+        set_last_error(ConvertSysEcToErrorCode(ec));
         ORIGIN_DEBUG_ERR(
-            "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_thread_last_err_msg());
-        return get_thread_last_err();
+            "Get file size failed. file: \"{}\", msg: \"{}\".", path, get_last_error_msg());
+        return get_last_error();
     }
 
     out = size;
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -367,12 +368,12 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
     }
     BOOL ok = GetFileAttributesExW(wpath.c_str(), GetFileExInfoStandard, &fileAttr);
     if (!ok) {
-        set_thread_last_err(ConvertSysEcToErrorCode(
+        set_last_error(ConvertSysEcToErrorCode(
             std::error_code(static_cast<int>(GetLastError()), std::system_category())));
         ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     }
 
     FILETIME ftCreate = fileAttr.ftCreationTime;
@@ -384,7 +385,7 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
     // 转毫秒，再减去1601到1970的毫秒差值 11644473600000
     int64_t totalMs = static_cast<int64_t>(ul.QuadPart) / HUNDRED_NANOSECONDS_PER_MILLISECOND;
     out = totalMs - WINDOWS_EPOCH_TO_UNIX_EPOCH_MS;
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 #else
     try {
@@ -395,20 +396,20 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
         auto ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(sysTime.time_since_epoch());
         out = static_cast<TimestampMs>(ms.count());
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
-        set_thread_last_err(ConvertSysEcToErrorCode(e.code()));
+        set_last_error(ConvertSysEcToErrorCode(e.code()));
         ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     } catch (const std::exception& e) {
-        set_thread_last_err(ConvertExceptionToErrorCode(e));
+        set_last_error(ConvertExceptionToErrorCode(e));
         ORIGIN_DEBUG_ERR("Get file modify time failed. file: \"{}\", msg: \"{}\".",
                          path,
-                         get_thread_last_err_msg());
-        return get_thread_last_err();
+                         get_last_error_msg());
+        return get_last_error();
     }
 #endif
 }
@@ -423,16 +424,16 @@ ErrorCode get_file_info(std::string_view path, FileInfo& out)
 
     if (fileInfo.type == EntryType::NONEXISTENT) {
         out = fileInfo;
-        const ErrorCode code = get_thread_last_err();
+        const ErrorCode code = get_last_error();
         return code != ERR_COMM_SUCCESS ? code : ERR_UTILS_NOT_FOUND;
     }
     if (fileInfo.type == EntryType::FILE) {
         std::error_code ec;
         fileInfo.size = fs::file_size(path, ec);
         if (ec) {
-            set_thread_last_err(ConvertSysEcToErrorCode(ec));
+            set_last_error(ConvertSysEcToErrorCode(ec));
             out = fileInfo;
-            return get_thread_last_err();
+            return get_last_error();
         }
     }
 
@@ -445,7 +446,7 @@ ErrorCode get_file_info(std::string_view path, FileInfo& out)
     fileInfo.modifyTime = modifyTime;
 
     out = fileInfo;
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 

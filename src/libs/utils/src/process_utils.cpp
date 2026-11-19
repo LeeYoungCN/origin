@@ -9,6 +9,7 @@
  *
  */
 #include "origin/process/process.h"
+#include "internal/last_error.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -45,30 +46,30 @@ ErrorCode get_proc_path(std::string& out)
 #if OS_WINDOWS
     DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH_STD);
     if (length == 0 || length >= MAX_PATH_STD) {
-        set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
+        set_last_error(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[WIN32] Get process path failed, length: {}", length);
-        return get_thread_last_err();
+        return get_last_error();
     }
 #elif OS_LINUX
     auto length = readlink("/proc/self/exe", path, MAX_PATH_STD - 1);
     if (length == -1) {
-        set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
+        set_last_error(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[Linux] Get process path failed.");
-        return get_thread_last_err();
+        return get_last_error();
     }
     path[length] = '\0';
 #elif OS_MACOS
     uint32_t size = sizeof(path);
     if (_NSGetExecutablePath(path, &size) != 0) {
-        set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
+        set_last_error(ERR_COMM_SYSTEM_ERROR);
         ORIGIN_DEBUG_ERR("[Macos] Get process path failed.");
-        return get_thread_last_err();
+        return get_last_error();
     }
 #else
 #error "Unsupport system."
 #endif
     out = path;
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     ORIGIN_DEBUG_TRACE("Get process path: {}", path);
     return ERR_COMM_SUCCESS;
 }
@@ -81,7 +82,7 @@ ErrorCode get_proc_directory(std::string& out)
         return rc;
     }
     out = get_directory(path);
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -93,7 +94,7 @@ ErrorCode get_proc_filename_stem(std::string& out)
         return rc;
     }
     out = get_filename_stem(path);
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 

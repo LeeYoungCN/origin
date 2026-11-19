@@ -9,6 +9,7 @@
  *
  */
 #include <array>
+#include "../internal/last_error.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -114,52 +115,52 @@ using namespace origin::thread;
 ErrorCode get_month_full_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
-        set_thread_last_err(ERR_UTILS_MONTH_INVALID);
+        set_last_error(ERR_UTILS_MONTH_INVALID);
         ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        out = std::string_view{}; return get_thread_last_err();
+        out = std::string_view{}; return get_last_error();
     }
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     out = MONTH_FULL_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
-        set_thread_last_err(ERR_UTILS_MONTH_INVALID);
+        set_last_error(ERR_UTILS_MONTH_INVALID);
         ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        out = std::string_view{}; return get_thread_last_err();
+        out = std::string_view{}; return get_last_error();
     }
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     out = MONTH_ABBR_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
-        set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
+        set_last_error(ERR_UTILS_WEEKDAY_INVALID);
         ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        out = std::string_view{}; return get_thread_last_err();
+        out = std::string_view{}; return get_last_error();
     }
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     out = WEEKDAY_FULL_NAMES.at(weekday); return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
-        set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
+        set_last_error(ERR_UTILS_WEEKDAY_INVALID);
         ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        out = std::string_view{}; return get_thread_last_err();
+        out = std::string_view{}; return get_last_error();
     }
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     out = WEEKDAY_ABBR_NAMES.at(weekday); return ERR_COMM_SUCCESS;
 }
 
@@ -262,7 +263,7 @@ ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime
 
     }
 
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
@@ -283,7 +284,7 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
                                const std::string_view& format)
 {
     if (buffer == nullptr || bufferSize == 0) {
-        set_thread_last_err(ERR_COMM_PARAM_INVALID);
+        set_last_error(ERR_COMM_PARAM_INVALID);
         ORIGIN_DEBUG_ERR("Invalid param!");
         return 0;
     }
@@ -297,7 +298,7 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
     auto insertDateTimeNumber = [&](uint32_t number, size_t numberLen) -> bool {
         uint32_t tmp = number;
         if (bufferIdx + numberLen >= bufferSize) {
-            set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
+            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
             ORIGIN_DEBUG_ERR("Failed to insert number: %lu", number);
             return false;
         }
@@ -316,7 +317,7 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
         std::string_view insertName = name.empty() ? "?" : name;
 
         if (bufferIdx + insertName.length() >= bufferSize) {
-            set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
+            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
             ORIGIN_DEBUG_ERR("Failed to insert string: {}", insertName.data());
             return false;
         }
@@ -392,15 +393,15 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
         }
     }
     if (formatIdx < format.length() || bufferIdx >= bufferSize) {
-        if (get_thread_last_err() == ERR_COMM_SUCCESS) {
-            set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
+        if (get_last_error() == ERR_COMM_SUCCESS) {
+            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
         }
         ORIGIN_DEBUG_ERR("Incomplete format processing (remaining: {}), message: {}",
                          format.data() + formatIdx,
-                         get_thread_last_err_msg());
+                         get_last_error_msg());
         bufferIdx = 0;
     } else {
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
     }
 
     buffer[bufferIdx] = '\0';
@@ -424,7 +425,7 @@ ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& 
                              const std::string_view& format, size_t& outLen)
 {
     outLen = format_time_buffer_impl(buffer, bufferSize, dateTime, format);
-    return get_thread_last_err();
+    return get_last_error();
 }
 
 }  // namespace origin::date_time

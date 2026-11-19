@@ -10,6 +10,7 @@
  */
 
 #include "origin/thread/thread.h"
+#include "internal/last_error.h"
 
 #if OS_WINDOWS
 #include <windows.h>
@@ -76,19 +77,23 @@ ErrorCode get_curr_thread_name(std::string& out)
     return ERR_COMM_SUCCESS;
 }
 
-void set_thread_last_err(const ErrorCode errcode)
+}  // namespace origin::thread
+
+namespace origin::utils::detail {
+
+void set_last_error(const ErrorCode errcode)
 {
     g_lastError = errcode;
 }
 
-ErrorCode get_thread_last_err()
+ErrorCode get_last_error()
 {
     return g_lastError;
 }
 
-const char *get_thread_last_err_msg()
+const char* get_last_error_msg()
 {
     return get_utils_err_msg(g_lastError);
 }
 
-}  // namespace origin::thread
+}  // namespace origin::utils::detail

@@ -1,4 +1,5 @@
 #include "filesystem/internal/common.hpp"
+#include "../../internal/last_error.h"
 
 #include "origin/common/macros/compiler.h"
 
@@ -80,7 +81,7 @@ ErrorCode ConvertExceptionToErrorCode(const std::exception& ex)
 ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
 {
     if (!ec) {
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        set_last_error(ERR_COMM_SUCCESS);
         return ERR_COMM_SUCCESS;
     }
     // 详细日志便于调试

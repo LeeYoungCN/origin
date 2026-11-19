@@ -1,4 +1,5 @@
 #include "origin/strings/strings.h"
+#include "internal/last_error.h"
 #include "origin/common/common_error_code.h"
 
 #include <cstdarg>

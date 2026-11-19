@@ -12,9 +12,8 @@
  * 1. ABI 隔离：std::filesystem::path 在 MSVC 下是 std::wstring，在
  *    libstdc++ / libc++ / MinGW 下是 std::string，公共头暴露它会将 ABI
  *    绑死到具体标准库实现。本层对外只用 std::string（UTF-8）。
- * 2. 错误处理统一：不向调用方抛异常，失败返回 false / 空串 / 0，并把错误码
- *    写入 thread-local 状态（get_thread_last_err / get_thread_last_err_msg），
- *    与库内其它模块一致。
+ * 2. 错误处理统一：不向调用方抛异常，可失败接口统一返回 `ErrorCode`，
+ *    需要产出值的用出参；错误文本用 `get_utils_err_msg(code)` 获取。
  * 3. 平台差异：Windows 长路径、UTF-8 ↔ UTF-16、分隔符归一化集中在这里处理。
  * 4. 可替换：将来更换实现（或去掉 std::filesystem）不影响调用方。
  *
@@ -25,8 +24,7 @@
  *   （Windows 为 `\`，POSIX 为 `/`）。
  * - 未特别说明时，相对路径相对于**当前工作目录**。
  * - 只有明确写了"要求存在"的接口才访问磁盘，其余是纯词法操作。
- * - 失败返回错误码（`ErrorCode`）或空字符串 / 0，具体见各接口说明；
- *   thread-local 错误状态（get_thread_last_err）保留作为诊断辅助。
+ * - 失败返回错误码（`ErrorCode`）或空字符串 / 0，具体见各接口说明。
  */
 #ifndef ORIGIN_FILESYSTEM_FILESYSTEM_H
 #define ORIGIN_FILESYSTEM_FILESYSTEM_H

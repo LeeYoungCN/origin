@@ -10,6 +10,7 @@
  */
 
 #include "origin/filesystem/filesystem.h"
+#include "../internal/last_error.h"
 
 #include <filesystem>
 #include <string_view>
@@ -28,7 +29,7 @@ using namespace origin::thread;
 ErrorCode get_entry_type(std::string_view path, EntryType& out)
 {
     if (!fs::exists(path)) {
-        set_thread_last_err(ERR_UTILS_NOT_FOUND);
+        set_last_error(ERR_UTILS_NOT_FOUND);
         out = EntryType::NONEXISTENT;
         return ERR_UTILS_NOT_FOUND;
     }
@@ -37,11 +38,11 @@ ErrorCode get_entry_type(std::string_view path, EntryType& out)
     fs::file_status const status = fs::symlink_status(path, ec);
     if (ec) {
         ORIGIN_DEBUG_ERR("Failed to get symlink status. errCode: {}", ec.value());
-        set_thread_last_err(ERR_COMM_SYSTEM_ERROR);
+        set_last_error(ERR_COMM_SYSTEM_ERROR);
         out = EntryType::UNKNOWN;
         return ERR_COMM_SYSTEM_ERROR;
     }
-    set_thread_last_err(ERR_COMM_SUCCESS);
+    set_last_error(ERR_COMM_SUCCESS);
     switch (status.type()) {
         case fs::file_type::regular:  // 普通文件
             out = EntryType::FILE;

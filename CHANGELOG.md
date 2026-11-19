@@ -24,7 +24,7 @@
 
 - 错误处理统一为长期方案：可失败接口返回 `ErrorCode`，错误文本用
   `get_utils_err_msg(code)` / `get_comm_err_msg(code)`；公共 thread-local API
-  （`get_thread_last_err*`）已移除，仅作为库内部实现细节。
+  （`get_thread_last_err*`）及其内部实现已彻底移除，错误只随返回值传递。
 - `date_time` 的可失败接口改为 `ErrorCode` + 出参：`local_date_time`、
   `utc_date_time`、`timestamp_to_date_time`、`date_time_to_timestamp`、
   `get_month_*` / `get_weekday_*`、`format_time_string`、`append_time_string`、

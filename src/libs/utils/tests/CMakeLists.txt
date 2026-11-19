@@ -15,6 +15,8 @@ set(SRC_LIST
     src/test_filesystem_utils/test_file_writer.cpp
     # thread
     src/test_thread_utils/test_thread_utils.cpp
+    # error-code APIs
+    src/test_error_code_api.cpp
 )
 
 add_library(${TEST_OBJECT} OBJECT ${SRC_LIST})

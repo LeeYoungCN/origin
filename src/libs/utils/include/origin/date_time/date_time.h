@@ -17,6 +17,7 @@
 
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 
 namespace origin::date_time {
 /**
@@ -41,7 +42,7 @@ DateTimeSt get_now_date_time();
  * @return DateTime 转换后的时间组件
  *         失败时返回所有字段为0的结构
  */
-DateTimeSt local_date_time(TimestampMs timestamp);
+ErrorCode local_date_time(TimestampMs timestamp, DateTimeSt& out);
 
 /**
  * @brief 将毫秒级时间戳转换为UTC时间的时间组件
@@ -49,7 +50,7 @@ DateTimeSt local_date_time(TimestampMs timestamp);
  * @return DateTime 转换后的时间组件
  *         失败时返回所有字段为0的结构
  */
-DateTimeSt utc_date_time(TimestampMs timestamp);
+ErrorCode utc_date_time(TimestampMs timestamp, DateTimeSt& out);
 
 /**
  * @brief 将毫秒级时间戳转换为时间组件
@@ -58,14 +59,14 @@ DateTimeSt utc_date_time(TimestampMs timestamp);
  * @return DateTime 转换后的时间组件
  *         失败时返回所有字段为0的结构
  */
-DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone = TimeZone::LOCAL);
+ErrorCode timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone, DateTimeSt& out);
 
 /**
  * @brief 将时间组件转换为毫秒级时间戳
  * @param[in] dateTime 待转换的时间组件
  * @return TimestampMs 毫秒级时间戳
  */
-TimestampMs date_time_to_timestamp(const DateTimeSt& dateTime);
+ErrorCode date_time_to_timestamp(const DateTimeSt& dateTime, TimestampMs& out);
 
 /**
  * @brief 比较两个毫秒级时间戳之间毫秒级时间差
@@ -85,7 +86,7 @@ DurationMs diff_date_time(const DateTimeSt& x, const DateTimeSt& y);
  * @return std::string_view 完整月份名称（如"January"）
  *         若参数超出范围，返回空字符串视图
  */
-std::string_view get_month_full_name(uint32_t month);
+ErrorCode get_month_full_name(uint32_t month, std::string_view& out);
 
 /**
  * @brief 获取月份的缩写英文名称
@@ -93,7 +94,7 @@ std::string_view get_month_full_name(uint32_t month);
  * @return std::string_view 缩写月份名称（如"Jan"）
  *         若参数超出范围，返回空字符串视图
  */
-std::string_view get_month_abbr_name(uint32_t month);
+ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out);
 
 /**
  * @brief 获取星期的完整英文名称
@@ -101,7 +102,7 @@ std::string_view get_month_abbr_name(uint32_t month);
  * @return std::string_view 完整星期名称（如"Monday"）
  *         若参数超出范围，返回空字符串视图
  */
-std::string_view get_weekday_full_name(uint32_t weekday);
+ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out);
 
 /**
  * @brief 获取星期的缩写英文名称
@@ -109,7 +110,7 @@ std::string_view get_weekday_full_name(uint32_t weekday);
  * @return std::string_view 缩写星期名称（如"Mon"）
  *         若参数超出范围，返回空字符串视图
  */
-std::string_view get_weekday_abbr_name(uint32_t weekday);
+ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out);
 
 /**
  * @brief 将时间戳按指定格式转换为字符串
@@ -120,9 +121,8 @@ std::string_view get_weekday_abbr_name(uint32_t weekday);
  * @return std::string 格式化后的时间字符串
  *         若格式化失败或参数无效，返回空字符串
  */
-std::string format_time_string(TimestampMs timestamp,
-                               const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
-                               TimeZone timeZone = TimeZone::LOCAL);
+ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
+                             TimeZone timeZone, std::string& out);
 
 /**
  * @brief 将时间组件按指定格式转换为字符串
@@ -133,8 +133,8 @@ std::string format_time_string(TimestampMs timestamp,
  * @return std::string 格式化后的时间字符串
  *         若格式化失败或参数无效，返回空字符串
  */
-std::string format_time_string(const DateTimeSt& dateTime, const std::string_view& format =
-                                                               origin::date_time::DEFAULT_TIME_FMT);
+ErrorCode format_time_string(const DateTimeSt& dateTime, const std::string_view& format,
+                             std::string& out);
 
 /**
  * @brief 将时间戳按指定格式转换为字符串并追加到已有字符串中
@@ -144,9 +144,8 @@ std::string format_time_string(const DateTimeSt& dateTime, const std::string_vie
  *                   默认值：origin::constants::date_time::DEFAULT_TIME_FMT（"%Y-%m-%d
  * %H:%M:%S"）
  */
-void append_time_string(std::string& timeString, TimestampMs timestamp,
-                        const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
-                        TimeZone timeZone = TimeZone::LOCAL);
+ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone);
 
 /**
  * @brief 将时间组件按指定格式转换为字符串并追加到已有字符串中
@@ -156,8 +155,8 @@ void append_time_string(std::string& timeString, TimestampMs timestamp,
  *                   默认值：origin::constants::date_time::DEFAULT_TIME_FMT（"%Y-%m-%d
  * %H:%M:%S"）
  */
-void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
-                        const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT);
+ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+                             const std::string_view& format);
 
 /**
  * @brief 将时间戳按指定格式写入字符缓冲区（高性能）
@@ -171,9 +170,8 @@ void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
  * @return size_t 成功写入的字符数（不含终止符'\0'）
  *         若失败（缓冲区无效/空间不足/格式错误），返回0
  */
-size_t format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                          const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT,
-                          TimeZone timeZone = TimeZone::LOCAL);
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone, size_t& outLen);
 
 /**
  * @brief 将时间组件按指定格式写入字符缓冲区（高性能）
@@ -187,8 +185,8 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp
  * @return size_t 成功写入的字符数（不含终止符'\0'）
  *         若失败（缓冲区无效/空间不足/格式错误），返回0
  */
-size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                          const std::string_view& format = origin::date_time::DEFAULT_TIME_FMT);
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                             const std::string_view& format, size_t& outLen);
 
 // ------------------------------ 系统时间操作 ------------------------------
 

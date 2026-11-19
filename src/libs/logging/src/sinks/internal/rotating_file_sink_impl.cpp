@@ -39,12 +39,11 @@ struct LogFileInfo {
 
     [[nodiscard]] std::string to_string() const
     {
+        std::string timeStr;
+        (void)origin::date_time::format_time_string(
+            modifyTime, "%Y-%m-%d %H:%M:%S.%3f", TimeZone::LOCAL, timeStr);
         return std::format(
-            "idx: {}, time: [{}], size: {}, file: \"{}\"",
-            idx,
-            origin::date_time::format_time_string(modifyTime, "%Y-%m-%d %H:%M:%S.%3f"),
-            fileSize,
-            file);
+            "idx: {}, time: [{}], size: {}, file: \"{}\"", idx, timeStr, fileSize, file);
     }
 };
 }  // namespace

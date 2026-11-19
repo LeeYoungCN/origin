@@ -60,8 +60,9 @@ std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, Ti
 {
     std::string filenameStem = get_filename_stem(baseFile);
     std::string extension = get_extension(baseFile);
-    std::string const filename =
-        std::format("{}.{}{}", filenameStem, format_time_string(time, "%Y%m%d"), extension);
+    std::string dateStr;
+    (void)format_time_string(time, "%Y%m%d", TimeZone::LOCAL, dateStr);
+    std::string const filename = std::format("{}.{}{}", filenameStem, dateStr, extension);
     return join_paths({_dir, filename});
 }
 
@@ -69,7 +70,8 @@ void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t h
                                    uint32_t minute, uint32_t rotationDays, uint32_t dayInterval)
 {
     TimestampMs const now = get_now_timestamp_ms();
-    DateTimeSt const nowDateTime = timestamp_to_date_time(now);
+    DateTimeSt nowDateTime{};
+    (void)timestamp_to_date_time(now, TimeZone::LOCAL, nowDateTime);
     DateTimeSt rotationDateTime = nowDateTime;
     rotationDateTime.hour = hour;
     rotationDateTime.minute = minute;

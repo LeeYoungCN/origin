@@ -65,8 +65,6 @@ namespace origin::filesystem {
  *       而非链接指向的目标类型。如需获取目标类型，需先解析链接。
  */
 ErrorCode get_entry_type(std::string_view path, EntryType& out);
-
-// Convenience overload (transitional): returns UNKNOWN on failure.
 inline EntryType get_entry_type(std::string_view path)
 {
     EntryType out = EntryType::UNKNOWN;
@@ -87,8 +85,6 @@ inline const char* get_file_mode_str(bool overwrite)
  * @return 工作路径
  */
 ErrorCode get_curr_working_dir(std::string& out);
-
-// Convenience overload (transitional): returns empty string on failure.
 inline std::string get_curr_working_dir()
 {
     std::string out;
@@ -105,8 +101,6 @@ inline std::string get_curr_working_dir()
  *       会替换掉前面已拼接的部分（std::filesystem::operator/= 语义）
  */
 ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
-
-// Convenience overload (transitional): returns empty string on failure.
 inline std::string join_paths(const std::vector<std::string>& parts)
 {
     std::string out;
@@ -128,8 +122,6 @@ inline std::string join_paths(const std::vector<std::string>& parts)
  * @see to_absolute_path 需要绝对路径时使用
  */
 ErrorCode normalize_path(std::string_view path, std::string& out);
-
-// Convenience overload (transitional): returns empty string on failure.
 inline std::string normalize_path(std::string_view path)
 {
     std::string out;
@@ -155,8 +147,6 @@ inline std::string normalize_path(std::string_view path)
  * @see normalize_path 只做词法规范化、不转绝对路径
  */
 ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out);
-
-// Convenience overload (transitional): returns empty string on failure.
 inline std::string to_absolute_path(std::string_view relPath, std::string_view baseDir = "")
 {
     std::string out;
@@ -260,8 +250,6 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
  * @return 文件内容字符串，读取失败返回空字符串
  */
 ErrorCode read_text_file(std::string_view path, std::string& out);
-
-// Convenience overload (transitional): returns empty string on failure.
 inline std::string read_text_file(std::string_view path)
 {
     std::string out;
@@ -291,8 +279,6 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
  * @return 文件大小（字节），获取失败返回0
  */
 ErrorCode get_file_size(std::string_view path, FileSize& out);
-
-// Convenience overload (transitional): returns 0 on failure.
 inline FileSize get_file_size(std::string_view path)
 {
     FileSize out = 0;

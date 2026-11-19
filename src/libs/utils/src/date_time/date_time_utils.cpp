@@ -144,26 +144,27 @@ TimestampMs get_now_timestamp_ms()
 
 DateTimeSt get_now_date_time()
 {
-    return timestamp_to_date_time(get_now_timestamp_ms());
+    DateTimeSt out{};
+    (void)timestamp_to_date_time(get_now_timestamp_ms(), TimeZone::LOCAL, out);
+    return out;
 }
 
-DateTimeSt local_date_time(TimestampMs timestamp)
+ErrorCode local_date_time(TimestampMs timestamp, DateTimeSt& out)
 {
-    return timestamp_to_date_time(timestamp, TimeZone::LOCAL);
+    return timestamp_to_date_time(timestamp, TimeZone::LOCAL, out);
 }
 
-DateTimeSt utc_date_time(TimestampMs timestamp)
+ErrorCode utc_date_time(TimestampMs timestamp, DateTimeSt& out)
 {
-    return timestamp_to_date_time(timestamp, TimeZone::UTC);
+    return timestamp_to_date_time(timestamp, TimeZone::UTC, out);
 }
 
-DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone)
+ErrorCode timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone, DateTimeSt& out)
 {
     const auto timer = static_cast<std::time_t>(timestamp / MILLIS_PER_SEC);
     const auto millis = static_cast<int32_t>(timestamp % MILLIS_PER_SEC);
 
     std::tm timeInfo{};
-    DateTimeSt dateTime{};
     bool rst = false;
     switch (timeZone) {
         case TimeZone::UTC:
@@ -178,22 +179,28 @@ DateTimeSt timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone)
         ORIGIN_DEBUG_ERR("Get time info failed. zone: {}, msg: {}.",
                          GetTimeZoneString(timeZone),
                          get_thread_last_err_msg());
-    } else {
-        std_tm_2_date_time_st(timeInfo, millis, dateTime);
-        set_thread_last_err(ERR_COMM_SUCCESS);
+        out = DateTimeSt{};
+        return get_thread_last_err();
     }
-    return dateTime;
+
+    std_tm_2_date_time_st(timeInfo, millis, out);
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
-TimestampMs date_time_to_timestamp(const DateTimeSt& dateTime)
+ErrorCode date_time_to_timestamp(const DateTimeSt& dateTime, TimestampMs& out)
 {
     std::tm tm{};
     date_time_st_to_std_tm(dateTime, tm);
     std::time_t const secStamp = std::mktime(&tm);
     if (secStamp == -1) {
-        return -1;
+        set_thread_last_err(ERR_UTILS_TIMESTAMP_INVALID);
+        out = -1;
+        return get_thread_last_err();
     }
-    return static_cast<TimestampMs>(secStamp) * MILLIS_PER_SEC + dateTime.millis;
+    out = static_cast<TimestampMs>(secStamp) * MILLIS_PER_SEC + dateTime.millis;
+    set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
 DurationMs diff_timestamp(TimestampMs x, TimestampMs y)
@@ -203,7 +210,13 @@ DurationMs diff_timestamp(TimestampMs x, TimestampMs y)
 
 DurationMs diff_date_time(const DateTimeSt& x, const DateTimeSt& y)
 {
-    return date_time_to_timestamp(x) - date_time_to_timestamp(y);
+    TimestampMs xTimestamp = 0;
+    TimestampMs yTimestamp = 0;
+    if (date_time_to_timestamp(x, xTimestamp) != ERR_COMM_SUCCESS ||
+        date_time_to_timestamp(y, yTimestamp) != ERR_COMM_SUCCESS) {
+        return 0;
+    }
+    return xTimestamp - yTimestamp;
 }
 
 void sleep_ms(DurationMs ms)

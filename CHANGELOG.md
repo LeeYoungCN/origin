@@ -25,6 +25,10 @@
 - 错误处理长期方向：可失败接口统一返回 `ErrorCode`，错误文本用
   `get_utils_err_msg(code)` / `get_comm_err_msg(code)` 获取；thread-local 的
   `get_thread_last_err*` 降级为诊断辅助，待剩余接口迁移完成后移除。
+- `date_time` 的可失败接口增加 `ErrorCode` + 出参版本：`local_date_time`、
+  `utc_date_time`、`timestamp_to_date_time`、`date_time_to_timestamp`、
+  `get_month_*` / `get_weekday_*`、`format_time_string`、`append_time_string`、
+  `format_time_buffer`；旧签名保留为过渡重载。
 - `filesystem` 的读/路径接口增加 `ErrorCode` + 出参版本：`read_text_file`、
   `get_file_size`、`get_entry_type`、`get_curr_working_dir`、`join_paths`、
   `normalize_path`、`to_absolute_path`；旧签名保留为过渡便捷重载。

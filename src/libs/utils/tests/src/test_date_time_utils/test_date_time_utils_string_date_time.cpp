@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "origin/common/common_error_code.h"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/date_time/date_time.h"
@@ -43,7 +44,8 @@ TEST_P(TestDateTimeUtilsFmtTimeCompBuffer, DateTimeSt)
     auto wday = std::get<3>(GetParam());
 
     auto ts = get_now_timestamp_ms();
-    auto dateTime = local_date_time(ts);
+    DateTimeSt dateTime{};
+    ASSERT_EQ(local_date_time(ts, dateTime), ERR_COMM_SUCCESS);
     auto timeInfo = TimestampToTimeInfo(ts);
     dateTime.month = month;
     dateTime.wday = wday;
@@ -86,7 +88,8 @@ TEST_P(TestDateTimeUtilsTimeCompStr, DateTimeSt)
     auto wday = std::get<2>(GetParam());
 
     auto ts = get_now_timestamp_ms();
-    auto dateTime = local_date_time(ts);
+    DateTimeSt dateTime{};
+    ASSERT_EQ(local_date_time(ts, dateTime), ERR_COMM_SUCCESS);
     auto timeInfo = TimestampToTimeInfo(ts);
     dateTime.month = month;
     dateTime.wday = wday;

@@ -86,34 +86,56 @@ const std::array<std::string_view, 12> MONTH_ABBR_NAMES = {
 
 }  // namespace
 
+namespace {
+std::string_view month_full_name(uint32_t month)
+{
+    std::string_view out{};
+    return origin::date_time::get_month_full_name(month, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+}
+std::string_view month_abbr_name(uint32_t month)
+{
+    std::string_view out{};
+    return origin::date_time::get_month_abbr_name(month, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+}
+std::string_view weekday_full_name(uint32_t weekday)
+{
+    std::string_view out{};
+    return origin::date_time::get_weekday_full_name(weekday, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+}
+std::string_view weekday_abbr_name(uint32_t weekday)
+{
+    std::string_view out{};
+    return origin::date_time::get_weekday_abbr_name(weekday, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+}
+}  // namespace
 namespace origin::date_time {
 using namespace origin::thread;
 
-std::string_view get_month_full_name(uint32_t month)
+ErrorCode get_month_full_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
         set_thread_last_err(ERR_UTILS_MONTH_INVALID);
         ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        return "";
+        out = std::string_view{}; return get_thread_last_err();
     }
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return MONTH_FULL_NAMES.at(month - MIN_MONTH);
+    out = MONTH_FULL_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
 }
 
-std::string_view get_month_abbr_name(uint32_t month)
+ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
         set_thread_last_err(ERR_UTILS_MONTH_INVALID);
         ORIGIN_DEBUG_ERR(
             "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        return "";
+        out = std::string_view{}; return get_thread_last_err();
     }
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return MONTH_ABBR_NAMES.at(month - MIN_MONTH);
+    out = MONTH_ABBR_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
 }
 
-std::string_view get_weekday_full_name(uint32_t weekday)
+ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
         set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
@@ -121,13 +143,13 @@ std::string_view get_weekday_full_name(uint32_t weekday)
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        return "";
+        out = std::string_view{}; return get_thread_last_err();
     }
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return WEEKDAY_FULL_NAMES.at(weekday);
+    out = WEEKDAY_FULL_NAMES.at(weekday); return ERR_COMM_SUCCESS;
 }
 
-std::string_view get_weekday_abbr_name(uint32_t weekday)
+ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
         set_thread_last_err(ERR_UTILS_WEEKDAY_INVALID);
@@ -135,36 +157,39 @@ std::string_view get_weekday_abbr_name(uint32_t weekday)
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        return "";
+        out = std::string_view{}; return get_thread_last_err();
     }
     set_thread_last_err(ERR_COMM_SUCCESS);
-    return WEEKDAY_ABBR_NAMES.at(weekday);
+    out = WEEKDAY_ABBR_NAMES.at(weekday); return ERR_COMM_SUCCESS;
 }
 
-std::string format_time_string(TimestampMs timestamp, const std::string_view& format,
-                               TimeZone timeZone)
+ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
+                             TimeZone timeZone, std::string& out)
 {
-    std::string timeString;
-    append_time_string(timeString, timestamp, format, timeZone);
-    return timeString;
+    out.clear();
+    return append_time_string(out, timestamp, format, timeZone);
 }
 
-std::string format_time_string(const DateTimeSt& dateTime, const std::string_view& format)
+ErrorCode format_time_string(const DateTimeSt& dateTime, const std::string_view& format,
+                             std::string& out)
 {
-    std::string timeString;
-    append_time_string(timeString, dateTime, format);
-    return timeString;
+    out.clear();
+    return append_time_string(out, dateTime, format);
 }
 
-void append_time_string(std::string& timeString, TimestampMs timestamp,
-                        const std::string_view& format, TimeZone timeZone)
+ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone)
 {
-    auto dateTime = timestamp_to_date_time(timestamp, timeZone);
-    append_time_string(timeString, dateTime, format);
+    DateTimeSt dateTime{};
+    const ErrorCode rc = timestamp_to_date_time(timestamp, timeZone, dateTime);
+    if (rc != ERR_COMM_SUCCESS) {
+        return rc;
+    }
+    return append_time_string(timeString, dateTime, format);
 }
 
-void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
-                        const std::string_view& format)
+ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+                             const std::string_view& format)
 {
     size_t formatIdx = 0;
 
@@ -207,17 +232,17 @@ void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
                 std::format_to(std::back_inserter(timeString), "{:02}", dateTime.second);
                 break;
             case 'B':  // 完整月份名称
-                insertString(get_month_full_name(dateTime.month));
+                insertString(month_full_name(dateTime.month));
                 break;
             case 'b':  // 缩写月份名称
             case 'h':  // 缩写月份名称
-                insertString(get_month_abbr_name(dateTime.month));
+                insertString(month_abbr_name(dateTime.month));
                 break;
             case 'A':  // 完整星期名称
-                insertString(get_weekday_full_name(dateTime.wday));
+                insertString(weekday_full_name(dateTime.wday));
                 break;
             case 'a':  // 缩写星期名称
-                insertString(get_weekday_abbr_name(dateTime.wday));
+                insertString(weekday_abbr_name(dateTime.wday));
                 break;
             case '%':
                 timeString.append("%");
@@ -238,19 +263,27 @@ void append_time_string(std::string& timeString, const DateTimeSt& dateTime,
     }
 
     set_thread_last_err(ERR_COMM_SUCCESS);
+    return ERR_COMM_SUCCESS;
 }
 
-size_t format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                          const std::string_view& format, TimeZone timeZone)
+size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                               const std::string_view& format);
+
+size_t format_time_buffer_impl(char* buffer, size_t bufferSize, TimestampMs timestamp,
+                               const std::string_view& format, TimeZone timeZone)
 {
-    auto dateTime = timestamp_to_date_time(timestamp, timeZone);
-    return format_time_buffer(buffer, bufferSize, dateTime, format);
+    DateTimeSt dateTime{};
+    if (timestamp_to_date_time(timestamp, timeZone, dateTime) != ERR_COMM_SUCCESS) {
+        return 0;
+    }
+    return format_time_buffer_impl(buffer, bufferSize, dateTime, format);
 }
 
-size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                          const std::string_view& format)
+size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                               const std::string_view& format)
 {
     if (buffer == nullptr || bufferSize == 0) {
+        set_thread_last_err(ERR_COMM_PARAM_INVALID);
         ORIGIN_DEBUG_ERR("Invalid param!");
         return 0;
     }
@@ -327,17 +360,17 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
                 success = insertDateTimeNumber(dateTime.second, 2);
                 break;
             case 'B':  // 完整月份名称
-                success = insertString(get_month_full_name(dateTime.month));
+                success = insertString(month_full_name(dateTime.month));
                 break;
             case 'b':  // 缩写月份名称
             case 'h':  // 缩写月份名称
-                success = insertString(get_month_abbr_name(dateTime.month));
+                success = insertString(month_abbr_name(dateTime.month));
                 break;
             case 'A':  // 完整星期名称
-                success = insertString(get_weekday_full_name(dateTime.wday));
+                success = insertString(weekday_full_name(dateTime.wday));
                 break;
             case 'a':  // 缩写星期名称
-                success = insertString(get_weekday_abbr_name(dateTime.wday));
+                success = insertString(weekday_abbr_name(dateTime.wday));
                 break;
             case '%':
                 buffer[bufferIdx++] = '%';
@@ -359,6 +392,9 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
         }
     }
     if (formatIdx < format.length() || bufferIdx >= bufferSize) {
+        if (get_thread_last_err() == ERR_COMM_SUCCESS) {
+            set_thread_last_err(ERR_COMM_BUFFER_OVERFLOW);
+        }
         ORIGIN_DEBUG_ERR("Incomplete format processing (remaining: {}), message: {}",
                          format.data() + formatIdx,
                          get_thread_last_err_msg());
@@ -370,6 +406,25 @@ size_t format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dat
     buffer[bufferIdx] = '\0';
 
     return bufferIdx;
+}
+
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
+                             const std::string_view& format, TimeZone timeZone, size_t& outLen)
+{
+    DateTimeSt dateTime{};
+    const ErrorCode rc = timestamp_to_date_time(timestamp, timeZone, dateTime);
+    if (rc != ERR_COMM_SUCCESS) {
+        outLen = 0;
+        return rc;
+    }
+    return format_time_buffer(buffer, bufferSize, dateTime, format, outLen);
+}
+
+ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
+                             const std::string_view& format, size_t& outLen)
+{
+    outLen = format_time_buffer_impl(buffer, bufferSize, dateTime, format);
+    return get_thread_last_err();
 }
 
 }  // namespace origin::date_time

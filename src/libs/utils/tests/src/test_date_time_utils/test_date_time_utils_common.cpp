@@ -1,5 +1,6 @@
 #include "test_date_time_utils_common.h"
 
+#include "origin/common/common_error_code.h"
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
@@ -53,7 +54,8 @@ void CompareString(const DateTimeSt& dateTime, std::string stdTimeStr,
 
 void TestTimeBuffer(const std::string_view& format, uint32_t length, TimestampMs timestamp)
 {
-    auto dateTime = local_date_time(timestamp);
+    DateTimeSt dateTime{};
+    ASSERT_EQ(local_date_time(timestamp, dateTime), ERR_COMM_SUCCESS);
     auto timeInfo = TimestampToTimeInfo(timestamp);
     TestTimeBuffer(format, length, timeInfo, dateTime);
 }
@@ -62,7 +64,13 @@ void TestTimeBuffer(const std::string_view& format, uint32_t length, std::tm tim
                     const DateTimeSt& dateTime)
 {
     char bufferUtils[MAX_TIME_STR_LEN] = {'\0'};
-    auto sizeUtils = format_time_buffer(bufferUtils, length, dateTime, format);
+    size_t sizeUtils = 0;
+    const ErrorCode rc = format_time_buffer(bufferUtils, length, dateTime, format, sizeUtils);
+    if (sizeUtils > 0) {
+        ASSERT_EQ(rc, ERR_COMM_SUCCESS);
+    } else {
+        EXPECT_NE(rc, ERR_COMM_SUCCESS);
+    }
 
     char bufferStd[MAX_TIME_STR_LEN] = {'\0'};
     auto sizeStd = std::strftime(bufferStd, length, format.data(), &timeInfo);
@@ -76,14 +84,16 @@ void TestTimeBuffer(const std::string_view& format, uint32_t length, std::tm tim
 
 void TestTimeString(const std::string_view& format, TimestampMs timestamp)
 {
-    auto dateTime = local_date_time(timestamp);
+    DateTimeSt dateTime{};
+    ASSERT_EQ(local_date_time(timestamp, dateTime), ERR_COMM_SUCCESS);
     auto timeInfo = TimestampToTimeInfo(timestamp);
     TestTimeString(format, timeInfo, dateTime);
 }
 
 void TestTimeString(const std::string_view& format, std::tm timeInfo, const DateTimeSt& dateTime)
 {
-    auto utilsStr = format_time_string(dateTime, format);
+    std::string utilsStr;
+    ASSERT_EQ(format_time_string(dateTime, format, utilsStr), ERR_COMM_SUCCESS);
     std::stringstream ss;
     ss << std::put_time(&timeInfo, format.data());
 

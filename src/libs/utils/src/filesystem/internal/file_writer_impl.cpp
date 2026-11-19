@@ -17,13 +17,11 @@
 #include "origin/common/types/filesystem_types.h"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 #include "origin/utils/utils_error_code.h"
 
 #define MODE_STR(mode) ((mode) ? "overwrite" : "append")
 
 namespace origin::filesystem {
-using namespace origin::thread;
 
 FileWriterImpl::FileWriterImpl(std::string_view file) : _file()
 {
@@ -95,14 +93,18 @@ FileSize FileWriterImpl::get_file_size_it()
 ErrorCode FileWriterImpl::open(bool overwrite)
 {
     close();
-    if (!file_exists(_file) && _errcode == ERR_UTILS_NOT_FILE) {
+    EntryType type = EntryType::UNKNOWN;
+    (void)get_entry_type(_file, type);
+    if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
+        _errcode = ERR_UTILS_NOT_FILE;
         ORIGIN_DEBUG_ERR("Write to text file failed. file: \"{}\". message: \"{}\".",
                          _file,
                          get_utils_err_msg(_errcode));
         return _errcode;
     }
 
-    if (create_dir(get_directory(_file)) != ERR_COMM_SUCCESS) {
+    _errcode = create_dir(get_directory(_file));
+    if (_errcode != ERR_COMM_SUCCESS) {
         return _errcode;
     }
 

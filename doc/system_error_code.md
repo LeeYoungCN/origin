@@ -86,7 +86,7 @@ if (rc != ERR_COMM_SUCCESS) {
 
 注意：
 
-- 公共 thread-local API（`get_thread_last_err*`）已移除，只作为库内部实现细节；
+- 错误码只通过返回值传递，库内不再保留 thread-local 错误状态；
 - 错误码随返回值传递，异步/协程切换不会丢上下文；
 - 需要区分"不存在/权限不足"时，直接比较返回码。
 
@@ -126,10 +126,10 @@ if (ec == std::errc::permission_denied) { ... }   // 跨平台
 ### 2.3 与 Origin 错误码的关系
 
 Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系统封装把
-`std::error_code` / 异常转换成 `ERR_UTILS_*`），对外统一用 `ErrorCode` +
-thread-local 状态。因此：
+`std::error_code` / 异常转换成 `ERR_UTILS_*`），对外统一用 `ErrorCode` 返回值
+传递。因此：
 
-- 使用 Origin 的工具接口时，读 `get_thread_last_err()`，不需要自己处理
+- 使用 Origin 的工具接口时，直接读取/比较返回的 `ErrorCode`，不需要自己处理
   `std::error_code`；
 - 直接调用标准库 / 系统 API 时，仍按标准方式使用 `std::error_code`。
 

@@ -1,6 +1,4 @@
 #include "origin/strings/strings.h"
-#include "internal/last_error.h"
-#include "origin/common/common_error_code.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -9,14 +7,16 @@
 #include <stdexcept>
 #include <string>
 
+#include "origin/common/common_error_code.h"
+
 namespace origin::strings {
 
-bool string_is_null_or_empty(const char *str)
+bool string_is_null_or_empty(const char* str)
 {
     return (str == nullptr || strlen(str) == 0);
 }
 
-ErrorCode va_list_to_string(const char *format, va_list args, std::string& out)
+ErrorCode va_list_to_string(const char* format, va_list args, std::string& out)
 {
     va_list argsCopy;
 

@@ -39,9 +39,12 @@ ErrorCode set_curr_thread_name(const char* name);
  */
 ErrorCode get_curr_thread_name(std::string& out);
 
+#ifdef UTILS_BUILD_SHARED
+// 内部诊断状态：仅库内部实现使用，不对外暴露。
 void set_thread_last_err(ErrorCode errcode);
 ErrorCode get_thread_last_err();
 const char *get_thread_last_err_msg();
+#endif
 
 }  // namespace origin::thread
 

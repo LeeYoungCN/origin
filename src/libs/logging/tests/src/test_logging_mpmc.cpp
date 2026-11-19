@@ -65,7 +65,7 @@ protected:
 void TestLoggingMPMC::SetUp()
 {
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
     _sink->set_level(LogLevel::TRACE);
     _sink->enable_debug_info(false);
 }
@@ -75,7 +75,7 @@ void TestLoggingMPMC::TearDown()
     _logger.reset();
     _taskPool.reset();
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 std::string TestLoggingMPMC::format_log_msg(uint32_t producerIdx, uint32_t msgIdx)

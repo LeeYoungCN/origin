@@ -55,21 +55,16 @@ TEST_F(TestFilesystemUtilsPath, ToAbsolute)
     std::string relPah = std::string(".") + PATH_SEP + baseName;
     EXPECT_FALSE(is_absolute_path(relPah));
     auto absFile = fs_abs(relPah, m_processDir);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(is_absolute_path(absFile));
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_EQ(fs_type(m_process), EntryType::FILE);
 }
 
 TEST_F(TestFilesystemUtilsPath, BaseName)
 {
     auto filename = get_filename_stem(m_process);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     auto extention = get_extension(m_process);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     std::string fileWithExt = filename + extention;
     auto baseName = get_filename(m_process);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_EQ(baseName, fileWithExt);
 }
 
@@ -78,7 +73,6 @@ TEST_F(TestFilesystemUtilsPath, normalize_path)
     auto baseName = get_filename(m_process);
     auto testPath = m_processDir + PATH_SEP + "." + PATH_SEP + baseName;
     auto rstPath = fs_normalize(testPath);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_process, rstPath);
     EXPECT_TRUE(is_absolute_path(rstPath));
 }
@@ -91,7 +85,6 @@ TEST_F(TestFilesystemUtilsPath, NormalizePath_WithDots)
     expect.resize(static_cast<size_t>(len));
     auto result = fs_normalize(test);
     EXPECT_EQ(result, expect);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsPath, NormalizePath_EmptyPath)
@@ -99,13 +92,11 @@ TEST_F(TestFilesystemUtilsPath, NormalizePath_EmptyPath)
     std::string result = fs_normalize("");
 
     EXPECT_EQ(result, "");
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsPath, JoinPaths_empty)
 {
     EXPECT_EQ(fs_join({}), "");
-    EXPECT_EQ(get_thread_last_err(), ERR_UTILS_PATH_INVALID) << get_thread_last_err_msg();
 }
 
 TEST_F(TestFilesystemUtilsPath, JoinPaths_Success)
@@ -115,7 +106,6 @@ TEST_F(TestFilesystemUtilsPath, JoinPaths_Success)
     auto size = snprintf(expect.data(), MAX_PATH_STD, "a%sb%sc", PATH_SEP, PATH_SEP);
     expect.resize(static_cast<size_t>(size));
     EXPECT_EQ(fs_join(test), expect);
-    EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS) << get_thread_last_err_msg();
 }
 
 }  // namespace utils_test::filesystem_test

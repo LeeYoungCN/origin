@@ -2,7 +2,7 @@
 
 本文分两部分：
 
-1. Origin 自己的错误码体系（`ErrorCode` + 模块化宏 + thread-local 错误状态）；
+1. Origin 自己的错误码体系（`ErrorCode` + 模块化宏 + 纯函数错误文本）；
 2. C++ 标准库的 `std::error_category`（`generic_category` / `system_category`），
    以及它们与 Origin 错误码的对应关系。
 
@@ -68,33 +68,27 @@ typedef uint16_t ErrorId;
 const char* text = get_comm_err_msg(errCode);   // 常见错误码 → 可读文本
 ```
 
-### 1.6 thread-local 错误状态
+### 1.6 utils 的错误返回
 
-大多数工具接口不抛异常、不返回 `ErrorCode`，而是把错误写进 thread-local 状态：
-
-```cpp
-#include <origin/thread/thread.h>
-
-void set_thread_last_err(ErrorCode errcode);
-ErrorCode get_thread_last_err();
-const char* get_thread_last_err_msg();
-```
-
-使用方式：
+utils 的可失败接口统一返回 `ErrorCode`，错误文本用纯函数获取：
 
 ```cpp
-if (!origin::filesystem::create_dir("logs/app")) {
+#include <origin/filesystem/filesystem.h>
+#include <origin/utils/utils_error_code.h>
+
+const ErrorCode rc = origin::filesystem::create_dir("logs/app");
+if (rc != ERR_COMM_SUCCESS) {
     std::printf("failed: %s (code=0x%llx)\n",
-                get_thread_last_err_msg(),
-                static_cast<unsigned long long>(get_thread_last_err()));
+                get_utils_err_msg(rc),
+                static_cast<unsigned long long>(rc));
 }
 ```
 
 注意：
 
-- 状态是 **thread-local** 的，异步/协程切换后不保证还是同一个上下文；
-- 成功路径一般会把错误码重置为 `ERR_COMM_SUCCESS`；
-- 需要精确区分"文件不存在"和"权限不足"时，读取 `get_thread_last_err()` 的原始值。
+- 公共 thread-local API（`get_thread_last_err*`）已移除，只作为库内部实现细节；
+- 错误码随返回值传递，异步/协程切换不会丢上下文；
+- 需要区分"不存在/权限不足"时，直接比较返回码。
 
 ## 二、C++ 标准库的错误类别
 
@@ -159,4 +153,4 @@ thread-local 状态。因此：
 - **对外统一用 `ErrorCode`**，避免把 `std::error_code` 泄漏到公共接口；
 - **跨平台比较用 `std::errc`**，不要直接比较 Windows 的 Win32 错误码；
 - **错误信息只用于展示**，逻辑判断用错误码本身；
-- 在异步/线程池场景下，及时把 thread-local 错误码复制到自己的上下文再使用。
+- 在异步/线程池场景下，错误码随返回值传递，不需要额外保存上下文。

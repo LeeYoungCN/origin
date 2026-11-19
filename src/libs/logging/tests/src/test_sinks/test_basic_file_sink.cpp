@@ -33,13 +33,13 @@ protected:
 void TestBasicFileSink::SetUp()
 {
     delete_dir(_dir, true);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestBasicFileSink::TearDown()
 {
     delete_dir(_dir, true);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 TEST_F(TestBasicFileSink, create_file_empty)

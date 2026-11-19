@@ -59,13 +59,13 @@ protected:
 void TestRotatingFileSink::SetUp()
 {
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestRotatingFileSink::TearDown()
 {
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 std::string TestRotatingFileSink::calc_log_file(const std::string& str)
@@ -133,7 +133,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
                                       const uint32_t rotateCount)
 {
     create_dir(_dir);
-    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
     const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
     std::vector<uint32_t> existFileIdx;
@@ -174,7 +174,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
                                                const uint32_t rotateCount)
 {
     create_dir(_dir);
-    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
     const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
     constexpr uint32_t maxFileSize = 1024;
@@ -221,7 +221,7 @@ TEST_F(TestRotatingFileSink, invalid_param)
 TEST_F(TestRotatingFileSink, init_with_existing_files)
 {
     create_dir(_dir);
-    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info_);
     const std::string logFile = fs_join({_dir, _fileNameStem + _extension});
 

@@ -1,7 +1,7 @@
 # 文件系统工具（`origin::filesystem`）
 
-`std::filesystem` 的薄封装层：对外只暴露 `std::string`（UTF-8），错误通过返回值和
-thread-local 错误码传递，不向调用方抛异常。
+`std::filesystem` 的薄封装层：对外只暴露 `std::string`（UTF-8），可失败接口统一
+返回 `ErrorCode`，不向调用方抛异常。
 
 设计说明与完整约定见头文件 `origin/filesystem/filesystem.h` 顶部注释。
 
@@ -114,18 +114,18 @@ public:
 
 ## 错误处理
 
-- 修改类接口（`create_file` / `delete_file` / `copy_file` / `rename_file` /
-  `write_text_file` / `create_dir` / `delete_dir`）返回 `ErrorCode`：成功为
-  `ERR_COMM_SUCCESS`，失败为具体错误码；
-- 查询类接口失败返回 `false` / 空字符串 / `0`；
-- 错误码同时写入 thread-local 状态，可用 `origin/thread/thread.h` 里的
-  `get_thread_last_err()` 和 `get_thread_last_err_msg()` 读取（诊断用途）。
+- 可失败接口统一返回 `ErrorCode`：成功为 `ERR_COMM_SUCCESS`，失败为具体错误码；
+- 需要产出值的接口（`read_text_file`、`get_file_size`、`join_paths` 等）用出参返回，
+  失败时出参不被修改；
+- 错误文本用纯函数获取，不再依赖 thread-local：
 
 ```cpp
-#include <origin/thread/thread.h>
+#include <origin/filesystem/filesystem.h>
+#include <origin/utils/utils_error_code.h>
 
-if (!origin::filesystem::create_dir("logs/app")) {
-    std::printf("create_dir failed: %s\n", get_thread_last_err_msg());
+const ErrorCode rc = origin::filesystem::create_dir("logs/app");
+if (rc != ERR_COMM_SUCCESS) {
+    std::printf("create_dir failed: %s\n", get_utils_err_msg(rc));
 }
 ```
 
@@ -135,25 +135,38 @@ if (!origin::filesystem::create_dir("logs/app")) {
 #include <cstdio>
 
 #include <origin/filesystem/filesystem.h>
-#include <origin/thread/thread.h>
+#include <origin/utils/utils_error_code.h>
 
 int main()
 {
-    const std::string dir = origin::filesystem::to_absolute_path("logs");
-    if (!origin::filesystem::create_dir(dir, true)) {
-        std::printf("create_dir failed: %s\n", get_thread_last_err_msg());
+    std::string dir;
+    if (origin::filesystem::to_absolute_path("logs", "", dir) != ERR_COMM_SUCCESS) {
+        return 1;
+    }
+    if (const ErrorCode rc = origin::filesystem::create_dir(dir, true); rc != ERR_COMM_SUCCESS) {
+        std::printf("create_dir failed: %s\n", get_utils_err_msg(rc));
         return 1;
     }
 
-    const std::string file = origin::filesystem::join_paths({dir, "app.log"});
-    if (!origin::filesystem::write_text_file(file, "hello\n", true)) {
-        std::printf("write failed: %s\n", get_thread_last_err_msg());
+    std::string file;
+    (void)origin::filesystem::join_paths({dir, "app.log"}, file);
+    if (const ErrorCode rc = origin::filesystem::create_file(file); rc != ERR_COMM_SUCCESS) {
+        std::printf("create_file failed: %s\n", get_utils_err_msg(rc));
+        return 1;
+    }
+    if (const ErrorCode rc = origin::filesystem::write_text_file(file, "hello\n", true);
+        rc != ERR_COMM_SUCCESS) {
+        std::printf("write failed: %s\n", get_utils_err_msg(rc));
         return 1;
     }
 
-    const FileInfo info = origin::filesystem::get_file_info(file);
-    std::printf("%s: %zu bytes, type=%d\n", info.path.c_str(), info.size,
-                static_cast<int>(info.type));
+    FileInfo info{};
+    if (origin::filesystem::get_file_info(file, info) == ERR_COMM_SUCCESS) {
+        std::printf("%s: %zu bytes, type=%d\n",
+                    info.path.c_str(),
+                    info.size,
+                    static_cast<int>(info.type));
+    }
     return 0;
 }
 ```

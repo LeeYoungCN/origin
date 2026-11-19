@@ -47,13 +47,13 @@ protected:
 void TestDailyFileSink::SetUp()
 {
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestDailyFileSink::TearDown()
 {
     delete_dir(_dir);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, TimestampMs time)
@@ -173,7 +173,7 @@ TEST_F(TestDailyFileSink, create_when_param_invalid)
 TEST_F(TestDailyFileSink, init_with_existing_files)
 {
     create_dir(_dir);
-    EXPECT_TRUE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_TRUE(dir_exists(_dir));
 
     const std::string filenameStem = get_logger_name(test_info_);
     const std::string baseFile = fs_join({_dir, filenameStem + ".log"});

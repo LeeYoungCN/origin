@@ -75,13 +75,9 @@ protected:
     void SetUp() override
     {
         (void)get_proc_path(m_process);
-        EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
         m_processDir = get_directory(m_process);
-        EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
         m_workDir = fs_cwd();
-        EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
         m_pid = get_curr_proc_id();
-        EXPECT_EQ(get_thread_last_err(), ERR_COMM_SUCCESS);
     };
     void TearDown() override {};
 

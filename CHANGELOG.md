@@ -22,19 +22,21 @@
 
 ### 变更
 
-- 错误处理长期方向：可失败接口统一返回 `ErrorCode`，错误文本用
-  `get_utils_err_msg(code)` / `get_comm_err_msg(code)` 获取；thread-local 的
-  `get_thread_last_err*` 降级为诊断辅助，待剩余接口迁移完成后移除。
-- `date_time` 的可失败接口增加 `ErrorCode` + 出参版本：`local_date_time`、
+- 错误处理统一为长期方案：可失败接口返回 `ErrorCode`，错误文本用
+  `get_utils_err_msg(code)` / `get_comm_err_msg(code)`；公共 thread-local API
+  （`get_thread_last_err*`）已移除，仅作为库内部实现细节。
+- `date_time` 的可失败接口改为 `ErrorCode` + 出参：`local_date_time`、
   `utc_date_time`、`timestamp_to_date_time`、`date_time_to_timestamp`、
   `get_month_*` / `get_weekday_*`、`format_time_string`、`append_time_string`、
-  `format_time_buffer`；旧签名保留为过渡重载。
-- `filesystem` 的读/路径接口增加 `ErrorCode` + 出参版本：`read_text_file`、
+  `format_time_buffer`；兼容重载已删除。
+- `filesystem` 的读/路径接口改为 `ErrorCode` + 出参：`read_text_file`、
   `get_file_size`、`get_entry_type`、`get_curr_working_dir`、`join_paths`、
-  `normalize_path`、`to_absolute_path`；旧签名保留为过渡便捷重载。
+  `normalize_path`、`to_absolute_path`；兼容重载已删除。
+- `process` / `strings` / `thread` 的可失败接口改为 `ErrorCode` + 出参：
+  `get_proc_*`、`va_list_to_string`、`set_curr_thread_name`、`get_curr_thread_name`。
 - **BREAKING**：`filesystem` 的写操作（`create_file` / `delete_file` / `copy_file` /
   `rename_file` / `write_text_file` / `create_dir` / `delete_dir`）返回值由 `bool`
-  改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）；thread-local 错误状态仅保留为诊断辅助。
+  改为 `ErrorCode`（成功为 `ERR_COMM_SUCCESS`）。
 - **BREAKING**：`origin/utils/{filesystem_utils,date_time_utils,thread_utils,process_utils,
   string_utils}.h` 迁移为 `origin/<domain>/<domain>.h`（如 `origin/filesystem/filesystem.h`），
   `file_writer.h` 移到 `origin/filesystem/file_writer.h`；旧路径直接删除，下游需更新 include。

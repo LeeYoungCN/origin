@@ -45,14 +45,14 @@ void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
 void TestSinkApi::SetUp()
 {
     delete_dir(_dir, true);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestSinkApi::TearDown()
 {
     _sink.reset();
     delete_dir(_dir, true);
-    EXPECT_FALSE(dir_exists(_dir)) << get_thread_last_err_msg();
+    EXPECT_FALSE(dir_exists(_dir));
 }
 
 TEST_F(TestSinkApi, param_string)

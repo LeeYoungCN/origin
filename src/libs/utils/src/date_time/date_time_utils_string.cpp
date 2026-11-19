@@ -9,7 +9,6 @@
  *
  */
 #include <array>
-#include "../internal/last_error.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -23,7 +22,6 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/date_time/date_time.h"
-#include "origin/thread/thread.h"
 #include "origin/utils/utils_error_code.h"
 
 namespace {
@@ -91,95 +89,107 @@ namespace {
 std::string_view month_full_name(uint32_t month)
 {
     std::string_view out{};
-    return origin::date_time::get_month_full_name(month, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+    return origin::date_time::get_month_full_name(month, out) == ERR_COMM_SUCCESS
+               ? out
+               : std::string_view{};
 }
 std::string_view month_abbr_name(uint32_t month)
 {
     std::string_view out{};
-    return origin::date_time::get_month_abbr_name(month, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+    return origin::date_time::get_month_abbr_name(month, out) == ERR_COMM_SUCCESS
+               ? out
+               : std::string_view{};
 }
 std::string_view weekday_full_name(uint32_t weekday)
 {
     std::string_view out{};
-    return origin::date_time::get_weekday_full_name(weekday, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+    return origin::date_time::get_weekday_full_name(weekday, out) == ERR_COMM_SUCCESS
+               ? out
+               : std::string_view{};
 }
 std::string_view weekday_abbr_name(uint32_t weekday)
 {
     std::string_view out{};
-    return origin::date_time::get_weekday_abbr_name(weekday, out) == ERR_COMM_SUCCESS ? out : std::string_view{};
+    return origin::date_time::get_weekday_abbr_name(weekday, out) == ERR_COMM_SUCCESS
+               ? out
+               : std::string_view{};
 }
 }  // namespace
 namespace origin::date_time {
-using namespace origin::thread;
 
 ErrorCode get_month_full_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
-        set_last_error(ERR_UTILS_MONTH_INVALID);
+        out = std::string_view{};
         ORIGIN_DEBUG_ERR(
-            "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        out = std::string_view{}; return get_last_error();
+            "Month invalid out of range [{}, {}]. month: {}.", MIN_MONTH, MAX_MONTH, month);
+        return ERR_UTILS_MONTH_INVALID;
     }
-    set_last_error(ERR_COMM_SUCCESS);
-    out = MONTH_FULL_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
+    out = MONTH_FULL_NAMES.at(month - MIN_MONTH);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out)
 {
     if (month < MIN_MONTH || month > MAX_MONTH) {
-        set_last_error(ERR_UTILS_MONTH_INVALID);
+        out = std::string_view{};
         ORIGIN_DEBUG_ERR(
-            "Month invalid out of range [{}, {}]. weekday: {}.", MIN_MONTH, MAX_MONTH, month);
-        out = std::string_view{}; return get_last_error();
+            "Month invalid out of range [{}, {}]. month: {}.", MIN_MONTH, MAX_MONTH, month);
+        return ERR_UTILS_MONTH_INVALID;
     }
-    set_last_error(ERR_COMM_SUCCESS);
-    out = MONTH_ABBR_NAMES.at(month - MIN_MONTH); return ERR_COMM_SUCCESS;
+    out = MONTH_ABBR_NAMES.at(month - MIN_MONTH);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
-        set_last_error(ERR_UTILS_WEEKDAY_INVALID);
+        out = std::string_view{};
         ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        out = std::string_view{}; return get_last_error();
+        return ERR_UTILS_WEEKDAY_INVALID;
     }
-    set_last_error(ERR_COMM_SUCCESS);
-    out = WEEKDAY_FULL_NAMES.at(weekday); return ERR_COMM_SUCCESS;
+    out = WEEKDAY_FULL_NAMES.at(weekday);
+    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out)
 {
     if (weekday < MIN_WEEKDAY || weekday > MAX_WEEKDAY) {
-        set_last_error(ERR_UTILS_WEEKDAY_INVALID);
+        out = std::string_view{};
         ORIGIN_DEBUG_ERR("Weekday invalid out of range [{}, {}]. weekday: {}.",
                          MIN_WEEKDAY,
                          MAX_WEEKDAY,
                          weekday);
-        out = std::string_view{}; return get_last_error();
+        return ERR_UTILS_WEEKDAY_INVALID;
     }
-    set_last_error(ERR_COMM_SUCCESS);
-    out = WEEKDAY_ABBR_NAMES.at(weekday); return ERR_COMM_SUCCESS;
+    out = WEEKDAY_ABBR_NAMES.at(weekday);
+    return ERR_COMM_SUCCESS;
 }
 
-ErrorCode format_time_string(TimestampMs timestamp, const std::string_view& format,
-                             TimeZone timeZone, std::string& out)
+ErrorCode format_time_string(TimestampMs timestamp,
+                             const std::string_view& format,
+                             TimeZone timeZone,
+                             std::string& out)
 {
     out.clear();
     return append_time_string(out, timestamp, format, timeZone);
 }
 
-ErrorCode format_time_string(const DateTimeSt& dateTime, const std::string_view& format,
+ErrorCode format_time_string(const DateTimeSt& dateTime,
+                             const std::string_view& format,
                              std::string& out)
 {
     out.clear();
     return append_time_string(out, dateTime, format);
 }
 
-ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
-                             const std::string_view& format, TimeZone timeZone)
+ErrorCode append_time_string(std::string& timeString,
+                             TimestampMs timestamp,
+                             const std::string_view& format,
+                             TimeZone timeZone)
 {
     DateTimeSt dateTime{};
     const ErrorCode rc = timestamp_to_date_time(timestamp, timeZone, dateTime);
@@ -189,7 +199,8 @@ ErrorCode append_time_string(std::string& timeString, TimestampMs timestamp,
     return append_time_string(timeString, dateTime, format);
 }
 
-ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime,
+ErrorCode append_time_string(std::string& timeString,
+                             const DateTimeSt& dateTime,
                              const std::string_view& format)
 {
     size_t formatIdx = 0;
@@ -260,33 +271,21 @@ ErrorCode append_time_string(std::string& timeString, const DateTimeSt& dateTime
                 timeString.append(std::string_view(format.data() + formatIdx - 1, 1));
                 break;
         }
-
     }
 
-    set_last_error(ERR_COMM_SUCCESS);
     return ERR_COMM_SUCCESS;
 }
 
-size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                               const std::string_view& format);
-
-size_t format_time_buffer_impl(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                               const std::string_view& format, TimeZone timeZone)
+ErrorCode format_time_buffer_impl(char* buffer,
+                                  size_t bufferSize,
+                                  const DateTimeSt& dateTime,
+                                  const std::string_view& format,
+                                  size_t& outLen)
 {
-    DateTimeSt dateTime{};
-    if (timestamp_to_date_time(timestamp, timeZone, dateTime) != ERR_COMM_SUCCESS) {
-        return 0;
-    }
-    return format_time_buffer_impl(buffer, bufferSize, dateTime, format);
-}
-
-size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                               const std::string_view& format)
-{
+    outLen = 0;
     if (buffer == nullptr || bufferSize == 0) {
-        set_last_error(ERR_COMM_PARAM_INVALID);
         ORIGIN_DEBUG_ERR("Invalid param!");
-        return 0;
+        return ERR_COMM_PARAM_INVALID;
     }
     size_t formatIdx = 0;
     size_t bufferIdx = 0;
@@ -298,7 +297,6 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
     auto insertDateTimeNumber = [&](uint32_t number, size_t numberLen) -> bool {
         uint32_t tmp = number;
         if (bufferIdx + numberLen >= bufferSize) {
-            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
             ORIGIN_DEBUG_ERR("Failed to insert number: %lu", number);
             return false;
         }
@@ -317,7 +315,6 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
         std::string_view insertName = name.empty() ? "?" : name;
 
         if (bufferIdx + insertName.length() >= bufferSize) {
-            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
             ORIGIN_DEBUG_ERR("Failed to insert string: {}", insertName.data());
             return false;
         }
@@ -393,24 +390,25 @@ size_t format_time_buffer_impl(char* buffer, size_t bufferSize, const DateTimeSt
         }
     }
     if (formatIdx < format.length() || bufferIdx >= bufferSize) {
-        if (get_last_error() == ERR_COMM_SUCCESS) {
-            set_last_error(ERR_COMM_BUFFER_OVERFLOW);
-        }
         ORIGIN_DEBUG_ERR("Incomplete format processing (remaining: {}), message: {}",
                          format.data() + formatIdx,
-                         get_last_error_msg());
+                         get_utils_err_msg(ERR_COMM_BUFFER_OVERFLOW));
         bufferIdx = 0;
-    } else {
-        set_last_error(ERR_COMM_SUCCESS);
+        buffer[bufferIdx] = '\0';
+        return ERR_COMM_BUFFER_OVERFLOW;
     }
 
     buffer[bufferIdx] = '\0';
-
-    return bufferIdx;
+    outLen = bufferIdx;
+    return ERR_COMM_SUCCESS;
 }
 
-ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timestamp,
-                             const std::string_view& format, TimeZone timeZone, size_t& outLen)
+ErrorCode format_time_buffer(char* buffer,
+                             size_t bufferSize,
+                             TimestampMs timestamp,
+                             const std::string_view& format,
+                             TimeZone timeZone,
+                             size_t& outLen)
 {
     DateTimeSt dateTime{};
     const ErrorCode rc = timestamp_to_date_time(timestamp, timeZone, dateTime);
@@ -421,11 +419,13 @@ ErrorCode format_time_buffer(char* buffer, size_t bufferSize, TimestampMs timest
     return format_time_buffer(buffer, bufferSize, dateTime, format, outLen);
 }
 
-ErrorCode format_time_buffer(char* buffer, size_t bufferSize, const DateTimeSt& dateTime,
-                             const std::string_view& format, size_t& outLen)
+ErrorCode format_time_buffer(char* buffer,
+                             size_t bufferSize,
+                             const DateTimeSt& dateTime,
+                             const std::string_view& format,
+                             size_t& outLen)
 {
-    outLen = format_time_buffer_impl(buffer, bufferSize, dateTime, format);
-    return get_last_error();
+    return format_time_buffer_impl(buffer, bufferSize, dateTime, format, outLen);
 }
 
 }  // namespace origin::date_time

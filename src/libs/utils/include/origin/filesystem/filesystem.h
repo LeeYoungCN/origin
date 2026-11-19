@@ -293,8 +293,6 @@ ErrorCode create_dir(std::string_view path, bool recursive = true);
 ErrorCode delete_dir(std::string_view path, bool recursive = true);
 
 // ------------------------------ 值返回便捷重载（忽略错误码） ------------------------------
-// 以下重载直接返回值，适合不需要区分错误原因的场景；失败时返回默认值
-// （空串 / 0 / UNKNOWN）。需要错误码时请使用上面的 ErrorCode 版本。
 
 /**
  * @brief 获取路径条目类型（值返回）

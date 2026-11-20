@@ -489,7 +489,7 @@ function run_gtest() {
         "${cmake_test_runtime}" --gtest_list_tests
         ;;
     all)
-        "${cmake_test_runtime}"
+        "${cmake_test_runtime}" --gtest_shuffle
         ;;
     *)
         "${cmake_test_runtime}" --gtest_filter="${arg_gtest_case}"

@@ -164,7 +164,8 @@ function clean_env() {
         echo "all(default), build, install, testing, pkg"
         ;;
     *)
-        print_log "Invalid clean type: [${arg_clean_type}] (valid: all, build, install, testing, pkg)"
+        print_log "Invalid clean type: [${arg_clean_type}] (valid: all, build, install, testing, pkg)" error
+        exit 1
         ;;
     esac
 }
@@ -644,6 +645,14 @@ function main() {
             ;;
         esac
     done
+
+    # getopt 只把 --clean=list 这种 = 形式当作可选参数的值；
+    # 写成 --clean list 时 list 会落在 -- 之后成为位置参数，
+    # 若静默丢弃就会退化成默认的 all，误删全部构建目录。
+    if [ $# -gt 0 ]; then
+        print_log "Unexpected argument: $* (optional arguments require --option=value)" error
+        exit 1
+    fi
 
     readonly arg_enable_clean
     readonly arg_clean_type

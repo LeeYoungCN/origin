@@ -186,6 +186,9 @@ function list_cmake_configure_param_in_dir() {
     fi
     echo "----- ${build_dir} -----"
     while IFS= read -r line; do
+        case "${line}" in
+        '' | '#'*) continue ;;
+        esac
         local key="${line%%=*}"
         local val="${line#*=}"
         local white_space="                              "

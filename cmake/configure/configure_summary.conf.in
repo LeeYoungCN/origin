@@ -1,3 +1,7 @@
+# 本文件由 configure_summary.cmake 经 configure_file 生成，随后被
+# cmake_tools.sh 的 init_cmake_env() source 回填构建参数。
+# 左侧变量名必须与 cmake_tools.sh 中的 shell 变量同名：重命名时两边同步修改，
+# 否则 source 会写入错误变量，或把脚本已经算好的值清空。
 ARCHITECTURE="@ARCHITECTURE@"
 cmake_configure_file="@CMAKE_CONFIGURE_FILE@"
 project_version="@PROJECT_VERSION@"

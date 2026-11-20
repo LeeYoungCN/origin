@@ -3,7 +3,7 @@
 #
 # 调用方约定：
 #   set(ORIGIN_VERSION_FILE "2.0.0")          # 树内唯一来源，发版时改这一行
-#   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
+#   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version/project_version.cmake)
 #   project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
 #
 # 可选 -D 覆盖：

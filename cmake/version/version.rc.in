@@ -1,4 +1,4 @@
-// 由 cmake/version_resource.cmake 从本模板生成，请勿手工修改目标文件。
+// 由 cmake/version/version_resource.cmake 从本模板生成，请勿手工修改目标文件。
 // 数值字段必须是 4 个 16 位整数，因此用 major/minor/patch；
 // 带 -dev+g<sha> 的完整版本只出现在字符串字段里。
 //

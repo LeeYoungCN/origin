@@ -13,13 +13,16 @@ set(ORIGIN_RC_COMPANY "LeeYoungCN" CACHE STRING "VERSIONINFO 的 CompanyName")
 set(ORIGIN_RC_COPYRIGHT "Copyright (c) 2026 LeeYoungCN" CACHE STRING "VERSIONINFO 的 LegalCopyright")
 set(ORIGIN_RC_PRODUCT_NAME "${PROJECT_NAME}" CACHE STRING "VERSIONINFO 的 ProductName")
 
+# 在 include 时固化模板路径；函数内部 CMAKE_CURRENT_LIST_DIR 会变成调用方目录。
+set(ORIGIN_VERSION_RC_TEMPLATE "${CMAKE_CURRENT_LIST_DIR}/version.rc.in")
+
 function(origin_add_version_resource target output_name)
     if(NOT WIN32)
         return()
     endif()
 
     if(NOT DEFINED ORIGIN_RC_COMPANY OR "${ORIGIN_RC_COMPANY}" STREQUAL "")
-        message(FATAL_ERROR "ORIGIN_RC_COMPANY is empty; include cmake/version_resource.cmake first")
+        message(FATAL_ERROR "ORIGIN_RC_COMPANY is empty; include cmake/version/version_resource.cmake first")
     endif()
 
     set(description "${ARGV2}")
@@ -42,7 +45,7 @@ function(origin_add_version_resource target output_name)
 
     set(rc_file "${CMAKE_CURRENT_BINARY_DIR}/${target}.version.rc")
     configure_file(
-        "${PROJECT_SOURCE_DIR}/cmake/version.rc.in"
+        "${ORIGIN_VERSION_RC_TEMPLATE}"
         "${rc_file}"
         @ONLY)
 

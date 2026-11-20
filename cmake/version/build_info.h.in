@@ -1,7 +1,7 @@
 #ifndef ORIGIN_BUILD_INFO_H
 #define ORIGIN_BUILD_INFO_H
 
-// 该文件由 cmake/build_info.h.in 生成，请勿手改。
+// 该文件由 cmake/version/build_info.h.in 生成，请勿手改。
 //
 // 开发版相关的版本信息（完整串 / 提交号 / 是否脏）单独成一个头文件：
 // 它们随提交变化，放进 version.h 会让所有依赖版本头的编译单元重编。

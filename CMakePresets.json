@@ -21,7 +21,7 @@
             "hidden": true,
             "generator": "Ninja",
             "inherits": "project_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_msvc.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/win_msvc.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
@@ -97,7 +97,7 @@
             "hidden": true,
             "inherits": "win_clang_base",
             "generator": "MinGW Makefiles",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_clang_mingw.cmake"
+            "toolchainFile": "${sourceDir}/cmake/toolchains/win_clang_mingw.cmake"
         },
         {
             "name": "win_clang_mingw_debug",
@@ -120,7 +120,7 @@
             "hidden": true,
             "generator": "Ninja",
             "inherits": "win_clang_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_clang_msvc.cmake"
+            "toolchainFile": "${sourceDir}/cmake/toolchains/win_clang_msvc.cmake"
         },
         {
             "name": "win_clang_msvc_debug",
@@ -143,7 +143,7 @@
             "hidden": true,
             "generator": "MinGW Makefiles",
             "inherits": "project_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_mingw.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/win_mingw.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc.exe",
                 "CMAKE_CXX_COMPILER": "g++.exe"
@@ -175,7 +175,7 @@
             "hidden": true,
             "generator": "Ninja",
             "inherits": "project_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/win_clang_cl.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/win_clang_cl.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang-cl.exe",
                 "CMAKE_CXX_COMPILER": "clang-cl.exe"
@@ -217,7 +217,7 @@
             "name": "linux_gnu_base",
             "hidden": true,
             "inherits": "linux_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/linux_gnu.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/linux_gnu.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "/usr/bin/gcc",
                 "CMAKE_CXX_COMPILER": "/usr/bin/g++"
@@ -243,7 +243,7 @@
             "name": "linux_clang_base",
             "hidden": true,
             "inherits": "linux_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/linux_clang.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/linux_clang.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++"
@@ -280,7 +280,7 @@
             "name": "darwin_clang_base",
             "hidden": true,
             "inherits": "darwin_base",
-            "toolchainFile": "${sourceDir}/cmake/toolchain_files/darwin_clang.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchains/darwin_clang.cmake",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++"

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
 # 版本号唯一来源：发版时改这里，并打同名 tag（v<版本号>），CI 负责校验两者一致。
-# 解析逻辑（-D 覆盖、开发版后缀、纯数字提取）见 cmake/project_version.cmake。
+# 解析逻辑（-D 覆盖、开发版后缀、纯数字提取）见 cmake/version/project_version.cmake。
 set(ORIGIN_VERSION_FILE "2.0.0")
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/project_version.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version/project_version.cmake)
 
 project(Origin VERSION ${ORIGIN_VERSION_NUMERIC} LANGUAGES C CXX)
 
@@ -22,14 +22,14 @@ endif()
 
 # 版本头：产物里能查到编译时使用的版本
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/version/version.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/version.h"
     @ONLY)
 
 # 开发版信息（完整串 / 提交号 / 是否脏）单独生成，只有 Common 的 version.cpp 引用，
 # 避免每次提交或 reconfigure 触发全量重编。
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/build_info.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/version/build_info.h.in"
     "${CMAKE_BINARY_DIR}/generated/origin/build_info.h"
     @ONLY)
 
@@ -81,7 +81,7 @@ endif()
 
 
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/get_cmake_preset.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/preset_info.cmake)
 
 # 被 FetchContent / add_subdirectory 嵌入时，不要覆盖父项目的全局设置
 if(ORIGIN_TOP_LEVEL)
@@ -123,7 +123,7 @@ if (ORIGIN_TOP_LEVEL AND NOT EXISTS "${CMAKE_THIRD_PARTY_PATH}")
     message(WARNING "CMAKE_THIRD_PARTY_PATH does not exist: ${CMAKE_THIRD_PARTY_PATH}")
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_configure_info.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/configure/configure_summary.cmake)
 
 if (ORIGIN_BUILD_TESTS)
     enable_testing()

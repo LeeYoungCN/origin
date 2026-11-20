@@ -2,7 +2,7 @@
 
 本项目版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-版本号的唯一来源是 **`CMakeLists.txt` 里的 `ORIGIN_VERSION_FILE`**（解析逻辑在 `cmake/project_version.cmake`）：
+版本号的唯一来源是 **`CMakeLists.txt` 里的 `ORIGIN_VERSION_FILE`**（解析逻辑在 `cmake/version/project_version.cmake`）：
 
 - 发版 = 一个把 `ORIGIN_VERSION_FILE` 改成新版本号、同时在本文加一节的提交，然后打**同名** tag（`v1.2.3`）；
 - CI 只做**校验**：tag 与 `ORIGIN_VERSION_FILE` 不一致时构建直接失败，不再往编译里注入版本号；

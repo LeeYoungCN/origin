@@ -2,7 +2,7 @@ set_property(GLOBAL PROPERTY ORIGIN_LIB_LIST "")
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
-include(${PROJECT_SOURCE_DIR}/cmake/version_resource.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/version/version_resource.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/origin_component.cmake)
 
 

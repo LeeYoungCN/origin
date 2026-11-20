@@ -32,7 +32,7 @@ cd "${ROOT_DIR}" || exit 1
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
 readonly PACKAGE_ROOT_DIR="${ROOT_DIR}/out/pkg"
-readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchain_files"
+readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchains"
 gtest_target="test_origin"
 
 

@@ -30,7 +30,7 @@ source "${SCRIPT_DIR}/common_func.sh"
 cd "${ROOT_DIR}" || exit 1
 
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
-readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchain_files"
+readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchains"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
 
 arg_preset=""

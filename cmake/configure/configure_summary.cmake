@@ -6,7 +6,7 @@ if(CPU_CORES EQUAL 0)
 endif()
 
 set(CMAKE_CONFIGURE_FILE  ${CMAKE_BINARY_DIR}/cmake_configure.conf)
-set(CMAKE_CONFIGURE_SRC   ${CMAKE_CURRENT_LIST_DIR}/cmake_configure.conf.in)
+set(CMAKE_CONFIGURE_SRC   ${CMAKE_CURRENT_LIST_DIR}/configure_summary.conf.in)
 
 configure_file(
     "${CMAKE_CONFIGURE_SRC}"

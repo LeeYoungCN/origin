@@ -16,4 +16,4 @@ add_subdirectory(logging)
 get_property(LIB_LIST GLOBAL PROPERTY ORIGIN_LIB_LIST)
 message(STATUS "LIB_LIST: ${LIB_LIST}")
 
-include(${PROJECT_SOURCE_DIR}/cmake/package/main_config.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/package/install_export.cmake)

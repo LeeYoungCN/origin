@@ -11,7 +11,7 @@ write_basic_package_version_file(
 
 # 主Config模板
 configure_package_config_file(
-    "${CMAKE_CURRENT_LIST_DIR}/project_config.cmake.in"
+    "${CMAKE_CURRENT_LIST_DIR}/OriginConfig.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )

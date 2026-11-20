@@ -1,21 +1,29 @@
 # GTest 源码缓存：所有 preset 共用一份源码，构建目录留在各 preset 的 _deps 下。
 # 这样 MinGW/MSVC 不会共用同一个 googletest-build，避免生成器冲突。
-set(ORIGIN_GTEST_CACHE_DIR "${PROJECT_SOURCE_DIR}/.cache/googletest-src"
-    CACHE PATH "FetchContent 下载 googletest 的独立源码目录")
+set(ORIGIN_GTEST_CACHE_DIR "${PROJECT_SOURCE_DIR}/external/googletest-src"
+    CACHE PATH "FetchContent 下载 googletest 的源码目录")
 
 include(FetchContent)
 
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  # 1.12.1(2022) 自身用 /W4 /WX 编译，clang-cl 16+ 的 /W4 会打开
-  # -Wcharacter-conversion，命中 gtest-printers.h 里 char16_t/char8_t ->
-  # char32_t 的隐式转换，再被 /WX 升级成 error。v1.18.0 起 gtest 不再对
-  # 自身用 /WX。
-  GIT_TAG        v1.18.0
-  GIT_SHALLOW    TRUE
-  SOURCE_DIR     "${ORIGIN_GTEST_CACHE_DIR}"
-)
+if (EXISTS "${ORIGIN_GTEST_CACHE_DIR}/CMakeLists.txt")
+  # 已经下载过：只声明 SOURCE_DIR，完全跳过 download/update 步骤
+  FetchContent_Declare(
+    googletest
+    SOURCE_DIR "${ORIGIN_GTEST_CACHE_DIR}"
+  )
+else()
+  FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    # 1.12.1(2022) 自身用 /W4 /WX 编译，clang-cl 16+ 的 /W4 会打开
+    # -Wcharacter-conversion，命中 gtest-printers.h 里 char16_t/char8_t ->
+    # char32_t 的隐式转换，再被 /WX 升级成 error。v1.18.0 起 gtest 不再对
+    # 自身用 /WX。
+    GIT_TAG        v1.18.0
+    GIT_SHALLOW    TRUE
+    SOURCE_DIR     "${ORIGIN_GTEST_CACHE_DIR}"
+  )
+endif()
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # gtest 的安装规则默认开启（INSTALL_GTEST 默认 ON），会把 include/gtest、

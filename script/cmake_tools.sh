@@ -112,9 +112,9 @@ function print_help() {
     echo "        --gtest[=<case-filter>]        Run gtest test case:         --gtest (all cases)"
     echo "                                       Run filtered cases:         --gtest=Version.*"
     echo "                                       List all cases:             --gtest=list"
-    echo "        --gtest_target[=<target>]      Run a single test executable. Default test_origin"
+    echo "        --gtest-target[=<target>]      Run a single test executable. Default test_origin"
     echo "                                       (aggregate target with all component tests; filter cases with --gtest=<filter>)"
-    echo "                                       e.g. --gtest_target=test_Logging"
+    echo "                                       e.g. --gtest-target=test_Logging"
     echo ""
     echo "        --ctest[=<ctest-case>]         Rerun ctest case TEST_ALL:    --ctest or --ctest=all"
     echo "                                       Run target ctest case:        --ctest=<ctest-case>"
@@ -128,7 +128,7 @@ function print_help() {
     echo ""
     echo "        --asan                         Enable asan."
     echo ""
-    echo "        --no_test                      Skip building tests (ORIGIN_BUILD_TESTS=OFF)."
+    echo "        --no-test                      Skip building tests (ORIGIN_BUILD_TESTS=OFF)."
     echo ""
     echo "        --list                         List cmake configure param."
     echo ""
@@ -554,7 +554,7 @@ function run_ctest() {
 function main() {
     if ! ARGS=$(
         getopt -o c::p:s: \
-            --long clean::,preset:,configure,asan,no_test,build::,install::,gtest::,gtest_target::,ctest::,pkg::,help,list \
+            --long clean::,preset:,configure,asan,no-test,build::,install::,gtest::,gtest-target::,ctest::,pkg::,help,list \
             -n "$0" -- "$@"
     ); then
         print_log "getopt failed." error
@@ -569,7 +569,7 @@ function main() {
             arg_enable_asan="ON"
             shift
             ;;
-        --no_test)
+        --no-test)
             arg_build_test="OFF"
             shift
             ;;
@@ -602,7 +602,7 @@ function main() {
             fi
             shift 2
             ;;
-        --gtest_target)
+        --gtest-target)
             arg_enable_gtest=0
             if [ -n "${2}" ]; then
                 gtest_target="${2}"

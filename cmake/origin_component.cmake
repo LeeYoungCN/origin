@@ -1,10 +1,53 @@
 # 组件构建脚手架：库目标与测试目标的统一创建入口。
 #
 # 这里只放 Origin 自己的构建函数（不安装、不导出）：
-#   origin_add_component(<lib>)         创建组件库的公共配置
-#   origin_add_component_tests(<lib>)   创建组件测试目标与 CTest 用例
+#   origin_apply_compile_options(<target>)  目标级编译选项（MSVC/警告/ASAN/测试宏）
+#   origin_apply_link_options(<target>)    目标级链接选项（ASAN）
+#   origin_add_component(<lib>)             创建组件库的公共配置
+#   origin_add_component_tests(<lib>)       创建组件测试目标与 CTest 用例
 
-# 配置组件的库目标：include 路径、Threads、警告、产物名、版本资源、安装规则。
+# 编译选项统一走 target 级，避免全局 add_compile_options 污染 GTest、Qt 等第三方目标。
+function(origin_apply_compile_options target)
+    if (MSVC)
+        target_compile_options(${target} PRIVATE
+            /utf-8
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
+        if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            # clang-cl 不支持这两个 MSVC 专有选项
+            target_compile_options(${target} PRIVATE
+                $<$<COMPILE_LANGUAGE:CXX>:/permissive->
+                $<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor>)
+        endif()
+    endif()
+
+    if (ORIGIN_WARNING_OPTIONS)
+        target_compile_options(${target} PRIVATE ${ORIGIN_WARNING_OPTIONS})
+    endif()
+
+    if (ORIGIN_ENABLE_ASAN)
+        if (MSVC)
+            target_compile_options(${target} PRIVATE /fsanitize=address /Zi)
+        elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+            target_compile_options(${target} PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+        endif()
+    endif()
+
+    if (ORIGIN_BUILD_TESTS)
+        target_compile_definitions(${target} PRIVATE ORIGIN_ENABLE_TEST)
+    endif()
+endfunction()
+
+function(origin_apply_link_options target)
+    if (ORIGIN_ENABLE_ASAN)
+        if (MSVC)
+            target_link_options(${target} PRIVATE /fsanitize=address /INCREMENTAL:NO)
+        elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+            target_link_options(${target} PRIVATE -fsanitize=address)
+        endif()
+    endif()
+endfunction()
+
+# 配置组件的库目标：include 路径、Threads、C++ 标准、编译/链接选项、产物名、版本资源、安装规则。
 # 源文件由各组件目录自己 add_library，再调用本函数。
 function(origin_add_component lib)
     set(origin_output_name "${PROJECT_NAME}${lib}")
@@ -26,17 +69,21 @@ function(origin_add_component lib)
 
     target_link_libraries(${lib} PUBLIC Threads::Threads)
 
-    # 警告只作用于 Origin 自己的库，第三方（FetchContent）不受影响
-    if (ORIGIN_WARNING_OPTIONS)
-        target_compile_options(${lib} PRIVATE ${ORIGIN_WARNING_OPTIONS})
-    endif()
+    # 导出 C++20 要求：安装后的消费者也能自动获得 -std=c++20
+    target_compile_features(${lib} PUBLIC cxx_std_20)
 
     set_target_properties(${lib} PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+        C_STANDARD 23
+        C_STANDARD_REQUIRED ON
         OUTPUT_NAME   "${origin_output_name}"
         DEBUG_POSTFIX "d"
         VERSION       ${PROJECT_VERSION}
         SOVERSION     ${PROJECT_VERSION_MAJOR}
     )
+
+    origin_apply_compile_options(${lib})
+    origin_apply_link_options(${lib})
 
     # MinGW 默认给 DLL 加 lib 前缀（libOriginLoggingd.dll），与 MSVC 的命名不一致；
     # Windows 上统一去掉，保证两种工具链的产物名一致
@@ -101,6 +148,13 @@ function(origin_add_component_tests lib)
     target_link_libraries(${test_runtime} PUBLIC ${test_link_libs})
     target_link_libraries(${test_object} PRIVATE Threads::Threads)
     target_link_libraries(${test_runtime} PRIVATE Threads::Threads)
+
+    target_compile_features(${test_object} PUBLIC cxx_std_20)
+    target_compile_features(${test_runtime} PRIVATE cxx_std_20)
+
+    origin_apply_compile_options(${test_object})
+    origin_apply_compile_options(${test_runtime})
+    origin_apply_link_options(${test_runtime})
 
     if (ARG_INCLUDE_DIRS)
         target_include_directories(${test_object} PUBLIC ${ARG_INCLUDE_DIRS})

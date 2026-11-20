@@ -33,19 +33,15 @@ configure_file(
     "${CMAKE_BINARY_DIR}/generated/origin/build_info.h"
     @ONLY)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS   ON)
 set(CMAKE_VERBOSE_MAKEFILE          OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# 输出目录只在顶层工程设置；被 FetchContent/add_subdirectory 嵌入时不要覆盖父工程
+if (ORIGIN_TOP_LEVEL)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif()
 
 option(ORIGIN_BUILD_TESTS "Build and run tests." OFF)
 option(ORIGIN_ENABLE_ASAN "Enable asan."         OFF)
@@ -59,12 +55,6 @@ if (MSVC)
     string(REGEX REPLACE " +" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
     string(REGEX REPLACE " +" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-    add_compile_options(/utf-8 $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>)
-    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        # clang-cl 不支持这两个 MSVC 专有选项，传了只会得到 unused argument 警告
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/permissive->)
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor>)
-    endif()
 endif()
 
 if (MSVC)
@@ -104,16 +94,11 @@ endif()
 
 if (ORIGIN_ENABLE_ASAN)
     if (MSVC)
-        add_compile_options(/fsanitize=address /Zi)
-        add_link_options(/fsanitize=address)
         # /RTC 与 ASan 不兼容，C 和 C++ 的 debug flags 都要清理
         foreach(flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG)
             string(REGEX REPLACE "/RTC(su|[1su])" "" ${flag} "${${flag}}")
         endforeach()
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
     elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-        add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
-        add_link_options(-fsanitize=address)
     else()
         message(WARNING "ASan is not supported on this platform/compiler.")
     endif()
@@ -127,7 +112,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/configure/configure_summary.cmake)
 
 if (ORIGIN_BUILD_TESTS)
     enable_testing()
-    add_compile_definitions(ORIGIN_ENABLE_TEST)
 endif()
 
 include(GNUInstallDirs)

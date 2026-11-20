@@ -9,3 +9,7 @@ add_executable(${TEST_RUNTIME}
     ${TEST_OBJ_LIST})
 
 target_link_libraries(${TEST_RUNTIME} GTest::gtest ${LIB_LIST})
+
+target_compile_features(${TEST_RUNTIME} PRIVATE cxx_std_20)
+origin_apply_compile_options(${TEST_RUNTIME})
+origin_apply_link_options(${TEST_RUNTIME})

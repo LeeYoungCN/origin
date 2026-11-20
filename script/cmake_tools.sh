@@ -31,6 +31,7 @@ cd "${ROOT_DIR}" || exit 1
 
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
+readonly TESTING_ROOT_DIR="${ROOT_DIR}/out/Testing"
 readonly PACKAGE_ROOT_DIR="${ROOT_DIR}/out/pkg"
 readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchains"
 gtest_target="test_origin"
@@ -60,6 +61,7 @@ arg_ctest_case="all"
 arg_enable_list_param=1
 
 arg_enable_asan="OFF"
+arg_build_test="ON"
 
 preset_array=("")
 
@@ -78,7 +80,7 @@ cmake_configure_param_cfg=""
 ARCHITECTURE="x64"
 env_param_file=""
 cmake_enable_asan="OFF"
-cmake_enable_test="ON"
+cmake_build_test="ON"
 
 g_is_init_param=1
 
@@ -126,6 +128,8 @@ function print_help() {
     echo ""
     echo "        --asan                         Enable asan."
     echo ""
+    echo "        --no_test                      Skip building tests (ORIGIN_BUILD_TESTS=OFF)."
+    echo ""
     echo "        --list                         List cmake configure param."
     echo ""
     echo "        --help                         Get help info."
@@ -134,11 +138,15 @@ function print_help() {
 function clean_env() {
     local build_dir="${BUILD_CACHE_ROOT_DIR}/${cmake_preset}"
     local install_dir="${INSTALL_ROOT_DIR}/${cmake_preset}"
+    local testing_dir="${TESTING_ROOT_DIR}/${cmake_preset}_ctest"
+    local pkg_dir="${PACKAGE_ROOT_DIR}/${cmake_preset}"
 
     case "${arg_clean_type}" in
     all)
         rm_dir "${build_dir}"
         rm_dir "${install_dir}"
+        rm_dir "${testing_dir}"
+        rm_dir "${pkg_dir}"
         ;;
     build)
         rm_dir "${build_dir}"
@@ -146,11 +154,17 @@ function clean_env() {
     install)
         rm_dir "${install_dir}"
         ;;
+    testing)
+        rm_dir "${testing_dir}"
+        ;;
+    pkg)
+        rm_dir "${pkg_dir}"
+        ;;
     list)
-        echo "all(default), build, install"
+        echo "all(default), build, install, testing, pkg"
         ;;
     *)
-        print_log "Invalid clean type: [${arg_clean_type}] (valid: all, build, install)"
+        print_log "Invalid clean type: [${arg_clean_type}] (valid: all, build, install, testing, pkg)"
         ;;
     esac
 }
@@ -357,7 +371,7 @@ function init_cmake_configure_param() {
     fi
 
     cmake_enable_asan="${arg_enable_asan}"
-
+    cmake_build_test="${arg_build_test}"
     if [ -n "${env_param_file}" ]; then
         # shellcheck disable=SC1090
         source "${env_param_file}"
@@ -378,6 +392,7 @@ function init_cmake_env() {
     cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     cmake_configure_param_cfg="${cmake_binary_dir}/cmake_configure.conf"
     cmake_enable_asan="${arg_enable_asan}"
+    cmake_build_test="${arg_build_test}"
     if [ -e "${cmake_configure_param_cfg}" ]; then
         # shellcheck disable=SC1090
         source "${cmake_configure_param_cfg}"
@@ -406,7 +421,7 @@ function cmake_configure() {
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
         -DORIGIN_ENABLE_ASAN="${cmake_enable_asan}" \
-        -DORIGIN_BUILD_TESTS="${cmake_enable_test}"; then
+        -DORIGIN_BUILD_TESTS="${cmake_build_test}"; then
         print_log "[${cmake_preset}] configure done." info
         cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     else
@@ -501,7 +516,7 @@ function run_ctest() {
     init_cmake_env
 
     # 与 CMakePresets.json 的 testPresets 对齐：同时输出文本日志和 JUnit 报告
-    local output_dir="${ROOT_DIR}/out/Testing/${cmake_preset}_ctest"
+    local output_dir="${TESTING_ROOT_DIR}/${cmake_preset}_ctest"
     local ctest_output_args=("--output-log" "${output_dir}/Test_ALL.log")
     if ctest --help 2>/dev/null | grep -q -- '--output-junit'; then
         ctest_output_args+=("--output-junit" "${output_dir}/Test_ALL.xml")
@@ -535,7 +550,7 @@ function run_ctest() {
 function main() {
     if ! ARGS=$(
         getopt -o c::p:s: \
-            --long clean::,install::,preset:,configure,build::,gtest::,ctest::,help,list,asan,gtest_target::,pkg:: \
+            --long clean::,preset:,configure,asan,no_test,build::,install::,gtest::,gtest_target::,ctest::,pkg::,help,list \
             -n "$0" -- "$@"
     ); then
         print_log "getopt failed." error
@@ -548,6 +563,10 @@ function main() {
         case "$1" in
         --asan)
             arg_enable_asan="ON"
+            shift
+            ;;
+        --no_test)
+            arg_build_test="OFF"
             shift
             ;;
         -c | --clean)

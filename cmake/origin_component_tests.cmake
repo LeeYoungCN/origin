@@ -50,10 +50,7 @@ function(origin_add_component_tests lib)
     # 聚合测试（test_origin）复用各组件的 OBJECT 列表
     set_property(GLOBAL APPEND PROPERTY ORIGIN_TEST_OBJ_LIST $<TARGET_OBJECTS:${test_object}>)
 
-    if (ORIGIN_TEST_SHUFFLE)
-        add_test(NAME ${test_runtime} COMMAND ${test_runtime} --gtest_shuffle)
-    else()
-        add_test(NAME ${test_runtime} COMMAND ${test_runtime})
-    endif()
+    # 默认随机化测试顺序，尽早暴露测试间的状态依赖
+    add_test(NAME ${test_runtime} COMMAND ${test_runtime} --gtest_shuffle)
     set_tests_properties(${test_runtime} PROPERTIES TIMEOUT 60)
 endfunction()

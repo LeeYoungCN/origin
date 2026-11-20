@@ -1,7 +1,6 @@
 if (ORIGIN_BUILD_TESTS)
     set_property(GLOBAL PROPERTY TEST_TIMEOUT 60)
     set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${CMAKE_THIRD_PARTY_PATH}/googletest")
-    option(ORIGIN_TEST_SHUFFLE "用 --gtest_shuffle 随机化测试执行顺序" OFF)
 
     find_package(GTest QUIET)
 

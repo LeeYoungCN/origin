@@ -5,7 +5,7 @@
 
 # 构建配置
 ARCHITECTURE="@ARCHITECTURE@"
-cmake_configure_file="@CMAKE_CONFIGURE_FILE@"
+build_config_file="@BUILD_CONFIG_FILE@"
 cmake_preset="@CMAKE_PRESET@"
 cmake_build_type="@CMAKE_BUILD_TYPE@"
 cmake_generator="@CMAKE_GENERATOR@"

@@ -5,18 +5,13 @@ if(CPU_CORES EQUAL 0)
     set(CPU_CORES 1)
 endif()
 
-# 顶层构建沿用 cmake_configure.conf（cmake_tools.sh 读取）；
-# 嵌入时写到 origin_configure.conf，避免和父工程同名覆盖。
-if (ORIGIN_TOP_LEVEL)
-    set(CMAKE_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/cmake_configure.conf)
-else()
-    set(CMAKE_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/origin_configure.conf)
-endif()
-set(CMAKE_CONFIGURE_SRC   ${CMAKE_CURRENT_LIST_DIR}/configure_summary.conf.in)
+# 顶层构建和嵌入构建都写 origin_build.conf；QtTimer 写 timer_build.conf，两者互不覆盖。
+set(BUILD_CONFIG_FILE ${CMAKE_BINARY_DIR}/origin_build.conf)
+set(BUILD_CONFIG_SRC  ${CMAKE_CURRENT_LIST_DIR}/build_config.conf.in)
 
 configure_file(
-    "${CMAKE_CONFIGURE_SRC}"
-    "${CMAKE_CONFIGURE_FILE}"
+    "${BUILD_CONFIG_SRC}"
+    "${BUILD_CONFIG_FILE}"
 )
 
 function(origin_summary_print key value)
@@ -37,7 +32,7 @@ origin_summary_print(CMAKE_BUILD_TYPE      "${CMAKE_BUILD_TYPE}")
 origin_summary_print(CMAKE_GENERATOR       "${CMAKE_GENERATOR}")
 origin_summary_print(CMAKE_TOOLCHAIN_FILE  "${CMAKE_TOOLCHAIN_FILE}")
 origin_summary_print(ENV_PARAM_FILE        "${ENV_PARAM_FILE}")
-origin_summary_print(CMAKE_CONFIGURE_FILE  "${CMAKE_CONFIGURE_FILE}")
+origin_summary_print(BUILD_CONFIG_FILE    "${BUILD_CONFIG_FILE}")
 
 # 版本
 origin_summary_print(ORIGIN_VERSION        "${ORIGIN_VERSION}")

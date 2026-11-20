@@ -179,7 +179,7 @@ function list_cmake_configure_param_in_dir() {
     local NC='\033[0m'
 
     local build_dir="${1}"
-    local configure_param_cfg="${build_dir}/cmake_configure.conf"
+    local configure_param_cfg="${build_dir}/origin_build.conf"
     if [ ! -e "${configure_param_cfg}" ]; then
         print_log "configure params file not found: ${configure_param_cfg}" error
         return 1
@@ -394,7 +394,7 @@ function init_cmake_env() {
         exit 1
     fi
     cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
-    cmake_configure_param_cfg="${cmake_binary_dir}/cmake_configure.conf"
+    cmake_configure_param_cfg="${cmake_binary_dir}/origin_build.conf"
     cmake_enable_asan="${arg_enable_asan}"
     cmake_build_test="${arg_build_test}"
     if [ -e "${cmake_configure_param_cfg}" ]; then

@@ -30,7 +30,6 @@ protected:
 
 TEST_P(TestDateTimeUtilsTimestampBuffer, TimestampMs)
 {
-    constexpr int64_t MILLIS_PER_DAY = 86400000;
     const auto &format = std::get<0>(GetParam());
     auto day = std::get<1>(GetParam());
     TimestampMs const currTs = get_now_timestamp_ms() + day * MILLIS_PER_DAY;

@@ -228,8 +228,13 @@ TEST(UtilsErrorCodeApi, GetterValueReturningOverloads)
     EXPECT_FALSE(origin::process::get_proc_directory().empty());
     EXPECT_FALSE(origin::process::get_proc_filename_stem().empty());
     EXPECT_EQ(FormatViaVaList("%d-%s", 7, "x"), "7-x");
+
+    // 线程名是线程局部状态，测试后恢复原值，避免影响其他用例
+    std::string originalName;
+    ASSERT_EQ(origin::thread::get_curr_thread_name(originalName), ERR_COMM_SUCCESS);
     ASSERT_EQ(origin::thread::set_curr_thread_name("value-overload"), ERR_COMM_SUCCESS);
     EXPECT_EQ(origin::thread::get_curr_thread_name(), "value-overload");
+    ASSERT_EQ(origin::thread::set_curr_thread_name(originalName.c_str()), ERR_COMM_SUCCESS);
 }
 
 }  // namespace

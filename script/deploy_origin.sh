@@ -32,6 +32,7 @@ cd "${ROOT_DIR}" || exit 1
 readonly BUILD_CACHE_ROOT_DIR="${ROOT_DIR}/out/build"
 readonly TOOLCHAIN_FILE_DIR="${ROOT_DIR}/cmake/toolchains"
 readonly INSTALL_ROOT_DIR="${ROOT_DIR}/out/install"
+readonly PACKAGE_ROOT_DIR="${ROOT_DIR}/out/pkg"
 
 arg_preset=""
 
@@ -50,7 +51,8 @@ cmake_configure_param_cfg=""
 ARCHITECTURE="x64"
 env_param_file=""
 cmake_enable_asan="OFF"
-cmake_enable_test="OFF"
+cmake_build_test="OFF"
+cpack_package_directory=""
 
 function init_cmake_preset() {
     case ${OS} in
@@ -211,6 +213,10 @@ function init_cmake_configure_param() {
         cmake_install_prefix="${INSTALL_ROOT_DIR}/${cmake_preset}"
     fi
 
+    if [ -z "${cpack_package_directory}" ]; then
+        cpack_package_directory="${PACKAGE_ROOT_DIR}/${cmake_preset}"
+    fi
+
     if [ -n "${env_param_file}" ]; then
         # shellcheck disable=SC1090
         source "${env_param_file}"
@@ -230,10 +236,11 @@ function cmake_configure() {
         -DCMAKE_TOOLCHAIN_FILE="${cmake_toolchain_file}" \
         -DCMAKE_BUILD_TYPE="${cmake_build_type}" \
         -DCMAKE_INSTALL_PREFIX="${cmake_install_prefix}" \
+        -DCPACK_PACKAGE_DIRECTORY="${cpack_package_directory}" \
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
-        -DENABLE_ASAN="${cmake_enable_asan}" \
-        -DBUILD_TESTS="${cmake_enable_test}"; then
+        -DORIGIN_ENABLE_ASAN="${cmake_enable_asan}" \
+        -DORIGIN_BUILD_TESTS="${cmake_build_test}"; then
         print_log "[${cmake_preset}] CMake configuration success." info
     else
         print_log "[${cmake_preset}] CMake configuration failed." error

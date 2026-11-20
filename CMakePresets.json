@@ -782,6 +782,102 @@
                 "project_package_base"
             ],
             "configurePreset": "darwin_clang_release"
+        },
+        {
+            "name": "msvc_x86_debug_pkg",
+            "description": "MSVC x86 Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "msvc_x86_debug"
+        },
+        {
+            "name": "msvc_x86_release_pkg",
+            "description": "MSVC x86 Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "msvc_x86_release"
+        },
+        {
+            "name": "win_clang_msvc_debug_pkg",
+            "description": "Clang MSVC Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_msvc_debug"
+        },
+        {
+            "name": "win_clang_msvc_release_pkg",
+            "description": "Clang MSVC Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_msvc_release"
+        },
+        {
+            "name": "win_clang_mingw_debug_pkg",
+            "description": "Clang MinGW Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_mingw_debug"
+        },
+        {
+            "name": "win_clang_mingw_release_pkg",
+            "description": "Clang MinGW Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_mingw_release"
+        },
+        {
+            "name": "win_mingw_debug_pkg",
+            "description": "MinGW Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_mingw_debug"
+        },
+        {
+            "name": "win_mingw_release_pkg",
+            "description": "MinGW Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_mingw_release"
+        },
+        {
+            "name": "win_clang_cl_debug_pkg",
+            "description": "Clang CL Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_cl_debug"
+        },
+        {
+            "name": "win_clang_cl_release_pkg",
+            "description": "Clang CL Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "win_clang_cl_release"
+        },
+        {
+            "name": "linux_clang_debug_pkg",
+            "description": "Linux Clang Debug Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "linux_clang_debug"
+        },
+        {
+            "name": "linux_clang_release_pkg",
+            "description": "Linux Clang Release Package",
+            "inherits": [
+                "project_package_base"
+            ],
+            "configurePreset": "linux_clang_release"
         }
     ],
     "workflowPresets": [

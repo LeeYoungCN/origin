@@ -16,9 +16,11 @@ target_include_directories(${LIB_NAME}
 # 头文件库同样把 C++20 要求传给消费者
 target_compile_features(${LIB_NAME} INTERFACE cxx_std_20)
 
-install(DIRECTORY include/
-        DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+if (ORIGIN_INSTALL)
+    install(DIRECTORY include/
+            DESTINATION include  # 安装路径：${CMAKE_INSTALL_PREFIX}/include
+            FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+endif()
 
 if (ORIGIN_BUILD_TESTS)
     add_subdirectory(tests)

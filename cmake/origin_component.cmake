@@ -95,14 +95,16 @@ function(origin_add_component lib)
     origin_add_version_resource(${lib} "${origin_output_name}" "${lib} library of ${PROJECT_NAME}")
 
     # 调试符号：MSVC / clang-cl 生成 PDB，随 Debug 包一起安装，方便单步进库代码
-    if(WIN32 AND NOT MINGW)
-        install(FILES $<TARGET_PDB_FILE:${lib}> DESTINATION ${CMAKE_INSTALL_BINDIR} OPTIONAL)
-    endif()
+    if (ORIGIN_INSTALL)
+        if(WIN32 AND NOT MINGW)
+            install(FILES $<TARGET_PDB_FILE:${lib}> DESTINATION ${CMAKE_INSTALL_BINDIR} OPTIONAL)
+        endif()
 
-    install(DIRECTORY include/
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        COMPONENT development
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+        install(DIRECTORY include/
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT development
+            FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+    endif()
 endfunction()
 
 # 为组件创建统一的测试目标：OBJECT 库 + 可执行文件 + CTest 用例。

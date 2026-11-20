@@ -45,6 +45,7 @@ endif()
 
 option(ORIGIN_BUILD_TESTS "Build and run tests." OFF)
 option(ORIGIN_ENABLE_ASAN "Enable asan."         OFF)
+option(ORIGIN_INSTALL "Generate install and export rules." ON)
 
 if (MSVC)
     # CMake 默认 flags 带 /W3，目标级再加 /W4 会触发 D9025（overriding /W3 with /W4）；

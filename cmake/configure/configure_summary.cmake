@@ -1,3 +1,9 @@
+# 嵌入到其他工程（FetchContent/add_subdirectory）时，CMAKE_BINARY_DIR 是父工程的，
+# 继续生成 cmake_configure.conf 会和父工程互相覆盖；只在 Origin 顶层构建时生成。
+if (NOT ORIGIN_TOP_LEVEL)
+    return()
+endif()
+
 include(ProcessorCount)
 ProcessorCount(CPU_CORES)
 

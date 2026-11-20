@@ -414,10 +414,10 @@ function cmake_configure() {
         -S "${cmake_source_dir}" \
         -B "${cmake_binary_dir}" \
         -G "${cmake_generator}" \
-        -DCMAKE_TOOLCHAIN_FILE="${cmake_toolchain_file}" \
         -DCMAKE_BUILD_TYPE="${cmake_build_type}" \
         -DCMAKE_INSTALL_PREFIX="${cmake_install_prefix}" \
         -DCPACK_PACKAGE_DIRECTORY="${cpack_package_directory}" \
+        -DCMAKE_TOOLCHAIN_FILE="${cmake_toolchain_file}" \
         -DCMAKE_PRESET="${cmake_preset}" \
         -DENV_PARAM_FILE="${env_param_file}" \
         -DORIGIN_ENABLE_ASAN="${cmake_enable_asan}" \

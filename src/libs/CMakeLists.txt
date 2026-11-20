@@ -3,6 +3,7 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
 include(${PROJECT_SOURCE_DIR}/cmake/version_resource.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/origin_component_tests.cmake)
 
 function(origin_add_component lib)
     set(origin_output_name "${PROJECT_NAME}${lib}")

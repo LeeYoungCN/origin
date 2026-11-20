@@ -95,6 +95,9 @@
 - `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`
   把 PATH / INCLUDE / LIB 导入当前 PowerShell 会话（支持 `-Architecture x86`），
   之后可直接 `cmake --preset=msvc_x64_debug`；bash 侧继续用 `load_msvc_env.sh`。
+- 测试工程统一：新增 `origin_add_component_tests(<lib>)` CMake 函数，组件测试只需
+  列出源文件；新增 `ORIGIN_TEST_SHUFFLE` 选项（默认 `OFF`），开启后用
+  `--gtest_shuffle` 随机化测试顺序。
 
 ### 升级指南（1.0.x → 2.0.0）
 

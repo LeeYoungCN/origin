@@ -3,59 +3,7 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)   # 必须在 find_package 之前设置
 find_package(Threads REQUIRED)
 
 include(${PROJECT_SOURCE_DIR}/cmake/version_resource.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/origin_component_tests.cmake)
-
-function(origin_add_component lib)
-    set(origin_output_name "${PROJECT_NAME}${lib}")
-
-    # 构建树与安装树使用同一套目标名（安装树导出 Origin::xxx）
-    add_library(${PROJECT_NAME}::${lib} ALIAS ${lib})
-
-    # 只负责配置组件；源文件由各组件目录自己 glob 后交给 add_library。
-    set_property(GLOBAL APPEND PROPERTY ORIGIN_LIB_LIST ${lib})
-
-    target_include_directories(${lib}
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # 编译时路径
-            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>        # 生成的 version.h
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>        # 安装时路径
-        PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/src                        # 内部头文件路径
-    )
-
-    target_link_libraries(${lib} PUBLIC Threads::Threads)
-
-    # 警告只作用于 Origin 自己的库，第三方（FetchContent）不受影响
-    if (ORIGIN_WARNING_OPTIONS)
-        target_compile_options(${lib} PRIVATE ${ORIGIN_WARNING_OPTIONS})
-    endif()
-
-    set_target_properties(${lib} PROPERTIES
-        OUTPUT_NAME   "${origin_output_name}"
-        DEBUG_POSTFIX "d"
-        VERSION       ${PROJECT_VERSION}
-        SOVERSION     ${PROJECT_VERSION_MAJOR}
-    )
-
-    # MinGW 默认给 DLL 加 lib 前缀（libOriginLoggingd.dll），与 MSVC 的命名不一致；
-    # Windows 上统一去掉，保证两种工具链的产物名一致
-    if (WIN32)
-        set_target_properties(${lib} PROPERTIES PREFIX "")
-    endif()
-
-    # Windows 专属：嵌入版本资源，资源管理器里能看到文件/产品版本
-    origin_add_version_resource(${lib} "${origin_output_name}" "${lib} library of ${PROJECT_NAME}")
-
-    # 调试符号：MSVC / clang-cl 生成 PDB，随 Debug 包一起安装，方便单步进库代码
-    if(WIN32 AND NOT MINGW)
-        install(FILES $<TARGET_PDB_FILE:${lib}> DESTINATION ${CMAKE_INSTALL_BINDIR} OPTIONAL)
-    endif()
-
-    install(DIRECTORY include/
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        COMPONENT development
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-endfunction()
+include(${PROJECT_SOURCE_DIR}/cmake/origin_component.cmake)
 
 
 # 显式列出组件目录，顺序按依赖排列（common → container → utils → logging）。

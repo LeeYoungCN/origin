@@ -1,13 +1,12 @@
 {
     "version": "2.0.0",
-    "type": "shell",
     "options": {
         "cwd": "${workspaceFolder}"
     },
     "tasks": [
         {
             "label": "Clean",
-            "detail": "清理所有build和install文件。",
+            "detail": "清理当前 preset 的 build/install/Testing/pkg 目录。",
             "options": {
                 "cwd": "${workspaceFolder}/script"
             },
@@ -43,7 +42,7 @@
         },
         {
             "label": "CMake Install",
-            "detail": "CMake: 构建项目",
+            "detail": "CMake: 构建并安装",
             "options": {
                 "cwd": "${workspaceFolder}/script"
             },
@@ -116,7 +115,7 @@
             "options": {
                 "cwd": "${workspaceFolder}/script"
             },
-            "command": "./format_all.sh*",
+            "command": "./format_all.sh",
             "args": [],
             "problemMatcher": []
         },
@@ -126,8 +125,10 @@
             "options": {
                 "cwd": "${workspaceFolder}/script"
             },
-            "command": "./git_oper.sh push",
-            "args": [],
+            "command": "./git_oper.sh",
+            "args": [
+                "push"
+            ],
             "problemMatcher": []
         },
         {
@@ -136,8 +137,10 @@
             "options": {
                 "cwd": "${workspaceFolder}/script"
             },
-            "command": "./git_oper.sh pull",
-            "args": [],
+            "command": "./git_oper.sh",
+            "args": [
+                "pull"
+            ],
             "problemMatcher": []
         }
     ]

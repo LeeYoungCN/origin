@@ -1,9 +1,3 @@
-# 嵌入到其他工程（FetchContent/add_subdirectory）时，CMAKE_BINARY_DIR 是父工程的，
-# 继续生成 cmake_configure.conf 会和父工程互相覆盖；只在 Origin 顶层构建时生成。
-if (NOT ORIGIN_TOP_LEVEL)
-    return()
-endif()
-
 include(ProcessorCount)
 ProcessorCount(CPU_CORES)
 
@@ -11,7 +5,13 @@ if(CPU_CORES EQUAL 0)
     set(CPU_CORES 1)
 endif()
 
-set(CMAKE_CONFIGURE_FILE  ${CMAKE_BINARY_DIR}/cmake_configure.conf)
+# 顶层构建沿用 cmake_configure.conf（cmake_tools.sh 读取）；
+# 嵌入时写到 origin_configure.conf，避免和父工程同名覆盖。
+if (ORIGIN_TOP_LEVEL)
+    set(CMAKE_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/cmake_configure.conf)
+else()
+    set(CMAKE_CONFIGURE_FILE ${CMAKE_BINARY_DIR}/origin_configure.conf)
+endif()
 set(CMAKE_CONFIGURE_SRC   ${CMAKE_CURRENT_LIST_DIR}/configure_summary.conf.in)
 
 configure_file(
@@ -28,6 +28,8 @@ function(origin_summary_print key value)
     string(REPEAT " " ${_padding} _spaces)
     message(STATUS "${key}:${_spaces}${value}")
 endfunction()
+
+message(STATUS "===== Origin configure =====")
 
 # 构建配置
 origin_summary_print(CMAKE_PRESET          "${CMAKE_PRESET}")

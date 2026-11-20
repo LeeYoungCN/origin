@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 为 Git Bash / MSYS2 导入 MSVC 命令行编译所需的最小环境。
 # 只覆盖 Ninja + cl.exe 的构建场景；需要 MSBuild / vcpkg / C++/WinRT 时请改用
 # vcvarsall.bat（或脚本 load_msvc_env.ps1），不要往这里继续堆 VS 的完整环境。

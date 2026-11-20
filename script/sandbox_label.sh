@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 #
 # 把目录树标记为“低完整性”(Low)，让运行在低完整性级别的沙箱进程可以写它。
 #

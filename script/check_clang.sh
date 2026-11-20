@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 #
 # 用 clang 编译一遍并跑测试，提前发现只在 clang 下才会报的错。
 # 典型场景：MSVC 默认把"临时对象绑定到非 const 引用"当成扩展放过，clang 直接报错。

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 function print_log() {
     local RED='\033[0;31m'

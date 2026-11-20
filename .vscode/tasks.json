@@ -6,6 +6,7 @@
     "tasks": [
         {
             "label": "Clean",
+            "type": "shell",
             "detail": "清理当前 preset 的 build/install/Testing/pkg 目录。",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -18,6 +19,7 @@
         },
         {
             "label": "CMake Configure",
+            "type": "shell",
             "detail": "CMake: 配置项目",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -30,6 +32,7 @@
         },
         {
             "label": "CMake Build",
+            "type": "shell",
             "detail": "CMake: 构建项目",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -42,6 +45,7 @@
         },
         {
             "label": "CMake Install",
+            "type": "shell",
             "detail": "CMake: 构建并安装",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -55,6 +59,7 @@
         },
         {
             "label": "CPack",
+            "type": "shell",
             "detail": "CPack: 打包工程",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -68,6 +73,7 @@
         },
         {
             "label": "Run gtest all",
+            "type": "shell",
             "detail": "运行gtest测试用例",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -83,6 +89,7 @@
         },
         {
             "label": "Run gtest logging",
+            "type": "shell",
             "detail": "运行gtest测试用例",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -98,6 +105,7 @@
         },
         {
             "label": "Run ctest",
+            "type": "shell",
             "detail": "CMake: 测试",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -111,6 +119,7 @@
         },
         {
             "label": "Format all files",
+            "type": "shell",
             "detail": "使用clang-format格式化所有文件",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -121,6 +130,7 @@
         },
         {
             "label": "git push -f",
+            "type": "shell",
             "detail": "推送代码",
             "options": {
                 "cwd": "${workspaceFolder}/script"
@@ -133,6 +143,7 @@
         },
         {
             "label": "git pull --rebase",
+            "type": "shell",
             "detail": "更新代码",
             "options": {
                 "cwd": "${workspaceFolder}/script"

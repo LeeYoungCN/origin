@@ -4,9 +4,9 @@
 
 #include "origin/common/c/version_c.h"
 #include "origin/common/version.h"
+#include "origin/version.h"
 
 #include "gtest/gtest.h"
-#include "origin/version.h"
 
 namespace origin_test {
 

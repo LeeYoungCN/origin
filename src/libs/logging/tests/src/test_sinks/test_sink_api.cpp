@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "origin/filesystem/filesystem.h"
+
 #include "origin/logging/formatters/pattern_formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
@@ -11,7 +13,6 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/filesystem/filesystem.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

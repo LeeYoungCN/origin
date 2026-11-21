@@ -8,6 +8,8 @@
 
 #include "origin/common/debug/debug_logger.h"
 
+#include "origin/date_time/date_time.h"
+
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/async_logger.hpp"
@@ -18,7 +20,6 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "origin/date_time/date_time.h"
 
 using namespace logging_test;
 using namespace origin::date_time;

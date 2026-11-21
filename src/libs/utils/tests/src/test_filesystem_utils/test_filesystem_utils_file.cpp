@@ -14,8 +14,9 @@
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/macros/compiler.h"
 
-#include "gtest/gtest.h"
 #include "origin/filesystem/filesystem.h"
+
+#include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {

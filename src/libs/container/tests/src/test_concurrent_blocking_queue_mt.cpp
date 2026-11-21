@@ -11,9 +11,10 @@
 
 #include "origin/container/concurrent_blocking_queue.hpp"
 
-#include "gtest/gtest.h"
 #include "origin/date_time/date_time.h"
 #include "origin/thread/thread.h"
+
+#include "gtest/gtest.h"
 
 namespace {
 constexpr uint32_t MAX_NUM = 2048;

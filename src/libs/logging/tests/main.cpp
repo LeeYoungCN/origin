@@ -1,9 +1,10 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/version.h"
 
+#include "origin/filesystem/filesystem.h"
+
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/filesystem/filesystem.h"
 
 int main(int argc, char *argv[])
 {

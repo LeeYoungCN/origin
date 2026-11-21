@@ -3,6 +3,11 @@
 #include <string>
 #include <string_view>
 
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
+#include "origin/process/process.h"
+#include "origin/thread/thread.h"
+
 #include "origin/logging/formatters/pattern_formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
@@ -10,10 +15,6 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/date_time/date_time.h"
-#include "origin/filesystem/filesystem.h"
-#include "origin/process/process.h"
-#include "origin/thread/thread.h"
 
 namespace logging_test {
 

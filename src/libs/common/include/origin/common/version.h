@@ -16,7 +16,6 @@
 #include <string_view>
 
 #include "origin/common/common_api.h"
-
 #include "origin/version.h"  // 由 cmake/version.h.in 在 configure 阶段生成
 
 namespace origin {

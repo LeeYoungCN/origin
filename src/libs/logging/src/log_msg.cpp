@@ -3,12 +3,12 @@
 #include <string>
 #include <string_view>
 
-#include "origin/logging/log_level.hpp"
-#include "origin/logging/log_source.hpp"
-
 #include "origin/date_time/date_time.h"
 #include "origin/process/process.h"
 #include "origin/thread/thread.h"
+
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
 
 namespace origin::logging {
 LogMsg create_log_msg(const LogSource& source, const std::string_view loggerName,

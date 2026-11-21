@@ -173,11 +173,16 @@ IncludeCategories:
     Priority: 3
   # 5. 项目公共头：按模块依赖层次自底向上
   #    common <- container / utils <- logging（container 与 utils 平级，按字母序）
+  #    common 还包含生成的 origin/version.h、origin/build_info.h
   - Regex: '^"origin/common/'
+    Priority: 4
+  - Regex: '^"origin/(version|build_info)\.h"$'
     Priority: 4
   - Regex: '^"origin/container/'
     Priority: 5
-  - Regex: '^"origin/utils/'
+  #    utils 库对外暴露 date_time/filesystem/thread/process/strings 多个 feature 目录，
+  #    它们不在 origin/utils/ 下，所以这里要一起列出来
+  - Regex: '^"origin/(utils|date_time|filesystem|thread|process|strings)/'
     Priority: 6
   - Regex: '^"origin/logging/'
     Priority: 7

@@ -8,13 +8,13 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 
+#include "origin/filesystem/file_writer.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/utils/utils_error_code.h"
 
 #include "origin/logging/log_msg.hpp"
 
 #include "internal/common.hpp"
-#include "origin/filesystem/file_writer.h"
-#include "origin/filesystem/filesystem.h"
 #include "sinks/internal/sink_impl_base.hpp"
 
 namespace origin::logging {

@@ -1,8 +1,9 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "gtest/gtest.h"
 #include "origin/container/concurrent_blocking_queue.hpp"
+
+#include "gtest/gtest.h"
 
 namespace test::test_container::test_concurrent_queue {
 using namespace origin::container;

@@ -8,11 +8,14 @@
 #include <thread>
 #include <vector>
 
+#include "origin/common/debug/debug_logger.h"
+
+#include "origin/container/concurrent_blocking_queue.hpp"
+
+#include "origin/logging/log_msg.hpp"
+
 #include "internal/log_task.hpp"
 #include "loggers/internal/logger_impl_base.hpp"
-#include "origin/common/debug/debug_logger.h"
-#include "origin/container/concurrent_blocking_queue.hpp"
-#include "origin/logging/log_msg.hpp"
 
 namespace origin::logging {
 using namespace origin::container;

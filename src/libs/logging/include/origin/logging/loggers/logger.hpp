@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "origin/common/types/type_traits.h"
+
 #include "origin/logging/detail/logging_api.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
 #include "origin/strings/strings.h"
 
 namespace origin::logging {

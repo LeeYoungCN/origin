@@ -10,11 +10,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "internal/task_pool.hpp"
 #include "origin/common/base/singleton.h"
+
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/loggers/logger.hpp"
+
+#include "internal/task_pool.hpp"
 
 #define REGISTRY (origin::logging::Registry::instance())
 

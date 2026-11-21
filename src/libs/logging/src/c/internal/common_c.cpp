@@ -11,6 +11,7 @@
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
 #include "origin/strings/strings.h"
 
 namespace origin::logging::c_api {

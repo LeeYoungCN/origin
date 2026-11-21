@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "origin/logging/log_msg.hpp"
+
 #include "sinks/internal/rotating_file_sink_impl_base.hpp"
 
 namespace origin::logging {

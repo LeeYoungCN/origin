@@ -4,9 +4,11 @@
 #include <map>
 #include <vector>
 
-#include "detail/mock_sinks/base_test_sink.hpp"
 #include "origin/common/types/thread_types.h"
+
 #include "origin/logging/log_msg.hpp"
+
+#include "detail/mock_sinks/base_test_sink.hpp"
 
 namespace logging_test {
 class TidMsgMapSink : public BaseTestSink {

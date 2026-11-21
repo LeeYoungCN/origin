@@ -10,10 +10,11 @@
  */
 #include <string>
 
-#include "gtest/gtest.h"
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/macros/compiler.h"
+
+#include "gtest/gtest.h"
 #include "origin/filesystem/filesystem.h"
 #include "test_filesystem_utils_base.h"
 

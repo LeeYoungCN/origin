@@ -3,8 +3,9 @@
 #include <memory>
 #include <string_view>
 
-#include "formatters/internal/pattern_formatter_impl.hpp"
 #include "origin/logging/formatters/formatter_base.hpp"
+
+#include "formatters/internal/pattern_formatter_impl.hpp"
 
 namespace origin::logging {
 

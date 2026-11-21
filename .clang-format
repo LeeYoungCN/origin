@@ -158,19 +158,32 @@ IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks:   Regroup
 IncludeCategories:
-  # 1. windows.h 最高优先级，负数，放在最前面
+  # 1. windows.h 必须最先：Windows SDK 窄头文件依赖它先建立平台宏
   - Regex: '^<windows\.h>$'
     Priority: -1
     CaseSensitive: false
-  # 2. 其它系统头文件（C标准库、其它win sdk头 winuser.h等）
+  # 2. 第三方库（gtest/gmock），与系统 C 头分开
+  - Regex: '^<(gtest|gmock|benchmark)/'
+    Priority: 1
+  # 3. C 标准库 / Windows SDK 窄头文件（<fileapi.h> 等）
   - Regex: '^<.+\.h>$'
     Priority: 2
-  # 3. C++标准库头文件 <string> <iostream>
+  # 4. C++ 标准库（<string> <vector>）
   - Regex: '^<.+>$'
     Priority: 3
-  # 4. 项目本地头文件 "xxx.h"
-  - Regex: '^".+"$'
+  # 5. 项目公共头：按模块依赖层次自底向上
+  #    common <- container / utils <- logging（container 与 utils 平级，按字母序）
+  - Regex: '^"origin/common/'
     Priority: 4
+  - Regex: '^"origin/container/'
+    Priority: 5
+  - Regex: '^"origin/utils/'
+    Priority: 6
+  - Regex: '^"origin/logging/'
+    Priority: 7
+  # 6. 同目录/相对路径头（"internal/..."、"test_x.h"）
+  - Regex: '^".+"$'
+    Priority: 8
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex: ''
 # 缩进访问控制

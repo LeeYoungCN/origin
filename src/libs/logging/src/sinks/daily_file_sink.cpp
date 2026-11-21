@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "origin/logging/sinks/sink_base.hpp"
+
 #include "sinks/internal/daily_file_sink_impl.hpp"
 
 namespace origin::logging {

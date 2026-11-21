@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "origin/logging/sinks/sink_base.hpp"
+
 #include "sinks/internal/stream_sink_impl.hpp"
 
 namespace origin::logging {

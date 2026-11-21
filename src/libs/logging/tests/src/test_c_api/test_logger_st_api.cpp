@@ -4,11 +4,12 @@
 #include <string_view>
 #include <vector>
 
+#include "origin/logging/c/logging_c.h"
+#include "origin/logging/log_level.hpp"
+
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
-#include "origin/logging/c/logging_c.h"
-#include "origin/logging/log_level.hpp"
 
 using namespace origin::logging;
 

@@ -5,6 +5,7 @@
 
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
+
 #include "origin/date_time/date_time.h"
 #include "origin/process/process.h"
 #include "origin/thread/thread.h"

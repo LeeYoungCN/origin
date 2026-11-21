@@ -1,9 +1,10 @@
 #include <cstdint>
 #include <string>
 
+#include "origin/logging/c/logging_c.h"
+
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/logging/c/logging_c.h"
 
 namespace logging_test {
 using namespace origin::logging;

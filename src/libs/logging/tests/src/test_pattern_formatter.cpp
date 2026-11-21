@@ -3,12 +3,13 @@
 #include <string>
 #include <string_view>
 
-#include "detail/common.hpp"
-#include "gtest/gtest.h"
 #include "origin/logging/formatters/pattern_formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
+
+#include "detail/common.hpp"
+#include "gtest/gtest.h"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"

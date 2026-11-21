@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "origin/common/macros/compiler.h"
+
 #include "origin/logging/detail/logging_api.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_msg.hpp"

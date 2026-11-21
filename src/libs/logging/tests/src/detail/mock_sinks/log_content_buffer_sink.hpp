@@ -6,8 +6,9 @@
 #include <string_view>
 #include <vector>
 
-#include "detail/mock_sinks/base_test_sink.hpp"
 #include "origin/logging/log_msg.hpp"
+
+#include "detail/mock_sinks/base_test_sink.hpp"
 
 using namespace origin::logging;
 

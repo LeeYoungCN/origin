@@ -2,15 +2,17 @@
 #include <string>
 #include <string_view>
 
-#include "detail/common.hpp"
-#include "gtest/gtest.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/types/filesystem_types.h"
-#include "origin/filesystem/filesystem.h"
+
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/basic_file_sink.hpp"
+
+#include "detail/common.hpp"
+#include "gtest/gtest.h"
+#include "origin/filesystem/filesystem.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

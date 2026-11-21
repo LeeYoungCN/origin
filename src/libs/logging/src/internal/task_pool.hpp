@@ -8,9 +8,11 @@
 #include <thread>
 #include <vector>
 
-#include "internal/log_task.hpp"
 #include "origin/container/concurrent_blocking_queue.hpp"
+
 #include "origin/logging/log_msg.hpp"
+
+#include "internal/log_task.hpp"
 
 namespace origin::logging {
 class LoggerImplBase;

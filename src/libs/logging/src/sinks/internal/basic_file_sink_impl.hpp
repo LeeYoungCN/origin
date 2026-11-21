@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "origin/logging/log_msg.hpp"
+
 #include "origin/filesystem/file_writer.h"
 #include "sinks/internal/sink_impl_base.hpp"
 

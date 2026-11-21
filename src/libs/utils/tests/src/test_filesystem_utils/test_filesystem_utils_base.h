@@ -9,8 +9,9 @@
  *
  */
 
-#include "gtest/gtest.h"
 #include "origin/common/common_error_code.h"
+
+#include "gtest/gtest.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
 #include "origin/thread/thread.h"

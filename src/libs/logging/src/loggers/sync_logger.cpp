@@ -5,9 +5,10 @@
 #include <string_view>
 #include <vector>
 
-#include "loggers/internal/sync_logger_impl.hpp"
 #include "origin/logging/loggers/logger_base.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
+#include "loggers/internal/sync_logger_impl.hpp"
 
 namespace origin::logging {
 SyncLogger::SyncLogger(const std::string_view name, const std::shared_ptr<Sink>& sink)

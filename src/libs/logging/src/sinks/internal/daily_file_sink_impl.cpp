@@ -11,12 +11,14 @@
 #include <utility>
 #include <vector>
 
-#include "internal/common.hpp"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
+
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/sinks/daily_file_sink.hpp"
+
+#include "internal/common.hpp"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/file_writer.h"
 #include "origin/filesystem/filesystem.h"

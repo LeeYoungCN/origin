@@ -4,8 +4,9 @@
 #include <memory>
 #include <string_view>
 
-#include "loggers/internal/logger_impl_base.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
+#include "loggers/internal/logger_impl_base.hpp"
 
 namespace origin::logging {
 class SyncLoggerImpl : public LoggerImplBase {

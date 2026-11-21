@@ -7,6 +7,7 @@
 #include "origin/common/types/date_time_types.h"
 #include "origin/common/types/process_types.h"
 #include "origin/common/types/thread_types.h"
+
 #include "origin/logging/detail/logging_api.h"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"

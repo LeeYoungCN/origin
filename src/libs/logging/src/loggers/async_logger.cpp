@@ -5,10 +5,11 @@
 #include <string_view>
 #include <vector>
 
-#include "internal/task_pool.hpp"
-#include "loggers/internal/async_logger_impl.hpp"
 #include "origin/logging/loggers/logger_base.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
+#include "internal/task_pool.hpp"
+#include "loggers/internal/async_logger_impl.hpp"
 
 namespace origin::logging {
 

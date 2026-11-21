@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "origin/logging/sinks/sink_base.hpp"
+
 #include "sinks/internal/basic_file_sink_impl.hpp"
 
 namespace origin::logging {

@@ -2,13 +2,15 @@
 #include <exception>
 #include <memory>
 
-#include "c/internal/common_c.hpp"
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/logging/sinks/daily_file_sink.hpp"
 #include "origin/logging/sinks/stderr_sink.hpp"
 #include "origin/logging/sinks/stdout_sink.hpp"
+
+#include "c/internal/common_c.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c_api;

@@ -3,11 +3,13 @@
 #include <cstdarg>
 #include <exception>
 
-#include "c/internal/common_c.hpp"
-#include "internal/registry.hpp"
 #include "origin/common/base/singleton.h"
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/logging.hpp"
+
+#include "c/internal/common_c.hpp"
+#include "internal/registry.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c_api;

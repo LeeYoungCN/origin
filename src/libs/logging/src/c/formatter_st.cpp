@@ -1,6 +1,7 @@
-#include "c/internal/common_c.hpp"  // NOLINT(misc-include-cleaner): 这里定义了 C API 的桥接结构体
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/formatters/pattern_formatter.hpp"
+
+#include "c/internal/common_c.hpp"  // NOLINT(misc-include-cleaner): 这里定义了 C API 的桥接结构体
 
 using namespace origin::logging;
 

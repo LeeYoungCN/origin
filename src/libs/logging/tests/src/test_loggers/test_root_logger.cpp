@@ -3,15 +3,16 @@
 #include <stdexcept>
 #include <string>
 
-#include "detail/common.hpp"
-#include "detail/mock_sinks/log_content_buffer_sink.hpp"
-#include "gtest/gtest.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/formatters/pattern_formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/sync_logger.hpp"
 #include "origin/logging/logging.hpp"
+
+#include "detail/common.hpp"
+#include "detail/mock_sinks/log_content_buffer_sink.hpp"
+#include "gtest/gtest.h"
 
 using namespace logging_test;
 using namespace origin::logging;

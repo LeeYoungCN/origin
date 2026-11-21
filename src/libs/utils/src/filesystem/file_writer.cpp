@@ -4,9 +4,10 @@
 #include <string>
 #include <string_view>
 
-#include "filesystem/internal/file_writer_impl.hpp"
 #include "origin/common/types/error_code_types.h"
 #include "origin/common/types/filesystem_types.h"
+
+#include "filesystem/internal/file_writer_impl.hpp"
 
 #define MODE_STR(mode) ((mode) ? "overwrite" : "append")
 

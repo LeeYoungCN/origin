@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/sinks/sink.hpp"

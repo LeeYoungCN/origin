@@ -1,4 +1,5 @@
 #include "origin/common/macros/compiler.h"
+
 #include "origin/date_time/date_time.h"
 
 #if OS_WINDOWS
@@ -24,6 +25,7 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/common/types/error_code_types.h"
+
 #include "origin/utils/utils_error_code.h"
 
 namespace {

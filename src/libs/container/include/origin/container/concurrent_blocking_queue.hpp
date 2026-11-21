@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/container/blocking_queue.hpp"
 
 namespace origin::container {

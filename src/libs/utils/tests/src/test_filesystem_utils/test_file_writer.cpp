@@ -3,10 +3,11 @@
 #include <stdexcept>
 #include <string>
 
-#include "gtest/gtest.h"
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/types/filesystem_types.h"
+
+#include "gtest/gtest.h"
 #include "origin/filesystem/file_writer.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"

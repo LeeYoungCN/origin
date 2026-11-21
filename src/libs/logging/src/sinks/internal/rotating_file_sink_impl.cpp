@@ -11,12 +11,14 @@
 #include <string_view>
 #include <vector>
 
-#include "internal/common.hpp"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
 #include "origin/common/types/filesystem_types.h"
+
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/sinks/rotating_file_sink.hpp"
+
+#include "internal/common.hpp"
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/file_writer.h"
 #include "origin/filesystem/filesystem.h"

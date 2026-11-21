@@ -4,12 +4,14 @@
 #include <stdexcept>
 #include <string_view>
 
+#include "origin/common/debug/debug_logger.h"
+
+#include "origin/logging/log_msg.hpp"
+#include "origin/logging/sinks/sink.hpp"
+
 #include "internal/registry.hpp"
 #include "internal/task_pool.hpp"
 #include "loggers/internal/logger_impl_base.hpp"
-#include "origin/common/debug/debug_logger.h"
-#include "origin/logging/log_msg.hpp"
-#include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
 

@@ -9,16 +9,18 @@
 #include <utility>
 #include <vector>
 
-#include "c/internal/common_c.hpp"
-#include "internal/registry.hpp"
-#include "internal/task_pool.hpp"
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/async_logger.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
+
+#include "c/internal/common_c.hpp"
+#include "internal/registry.hpp"
+#include "internal/task_pool.hpp"
 
 namespace origin::logging {
 std::shared_ptr<Logger> create_async_logger(const std::string_view name,

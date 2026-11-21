@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "internal/task_pool.hpp"
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/detail/constants.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/formatters/pattern_formatter.hpp"
@@ -17,6 +17,8 @@
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/loggers/sync_logger.hpp"
 #include "origin/logging/sinks/stdout_sink.hpp"
+
+#include "internal/task_pool.hpp"
 
 namespace origin::logging {
 

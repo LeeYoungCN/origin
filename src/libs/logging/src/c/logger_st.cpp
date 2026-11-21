@@ -5,11 +5,13 @@
 #include <memory>
 #include <string_view>
 
-#include "c/internal/common_c.hpp"
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/logging/c/logging_c.h"
 #include "origin/logging/loggers/async_logger.hpp"
 #include "origin/logging/loggers/sync_logger.hpp"
+
+#include "c/internal/common_c.hpp"
 
 using namespace origin::logging;
 using namespace origin::logging::c_api;

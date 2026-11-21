@@ -29,14 +29,14 @@ COMMON_API uint32_t origin_c_abi_version(void);
  * 开发版工作区有未提交修改时，串尾会带 "-dirty"。
  * 返回库内静态存储，进程生命周期内有效，调用方不需要释放。
  */
-COMMON_API const char *origin_version(void);
+COMMON_API const char* origin_version(void);
 
 /**
  * @brief 短 git 提交号；发布构建或没有 git 时返回空字符串。
  *
  * 返回库内静态存储，调用方不需要释放。
  */
-COMMON_API const char *origin_version_commit(void);
+COMMON_API const char* origin_version_commit(void);
 
 #ifdef __cplusplus
 }

@@ -23,13 +23,16 @@ using namespace origin::filesystem;
 BasicFileSinkImpl::BasicFileSinkImpl() : BasicFileSinkImpl(get_default_log_file("log"), true) {}
 
 BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool overwrite)
-    : BasicFileSinkImpl(file, overwrite,
-                        std::format("BasicFileSinkImpl. file: \"{}\", mode: {}.", file,
-                                    get_file_mode_str(overwrite)))
+    : BasicFileSinkImpl(
+          file,
+          overwrite,
+          std::format(
+              "BasicFileSinkImpl. file: \"{}\", mode: {}.", file, get_file_mode_str(overwrite)))
 {
 }
 
-BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool overwrite,
+BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file,
+                                     const bool overwrite,
                                      const std::string_view paramStr)
     : SinkImplBase(paramStr),
       _file(to_absolute_path(file)),

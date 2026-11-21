@@ -17,9 +17,14 @@ class DailyFileSinkImpl : public RotatingFileSinkImplBase {
 public:
     DailyFileSinkImpl();
     explicit DailyFileSinkImpl(std::string_view file, bool overwrite = false);
-    DailyFileSinkImpl(std::string_view file, uint32_t hour, uint32_t minute,
+    DailyFileSinkImpl(std::string_view file,
+                      uint32_t hour,
+                      uint32_t minute,
                       bool overwrite = false);
-    DailyFileSinkImpl(std::string_view file, uint32_t hour, uint32_t minute, uint32_t maxFiles,
+    DailyFileSinkImpl(std::string_view file,
+                      uint32_t hour,
+                      uint32_t minute,
+                      uint32_t maxFiles,
                       bool overwrite = false);
     ~DailyFileSinkImpl() override = default;
 

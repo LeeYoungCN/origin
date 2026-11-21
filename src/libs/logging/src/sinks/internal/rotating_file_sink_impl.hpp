@@ -16,7 +16,9 @@ public:
     RotatingFileSinkImpl();
     ~RotatingFileSinkImpl() override = default;
     explicit RotatingFileSinkImpl(std::string_view file, bool rotateOnOpen = false);
-    RotatingFileSinkImpl(std::string_view file, uint32_t maxFileSize, uint32_t maxFiles,
+    RotatingFileSinkImpl(std::string_view file,
+                         uint32_t maxFileSize,
+                         uint32_t maxFiles,
                          bool rotateOnOpen = false);
 
 public:

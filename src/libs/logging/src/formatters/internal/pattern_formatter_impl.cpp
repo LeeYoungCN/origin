@@ -61,7 +61,8 @@ void PatternFormatterImpl::format_time(const LogMsg& logMsg, std::string& logCon
                    datetime.millis);
 }
 
-void PatternFormatterImpl::log_msg_to_content(char symbol, const LogMsg& logMsg,
+void PatternFormatterImpl::log_msg_to_content(char symbol,
+                                              const LogMsg& logMsg,
                                               std::string& logContent)
 {
     switch (symbol) {

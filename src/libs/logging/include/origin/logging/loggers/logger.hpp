@@ -52,7 +52,9 @@ public:
     }
 
     template <typename... Args>
-    void log(const LogSource& source, const LogLevel level, std::format_string<Args...> format,
+    void log(const LogSource& source,
+             const LogLevel level,
+             std::format_string<Args...> format,
              Args&&... args)
     {
         if (should_log(level)) {

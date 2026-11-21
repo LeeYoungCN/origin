@@ -26,10 +26,11 @@ using remove_cvref_t = std::remove_cvref_t<T>;
 // std::string）--------------------------
 template <typename T>
 struct is_direct_string_type
-    : std::integral_constant<bool, std::is_same_v<remove_cvref_t<T>, const char *> ||
-                                       std::is_same_v<remove_cvref_t<T>, char *> ||
-                                       std::is_same_v<remove_cvref_t<T>, std::string_view> ||
-                                       std::is_same_v<remove_cvref_t<T>, std::string> > {};
+    : std::integral_constant<bool,
+                             std::is_same_v<remove_cvref_t<T>, const char*> ||
+                                 std::is_same_v<remove_cvref_t<T>, char*> ||
+                                 std::is_same_v<remove_cvref_t<T>, std::string_view> ||
+                                 std::is_same_v<remove_cvref_t<T>, std::string> > {};
 
 /**
  * @brief  简化别名：直接字符串类型判断结果（true/false）
@@ -42,15 +43,16 @@ constexpr bool is_direct_string_type_v = is_direct_string_type<T>::value;
 // --------------------------
 template <typename T>
 struct is_numeric_type
-    : std::integral_constant<bool, std::is_same_v<remove_cvref_t<T>, int> ||
-                                       std::is_same_v<remove_cvref_t<T>, long> ||
-                                       std::is_same_v<remove_cvref_t<T>, long long> ||
-                                       std::is_same_v<remove_cvref_t<T>, unsigned int> ||
-                                       std::is_same_v<remove_cvref_t<T>, unsigned long> ||
-                                       std::is_same_v<remove_cvref_t<T>, unsigned long long> ||
-                                       std::is_same_v<remove_cvref_t<T>, float> ||
-                                       std::is_same_v<remove_cvref_t<T>, double> ||
-                                       std::is_same_v<remove_cvref_t<T>, long double> > {};
+    : std::integral_constant<bool,
+                             std::is_same_v<remove_cvref_t<T>, int> ||
+                                 std::is_same_v<remove_cvref_t<T>, long> ||
+                                 std::is_same_v<remove_cvref_t<T>, long long> ||
+                                 std::is_same_v<remove_cvref_t<T>, unsigned int> ||
+                                 std::is_same_v<remove_cvref_t<T>, unsigned long> ||
+                                 std::is_same_v<remove_cvref_t<T>, unsigned long long> ||
+                                 std::is_same_v<remove_cvref_t<T>, float> ||
+                                 std::is_same_v<remove_cvref_t<T>, double> ||
+                                 std::is_same_v<remove_cvref_t<T>, long double> > {};
 
 /**
  * @brief  简化别名：数字类型判断结果（true/false）

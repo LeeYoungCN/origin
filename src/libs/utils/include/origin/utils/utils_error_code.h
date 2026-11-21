@@ -56,7 +56,7 @@ typedef enum {
 #define ERR_UTILS_IS_A_DIRECTORY    MAKE_FILESYS_ERROR(FS_ERR_ID_IS_A_DIRECTORY)
 #define ERR_UTILS_FILE_NOT_OPEN     MAKE_FILESYS_ERROR(FS_ERR_ID_FILE_NOT_OPEN)
 
-static inline const char *get_utils_err_msg(ErrorCode errCode)
+static inline const char* get_utils_err_msg(ErrorCode errCode)
 {
     switch (errCode) {
         // Date time error code.

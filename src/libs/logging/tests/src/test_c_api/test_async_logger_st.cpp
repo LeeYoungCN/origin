@@ -29,14 +29,14 @@ protected:
     void TearDown() override;
     void wait_flush_complete(uint32_t expectedCount) const;
     void wait_log_complete(uint32_t expectedCount) const;
-    void init_logger(const testing::TestInfo *test_info);
+    void init_logger(const testing::TestInfo* test_info);
 
 protected:
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
-    LoggerSt *_loggerSt = nullptr;
-    SinkSt *_sinkSt = create_mock_sink_st(_sink);
-    TaskPoolSt *_taskPoolSt = origin_create_task_pool(1024, 3);
-    SinkSt *_sinks[1] = {_sinkSt};
+    LoggerSt* _loggerSt = nullptr;
+    SinkSt* _sinkSt = create_mock_sink_st(_sink);
+    TaskPoolSt* _taskPoolSt = origin_create_task_pool(1024, 3);
+    SinkSt* _sinks[1] = {_sinkSt};
 };
 
 void TestAsyncLoggerSt::SetUp()
@@ -53,7 +53,7 @@ void TestAsyncLoggerSt::TearDown()
     origin_destroy_task_pool(_taskPoolSt);
 }
 
-void TestAsyncLoggerSt::init_logger(const testing::TestInfo *test_info)
+void TestAsyncLoggerSt::init_logger(const testing::TestInfo* test_info)
 {
     const std::string name = get_logger_name(test_info);
     _loggerSt = origin_create_async_logger(name.c_str(), _sinks, 1, _taskPoolSt);
@@ -129,8 +129,8 @@ TEST_F(TestAsyncLoggerSt, create_multi_sinks)
 {
     const std::string name = get_logger_name(test_info_);
     constexpr uint32_t sinkCnt = 3;
-    SinkSt *sinks[sinkCnt] = {};
-    for (SinkSt *&sink : sinks) {
+    SinkSt* sinks[sinkCnt] = {};
+    for (SinkSt*& sink : sinks) {
         sink = _sinkSt;
     }
     _loggerSt = origin_create_async_logger(name.c_str(), sinks, sinkCnt, _taskPoolSt);

@@ -11,12 +11,12 @@
 namespace origin::logging {
 StreamSinkImpl::StreamSinkImpl() : SinkImplBase("StreamSink.") {}
 
-StreamSinkImpl::StreamSinkImpl(std::ostream &stream, const std::string_view param_string)
+StreamSinkImpl::StreamSinkImpl(std::ostream& stream, const std::string_view param_string)
     : SinkImplBase(param_string), _stream(stream)
 {
 }
 
-void StreamSinkImpl::log_it(const LogMsg &logMsg)
+void StreamSinkImpl::log_it(const LogMsg& logMsg)
 {
     std::string content;
     _formatter->format(logMsg, content);

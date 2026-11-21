@@ -40,7 +40,6 @@ TEST(Version, headers_match_binary)
         << "headers=" << origin::compiled_version().string << " binary=" << origin::version();
 }
 
-
 TEST(Version, c_api_abi_version_matches_header)
 {
     // 绑定在加载库后应先比对 ABI 版本，避免签名/布局不匹配时直接崩溃

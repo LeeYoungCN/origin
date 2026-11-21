@@ -41,7 +41,7 @@ struct MockFormatterSt {
         : ptr(std::move(formatter))
     {
     }
-    explicit MockFormatterSt(origin::logging::Formatter *formatter) : ptr(formatter) {}
+    explicit MockFormatterSt(origin::logging::Formatter* formatter) : ptr(formatter) {}
 };
 
 struct MockTaskPoolSt {
@@ -72,21 +72,21 @@ const std::vector<LogLevelC> C_LOG_LEVELS = {LOG_LEVEL_C_TRACE,
                                              LOG_LEVEL_C_OFF};
 
 int32_t diff_log_level(origin::logging::LogLevel a, origin::logging::LogLevel b);
-std::string get_logger_name(const testing::TestInfo *test_info);
+std::string get_logger_name(const testing::TestInfo* test_info);
 
 std::string get_log_dir();
 
-SinkSt *create_mock_sink_st(std::shared_ptr<origin::logging::Sink> sink);
-void destroy_mock_sink_st(SinkSt *sink);
+SinkSt* create_mock_sink_st(std::shared_ptr<origin::logging::Sink> sink);
+void destroy_mock_sink_st(SinkSt* sink);
 
-LoggerSt *create_mock_logger_st(std::shared_ptr<origin::logging::Logger> logger);
-void destroy_mock_logger_st(LoggerSt *logger);
+LoggerSt* create_mock_logger_st(std::shared_ptr<origin::logging::Logger> logger);
+void destroy_mock_logger_st(LoggerSt* logger);
 
-FormatterSt *create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter);
-void destroy_mock_formatter_st(FormatterSt *formatter);
+FormatterSt* create_mock_formatter_st(std::unique_ptr<origin::logging::Formatter> formatter);
+void destroy_mock_formatter_st(FormatterSt* formatter);
 
-TaskPoolSt *create_mock_task_pool_st(std::shared_ptr<origin::logging::TaskPool> taskPool);
-void destroy_mock_task_pool_st(TaskPoolSt *taskPool);
+TaskPoolSt* create_mock_task_pool_st(std::shared_ptr<origin::logging::TaskPool> taskPool);
+void destroy_mock_task_pool_st(TaskPoolSt* taskPool);
 
 }  // namespace logging_test
 #endif  // TEST_LOGGING_DETAIL_COMMON_H

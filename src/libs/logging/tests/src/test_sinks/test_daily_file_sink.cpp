@@ -35,10 +35,15 @@ protected:
 
 protected:
     std::string calc_log_file(const std::string_view baseFile, TimestampMs time);
-    void TestRotate(const testing::TestInfo* testInfo, uint32_t hour, uint32_t minute,
-                    uint32_t rotationDays, uint32_t dayInterVal = 1);
-    void TestRotateAndDelete(const testing::TestInfo* testInfo, uint32_t maxFiles,
-                             uint32_t existFiles, uint32_t rotationDays);
+    void TestRotate(const testing::TestInfo* testInfo,
+                    uint32_t hour,
+                    uint32_t minute,
+                    uint32_t rotationDays,
+                    uint32_t dayInterVal = 1);
+    void TestRotateAndDelete(const testing::TestInfo* testInfo,
+                             uint32_t maxFiles,
+                             uint32_t existFiles,
+                             uint32_t rotationDays);
 
 protected:
     std::string _dir = get_log_dir();
@@ -65,8 +70,11 @@ std::string TestDailyFileSink::calc_log_file(const std::string_view baseFile, Ti
     return join_paths({_dir, filename});
 }
 
-void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t hour,
-                                   uint32_t minute, uint32_t rotationDays, uint32_t dayInterval)
+void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo,
+                                   uint32_t hour,
+                                   uint32_t minute,
+                                   uint32_t rotationDays,
+                                   uint32_t dayInterval)
 {
     TimestampMs const now = get_now_timestamp_ms();
     DateTimeSt const nowDateTime = timestamp_to_date_time(now);
@@ -102,8 +110,10 @@ void TestDailyFileSink::TestRotate(const testing::TestInfo* testInfo, uint32_t h
     }
 }
 
-void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo, uint32_t maxFiles,
-                                            uint32_t existFiles, uint32_t rotationDays)
+void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo,
+                                            uint32_t maxFiles,
+                                            uint32_t existFiles,
+                                            uint32_t rotationDays)
 {
     TimestampMs const now = get_now_timestamp_ms();
     std::string const baseFile = join_paths({_dir, get_logger_name(testInfo) + ".log"});

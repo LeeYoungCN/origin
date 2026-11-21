@@ -34,19 +34,21 @@ protected:
 
 TEST_P(TestDateTimeUtilsTimestampBuffer, TimestampMs)
 {
-    const auto &format = std::get<0>(GetParam());
+    const auto& format = std::get<0>(GetParam());
     auto day = std::get<1>(GetParam());
     TimestampMs const currTs = get_now_timestamp_ms() + day * MILLIS_PER_DAY;
 
     TestTimeBuffer(format, MAX_TIME_STR_LEN, currTs);
 }
 
-INSTANTIATE_TEST_SUITE_P(DAY, TestDateTimeUtilsTimestampBuffer,
+INSTANTIATE_TEST_SUITE_P(DAY,
+                         TestDateTimeUtilsTimestampBuffer,
                          testing::Combine(testing::Values("%Y-%y-%m-%d %H:%M:%S %A %a %B %b"),
                                           testing::Range(0, 365, 10)));
 
 #ifdef __linux__
-INSTANTIATE_TEST_SUITE_P(Linux, TestDateTimeUtilsTimestampBuffer,
+INSTANTIATE_TEST_SUITE_P(Linux,
+                         TestDateTimeUtilsTimestampBuffer,
                          testing::Combine(testing::ValuesIn(TestMillisFormats),
                                           testing::Values(0)));
 #endif
@@ -61,17 +63,25 @@ protected:
 
 TEST_P(TestDateTimeUtilsTimestampStr, TimestampMs)
 {
-    const auto &format = GetParam();
+    const auto& format = GetParam();
     TimestampMs const currTs = get_now_timestamp_ms();
     TestTimeString(format, currTs);
 }
 
-INSTANTIATE_TEST_SUITE_P(FORMAT, TestDateTimeUtilsTimestampStr,
-                         testing::Values(DEFAULT_TIME_FMT, "%Y-%m-%d %H:%M:%S %B",
-                                         "%Y-%m-%d %H:%M:%S %b", "%Y-%m-%d %H:%M:%S %A",
-                                         "%Y-%m-%d%H:%M:%S %a", "%Y%y%m%d%H%M%S%A%a%B%b",
-                                         "%y-%m-%d%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y%m%d%H%M%S",
-                                         "%Y%m%d%H%M%S%%", "%%%%Y", "asdffsfsaf...."));
+INSTANTIATE_TEST_SUITE_P(FORMAT,
+                         TestDateTimeUtilsTimestampStr,
+                         testing::Values(DEFAULT_TIME_FMT,
+                                         "%Y-%m-%d %H:%M:%S %B",
+                                         "%Y-%m-%d %H:%M:%S %b",
+                                         "%Y-%m-%d %H:%M:%S %A",
+                                         "%Y-%m-%d%H:%M:%S %a",
+                                         "%Y%y%m%d%H%M%S%A%a%B%b",
+                                         "%y-%m-%d%H:%M:%S",
+                                         "%Y-%m-%d %H:%M:%S",
+                                         "%Y%m%d%H%M%S",
+                                         "%Y%m%d%H%M%S%%",
+                                         "%%%%Y",
+                                         "asdffsfsaf...."));
 
 #ifdef _MSVC
 INSTANTIATE_TEST_SUITE_P(Windows, TestFormatTimeString, testing::ValuesIn(TestMillisFormats));

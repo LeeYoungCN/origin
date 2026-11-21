@@ -156,13 +156,20 @@ public:
         return (_logLevel != OriginDbgLvl::ORG_DBG_LVL_OFF && level >= _logLevel);
     }
 
-    void log_va(const char* file, const int line, const char* func, const OriginDbgLvl level,
-                const char* format, va_list args)
+    void log_va(const char* file,
+                const int line,
+                const char* func,
+                const OriginDbgLvl level,
+                const char* format,
+                va_list args)
     {
         log(file, line, func, level, va_list_to_string(format, args));
     }
 
-    void log(const char* file, const int line, const char* func, const OriginDbgLvl level,
+    void log(const char* file,
+             const int line,
+             const char* func,
+             const OriginDbgLvl level,
              const std::string& message)
     {
         const auto logMsg = format_log(level, message, file, line, func);
@@ -183,7 +190,8 @@ private:
     DebugLoggerImpl() = default;
     ~DebugLoggerImpl() override = default;
 
-    static std::string format_log(const OriginDbgLvl level, const std::string& message,
+    static std::string format_log(const OriginDbgLvl level,
+                                  const std::string& message,
                                   [[maybe_unused]] const char* file = nullptr,
                                   [[maybe_unused]] int line = 0,
                                   [[maybe_unused]] const char* func = nullptr)
@@ -228,8 +236,12 @@ bool origin_debug_logger_should_log(const OriginDbgLvl level)
     return DebugLoggerImpl::instance().should_log(level);
 }
 
-void origin_debug_logger_c(const char* file, const int line, const char* func,
-                           const OriginDbgLvl level, const char* format, ...)
+void origin_debug_logger_c(const char* file,
+                           const int line,
+                           const char* func,
+                           const OriginDbgLvl level,
+                           const char* format,
+                           ...)
 {
     if (!DebugLoggerImpl::instance().should_log(level)) {
         return;
@@ -242,14 +254,20 @@ void origin_debug_logger_c(const char* file, const int line, const char* func,
 }
 }
 
-void origin_debug_logger_force_log(const char* file, const int line, const char* func,
-                                   const OriginDbgLvl level, const std::string& message)
+void origin_debug_logger_force_log(const char* file,
+                                   const int line,
+                                   const char* func,
+                                   const OriginDbgLvl level,
+                                   const std::string& message)
 {
     DebugLoggerImpl::instance().log(file, line, func, level, message);
 }
 
-void origin_debug_logger_log(const char* file, const int line, const char* func,
-                             const OriginDbgLvl level, const std::string& message)
+void origin_debug_logger_log(const char* file,
+                             const int line,
+                             const char* func,
+                             const OriginDbgLvl level,
+                             const std::string& message)
 {
     if (origin_debug_logger_should_log(level)) {
         origin_debug_logger_force_log(file, line, func, level, message);

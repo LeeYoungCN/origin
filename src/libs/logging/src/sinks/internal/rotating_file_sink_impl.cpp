@@ -54,17 +54,26 @@ struct LogFileInfo {
 RotatingFileSinkImpl::RotatingFileSinkImpl() : RotatingFileSinkImpl(get_default_log_file("log")) {}
 
 RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, const bool rotateOnOpen)
-    : RotatingFileSinkImpl(file, RotatingFileSink::DEFAULT_MAX_FILE_SIZE,
-                           RotatingFileSink::DEFAULT_MAX_FILES, rotateOnOpen)
+    : RotatingFileSinkImpl(file,
+                           RotatingFileSink::DEFAULT_MAX_FILE_SIZE,
+                           RotatingFileSink::DEFAULT_MAX_FILES,
+                           rotateOnOpen)
 {
 }
 
-RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file, const uint32_t maxFileSize,
-                                           const uint32_t maxFiles, const bool rotateOnOpen)
+RotatingFileSinkImpl::RotatingFileSinkImpl(const std::string_view file,
+                                           const uint32_t maxFileSize,
+                                           const uint32_t maxFiles,
+                                           const bool rotateOnOpen)
     : RotatingFileSinkImplBase(
-          file, false, maxFiles, "rotating log file",
-          std::format("RotatingFileSinkImpl, File: \"{}\", MaxFileSize: {}, MaxFiles: {}.", file,
-                      maxFileSize, maxFiles)),
+          file,
+          false,
+          maxFiles,
+          "rotating log file",
+          std::format("RotatingFileSinkImpl, File: \"{}\", MaxFileSize: {}, MaxFiles: {}.",
+                      file,
+                      maxFileSize,
+                      maxFiles)),
       _maxFileSize(maxFileSize)
 {
     if (maxFileSize == 0) {

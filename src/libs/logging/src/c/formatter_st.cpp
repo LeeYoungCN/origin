@@ -6,7 +6,7 @@
 using namespace origin::logging;
 
 extern "C" {
-FormatterSt *origin_create_pattern_formatter(const char *pattern)
+FormatterSt* origin_create_pattern_formatter(const char* pattern)
 {
     if (pattern == nullptr) {
         return new FormatterSt(new PatternFormatter());
@@ -14,7 +14,7 @@ FormatterSt *origin_create_pattern_formatter(const char *pattern)
     return new FormatterSt(new PatternFormatter(pattern));
 }
 
-void origin_destroy_formatter(FormatterSt *formatter)
+void origin_destroy_formatter(FormatterSt* formatter)
 {
     if (formatter != nullptr) {
         if (formatter->ptr != nullptr) {

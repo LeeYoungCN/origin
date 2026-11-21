@@ -17,7 +17,8 @@ using namespace origin::logging;
 using namespace origin::logging::c_api;
 
 extern "C" {
-LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[],
+LoggerSt* origin_create_sync_logger(const char* name,
+                                    const SinkSt* const sinks[],
                                     const uint32_t count)
 {
     if (name == nullptr) {
@@ -31,14 +32,16 @@ LoggerSt *origin_create_sync_logger(const char *name, const SinkSt *const sinks[
     }
     try {
         return new LoggerSt(std::make_shared<SyncLogger>(name, sink_ptr_vector(sinks, count)));
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         ORIGIN_DEBUG_ERR("Create sync logger failed. Name: [{}]. Exception: {}", name, e.what());
         return nullptr;
     }
 }
 
-LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks[],
-                                     const uint32_t count, const TaskPoolSt *taskPool)
+LoggerSt* origin_create_async_logger(const char* name,
+                                     const SinkSt* const sinks[],
+                                     const uint32_t count,
+                                     const TaskPoolSt* taskPool)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Create async logger failed. name nullptr.")
@@ -57,13 +60,13 @@ LoggerSt *origin_create_async_logger(const char *name, const SinkSt *const sinks
         }
         return new struct LoggerSt(
             std::make_shared<AsyncLogger>(name, sink_ptr_vector(sinks, count)));
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         ORIGIN_DEBUG_ERR("Create async logger failed. Name: [{}]. Exception: {}", name, e.what());
         return nullptr;
     }
 }
 
-void origin_destroy_logger(LoggerSt *logger)
+void origin_destroy_logger(LoggerSt* logger)
 {
     if (logger != nullptr) {
         if (logger->ptr != nullptr) {
@@ -76,7 +79,7 @@ void origin_destroy_logger(LoggerSt *logger)
     }
 }
 
-const char *origin_logger_name(const LoggerSt *logger)
+const char* origin_logger_name(const LoggerSt* logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Get logger name failed. {}", LOGGER_NULL_LOG);
@@ -85,7 +88,7 @@ const char *origin_logger_name(const LoggerSt *logger)
     return logger->ptr->name().data();
 }
 
-void origin_logger_set_level(const LoggerSt *logger, const LogLevelC level)
+void origin_logger_set_level(const LoggerSt* logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger set level failed. {}", LOGGER_NULL_LOG);
@@ -101,7 +104,7 @@ void origin_logger_set_level(const LoggerSt *logger, const LogLevelC level)
     logger->ptr->set_level(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_log(const LoggerSt *logger, const LogLevelC level)
+bool origin_logger_should_log(const LoggerSt* logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger should log failed. {}", LOGGER_NULL_LOG);
@@ -117,7 +120,7 @@ bool origin_logger_should_log(const LoggerSt *logger, const LogLevelC level)
     return logger->ptr->should_log(c_to_cpp_log_level(level));
 }
 
-LogLevelC origin_logger_level(const LoggerSt *logger)
+LogLevelC origin_logger_level(const LoggerSt* logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get level failed. {}", LOGGER_NULL_LOG);
@@ -126,7 +129,7 @@ LogLevelC origin_logger_level(const LoggerSt *logger)
     return cpp_to_c_log_level(logger->ptr->level());
 }
 
-void origin_logger_flush_on(const LoggerSt *logger, const LogLevelC level)
+void origin_logger_flush_on(const LoggerSt* logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger flush on failed. {}", LOGGER_NULL_LOG);
@@ -142,7 +145,7 @@ void origin_logger_flush_on(const LoggerSt *logger, const LogLevelC level)
     logger->ptr->flush_on(c_to_cpp_log_level(level));
 }
 
-bool origin_logger_should_flush(const LoggerSt *logger, const LogLevelC level)
+bool origin_logger_should_flush(const LoggerSt* logger, const LogLevelC level)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger should flush failed. {}", LOGGER_NULL_LOG);
@@ -158,7 +161,7 @@ bool origin_logger_should_flush(const LoggerSt *logger, const LogLevelC level)
     return logger->ptr->should_flush(c_to_cpp_log_level(level));
 }
 
-LogLevelC origin_logger_flush_level(const LoggerSt *logger)
+LogLevelC origin_logger_flush_level(const LoggerSt* logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_WARN("Logger get flush level. {}", LOGGER_NULL_LOG);
@@ -167,7 +170,7 @@ LogLevelC origin_logger_flush_level(const LoggerSt *logger)
     return cpp_to_c_log_level(logger->ptr->flush_level());
 }
 
-void origin_logger_set_pattern(const LoggerSt *logger, const char *pattern)
+void origin_logger_set_pattern(const LoggerSt* logger, const char* pattern)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger set pattern failed. {}", LOGGER_NULL_LOG);
@@ -182,14 +185,14 @@ void origin_logger_set_pattern(const LoggerSt *logger, const char *pattern)
 
     try {
         logger->ptr->set_pattern(pattern);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         ORIGIN_DEBUG_ERR("Logger set pattern failed. Name: [{}]. [Exception]: {}",
                          logger->ptr->name(),
                          e.what());
     }
 }
 
-void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *formatter)
+void origin_logger_set_formatter(const LoggerSt* logger, const FormatterSt* formatter)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger set formatter failed. {}", LOGGER_NULL_LOG);
@@ -204,7 +207,7 @@ void origin_logger_set_formatter(const LoggerSt *logger, const FormatterSt *form
     logger->ptr->set_formatter(formatter->ptr->clone());
 }
 
-void origin_logger_flush(const LoggerSt *logger)
+void origin_logger_flush(const LoggerSt* logger)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger flush failed. {}", LOGGER_NULL_LOG);
@@ -213,8 +216,13 @@ void origin_logger_flush(const LoggerSt *logger)
     logger->ptr->flush();
 }
 
-void origin_logger_log(const LoggerSt *logger, const char *file, const int line, const char *func,
-                       const LogLevelC level, const char *format, ...)
+void origin_logger_log(const LoggerSt* logger,
+                       const char* file,
+                       const int line,
+                       const char* func,
+                       const LogLevelC level,
+                       const char* format,
+                       ...)
 {
     if (PTR_INVALID(logger)) {
         ORIGIN_DEBUG_ERR("Logger log failed. {}", LOGGER_NULL_LOG);

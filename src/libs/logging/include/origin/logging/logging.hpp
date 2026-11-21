@@ -89,7 +89,10 @@ void log(LogLevel level, std::format_string<Args...> format, Args&&... args)
 }
 
 template <typename... Args>
-void log(const LogSource& source, LogLevel level, std::format_string<Args...> format, Args&&... args)
+void log(const LogSource& source,
+         LogLevel level,
+         std::format_string<Args...> format,
+         Args&&... args)
 {
     root_logger()->log(source, level, format, std::forward<Args>(args)...);
 }
@@ -278,7 +281,9 @@ LOGGING_API void set_formatter_all(std::unique_ptr<Formatter> formatter);
 LOGGING_API uint32_t log_all(const LogSource& source, LogLevel level, std::string_view message);
 
 template <typename... Args>
-uint32_t log_all(const LogSource& source, LogLevel level, std::format_string<Args...> format,
+uint32_t log_all(const LogSource& source,
+                 LogLevel level,
+                 std::format_string<Args...> format,
                  Args&&... args)
 {
     const std::string text = std::format(format, std::forward<Args>(args)...);

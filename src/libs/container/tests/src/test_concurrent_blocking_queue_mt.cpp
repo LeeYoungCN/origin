@@ -58,7 +58,8 @@ protected:
     void StartThread(uint32_t producerCnt, uint32_t consumerCnt);
     void WaitFinish();
     void TestResult();
-    void RunTest(uint32_t producerCnt, uint32_t consumerCnt,
+    void RunTest(uint32_t producerCnt,
+                 uint32_t consumerCnt,
                  uint32_t capacity = CONCURRENT_BLOCKING_QUEUE_DEFAULT_CAPACITY);
 };
 
@@ -156,7 +157,8 @@ void TestConcurrentBlockingQueueMt::TestResult()
     }
 }
 
-void TestConcurrentBlockingQueueMt::RunTest(uint32_t producerCnt, uint32_t consumerCnt,
+void TestConcurrentBlockingQueueMt::RunTest(uint32_t producerCnt,
+                                            uint32_t consumerCnt,
                                             uint32_t capacity)
 {
     _producerCnt = producerCnt;

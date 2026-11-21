@@ -12,7 +12,6 @@
 #ifndef ORIGIN_COMMON_VERSION_H
 #define ORIGIN_COMMON_VERSION_H
 
-#include <string>
 #include <string_view>
 
 #include "origin/common/common_api.h"
@@ -22,8 +21,7 @@ namespace origin {
 /**
  * @brief 版本三元组与完整版本字符串
  */
-struct Version
-{
+struct Version {
     int major = 0;              ///< 主版本号
     int minor = 0;              ///< 次版本号
     int patch = 0;              ///< 修订号
@@ -35,8 +33,7 @@ struct Version
  *
  * 适合需要把版本与提交号分开上报的场景（崩溃报告、遥测、JSON 输出）。
  */
-struct BuildInfo
-{
+struct BuildInfo {
     std::string_view version;  ///< 完整版本，形如 "2.0.0-dev+g7b4ef62"
     std::string_view commit;   ///< 短 git sha；发布构建或无 git 时为空
     bool dirty = false;        ///< 开发版构建时工作区是否有未提交修改
@@ -49,7 +46,8 @@ struct BuildInfo
  */
 [[nodiscard]] constexpr Version compiled_version() noexcept
 {
-    return Version{ORIGIN_VERSION_MAJOR, ORIGIN_VERSION_MINOR, ORIGIN_VERSION_PATCH, ORIGIN_VERSION_STRING};
+    return Version{
+        ORIGIN_VERSION_MAJOR, ORIGIN_VERSION_MINOR, ORIGIN_VERSION_PATCH, ORIGIN_VERSION_STRING};
 }
 
 /**

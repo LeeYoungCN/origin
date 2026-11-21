@@ -21,14 +21,14 @@ struct LoggerSt {
     std::shared_ptr<origin::logging::Logger> ptr;
 
     explicit LoggerSt(std::shared_ptr<origin::logging::Logger> ptr) : ptr(std::move(ptr)) {}
-    explicit LoggerSt(origin::logging::Logger *ptr) : ptr(ptr) {}
+    explicit LoggerSt(origin::logging::Logger* ptr) : ptr(ptr) {}
 };
 
 struct SinkSt {
     std::shared_ptr<origin::logging::Sink> ptr;
 
     explicit SinkSt(std::shared_ptr<origin::logging::Sink> sink) : ptr(std::move(sink)) {}
-    explicit SinkSt(origin::logging::Sink *sink) : ptr(sink) {}
+    explicit SinkSt(origin::logging::Sink* sink) : ptr(sink) {}
 };
 
 struct FormatterSt {
@@ -38,7 +38,7 @@ struct FormatterSt {
         : ptr(std::move(formatter))
     {
     }
-    explicit FormatterSt(origin::logging::Formatter *formatter) : ptr(formatter) {}
+    explicit FormatterSt(origin::logging::Formatter* formatter) : ptr(formatter) {}
 };
 
 struct TaskPoolSt {
@@ -48,7 +48,7 @@ struct TaskPoolSt {
         : ptr(std::move(taskPool))
     {
     }
-    explicit TaskPoolSt(origin::logging::TaskPool *taskPool) : ptr(taskPool) {}
+    explicit TaskPoolSt(origin::logging::TaskPool* taskPool) : ptr(taskPool) {}
 };
 
 #define PTR_INVALID(stPtr) ((stPtr) == nullptr || (stPtr)->ptr == nullptr)
@@ -63,14 +63,23 @@ namespace origin::logging::c_api {
 bool log_level_c_invalid(LogLevelC level);
 LogLevel c_to_cpp_log_level(LogLevelC level);
 LogLevelC cpp_to_c_log_level(LogLevel level);
-std::vector<std::shared_ptr<origin::logging::Sink>> sink_ptr_vector(const SinkSt *const sinks[],
+std::vector<std::shared_ptr<origin::logging::Sink>> sink_ptr_vector(const SinkSt* const sinks[],
                                                                     uint32_t sinkCnt);
 
-void origin_force_log_it(const std::shared_ptr<origin::logging::Logger> &logger, const char *file,
-                         int line, const char *func, LogLevel level, const char *format,
+void origin_force_log_it(const std::shared_ptr<origin::logging::Logger>& logger,
+                         const char* file,
+                         int line,
+                         const char* func,
+                         LogLevel level,
+                         const char* format,
                          va_list args);
 
-void origin_log_it(const std::shared_ptr<origin::logging::Logger> &logger, const char *file,
-                   int line, const char *func, LogLevel level, const char *format, va_list args);
+void origin_log_it(const std::shared_ptr<origin::logging::Logger>& logger,
+                   const char* file,
+                   int line,
+                   const char* func,
+                   LogLevel level,
+                   const char* format,
+                   va_list args);
 }  // namespace origin::logging::c_api
 #endif  // ORIGIN_LOGGING_C_INTERNAL_COMMON_C_HPP

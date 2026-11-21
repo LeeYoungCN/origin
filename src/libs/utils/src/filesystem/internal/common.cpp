@@ -76,7 +76,7 @@ ErrorCode ConvertExceptionToErrorCode(const std::exception& ex)
 ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
 {
     if (!ec) {
-            return ERR_COMM_SUCCESS;
+        return ERR_COMM_SUCCESS;
     }
     // 详细日志便于调试
     ORIGIN_DEBUG_WARN("Convert error: {} (category: {}, value: {})",

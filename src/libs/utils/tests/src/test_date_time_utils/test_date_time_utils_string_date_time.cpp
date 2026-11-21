@@ -58,20 +58,27 @@ TEST_P(TestDateTimeUtilsFmtTimeCompBuffer, DateTimeSt)
     TestTimeBuffer(format, length, timeInfo, dateTime);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    LENGTH, TestDateTimeUtilsFmtTimeCompBuffer,
-    testing::Combine(testing::Values("%Y-%y-%m-%d-%H:%M:%S-%A-%a-%B-%b-%h", "111"),
-                     testing::Range(1U, 50U, 5U), testing::Values(2), testing::Values(2)));
+INSTANTIATE_TEST_SUITE_P(LENGTH,
+                         TestDateTimeUtilsFmtTimeCompBuffer,
+                         testing::Combine(testing::Values("%Y-%y-%m-%d-%H:%M:%S-%A-%a-%B-%b-%h",
+                                                          "111"),
+                                          testing::Range(1U, 50U, 5U),
+                                          testing::Values(2),
+                                          testing::Values(2)));
 
 #if defined(__linux__) || defined(__APPLE__)
-INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_MONTH, TestDateTimeUtilsFmtTimeCompBuffer,
+INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_MONTH,
+                         TestDateTimeUtilsFmtTimeCompBuffer,
                          testing::Combine(testing::ValuesIn(MONTH_TEST_FORMAT),
                                           testing::Values(MAX_TIME_STR_LEN),
-                                          testing::Range(0U, 15U), testing::Values(2)));
+                                          testing::Range(0U, 15U),
+                                          testing::Values(2)));
 
-INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_WEEKDAY, TestDateTimeUtilsFmtTimeCompBuffer,
+INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_WEEKDAY,
+                         TestDateTimeUtilsFmtTimeCompBuffer,
                          testing::Combine(testing::ValuesIn(WEEKDAY_TEST_FORMAT),
-                                          testing::Values(MAX_TIME_STR_LEN), testing::Values(10U),
+                                          testing::Values(MAX_TIME_STR_LEN),
+                                          testing::Values(10U),
                                           testing::Range(0U, 10U)));
 #endif
 
@@ -102,12 +109,16 @@ TEST_P(TestDateTimeUtilsTimeCompStr, DateTimeSt)
     TestTimeString(format, timeInfo, dateTime);
 }
 
-INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_MONTH, TestDateTimeUtilsTimeCompStr,
+INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_MONTH,
+                         TestDateTimeUtilsTimeCompStr,
                          testing::Combine(testing::ValuesIn(MONTH_TEST_FORMAT),
-                                          testing::Range(0U, 15U), testing::Values(2)));
+                                          testing::Range(0U, 15U),
+                                          testing::Values(2)));
 
-INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_WEEKDAY, TestDateTimeUtilsTimeCompStr,
+INSTANTIATE_TEST_SUITE_P(LINUX_AND_APPLE_WEEKDAY,
+                         TestDateTimeUtilsTimeCompStr,
                          testing::Combine(testing::ValuesIn(WEEKDAY_TEST_FORMAT),
-                                          testing::Values(10U), testing::Range(0U, 10U)));
+                                          testing::Values(10U),
+                                          testing::Range(0U, 10U)));
 #endif
 }  // namespace utils_test::date_time_test

@@ -21,12 +21,12 @@ protected:
     static void TearDownTestSuite() {}
     void SetUp() override;
     void TearDown() override;
-    void init_logger(const testing::TestInfo *test_info);
+    void init_logger(const testing::TestInfo* test_info);
 
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
-    LoggerSt *_loggerSt = nullptr;
-    SinkSt *_sinkSt = create_mock_sink_st(_sink);
-    SinkSt const *_sinks[1] = {_sinkSt};
+    LoggerSt* _loggerSt = nullptr;
+    SinkSt* _sinkSt = create_mock_sink_st(_sink);
+    SinkSt const* _sinks[1] = {_sinkSt};
 };
 
 void TestSyncLoggerSt::SetUp()
@@ -42,7 +42,7 @@ void TestSyncLoggerSt::TearDown()
     origin_destroy_logger(_loggerSt);
 }
 
-void TestSyncLoggerSt::init_logger(const testing::TestInfo *test_info)
+void TestSyncLoggerSt::init_logger(const testing::TestInfo* test_info)
 {
     const std::string name = get_logger_name(test_info);
     _loggerSt = origin_create_sync_logger(name.c_str(), _sinks, 1);
@@ -80,8 +80,8 @@ TEST_F(TestSyncLoggerSt, create_multi_sinks)
 {
     const std::string name = get_logger_name(test_info_);
     constexpr uint32_t sinkCnt = 3;
-    SinkSt *sinks[sinkCnt] = {};
-    for (auto &sink : sinks) {
+    SinkSt* sinks[sinkCnt] = {};
+    for (auto& sink : sinks) {
         sink = _sinkSt;
     }
     _loggerSt = origin_create_sync_logger(name.c_str(), sinks, sinkCnt);

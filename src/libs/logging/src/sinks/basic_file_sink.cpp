@@ -20,7 +20,7 @@ BasicFileSink::BasicFileSink(const std::string_view file, const bool overwrite)
 std::string BasicFileSink::file() const
 {
     throw_if_pimpl_null();
-    return dynamic_cast<const BasicFileSinkImpl *>(_pImpl.get())->file();
+    return dynamic_cast<const BasicFileSinkImpl*>(_pImpl.get())->file();
 }
 
 }  // namespace origin::logging

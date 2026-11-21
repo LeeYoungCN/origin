@@ -7,7 +7,7 @@
 
 #include "detail/common.hpp"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     auto dir = logging_test::get_log_dir();
 

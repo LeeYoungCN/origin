@@ -14,7 +14,9 @@ std::tm TimestampToTimeInfo(TimestampMs ts);
 
 void TestTimeBuffer(const std::string_view& format, uint32_t length, TimestampMs timestamp);
 
-void TestTimeBuffer(const std::string_view& format, uint32_t length, std::tm timeInfo,
+void TestTimeBuffer(const std::string_view& format,
+                    uint32_t length,
+                    std::tm timeInfo,
                     const DateTimeSt& dateTime);
 
 void TestTimeString(const std::string_view& format, TimestampMs timestamp);

@@ -94,7 +94,8 @@ void LoggerBase::flush()
     _pImpl->flush();
 }
 
-void LoggerBase::force_log(const LogSource& source, const LogLevel level,
+void LoggerBase::force_log(const LogSource& source,
+                           const LogLevel level,
                            const std::string_view message)
 {
     throw_if_pimpl_null();

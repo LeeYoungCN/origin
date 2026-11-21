@@ -23,10 +23,15 @@ struct LogMsg {
     ProcessId procId{0};
 };
 
-LOGGING_API LogMsg create_log_msg(const LogSource& source, std::string_view loggerName,
-                                  LogLevel level, std::string_view message);
+LOGGING_API LogMsg create_log_msg(const LogSource& source,
+                                  std::string_view loggerName,
+                                  LogLevel level,
+                                  std::string_view message);
 
-LOGGING_API void init_log_msg(const LogSource& source, std::string_view loggerName, LogLevel level,
-                              std::string_view message, LogMsg& msg);
+LOGGING_API void init_log_msg(const LogSource& source,
+                              std::string_view loggerName,
+                              LogLevel level,
+                              std::string_view message,
+                              LogMsg& msg);
 }  // namespace origin::logging
 #endif  // ORIGIN_LOGGING_LOG_MSG_HPP

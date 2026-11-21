@@ -15,12 +15,12 @@ uint32_t origin_c_abi_version(void)
     return ORIGIN_C_ABI_VERSION;
 }
 
-const char *origin_version(void)
+const char* origin_version(void)
 {
     return origin::version().data();
 }
 
-const char *origin_version_commit(void)
+const char* origin_version_commit(void)
 {
     const origin::BuildInfo info = origin::build_info();
     // 空字符串而不是 nullptr：绑定的字符串转换函数通常不接受 NULL

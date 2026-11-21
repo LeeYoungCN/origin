@@ -21,14 +21,14 @@ protected:
     static void TearDownTestSuite() {}
     void SetUp() override;
     void TearDown() override;
-    void init_root_logger(const testing::TestInfo *test_info);
+    void init_root_logger(const testing::TestInfo* test_info);
 
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
-    LoggerSt *_loggerSt = nullptr;
-    SinkSt *_sinkSt = create_mock_sink_st(_sink);
-    SinkSt const *_sinks[1] = {_sinkSt};
-    LoggerSt *_nullLogger = create_mock_logger_st(nullptr);
-    FormatterSt *_nullFormatter = create_mock_formatter_st(nullptr);
+    LoggerSt* _loggerSt = nullptr;
+    SinkSt* _sinkSt = create_mock_sink_st(_sink);
+    SinkSt const* _sinks[1] = {_sinkSt};
+    LoggerSt* _nullLogger = create_mock_logger_st(nullptr);
+    FormatterSt* _nullFormatter = create_mock_formatter_st(nullptr);
 };
 
 void TestRootLoggerC::SetUp()
@@ -47,7 +47,7 @@ void TestRootLoggerC::TearDown()
     origin_logging_shutdown();
 }
 
-void TestRootLoggerC::init_root_logger(const testing::TestInfo *test_info)
+void TestRootLoggerC::init_root_logger(const testing::TestInfo* test_info)
 {
     const std::string name = get_logger_name(test_info);
     _loggerSt = origin_create_sync_logger(name.data(), _sinks, 1);
@@ -319,7 +319,7 @@ TEST_F(TestRootLoggerC, set_formatter)
 {
     init_root_logger(test_info_);
 
-    FormatterSt *formatter = origin_create_pattern_formatter("%v");
+    FormatterSt* formatter = origin_create_pattern_formatter("%v");
     origin_logging_set_formatter(formatter);
     origin_destroy_formatter(formatter);
 
@@ -338,7 +338,7 @@ TEST_F(TestRootLoggerC, set_formatter_failed_when_formatter_nullptr)
 
 TEST_F(TestRootLoggerC, set_formatter_failed_when_root_logger_nullptr)
 {
-    FormatterSt *formatter = origin_create_pattern_formatter("%v");
+    FormatterSt* formatter = origin_create_pattern_formatter("%v");
     origin_logging_set_formatter(formatter);
     origin_destroy_formatter(formatter);
 }
@@ -347,10 +347,10 @@ TEST_F(TestRootLoggerC, log_failed_when_level_invalid)
 {
     init_root_logger(test_info_);
     origin_logging_log(__FILE__,
-               __LINE__,
-               __FUNCTION__,
-               INVALID_LEVEL_C,
-               "TestRootLoggerC.log_failed_when_level_invalid");
+                       __LINE__,
+                       __FUNCTION__,
+                       INVALID_LEVEL_C,
+                       "TestRootLoggerC.log_failed_when_level_invalid");
     EXPECT_EQ(_sink->buffer().size(), 0);
 }
 

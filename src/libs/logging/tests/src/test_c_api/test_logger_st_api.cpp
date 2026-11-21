@@ -25,11 +25,11 @@ protected:
 
     std::string_view _loggerName = "TestLoggerStApi";
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>();
-    SinkSt *_sinkSt = create_mock_sink_st(_sink);
-    LoggerSt *_nullLogger = create_mock_logger_st(nullptr);
-    FormatterSt *_nullFormatter = create_mock_formatter_st(nullptr);
-    SinkSt const *_sinks[1] = {_sinkSt};
-    LoggerSt *_loggerSt = origin_create_sync_logger(_loggerName.data(), _sinks, 1);
+    SinkSt* _sinkSt = create_mock_sink_st(_sink);
+    LoggerSt* _nullLogger = create_mock_logger_st(nullptr);
+    FormatterSt* _nullFormatter = create_mock_formatter_st(nullptr);
+    SinkSt const* _sinks[1] = {_sinkSt};
+    LoggerSt* _loggerSt = origin_create_sync_logger(_loggerName.data(), _sinks, 1);
 };
 
 void TestLoggerStApi::SetUp()
@@ -193,7 +193,7 @@ TEST_F(TestLoggerStApi, set_formatter)
 {
     origin_logger_set_level(_loggerSt, LOG_LEVEL_C_TRACE);
 
-    FormatterSt *formatter = origin_create_pattern_formatter("%v");
+    FormatterSt* formatter = origin_create_pattern_formatter("%v");
     origin_logger_set_formatter(_loggerSt, formatter);
     origin_destroy_formatter(formatter);
 
@@ -205,7 +205,7 @@ TEST_F(TestLoggerStApi, set_formatter)
 
 TEST_F(TestLoggerStApi, set_formatter_failed_when_logger_nullptr)
 {
-    FormatterSt *formatter = origin_create_pattern_formatter("%v");
+    FormatterSt* formatter = origin_create_pattern_formatter("%v");
     origin_logger_set_formatter(nullptr, formatter);
     origin_logger_set_formatter(_nullLogger, formatter);
     origin_destroy_formatter(formatter);

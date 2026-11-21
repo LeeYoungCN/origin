@@ -21,7 +21,8 @@ AsyncLoggerImpl::AsyncLoggerImpl(const std::string_view name, const std::shared_
     throw_if_task_pool_invalid(true);
 }
 
-AsyncLoggerImpl::AsyncLoggerImpl(const std::string_view name, const std::shared_ptr<Sink>& sink,
+AsyncLoggerImpl::AsyncLoggerImpl(const std::string_view name,
+                                 const std::shared_ptr<Sink>& sink,
                                  const std::weak_ptr<TaskPool>& pool)
     : LoggerImplBase(name, sink), _taskPool(pool)
 {

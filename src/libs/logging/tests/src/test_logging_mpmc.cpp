@@ -51,9 +51,11 @@ protected:
 
     void run_test(uint32_t producerCnt, uint32_t logCnt);
     void producer_loop(uint32_t idx, uint32_t producerCnt, uint32_t logCnt);
-    void init_logger(const testing::TestInfo *test_info, uint32_t consumerCnt);
+    void init_logger(const testing::TestInfo* test_info, uint32_t consumerCnt);
     static std::string format_log_msg(uint32_t producerIdx, uint32_t msgIdx);
-    void wait_flush_complete(uint32_t producerCnt, uint32_t logCnt, uint32_t intervalMs,
+    void wait_flush_complete(uint32_t producerCnt,
+                             uint32_t logCnt,
+                             uint32_t intervalMs,
                              uint32_t maxWaitTimeMs) const;
 
     std::string _dir = get_log_dir();
@@ -106,7 +108,7 @@ void TestLoggingMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
         _threads.emplace_back(&TestLoggingMPMC::producer_loop, this, i, producerCnt, logCnt);
     }
 
-    for (auto &thread : _threads) {
+    for (auto& thread : _threads) {
         thread.join();
     }
 
@@ -118,11 +120,11 @@ void TestLoggingMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
         EXPECT_NE(_sink->buffer().count(tid), 0) << "idx: " << idx << ", tid: " << tid;
         std::vector<LogMsg> logMsgs = _sink->buffer().at(tid);
         EXPECT_EQ(logMsgs.size(), logCnt);
-        std::sort(logMsgs.begin(), logMsgs.end(), [](const LogMsg &a, const LogMsg &b) {
+        std::sort(logMsgs.begin(), logMsgs.end(), [](const LogMsg& a, const LogMsg& b) {
             return a.data < b.data;
         });
         for (uint32_t i = 0; i < logCnt; i++) {
-            const LogMsg &logMsg = logMsgs.at(i);
+            const LogMsg& logMsg = logMsgs.at(i);
             EXPECT_EQ(logMsg.threadId, tid);
             EXPECT_EQ(logMsg.data, format_log_msg(idx, i));
             EXPECT_EQ(logMsg.loggerName, _logger->name());
@@ -134,15 +136,17 @@ void TestLoggingMPMC::run_test(uint32_t producerCnt, uint32_t logCnt)
     }
 }
 
-void TestLoggingMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt,
-                                          uint32_t intervalMs, uint32_t maxWaitTimeMs) const
+void TestLoggingMPMC::wait_flush_complete(uint32_t producerCnt,
+                                          uint32_t logCnt,
+                                          uint32_t intervalMs,
+                                          uint32_t maxWaitTimeMs) const
 {
     auto _isFlushComplete = [&]() -> bool {
         if (_sink->buffer().size() < producerCnt) {
             return false;
         }
         return std::ranges::all_of(
-            _sink->buffer(), [logCnt](const auto &entry) { return entry.second.size() >= logCnt; });
+            _sink->buffer(), [logCnt](const auto& entry) { return entry.second.size() >= logCnt; });
     };
 
     uint32_t waitedTimeMs = 0;
@@ -158,7 +162,7 @@ void TestLoggingMPMC::wait_flush_complete(uint32_t producerCnt, uint32_t logCnt,
     }
 }
 
-void TestLoggingMPMC::init_logger(const testing::TestInfo *test_info, uint32_t consumerCnt)
+void TestLoggingMPMC::init_logger(const testing::TestInfo* test_info, uint32_t consumerCnt)
 {
     const std::string name = get_logger_name(test_info);
     const std::string logFile = join_paths({_dir, name + ".log"});

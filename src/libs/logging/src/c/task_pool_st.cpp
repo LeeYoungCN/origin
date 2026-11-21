@@ -11,12 +11,12 @@
 using namespace origin::logging;
 
 extern "C" {
-TaskPoolSt *origin_create_task_pool(const uint32_t capacity, const uint32_t threadCnt)
+TaskPoolSt* origin_create_task_pool(const uint32_t capacity, const uint32_t threadCnt)
 {
     return new TaskPoolSt(std::make_shared<TaskPool>(capacity, threadCnt));
 }
 
-void origin_destroy_task_pool(TaskPoolSt *taskPool)
+void origin_destroy_task_pool(TaskPoolSt* taskPool)
 {
     if (taskPool != nullptr) {
         if (taskPool->ptr != nullptr) {

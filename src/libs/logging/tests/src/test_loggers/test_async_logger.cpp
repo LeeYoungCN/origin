@@ -38,7 +38,7 @@ protected:
 protected:
     void wait_flush_complete(uint32_t expectedCount) const;
     void wait_log_complete(uint32_t expectedCount) const;
-    void init_logger(const testing::TestInfo *test_info);
+    void init_logger(const testing::TestInfo* test_info);
 
     std::shared_ptr<Logger> _logger;
     std::shared_ptr<LogContentBufferSink> _sink = std::make_shared<LogContentBufferSink>(2048);
@@ -47,7 +47,7 @@ protected:
     const uint32_t _maxWaitTimeMs = 5000;
 };
 
-void TestAsyncLogger::init_logger(const testing::TestInfo *test_info)
+void TestAsyncLogger::init_logger(const testing::TestInfo* test_info)
 {
     const std::string name = get_logger_name(test_info);
     _logger = std::make_shared<AsyncLogger>(name, _sink, _taskPool);
@@ -94,7 +94,7 @@ TEST_F(TestAsyncLogger, create_single_sink)
     EXPECT_EQ(_sink.use_count(), 2);
     EXPECT_EQ(_logger->name(), name);
     EXPECT_EQ(_logger->sinks().size(), 1);
-    auto *sinkPtr = reinterpret_cast<LogContentBufferSink *>(_logger->sinks()[0].get());
+    auto* sinkPtr = reinterpret_cast<LogContentBufferSink*>(_logger->sinks()[0].get());
     EXPECT_EQ(sinkPtr->buffer().size(), 0);
 }
 

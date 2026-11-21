@@ -19,14 +19,19 @@ DailyFileSink::DailyFileSink(const std::string_view file, const bool overwrite)
 {
 }
 
-DailyFileSink::DailyFileSink(const std::string_view file, const uint32_t hour,
-                             const uint32_t minute, const bool overwrite)
+DailyFileSink::DailyFileSink(const std::string_view file,
+                             const uint32_t hour,
+                             const uint32_t minute,
+                             const bool overwrite)
     : SinkBase(std::make_unique<DailyFileSinkImpl>(file, hour, minute, overwrite))
 {
 }
 
-DailyFileSink::DailyFileSink(const std::string_view file, const uint32_t hour,
-                             const uint32_t minute, const uint32_t maxFiles, const bool overwrite)
+DailyFileSink::DailyFileSink(const std::string_view file,
+                             const uint32_t hour,
+                             const uint32_t minute,
+                             const uint32_t maxFiles,
+                             const bool overwrite)
     : SinkBase(std::make_unique<DailyFileSinkImpl>(file, hour, minute, maxFiles, overwrite))
 
 {
@@ -35,25 +40,25 @@ DailyFileSink::DailyFileSink(const std::string_view file, const uint32_t hour,
 std::string DailyFileSink::file() const
 {
     throw_if_pimpl_null();
-    return dynamic_cast<const DailyFileSinkImpl *>(_pImpl.get())->file();
+    return dynamic_cast<const DailyFileSinkImpl*>(_pImpl.get())->file();
 }
 
 std::vector<std::string> DailyFileSink::get_file_list() const
 {
     throw_if_pimpl_null();
-    return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->get_file_list();
+    return dynamic_cast<DailyFileSinkImpl*>(_pImpl.get())->get_file_list();
 }
 
 void DailyFileSink::set_max_files(const uint32_t maxFiles)
 {
     throw_if_pimpl_null();
-    return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->set_max_files(maxFiles);
+    return dynamic_cast<DailyFileSinkImpl*>(_pImpl.get())->set_max_files(maxFiles);
 }
 
 uint32_t DailyFileSink::max_files() const
 {
     throw_if_pimpl_null();
-    return dynamic_cast<DailyFileSinkImpl *>(_pImpl.get())->max_files();
+    return dynamic_cast<DailyFileSinkImpl*>(_pImpl.get())->max_files();
 }
 
 }  // namespace origin::logging

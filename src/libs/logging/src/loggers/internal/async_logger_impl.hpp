@@ -28,7 +28,8 @@ public:
         throw_if_task_pool_invalid(true);
     }
 
-    AsyncLoggerImpl(std::string_view name, const std::shared_ptr<Sink>& sink,
+    AsyncLoggerImpl(std::string_view name,
+                    const std::shared_ptr<Sink>& sink,
                     const std::weak_ptr<TaskPool>& pool);
 
     template <typename It>

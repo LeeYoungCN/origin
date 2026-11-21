@@ -11,16 +11,21 @@
 #include "origin/logging/log_source.hpp"
 
 namespace origin::logging {
-LogMsg create_log_msg(const LogSource& source, const std::string_view loggerName,
-                      const LogLevel level, const std::string_view message)
+LogMsg create_log_msg(const LogSource& source,
+                      const std::string_view loggerName,
+                      const LogLevel level,
+                      const std::string_view message)
 {
     LogMsg msg{};
     init_log_msg(source, loggerName, level, message, msg);
     return msg;
 }
 
-void init_log_msg(const LogSource& source, const std::string_view loggerName, const LogLevel level,
-                  const std::string_view message, LogMsg& msg)
+void init_log_msg(const LogSource& source,
+                  const std::string_view loggerName,
+                  const LogLevel level,
+                  const std::string_view message,
+                  LogMsg& msg)
 {
     msg.loggerName = loggerName;
     msg.level = level;

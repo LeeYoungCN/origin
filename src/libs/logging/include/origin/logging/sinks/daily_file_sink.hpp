@@ -27,7 +27,10 @@ public:
     DailyFileSink();
     explicit DailyFileSink(std::string_view file, bool overwrite = false);
     DailyFileSink(std::string_view file, uint32_t hour, uint32_t minute, bool overwrite = false);
-    DailyFileSink(std::string_view file, uint32_t hour, uint32_t minute, uint32_t maxFiles,
+    DailyFileSink(std::string_view file,
+                  uint32_t hour,
+                  uint32_t minute,
+                  uint32_t maxFiles,
                   bool overwrite = false);
     ~DailyFileSink() override = default;
 

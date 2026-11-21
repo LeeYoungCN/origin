@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-const char *GetCStandard(void);
+const char* GetCStandard(void);
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,8 @@ constexpr uint32_t RENAME_FILE_RETRY = 3;
 constexpr uint32_t RENAME_FILE_SLEEP_MS = 10;
 
 RotatingFileSinkImplBase::RotatingFileSinkImplBase(const std::string_view file,
-                                                   const bool overwrite, const uint32_t maxFiles,
+                                                   const bool overwrite,
+                                                   const uint32_t maxFiles,
                                                    const std::string_view itemName,
                                                    const std::string_view paramStr)
     : BasicFileSinkImpl(file, overwrite, paramStr), _maxFiles(maxFiles), _itemName(itemName)

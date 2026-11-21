@@ -25,7 +25,7 @@ std::string_view version() noexcept
 BuildInfo build_info() noexcept
 {
     // 字段都由 configure 阶段生成，避免在运行期解析版本字符串
-    //（解析出来的子串不是 NUL 结尾，C 接口会把它后面的 "-dirty" 一起读出去）。
+    // （解析出来的子串不是 NUL 结尾，C 接口会把它后面的 "-dirty" 一起读出去）。
     BuildInfo info{};
     info.version = ORIGIN_VERSION_FULL;
     info.commit = ORIGIN_VERSION_COMMIT;
@@ -43,7 +43,8 @@ bool headers_match_binary() noexcept
         runtime_version.substr(0, header_version.size()) != header_version) {
         return false;
     }
-    return runtime_version.size() == header_version.size() || runtime_version[header_version.size()] == '-';
+    return runtime_version.size() == header_version.size() ||
+           runtime_version[header_version.size()] == '-';
 }
 
 }  // namespace origin

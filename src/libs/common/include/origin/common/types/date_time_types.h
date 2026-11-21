@@ -51,7 +51,7 @@ typedef enum {
     LOCAL,  // 本地时区（跟随系统）
 } TimeZone;
 
-inline const char *GetTimeZoneString(TimeZone zone)
+inline const char* GetTimeZoneString(TimeZone zone)
 {
     switch (zone) {
         case TimeZone::UTC:

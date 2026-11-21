@@ -1,6 +1,6 @@
 #include "working_env_c.h"
 
-const char *GetCStandard(void)
+const char* GetCStandard(void)
 {
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
     return "C23";

@@ -42,7 +42,8 @@ tm TimestampToTimeInfo(TimestampMs ts)
     return timeInfo;
 }
 
-void CompareString(const DateTimeSt& dateTime, std::string stdTimeStr,
+void CompareString(const DateTimeSt& dateTime,
+                   std::string stdTimeStr,
                    const std::string& utilsTimeStr)
 {
     char buffer[4];  // 3位数字 + 终止符
@@ -66,7 +67,9 @@ void TestTimeBuffer(const std::string_view& format, uint32_t length, TimestampMs
     TestTimeBuffer(format, length, timeInfo, dateTime);
 }
 
-void TestTimeBuffer(const std::string_view& format, uint32_t length, std::tm timeInfo,
+void TestTimeBuffer(const std::string_view& format,
+                    uint32_t length,
+                    std::tm timeInfo,
                     const DateTimeSt& dateTime)
 {
     char bufferUtils[MAX_TIME_STR_LEN] = {'\0'};

@@ -30,7 +30,8 @@ AsyncLogger::AsyncLogger(const std::string_view name,
 {
 }
 
-AsyncLogger::AsyncLogger(const std::string_view name, const std::shared_ptr<Sink>& sink,
+AsyncLogger::AsyncLogger(const std::string_view name,
+                         const std::shared_ptr<Sink>& sink,
                          const std::weak_ptr<TaskPool>& pool)
     : LoggerBase(std::make_shared<AsyncLoggerImpl>(name, sink, pool))
 {

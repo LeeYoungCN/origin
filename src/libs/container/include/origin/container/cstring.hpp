@@ -17,7 +17,7 @@ public:
     CString() = default;
     ~CString() = default;
 
-    explicit CString(const char *format, ...)
+    explicit CString(const char* format, ...)
     {
         if (format != nullptr) {
             va_list ap;
@@ -32,7 +32,7 @@ public:
         }
     }
 
-    ErrorCode append(const char *format, ...)
+    ErrorCode append(const char* format, ...)
     {
         if (format != nullptr) {
             va_list ap;
@@ -44,7 +44,7 @@ public:
     }
 
     template <typename... Args>
-    void append(std::format_string<Args...> fmt, Args &&...args)
+    void append(std::format_string<Args...> fmt, Args&&... args)
     {
         auto rst = std::format_to_n(
             m_cstr + m_length, m_capacity - m_length - 1, fmt, std::forward(args)...);
@@ -65,7 +65,7 @@ public:
     ErrorCode last_error() { return m_lastErrcode; }
 
 private:
-    ErrorCode append_va(const char *format, va_list ap)
+    ErrorCode append_va(const char* format, va_list ap)
     {
         size_t fmtLen = 0;
         if (format != nullptr) {

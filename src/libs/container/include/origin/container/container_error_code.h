@@ -19,7 +19,7 @@ typedef enum {
 
 #define ERR_CONTAINER_OVERFLOW MAKE_CONTAINER_ERROR(CTN_ERR_ID_OVERFLOW)
 
-static inline const char *get_container_err_msg(ErrorCode errCode)
+static inline const char* get_container_err_msg(ErrorCode errCode)
 {
     if (errCode == ERR_CONTAINER_OVERFLOW) {
         return "Container overflow";

@@ -10,4 +10,4 @@ ROOT_DIR="$(
 
 CODE_DIR="${ROOT_DIR}/src"
 
-find "${CODE_DIR}" -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -exec clang-format -i {} +
+find "${CODE_DIR}" -type f \( -name "*.cpp" -o -name "*.c" -o -name "*.hpp" -o -name "*.h" \) -exec clang-format -i {} +

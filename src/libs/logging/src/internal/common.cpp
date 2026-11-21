@@ -37,8 +37,11 @@ bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, con
     return false;
 }
 
-bool rename_file_retry(const std::string_view src, std::string_view dest, const bool overwrite,
-                       const uint32_t maxRetry, const uint32_t sleepMs)
+bool rename_file_retry(const std::string_view src,
+                       std::string_view dest,
+                       const bool overwrite,
+                       const uint32_t maxRetry,
+                       const uint32_t sleepMs)
 {
     for (uint32_t i = 0; i < maxRetry; i++) {
         if (rename_file(src, dest, overwrite) == ERR_COMM_SUCCESS) {

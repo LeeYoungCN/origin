@@ -17,7 +17,7 @@ using namespace origin::logging::c_api;
 #define ROOT_LOGGER (INST(Registry).root_logger())
 
 extern "C" {
-LoggerSt *origin_logging_root_logger()
+LoggerSt* origin_logging_root_logger()
 {
     if (!ROOT_LOGGER) {
         ORIGIN_DEBUG_WARN("Root logger nullptr.");
@@ -26,7 +26,7 @@ LoggerSt *origin_logging_root_logger()
     return new struct LoggerSt(ROOT_LOGGER);
 }
 
-void origin_logging_set_root_logger(const LoggerSt *logger)
+void origin_logging_set_root_logger(const LoggerSt* logger)
 {
     if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Set root logger failed. logger nullptr.")
@@ -107,7 +107,7 @@ LogLevelC origin_logging_flush_level()
     return cpp_to_c_log_level(ROOT_LOGGER->flush_level());
 }
 
-void origin_logging_set_pattern(const char *pattern)
+void origin_logging_set_pattern(const char* pattern)
 {
     if (pattern == nullptr) {
         ORIGIN_DEBUG_ERR("Root logger set pattern failed. pattern nullptr.");
@@ -119,12 +119,12 @@ void origin_logging_set_pattern(const char *pattern)
     }
     try {
         ROOT_LOGGER->set_pattern(pattern);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         ORIGIN_DEBUG_ERR("Root logger set pattern failed. [Exception]: {}", e.what());
     }
 }
 
-void origin_logging_set_formatter(const FormatterSt *formatter)
+void origin_logging_set_formatter(const FormatterSt* formatter)
 {
     if (PTR_INVALID(formatter)) {
         ORIGIN_DEBUG_ERR("Root logger set formatter failed. formatter nullptr.");
@@ -146,8 +146,8 @@ void origin_logging_flush()
     ROOT_LOGGER->flush();
 }
 
-void origin_logging_log(const char *file, const int line, const char *func, LogLevelC level,
-                const char *format, ...)
+void origin_logging_log(
+    const char* file, const int line, const char* func, LogLevelC level, const char* format, ...)
 {
     if (log_level_c_invalid(level)) {
         ORIGIN_DEBUG_WARN("Root logger log failed. {}", LOG_LEVEL_C_INVALID_LOG);
@@ -170,7 +170,7 @@ void origin_logging_log(const char *file, const int line, const char *func, LogL
     va_end(args);
 }
 
-bool origin_logging_register_logger(const LoggerSt *logger)
+bool origin_logging_register_logger(const LoggerSt* logger)
 {
     if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Register logger failed. logger nullptr.");
@@ -179,7 +179,7 @@ bool origin_logging_register_logger(const LoggerSt *logger)
     return REGISTRY.register_logger(logger->ptr);
 }
 
-void origin_logging_register_or_replace_logger(const LoggerSt *logger)
+void origin_logging_register_or_replace_logger(const LoggerSt* logger)
 {
     if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Register logger failed. logger nullptr.");
@@ -189,7 +189,7 @@ void origin_logging_register_or_replace_logger(const LoggerSt *logger)
     REGISTRY.register_or_replace_logger(logger->ptr);
 }
 
-void origin_logging_remove_logger(const char *name)
+void origin_logging_remove_logger(const char* name)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Remove logger failed. name nullptr.");
@@ -203,7 +203,7 @@ void origin_logging_remove_all()
     REGISTRY.remove_all();
 }
 
-LoggerSt *origin_logging_get_logger(const char *name)
+LoggerSt* origin_logging_get_logger(const char* name)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Get logger failed. name nullptr.");
@@ -216,7 +216,7 @@ LoggerSt *origin_logging_get_logger(const char *name)
     return new LoggerSt(logger);
 }
 
-bool origin_logging_is_logger_exists(const char *name)
+bool origin_logging_is_logger_exists(const char* name)
 {
     if (name == nullptr) {
         ORIGIN_DEBUG_ERR("Check logger exists failed. name nullptr.");
@@ -225,7 +225,7 @@ bool origin_logging_is_logger_exists(const char *name)
     return REGISTRY.exists(name);
 }
 
-bool origin_logging_set_root_task_pool(const TaskPoolSt *taskPool)
+bool origin_logging_set_root_task_pool(const TaskPoolSt* taskPool)
 {
     if (taskPool == nullptr) {
         ORIGIN_DEBUG_ERR("Set root task pool failed. taskPool nullptr.");
@@ -234,7 +234,7 @@ bool origin_logging_set_root_task_pool(const TaskPoolSt *taskPool)
     return REGISTRY.set_root_task_pool(taskPool->ptr);
 }
 
-TaskPoolSt *origin_logging_root_task_pool()
+TaskPoolSt* origin_logging_root_task_pool()
 {
     const auto taskPool = REGISTRY.root_task_pool();
     if (taskPool == nullptr) {
@@ -244,7 +244,7 @@ TaskPoolSt *origin_logging_root_task_pool()
     return new struct TaskPoolSt(taskPool);
 }
 
-void origin_logging_initialize_logger(LoggerSt const *logger, bool autoRegister)
+void origin_logging_initialize_logger(LoggerSt const* logger, bool autoRegister)
 {
     if (logger == nullptr) {
         ORIGIN_DEBUG_ERR("Initialize logger failed. logger nullptr.");
@@ -263,7 +263,7 @@ void origin_logging_flush_on_all(const LogLevelC level)
     REGISTRY.flush_on_all(c_to_cpp_log_level(level));
 }
 
-void origin_logging_set_pattern_all(const char *pattern)
+void origin_logging_set_pattern_all(const char* pattern)
 {
     if (pattern == nullptr) {
         ORIGIN_DEBUG_ERR("Set pattern all failed. pattern nullptr.");
@@ -271,12 +271,12 @@ void origin_logging_set_pattern_all(const char *pattern)
     }
     try {
         REGISTRY.set_pattern_all(pattern);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         ORIGIN_DEBUG_ERR("Set pattern all failed. [Exception]: {}", e.what());
     }
 }
 
-void origin_logging_set_formatter_all(const FormatterSt *formatter)
+void origin_logging_set_formatter_all(const FormatterSt* formatter)
 {
     if (PTR_INVALID(formatter)) {
         ORIGIN_DEBUG_ERR("Set formatter all failed. {}", FORMATTER_NULL_LOG);

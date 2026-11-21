@@ -1,6 +1,8 @@
 #ifndef COMMON_DEBUG_DEBUG_LOGGER_H
 #define COMMON_DEBUG_DEBUG_LOGGER_H
 
+#include <string>
+
 #include "origin/common/common_api.h"
 
 #ifdef __cplusplus

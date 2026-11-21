@@ -10,7 +10,6 @@
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {
-using namespace origin::thread;
 using namespace origin::filesystem;
 
 class TestFilesystemUtilsDir : public TestFilesystemUtilsBase {

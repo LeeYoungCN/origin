@@ -11,16 +11,20 @@
 
 #include "gtest/gtest.h"
 
-#include "origin/common/common_error_code.h"
+#include <initializer_list>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "origin/common/types/filesystem_types.h"
+#include "origin/common/types/process_types.h"
 
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
-#include "origin/thread/thread.h"
 
 namespace utils_test::filesystem_test {
 using namespace origin::filesystem;
 using namespace origin::process;
-using namespace origin::thread;
 
 // 测试辅助：返回旧哨兵值，失败时与兼容重载语义一致
 inline std::string fs_cwd()

@@ -2,6 +2,7 @@
 #define ORIGIN_LOGGING_FORMATTERS_FORMATTER_BASE_HPP
 
 #include <memory>
+#include <string>
 
 #include "origin/common/macros/compiler.h"
 

@@ -3,6 +3,7 @@
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
 #include <windows.h>
 
 #include <minwindef.h>

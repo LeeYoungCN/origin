@@ -213,6 +213,8 @@ origin::headers_match_binary();    // 头文件与二进制是否一致
 - 代码格式：`.clang-format`（`./script/format_all.sh` 批量格式化）；
 - 静态检查：`.clang-tidy`，提交前跑 `./script/check_tidy.sh`（默认只查改动文件；
   `--all` 全量、`--fix` 自动修复、`--no-werror` 只报告）；
+- 模块分层：`common <- container / utils <- logging`，低层模块不允许 include
+  高层；`./script/check_layers.sh` 可单独检查（CI 也会跑）；
 - 拼写检查：`.cspell.json`；
 - 编辑器：`.clangd` 指向 `out/build/compile_commands.json`，该文件由
   `check_tidy.sh` / VS Code 从当前 preset 的构建目录自动复制刷新；

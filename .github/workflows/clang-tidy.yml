@@ -55,6 +55,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: module layer check
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      # 分层是硬约束：低层模块不允许 include 高层。不依赖编译数据库，先跑。
+      run: bash ./script/check_layers.sh
+
     - name: Install LLVM 22 (Windows)
       if: runner.os == 'Windows'
       shell: pwsh

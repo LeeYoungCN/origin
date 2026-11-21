@@ -7,9 +7,6 @@
 #include <windows.h>
 
 #include <winerror.h>
-
-#else
-#include <cerrno>
 #endif
 
 #include <exception>

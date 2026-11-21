@@ -17,8 +17,6 @@
 #elif OS_MACOS
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #include <unistd.h>
-
-#include <cstddef>
 #endif
 
 #include <array>

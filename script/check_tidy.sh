@@ -8,6 +8,7 @@
 #   ./script/check_tidy.sh --all           # 全量检查（CI 用）
 #   ./script/check_tidy.sh --fix           # 尝试自动修复（改完记得重新编译验证）
 #   ./script/check_tidy.sh --no-werror     # 只报告告警，不因此失败
+#   ./script/check_tidy.sh --github-annotations  # 把告警转成 GitHub 注解（CI 用）
 #   ./script/check_tidy.sh --no-configure  # 跳过 configure，复用已有构建目录（CI 用）
 #   ./script/check_tidy.sh --prepare-db    # 只准备编译数据库（给 clangd 用），不检查
 #   ./script/check_tidy.sh --preset win_clang_cl_debug
@@ -35,6 +36,8 @@ function usage() {
   --all           检查编译数据库中的全部源文件（默认只查改动文件）
   --fix           应用 clang-tidy 修复（默认只报告）
   --no-werror     告警不导致失败（默认 --warnings-as-errors='*'）
+  --github-annotations
+                  把 clang-tidy 的告警/错误转成 GitHub 注解（CI 用）
   --no-configure  跳过 configure，直接使用已有构建目录（CI 用）
   --prepare-db    只准备编译数据库（复制到 out/build），不执行检查
   --preset <name> 指定 CMake configure preset，默认按平台选择：
@@ -47,6 +50,7 @@ APPLY_FIX=0
 WERROR=1
 NO_CONFIGURE=0
 PREPARE_DB=0
+GITHUB_ANNOTATIONS=0
 PRESET=""
 PRESET_GIVEN=0
 
@@ -66,6 +70,9 @@ while [ $# -gt 0 ]; do
         ;;
     --prepare-db)
         PREPARE_DB=1
+        ;;
+    --github-annotations)
+        GITHUB_ANNOTATIONS=1
         ;;
     --preset)
         if [ -z "$2" ]; then
@@ -211,6 +218,45 @@ function file_in_db() {
     grep -qF "\"${abs_path}\"" "${DB_FILE}"
 }
 
+# GitHub workflow command 需要对 % 和换行做转义；属性值还要额外转义 , 和 :
+function gh_escape() {
+    local text="$1"
+    text="${text//%/%25}"
+    text="${text//$'\r'/%0D}"
+    text="${text//$'\n'/%0A}"
+    printf '%s' "${text}"
+}
+
+function gh_escape_prop() {
+    local text
+    text="$(gh_escape "$1")"
+    text="${text//,/%2C}"
+    text="${text//:/%3A}"
+    printf '%s' "${text}"
+}
+
+# 把 clang-tidy 的 "path:line:col: warning: message" 转成 GitHub 注解，
+# 这样告警会直接显示在 PR 的 Checks / Files changed 里，而不是只躺在日志中。
+function emit_github_annotations() {
+    local log_file="$1"
+    local line path lineno col severity message relative
+    while IFS= read -r line; do
+        if [[ "${line}" =~ ^(.+):([0-9]+):([0-9]+):\ (warning|error):\ (.*)$ ]]; then
+            path="${BASH_REMATCH[1]}"
+            lineno="${BASH_REMATCH[2]}"
+            col="${BASH_REMATCH[3]}"
+            severity="${BASH_REMATCH[4]}"
+            message="${BASH_REMATCH[5]}"
+            path="${path//\\//}"
+            relative="${path#${ROOT_MIXED}/}"
+            relative="${relative#${ROOT_DIR}/}"
+            printf '::%s file=%s,line=%s,col=%s::%s\n' \
+                "${severity}" "$(gh_escape_prop "${relative}")" "${lineno}" "${col}" \
+                "$(gh_escape "${message}")"
+        fi
+    done <"${log_file}"
+}
+
 function collect_files() {
     if [ "${ALL}" -eq 1 ]; then
         find src -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' \) | sort
@@ -285,8 +331,33 @@ fi
 
 print_log "clang-tidy 检查开始: preset=${PRESET} files=${#FILES[@]}" info
 
-if "${CLANG_TIDY_BIN}" "${TIDY_ARGS[@]}" "${FILES[@]}"; then
-    print_log "clang-tidy 检查通过: ${#FILES[@]} 个文件" info
+TIDY_STATUS=0
+if [ "${GITHUB_ANNOTATIONS}" -eq 1 ]; then
+    TIDY_LOG="$(mktemp)" || {
+        print_log "创建临时文件失败" error
+        exit 1
+    }
+    "${CLANG_TIDY_BIN}" "${TIDY_ARGS[@]}" "${FILES[@]}" >"${TIDY_LOG}" 2>&1 || TIDY_STATUS=$?
+    cat "${TIDY_LOG}"
+    emit_github_annotations "${TIDY_LOG}"
+
+    DIAGNOSTIC_COUNT="$(grep -cE '^.+:[0-9]+:[0-9]+: (warning|error): ' "${TIDY_LOG}" || true)"
+    print_log "诊断数: ${DIAGNOSTIC_COUNT:-0}" info
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+        {
+            echo "### clang-tidy (${PRESET})"
+            echo ""
+            echo "- 文件数: ${#FILES[@]}"
+            echo "- 诊断数: ${DIAGNOSTIC_COUNT:-0}"
+        } >>"${GITHUB_STEP_SUMMARY}"
+    fi
+    rm -f "${TIDY_LOG}"
+else
+    "${CLANG_TIDY_BIN}" "${TIDY_ARGS[@]}" "${FILES[@]}" || TIDY_STATUS=$?
+fi
+
+if [ "${TIDY_STATUS}" -eq 0 ]; then
+    print_log "clang-tidy 检查完成: ${#FILES[@]} 个文件" info
     exit 0
 fi
 

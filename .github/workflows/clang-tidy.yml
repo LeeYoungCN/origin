@@ -36,13 +36,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows 是开发主环境，作为必须通过的检查。
+          # 三平台都跑，有告警就是红叉（可见），但都不加进分支保护的
+          # required checks，因此不会阻塞合并；需要拦截时再逐个加进去。
           - os: windows-latest
             preset: win_clang_cl_debug
             configure-args: ""
-          # Linux / macOS 先处于观察期：失败会在 PR 上显示为红叉（可见、可点开），
-          # 但不要把它们加进分支保护（required status checks），因此不会阻塞合并。
-          # 清完平台差异后，再把它们加进 required checks。
           - os: ubuntu-latest
             preset: linux_clang_debug
             configure-args: "-DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22"
@@ -115,6 +113,10 @@ jobs:
     - name: clang-tidy check
       working-directory: ${{ github.workspace }}
       shell: bash
-      # 不做 continue-on-error：失败必须体现为红叉，避免“绿色但没人看”的假象。
-      # Linux/macOS 在清完平台差异前不加进分支保护的 required checks，所以只提示、不阻塞。
-      run: bash ./script/check_tidy.sh --all --no-configure --preset ${{ matrix.preset }}
+      # 失败必须体现为红叉，避免“绿色但没人看”的假象：
+      #   保留默认的 --warnings-as-errors，有告警 => 步骤失败 => PR 上红叉；
+      #   --github-annotations 再把每条告警标到具体文件/行，方便直接定位。
+      # 不设为分支保护的 required check，所以红叉可见但不阻塞合并。
+      run: |
+        bash ./script/check_tidy.sh --all --no-configure --preset ${{ matrix.preset }} \
+          --github-annotations

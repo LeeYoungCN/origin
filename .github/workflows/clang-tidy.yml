@@ -36,21 +36,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows 是开发主环境，先作为阻塞门禁。
+          # Windows 是开发主环境，作为必须通过的检查。
           - os: windows-latest
             preset: win_clang_cl_debug
             configure-args: ""
-            blocking: true
-          # Linux / macOS 先以“观察模式”接入（见 clang-tidy check 步骤的
-          # continue-on-error），清完平台差异后把 blocking 改成 true。
+          # Linux / macOS 先处于观察期：失败会在 PR 上显示为红叉（可见、可点开），
+          # 但不要把它们加进分支保护（required status checks），因此不会阻塞合并。
+          # 清完平台差异后，再把它们加进 required checks。
           - os: ubuntu-latest
             preset: linux_clang_debug
             configure-args: "-DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22"
-            blocking: false
           - os: macos-15
             preset: darwin_clang_debug
             configure-args: ""
-            blocking: false
 
     steps:
     - uses: actions/checkout@v4
@@ -117,6 +115,6 @@ jobs:
     - name: clang-tidy check
       working-directory: ${{ github.workspace }}
       shell: bash
-      # 观察期：Linux/macOS 只收集结果、不阻塞；清完平台差异后把 blocking 置 true。
-      continue-on-error: ${{ !matrix.blocking }}
+      # 不做 continue-on-error：失败必须体现为红叉，避免“绿色但没人看”的假象。
+      # Linux/macOS 在清完平台差异前不加进分支保护的 required checks，所以只提示、不阻塞。
       run: bash ./script/check_tidy.sh --all --no-configure --preset ${{ matrix.preset }}

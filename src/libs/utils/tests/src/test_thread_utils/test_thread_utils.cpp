@@ -9,6 +9,8 @@
  *
  */
 
+#include <string>
+
 #include "origin/common/common_error_code.h"
 
 #include "origin/thread/thread.h"

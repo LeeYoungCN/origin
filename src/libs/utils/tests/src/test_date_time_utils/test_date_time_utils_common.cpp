@@ -2,9 +2,13 @@
 
 #include "origin/common/common_error_code.h"
 #include "origin/common/macros/compiler.h"
+#include "origin/common/types/error_code_types.h"
 
 #if OS_WINDOWS
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
 #include <windows.h>
+
+#include <winnls.h>
 #endif
 #include <cstdint>
 #include <cstdio>
@@ -99,7 +103,7 @@ void TestTimeString(const std::string_view& format, std::tm timeInfo, const Date
 
     EXPECT_EQ(ss.str().size(), utilsStr.size());
 
-    if (utilsStr.size() > 0) {
+    if (!utilsStr.empty()) {
         CompareString(dateTime, ss.str(), utilsStr);
     }
 }

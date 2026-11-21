@@ -2,9 +2,7 @@
 #include <stdexcept>
 
 #include "gtest/gtest.h"
-#include "origin/common/types/thread_types.h"
 #include "origin/container/concurrent_blocking_queue.hpp"
-#include "origin/thread/thread.h"
 
 namespace test::test_container::test_concurrent_queue {
 using namespace origin::container;

@@ -1,5 +1,8 @@
+#include <cstdint>
+
 #include "gtest/gtest.h"
 #include "origin/common/common_error_code.h"
+#include "origin/container/container_error_code.h"
 #include "origin/container/cstring.hpp"
 
 namespace test::test_container::test_CString {
@@ -34,7 +37,7 @@ TEST_F(TestCString, construct)
 {
     constexpr uint32_t capacity = 128;
     const std::string expectStr = "Hello world!";
-    CString<capacity> testString = expectStr.c_str();
+    CString<capacity> testString(expectStr.c_str());
     EXPECT_EQ(testString.last_error(), ERR_COMM_SUCCESS);
     EXPECT_EQ(testString.capacity(), capacity);
     EXPECT_EQ(testString.length(), expectStr.length());
@@ -48,7 +51,7 @@ TEST_F(TestCString, overflow)
 {
     constexpr uint32_t capacity = 2;
     const std::string expectStr = "Hello world!";
-    CString<capacity> testString = expectStr.c_str();
+    CString<capacity> testString(expectStr.c_str());
     EXPECT_EQ(testString.last_error(), ERR_CONTAINER_OVERFLOW);
     EXPECT_EQ(testString.capacity(), capacity);
     EXPECT_EQ(testString.length(), 0);

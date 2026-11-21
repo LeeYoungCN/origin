@@ -123,7 +123,7 @@ public:
         return _items.at((_head + idx) % _maxItems);
     }
 
-    const T& at(size_t idx) const
+    [[nodiscard]] const T& at(size_t idx) const
     {
         throw_if_out_of_range(idx);
         return _items[(_head + idx) % _maxItems];

@@ -31,9 +31,9 @@ std::shared_ptr<LoggerType> create_logger(std::string_view name, SinkArgs&&... s
 }
 
 template <typename LoggerType>
-std::shared_ptr<LoggerType> create_logger(std::string_view name, std::shared_ptr<Sink> sink)
+std::shared_ptr<LoggerType> create_logger(std::string_view name, const std::shared_ptr<Sink>& sink)
 {
-    return std::make_shared<LoggerType>(name, std::move(sink));
+    return std::make_shared<LoggerType>(name, sink);
 }
 
 template <typename LoggerType>

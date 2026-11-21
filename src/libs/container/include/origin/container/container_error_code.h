@@ -21,14 +21,11 @@ typedef enum {
 
 static inline const char *get_container_err_msg(ErrorCode errCode)
 {
-    switch (errCode) {
-        // Container error code.
-        case ERR_CONTAINER_OVERFLOW:
-            return "Container overflow";
-        // Unknown error code.
-        default:
-            return get_comm_err_msg(errCode);
-    };
+    if (errCode == ERR_CONTAINER_OVERFLOW) {
+        return "Container overflow";
+    }
+    // Unknown error code.
+    return get_comm_err_msg(errCode);
 }
 
 #endif  // ORIGIN_CONTAINER_ERROR_CODE_H

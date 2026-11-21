@@ -5,8 +5,10 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <utility>
 
 #include "origin/common/common_error_code.h"
+#include "origin/common/types/error_code_types.h"
 
 namespace origin::strings {
 

@@ -4,8 +4,6 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/macros/compiler.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
-#include "origin/utils/utils_error_code.h"
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {

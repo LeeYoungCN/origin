@@ -30,7 +30,6 @@
         "--background-index",
         "--completion-style=bundled",
         "--header-insertion=iwyu",
-        "--function-arg-placeholders=false",
         "--ranking-model=decision_forest",
         "--pch-storage=disk",
         "--all-scopes-completion",

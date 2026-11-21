@@ -21,6 +21,7 @@
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/date_time/date_time.h"
 #include "origin/utils/utils_error_code.h"
 

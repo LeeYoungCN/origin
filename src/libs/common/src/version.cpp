@@ -10,7 +10,6 @@
  */
 #include "origin/common/version.h"
 
-#include <string>
 #include <string_view>
 
 #include "origin/build_info.h"

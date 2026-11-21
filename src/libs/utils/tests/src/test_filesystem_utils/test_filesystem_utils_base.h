@@ -85,7 +85,7 @@ protected:
     std::string m_process;
     std::string m_processDir;
     std::string m_workDir;
-    ProcessId m_pid;
+    ProcessId m_pid = 0;
 };
 
 }  // namespace utils_test::filesystem_test

@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "c/internal/common_c.hpp"
+#include "c/internal/common_c.hpp"  // NOLINT(misc-include-cleaner): 这里定义了 C API 的桥接结构体
 #include "internal/task_pool.hpp"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/logging/c/logging_c.h"

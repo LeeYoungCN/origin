@@ -10,9 +10,10 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/tid_msg_map_sink.hpp"
 #include "gtest/gtest.h"
-#include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/thread_types.h"
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
@@ -22,8 +23,6 @@
 #include "origin/logging/logging.hpp"
 #include "origin/logging/sinks/basic_file_sink.hpp"
 #include "origin/logging/sinks/sink.hpp"
-#include "origin/date_time/date_time.h"
-#include "origin/filesystem/filesystem.h"
 #include "origin/thread/thread.h"
 
 using namespace logging_test;

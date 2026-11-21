@@ -4,6 +4,8 @@
  */
 #include "origin/common/c/version_c.h"
 
+#include <cstdint>
+
 #include "origin/common/version.h"
 
 extern "C" {

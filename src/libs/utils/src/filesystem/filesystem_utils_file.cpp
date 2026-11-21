@@ -12,7 +12,16 @@
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
 #include <windows.h>
+
+#include <errhandlingapi.h>
+#include <fileapi.h>
+#include <minwinbase.h>
+#include <minwindef.h>
+#include <stringapiset.h>
+#include <winnls.h>
+#include <winnt.h>
 
 #include "origin/common/constants/date_time_constants.h"
 #else
@@ -30,12 +39,14 @@
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <utility>
 #include <vector>
 
 #include "filesystem/internal/common.hpp"
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/filesystem_types.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/utils/utils_error_code.h"

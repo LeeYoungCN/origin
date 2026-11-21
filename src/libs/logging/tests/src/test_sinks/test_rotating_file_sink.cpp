@@ -6,14 +6,13 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/rotating_file_sink.hpp"
-#include "origin/date_time/date_time.h"
-#include "origin/filesystem/filesystem.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

@@ -1,5 +1,6 @@
 #include "internal/registry.hpp"
 
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <ranges>

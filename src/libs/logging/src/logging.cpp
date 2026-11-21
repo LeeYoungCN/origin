@@ -1,11 +1,13 @@
 #include "origin/logging/logging.hpp"
 
 #include <cstdint>
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <stdexcept>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "c/internal/common_c.hpp"
 #include "internal/registry.hpp"
@@ -13,6 +15,7 @@
 #include "origin/common/debug/debug_logger.h"
 #include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/async_logger.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"

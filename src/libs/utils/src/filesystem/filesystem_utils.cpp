@@ -9,21 +9,19 @@
  *
  */
 
-#include "origin/filesystem/filesystem.h"
-
 #include <filesystem>
 #include <string_view>
 #include <system_error>
 
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/filesystem_types.h"
-#include "origin/thread/thread.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/utils/utils_error_code.h"
 
 namespace origin::filesystem {
 namespace fs = std::filesystem;
-using namespace origin::thread;
 
 ErrorCode get_entry_type(std::string_view path, EntryType& out)
 {

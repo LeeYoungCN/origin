@@ -9,13 +9,13 @@
  *
  */
 #include <cstddef>
+#include <cstdio>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/types/filesystem_types.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
-#include "origin/utils/utils_error_code.h"
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {

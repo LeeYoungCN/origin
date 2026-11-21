@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -10,6 +11,7 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/sync_logger.hpp"
+#include "origin/logging/sinks/sink.hpp"
 
 using namespace logging_test;
 using namespace origin::logging;

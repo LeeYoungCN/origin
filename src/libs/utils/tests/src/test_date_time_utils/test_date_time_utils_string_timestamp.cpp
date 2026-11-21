@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "origin/common/constants/date_time_constants.h"

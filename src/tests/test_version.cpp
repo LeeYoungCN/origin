@@ -1,4 +1,3 @@
-#include <cstring>
 #include <regex>
 #include <string>
 #include <string_view>
@@ -6,6 +5,7 @@
 #include "gtest/gtest.h"
 #include "origin/common/c/version_c.h"
 #include "origin/common/version.h"
+#include "origin/version.h"
 
 namespace origin_test {
 

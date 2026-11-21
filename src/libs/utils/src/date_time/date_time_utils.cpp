@@ -2,6 +2,7 @@
 #include "origin/date_time/date_time.h"
 
 #if OS_WINDOWS
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
 #include <windows.h>
 
 #include <corecrt.h>
@@ -22,6 +23,7 @@
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/utils/utils_error_code.h"
 
 namespace {

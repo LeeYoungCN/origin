@@ -21,6 +21,7 @@ public:
 
     template <typename It>
     AsyncLoggerImpl(std::string_view name, It begin, It end)
+        // NOLINTNEXTLINE(performance-unnecessary-value-param): 迭代器按值传递更符合惯例
         : LoggerImplBase(name, begin, end), _taskPool(REGISTRY.root_task_pool())
     {
         throw_if_task_pool_invalid(true);
@@ -31,6 +32,7 @@ public:
 
     template <typename It>
     AsyncLoggerImpl(std::string_view name, It begin, It end, const std::weak_ptr<TaskPool>& pool)
+        // NOLINTNEXTLINE(performance-unnecessary-value-param): 迭代器按值传递更符合惯例
         : LoggerImplBase(name, begin, end), _taskPool(pool)
     {
         throw_if_task_pool_invalid(false);

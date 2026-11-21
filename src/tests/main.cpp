@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include "origin/common/debug/debug_logger.h"
-#include "origin/common/debug/working_env.h"
 #include "origin/common/version.h"
 
 int main(int argc, char *argv[])

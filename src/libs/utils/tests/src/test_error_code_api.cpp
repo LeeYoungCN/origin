@@ -8,10 +8,15 @@
 #include <origin/utils/utils_error_code.h>
 
 #include <cstdarg>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#include "origin/common/constants/date_time_constants.h"
+#include "origin/common/types/date_time_types.h"
+#include "origin/common/types/filesystem_types.h"
 
 namespace {
 

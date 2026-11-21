@@ -1,6 +1,6 @@
 # .clangd
 CompileFlags:
-  CompilationDatabase: out/build      # 确认该目录下直接有 compile_commands.json
+  CompilationDatabase: out/build      # script/check_tidy.sh 与 VS Code 会把当前 preset 的 compile_commands.json 复制到这里
 
 Completion:
   AllScopes: Yes
@@ -11,12 +11,12 @@ Index:
   Background: Build
 
 Diagnostics:
-  UnusedIncludes: Strict
-  MissingIncludes: None
+  UnusedIncludes: Strict           # 未使用 include（clangd 自带 Include Cleaner）
+  MissingIncludes: Strict          # 缺失 include，与 CI 的 misc-include-cleaner 对齐
   ClangTidy:
     Add: []
     Remove:
-      - misc-include-cleaner     # 编辑器用 clangd 自带 Include Cleaner，CI 用 clang-tidy 的
+      - misc-include-cleaner     # 编辑器用 clangd 自带 Include Cleaner，CI/脚本用 clang-tidy 的
     FastCheckFilter: Loose
 
 InlayHints:

@@ -16,7 +16,7 @@ public:
     CString() = default;
     ~CString() = default;
 
-    CString(const char *format, ...)
+    explicit CString(const char *format, ...)
     {
         if (format != nullptr) {
             va_list ap;

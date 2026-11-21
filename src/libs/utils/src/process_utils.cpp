@@ -11,6 +11,7 @@
 #include "origin/process/process.h"
 
 #if OS_WINDOWS
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
 #include <windows.h>
 
 #include <libloaderapi.h>
@@ -31,13 +32,12 @@
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/macros/compiler.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/process_types.h"
 #include "origin/filesystem/filesystem.h"
-#include "origin/thread/thread.h"
 
 namespace origin::process {
 using namespace origin::filesystem;
-using namespace origin::thread;
 
 ErrorCode get_proc_path(std::string& out)
 {

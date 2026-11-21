@@ -1,0 +1,116 @@
+# 跨平台静态检查（clang-tidy）。与构建流水线分开：
+#   - 三平台并行，不拖慢构建/测试的关键路径；
+#   - 失败时状态独立，便于单独设为 required check；
+#   - 只跑一次（每个平台一份编译数据库），不需要跟着构建矩阵重复。
+#
+# 三平台差异只在“编译数据库”和“clang-tidy 安装方式”，检查规则完全共用
+# .clang-tidy / script/check_tidy.sh。
+name: clang-tidy
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - "src/**"
+      - ".clang-tidy"
+      - ".clangd"
+      - "script/check_tidy.sh"
+      - "script/load_msvc_env.sh"
+      - "CMakePresets.json"
+      - "cmake/toolchains/**"
+      - ".github/workflows/clang-tidy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: clang-tidy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tidy:
+    name: tidy (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows 是开发主环境，先作为阻塞门禁。
+          - os: windows-latest
+            preset: win_clang_cl_debug
+            configure-args: ""
+            blocking: true
+          # Linux / macOS 先以“观察模式”接入（见 clang-tidy check 步骤的
+          # continue-on-error），清完平台差异后把 blocking 改成 true。
+          - os: ubuntu-latest
+            preset: linux_clang_debug
+            configure-args: "-DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22"
+            blocking: false
+          - os: macos-15
+            preset: darwin_clang_debug
+            configure-args: ""
+            blocking: false
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install LLVM 22 (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        choco upgrade llvm --version=22.1.8 --allow-downgrade -y --no-progress
+        $version = clang-tidy --version | Out-String
+        Write-Output $version
+        if ($version -notmatch 'LLVM version 22\.') {
+          throw "Expected clang-tidy from LLVM 22, got: $version"
+        }
+
+    - name: Install LLVM 22 (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s 22
+        sudo apt-get install -y clang-22 clang-tidy-22
+        # apt.llvm.org 同时提供带版本的 /usr/bin 链接和 /usr/lib/llvm-22/bin，
+        # 把后者放到 PATH 前面，脚本里的 clang-tidy / clangd 才会是 22。
+        echo "/usr/lib/llvm-22/bin" >> "${GITHUB_PATH}"
+        /usr/lib/llvm-22/bin/clang-tidy --version
+        /usr/lib/llvm-22/bin/clangd --version
+
+    - name: Install LLVM 22 (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        if brew info --formula llvm@22 >/dev/null 2>&1; then
+          brew install llvm@22
+          LLVM_PREFIX="$(brew --prefix llvm@22)"
+        else
+          # 没有版本化 formula 时退回最新版；版本不一致会在 check 名自检里暴露。
+          brew install llvm
+          LLVM_PREFIX="$(brew --prefix llvm)"
+        fi
+        echo "${LLVM_PREFIX}/bin" >> "${GITHUB_PATH}"
+        "${LLVM_PREFIX}/bin/clang-tidy" --version
+
+    - name: Configure CMake (compile database)
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      # Windows runner 默认 shell 是 pwsh，它会把 "-DVAR=x.y.z" 拆开；统一用 bash。
+      run: cmake --preset=${{ matrix.preset }} ${{ matrix.configure-args }}
+
+    - name: clangd config smoke check
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      # 先让脚本把 out/build/<preset>/compile_commands.json 复制到 out/build，
+      # 确保 .clangd 与提交前脚本用的是同一份编译参数，再让 clangd 完整解析一次。
+      run: |
+        bash ./script/check_tidy.sh --prepare-db --no-configure --preset ${{ matrix.preset }}
+        clangd --check=src/libs/common/src/version.cpp
+
+    - name: clang-tidy check
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      # 观察期：Linux/macOS 只收集结果、不阻塞；清完平台差异后把 blocking 置 true。
+      continue-on-error: ${{ !matrix.blocking }}
+      run: bash ./script/check_tidy.sh --all --no-configure --preset ${{ matrix.preset }}

@@ -12,7 +12,6 @@
 #include "origin/thread/thread.h"
 
 #if OS_WINDOWS
-#include <windows.h>
 
 #include <processthreadsapi.h>
 

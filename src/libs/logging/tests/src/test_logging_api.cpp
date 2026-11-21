@@ -5,6 +5,8 @@
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
 #include "gtest/gtest.h"
+#include "origin/logging/log_level.hpp"
+#include "origin/logging/log_source.hpp"
 #include "origin/logging/loggers/sync_logger.hpp"
 #include "origin/logging/logging.hpp"
 #include "origin/logging/sinks/stdout_sink.hpp"

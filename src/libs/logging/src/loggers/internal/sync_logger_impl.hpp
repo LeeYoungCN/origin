@@ -16,6 +16,7 @@ public:
     SyncLoggerImpl(std::string_view name, const std::shared_ptr<Sink>& sink);
 
     template <typename It>
+    // NOLINTNEXTLINE(performance-unnecessary-value-param): 迭代器按值传递更符合惯例
     SyncLoggerImpl(std::string_view name, It begin, It end) : LoggerImplBase(name, begin, end)
     {
     }

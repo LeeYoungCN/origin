@@ -1,7 +1,6 @@
 #include "loggers/internal/logger_impl_base.hpp"
 
 #include <atomic>
-#include <exception>
 #include <initializer_list>
 #include <memory>
 #include <stdexcept>

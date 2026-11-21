@@ -3,12 +3,11 @@
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
-#include <windows.h>
 
+// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
+#include <windows.h>
 #include <libloaderapi.h>
-#include <minwindef.h>
 #include <processthreadsapi.h>
-#include <stdlib.h>
 
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
@@ -146,7 +145,7 @@ void PrintEnvValue(const char* name)
     char* value = nullptr;
     auto err = 0;
     size_t len = 0;
-    err = _dupenv_s(&value, &len, name);
+    err = _dupenv_s(&value, &len, name);  // NOLINT(misc-include-cleaner): <cstdlib> 已提供
     if (err == 0 && value != nullptr) {
         std::cout << "-------------------- " << name << " --------------------" << std::endl;
         std::cout << name << ": " << value << std::endl;

@@ -21,6 +21,7 @@ public:
     LoggerImplBase(std::string_view name, const std::shared_ptr<Sink>& sink);
 
     template <typename It>
+    // NOLINTNEXTLINE(performance-unnecessary-value-param): 迭代器按值传递更符合惯例
     LoggerImplBase(std::string_view name, It begin, It end) : _name(name), _sinks(begin, end)
     {
         throw_if_param_invalid();

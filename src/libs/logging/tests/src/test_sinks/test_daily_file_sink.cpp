@@ -1,4 +1,3 @@
-#include <sys/types.h>
 
 #include <cstdint>
 #include <format>
@@ -9,15 +8,14 @@
 
 #include "detail/common.hpp"
 #include "gtest/gtest.h"
-#include "origin/common/common_error_code.h"
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/date_time/date_time.h"
+#include "origin/filesystem/filesystem.h"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
 #include "origin/logging/log_source.hpp"
 #include "origin/logging/sinks/daily_file_sink.hpp"
-#include "origin/date_time/date_time.h"
-#include "origin/filesystem/filesystem.h"
 
 namespace logging_test {
 using namespace origin::date_time;

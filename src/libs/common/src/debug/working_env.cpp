@@ -10,7 +10,10 @@
 #include <libloaderapi.h>
 #include <processthreadsapi.h>
 
+// OS_WINDOWS 也覆盖 MinGW，但 size_t 只在 MSVC 的 _dupenv_s 分支里用到
+#if COMPILER_MSVC
 #include <cstddef>
+#endif
 
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数

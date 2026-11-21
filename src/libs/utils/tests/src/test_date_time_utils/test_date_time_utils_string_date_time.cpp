@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <ctime>
 #include <string_view>
@@ -10,7 +12,6 @@
 
 #include "origin/date_time/date_time.h"
 
-#include "gtest/gtest.h"
 #include "test_date_time_utils_common.h"
 
 namespace {

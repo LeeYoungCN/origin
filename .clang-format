@@ -162,8 +162,8 @@ IncludeCategories:
   - Regex: '^<windows\.h>$'
     Priority: -1
     CaseSensitive: false
-  # 2. 第三方库（gtest/gmock），与系统 C 头分开
-  - Regex: '^<(gtest|gmock|benchmark)/'
+  # 2. 第三方库（gtest/gmock），尖括号和引号两种写法都归这一组
+  - Regex: '^[<"](gtest|gmock|benchmark)/'
     Priority: 1
   # 3. C 标准库 / Windows SDK 窄头文件（<fileapi.h> 等）
   - Regex: '^<.+\.h>$'

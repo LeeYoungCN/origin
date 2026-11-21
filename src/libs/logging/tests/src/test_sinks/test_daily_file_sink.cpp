@@ -1,4 +1,6 @@
 
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <format>
 #include <stdexcept>
@@ -18,7 +20,6 @@
 #include "origin/logging/sinks/daily_file_sink.hpp"
 
 #include "detail/common.hpp"
-#include "gtest/gtest.h"
 
 namespace logging_test {
 using namespace origin::date_time;

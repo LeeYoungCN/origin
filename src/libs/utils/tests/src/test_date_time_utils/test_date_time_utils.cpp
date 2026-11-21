@@ -1,4 +1,6 @@
 
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <string_view>
 
@@ -9,8 +11,6 @@
 
 #include "origin/date_time/date_time.h"
 #include "origin/utils/utils_error_code.h"
-
-#include "gtest/gtest.h"
 
 using namespace origin::date_time;
 

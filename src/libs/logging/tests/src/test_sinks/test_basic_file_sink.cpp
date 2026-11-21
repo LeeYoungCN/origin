@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -13,7 +15,6 @@
 #include "origin/logging/sinks/basic_file_sink.hpp"
 
 #include "detail/common.hpp"
-#include "gtest/gtest.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

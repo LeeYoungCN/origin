@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -15,7 +17,6 @@
 #include "origin/logging/sinks/rotating_file_sink.hpp"
 
 #include "detail/common.hpp"
-#include "gtest/gtest.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

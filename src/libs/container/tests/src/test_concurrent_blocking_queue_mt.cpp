@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <atomic>
 #include <cstdint>
 #include <map>
@@ -13,8 +15,6 @@
 
 #include "origin/date_time/date_time.h"
 #include "origin/thread/thread.h"
-
-#include "gtest/gtest.h"
 
 namespace {
 constexpr uint32_t MAX_NUM = 2048;

@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <format>
@@ -26,7 +28,6 @@
 
 #include "detail/common.hpp"
 #include "detail/mock_sinks/tid_msg_map_sink.hpp"
-#include "gtest/gtest.h"
 
 using namespace logging_test;
 using namespace origin::logging;

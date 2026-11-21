@@ -8,6 +8,8 @@
  * @copyright Copyright (c) 2025
  *
  */
+#include "gtest/gtest.h"
+
 #include <cstddef>
 #include <cstdio>
 #include <vector>
@@ -17,7 +19,6 @@
 
 #include "origin/filesystem/filesystem.h"
 
-#include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {

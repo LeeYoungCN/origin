@@ -1,6 +1,8 @@
 #ifndef TEST_LOGGING_DETAIL_COMMON_H
 #define TEST_LOGGING_DETAIL_COMMON_H
 
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -12,8 +14,6 @@
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/loggers/logger.hpp"
 #include "origin/logging/sinks/sink.hpp"
-
-#include "gtest/gtest.h"
 
 namespace origin::logging {
 class TaskPool;

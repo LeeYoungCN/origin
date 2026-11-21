@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <format>
 #include <initializer_list>
@@ -19,7 +21,6 @@
 
 #include "detail/common.hpp"
 #include "detail/mock_sinks/log_content_buffer_sink.hpp"
-#include "gtest/gtest.h"
 
 using namespace logging_test;
 using namespace origin::date_time;

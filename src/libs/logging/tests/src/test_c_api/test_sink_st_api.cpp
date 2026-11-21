@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <memory>
 #include <string>
 
@@ -11,7 +13,6 @@
 #include "origin/logging/sinks/sink.hpp"
 
 #include "detail/common.hpp"
-#include "gtest/gtest.h"
 
 using namespace origin::logging;
 using namespace origin::filesystem;

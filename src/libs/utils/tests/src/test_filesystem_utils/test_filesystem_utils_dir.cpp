@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <string>
 
 #include "origin/common/common_error_code.h"
@@ -5,7 +7,6 @@
 
 #include "origin/filesystem/filesystem.h"
 
-#include "gtest/gtest.h"
 #include "test_filesystem_utils_base.h"
 
 namespace utils_test::filesystem_test {

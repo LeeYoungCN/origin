@@ -10,6 +10,8 @@
 
 #include <winnls.h>
 #endif
+#include "gtest/gtest.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <ctime>
@@ -22,8 +24,6 @@
 #include "origin/common/types/date_time_types.h"
 
 #include "origin/date_time/date_time.h"
-
-#include "gtest/gtest.h"
 
 namespace utils_test::date_time_test {
 

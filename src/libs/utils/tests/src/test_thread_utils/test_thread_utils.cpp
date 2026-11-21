@@ -9,13 +9,13 @@
  *
  */
 
+#include "gtest/gtest.h"
+
 #include <string>
 
 #include "origin/common/common_error_code.h"
 
 #include "origin/thread/thread.h"
-
-#include "gtest/gtest.h"
 using namespace origin::thread;
 TEST(TestThreadUtils, ThreadId)
 {

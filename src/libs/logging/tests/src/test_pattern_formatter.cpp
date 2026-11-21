@@ -1,3 +1,5 @@
+#include "gtest/gtest.h"
+
 #include <format>
 #include <stdexcept>
 #include <string>
@@ -14,7 +16,6 @@
 #include "origin/logging/log_source.hpp"
 
 #include "detail/common.hpp"
-#include "gtest/gtest.h"
 
 namespace logging_test {
 

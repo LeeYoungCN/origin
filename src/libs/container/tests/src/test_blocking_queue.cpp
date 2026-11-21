@@ -58,7 +58,7 @@ TEST_F(TestBlockingQueue, out_of_range)
     for (uint32_t i = 0; i < capacity; i++) {
         EXPECT_TRUE(queue.enqueue(i)) << "i = " << i;
         EXPECT_EQ(i + 1, queue.size());
-        EXPECT_THROW(queue.at(i + 1), std::out_of_range);
+        EXPECT_THROW(static_cast<void>(queue.at(i + 1)), std::out_of_range);
     }
 }
 

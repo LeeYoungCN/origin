@@ -10,15 +10,18 @@
 #include <libloaderapi.h>
 #include <processthreadsapi.h>
 
+#include <cstddef>
+
 #elif OS_LINUX
 #include <unistd.h>  // Linux的readlink函数
 #elif OS_MACOS
 #include <mach-o/dyld.h>  // macOS的_NSGetExecutablePath
 #include <unistd.h>
+
+#include <cstddef>
 #endif
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>

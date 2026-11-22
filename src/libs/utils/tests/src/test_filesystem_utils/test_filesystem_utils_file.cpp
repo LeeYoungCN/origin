@@ -10,7 +10,9 @@
  */
 #include "gtest/gtest.h"
 
+#include <chrono>
 #include <string>
+#include <thread>
 
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
@@ -329,6 +331,36 @@ TEST_F(TestFilesystemUtilsFile, rename_file_dest_invalid)
     EXPECT_EQ(write_text_file(m_testFile, text), ERR_COMM_SUCCESS);
 
     EXPECT_NE(rename_file(m_testFile, m_processDir), ERR_COMM_SUCCESS);
+}
+
+TEST_F(TestFilesystemUtilsFile, get_file_modify_time_uses_last_write)
+{
+    ASSERT_EQ(create_file(m_testFile), ERR_COMM_SUCCESS);
+    ASSERT_EQ(write_text_file(m_testFile, "a"), ERR_COMM_SUCCESS);
+
+    TimestampMs first = 0;
+    ASSERT_EQ(get_file_modify_time(m_testFile, first), ERR_COMM_SUCCESS);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    ASSERT_EQ(write_text_file(m_testFile, "b", false), ERR_COMM_SUCCESS);
+
+    TimestampMs second = 0;
+    ASSERT_EQ(get_file_modify_time(m_testFile, second), ERR_COMM_SUCCESS);
+
+    EXPECT_GT(second, first);
+}
+
+TEST_F(TestFilesystemUtilsFile, read_text_file_accepts_non_terminated_view)
+{
+    ASSERT_EQ(create_file(m_testFile), ERR_COMM_SUCCESS);
+    ASSERT_EQ(write_text_file(m_testFile, "abc"), ERR_COMM_SUCCESS);
+
+    std::string backed = m_testFile + "GARBAGE";
+    std::string_view const path(backed.data(), m_testFile.size());
+
+    std::string content;
+    ASSERT_EQ(read_text_file(path, content), ERR_COMM_SUCCESS);
+    EXPECT_EQ(content, "abc");
 }
 
 }  // namespace utils_test::filesystem_test

@@ -1,5 +1,6 @@
 #include "internal/task_pool.hpp"
 
+#include <atomic>
 #include <cstdint>
 #include <format>
 #include <memory>
@@ -64,6 +65,10 @@ void TaskPool::start()
 
 void TaskPool::shutdown()
 {
+    if (_stopped.exchange(true, std::memory_order_acq_rel)) {
+        return;
+    }
+
     for (uint32_t i = 0; i < _threadPool.size(); i++) {
         _buffer.enqueue_wait(LogTask(TaskType::SHUTDOWN));
     }

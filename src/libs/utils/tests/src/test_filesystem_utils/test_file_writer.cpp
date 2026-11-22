@@ -12,6 +12,7 @@
 #include "origin/filesystem/file_writer.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
+#include "origin/utils/utils_error_code.h"
 
 #include "test_filesystem_utils_base.h"
 
@@ -141,6 +142,17 @@ TEST_F(TestFileWriter, append_mode)
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     m_fileWriter->close();
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
+}
+
+TEST_F(TestFileWriter, write_after_close_reports_not_open)
+{
+    m_fileWriter = std::make_shared<FileWriter>(m_testFile);
+    ASSERT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
+    m_fileWriter->close();
+
+    m_fileWriter->write("should fail");
+
+    EXPECT_EQ(m_fileWriter->get_last_error(), ERR_UTILS_FILE_NOT_OPEN);
 }
 
 }  // namespace utils_test::test_file_writer

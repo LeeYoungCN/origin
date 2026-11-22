@@ -23,6 +23,18 @@
 #include "internal/task_pool.hpp"
 
 namespace origin::logging {
+namespace {
+std::shared_ptr<Logger> get_root_logger_or_throw(const char* action)
+{
+    auto logger = root_logger();
+    if (!logger) {
+        ORIGIN_DEBUG_ERR("Root logger {} failed. {}", action, ROOT_LOGGER_NULL_LOG);
+        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
+    }
+    return logger;
+}
+}  // namespace
+
 std::shared_ptr<Logger> create_async_logger(const std::string_view name,
                                             const std::shared_ptr<Sink>& sink,
                                             const std::weak_ptr<TaskPool>& pool)
@@ -61,83 +73,47 @@ void set_root_logger(std::shared_ptr<Logger> logger)
 
 void set_level(const LogLevel level)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger set log level failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    root_logger_raw()->set_level(level);
+    get_root_logger_or_throw("set log level")->set_level(level);
 }
 
 LogLevel level()
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger get log level failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    return root_logger_raw()->level();
+    return get_root_logger_or_throw("get log level")->level();
 }
 
 bool should_log(const LogLevel level)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger should log failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    return root_logger_raw()->should_log(level);
+    return get_root_logger_or_throw("should log")->should_log(level);
 }
 
 void flush_on(const LogLevel level)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger flush on failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    root_logger_raw()->flush_on(level);
+    get_root_logger_or_throw("flush on")->flush_on(level);
 }
 
 LogLevel flush_level()
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger get flush level failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    return root_logger_raw()->flush_level();
+    return get_root_logger_or_throw("get flush level")->flush_level();
 }
 
 bool should_flush(const LogLevel level)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger should flush failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    return root_logger_raw()->should_flush(level);
+    return get_root_logger_or_throw("should flush")->should_flush(level);
 }
 
 void set_pattern(const std::string_view pattern)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger set pattern failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    root_logger_raw()->set_pattern(pattern);
+    get_root_logger_or_throw("set pattern")->set_pattern(pattern);
 }
 
 void set_formatter(const std::unique_ptr<Formatter>& formatter)
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger set formatter failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    root_logger_raw()->set_formatter(formatter);
+    get_root_logger_or_throw("set formatter")->set_formatter(formatter);
 }
 
 void flush()
 {
-    if (!root_logger_raw()) {
-        ORIGIN_DEBUG_ERR("Root logger flush failed. {}", ROOT_LOGGER_NULL_LOG);
-        throw std::runtime_error(ROOT_LOGGER_NULL_LOG.data());
-    }
-    root_logger_raw()->flush();
+    get_root_logger_or_throw("flush")->flush();
 }
 
 #pragma endregion

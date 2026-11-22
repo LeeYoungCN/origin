@@ -1,6 +1,7 @@
 
 #ifndef ORIGIN_LOGGING_INTERNAL_TASK_POOL_HPP
 #define ORIGIN_LOGGING_INTERNAL_TASK_POOL_HPP
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -36,6 +37,7 @@ private:
     uint32_t _threadCnt{0};
     std::vector<std::thread> _threadPool;
     std::string _paramStr;
+    std::atomic<bool> _stopped{false};
 };
 }  // namespace origin::logging
 

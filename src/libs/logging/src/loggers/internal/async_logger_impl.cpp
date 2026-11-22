@@ -47,11 +47,22 @@ void AsyncLoggerImpl::throw_if_task_pool_invalid(const bool useRoot)
 
 void AsyncLoggerImpl::log_it(const LogMsg& logMsg)
 {
-    _taskPool.lock()->log(shared_from_this(), logMsg);
+    auto pool = _taskPool.lock();
+    if (!pool) {
+        ORIGIN_DEBUG_ERR("Async logger task pool expired, fallback to sync. logger: {}.", _name);
+        backend_log(logMsg);
+        return;
+    }
+    pool->log(shared_from_this(), logMsg);
 }
 
 void AsyncLoggerImpl::flush_it()
 {
-    _taskPool.lock()->flush(shared_from_this());
+    auto pool = _taskPool.lock();
+    if (!pool) {
+        backend_flush();
+        return;
+    }
+    pool->flush(shared_from_this());
 }
 }  // namespace origin::logging

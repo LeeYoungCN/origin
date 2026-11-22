@@ -284,4 +284,14 @@ TEST_F(TestAsyncLogger, log_function)
     wait_flush_complete(logCount * static_cast<uint32_t>(LOG_LEVELS.size() - 1) * 4);
 }
 
+TEST_F(TestAsyncLogger, log_after_task_pool_destroyed_falls_back_sync)
+{
+    init_logger(test_info_);
+    _taskPool.reset();
+
+    _logger->log(LOG_SRC_LOCAL, LogLevel::INFO, "fallback");
+
+    EXPECT_EQ(_sink->buffer().size(), 1);
+}
+
 }  // namespace logging_test

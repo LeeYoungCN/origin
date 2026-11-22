@@ -126,7 +126,7 @@ ErrorCode create_file(std::string_view path)
         return ERR_UTILS_NOT_FILE;
     }
 
-    std::ofstream file(path.data(), std::ios::app | std::ios::binary);
+    std::ofstream file(std::string(path), std::ios::app | std::ios::binary);
     if (file.is_open()) {
         return ERR_COMM_SUCCESS;
     }
@@ -244,7 +244,7 @@ ErrorCode read_text_file(std::string_view path, std::string& out)
         return fileCode;
     }
 
-    std::ifstream file(path.data(), std::ios::in);
+    std::ifstream file(std::string(path), std::ios::in);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
         const ErrorCode code = ConvertSysEcToErrorCode(ec);
@@ -268,7 +268,7 @@ ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out)
         return fileCode;
     }
 
-    std::ifstream file(path.data(), std::ios::in);
+    std::ifstream file(std::string(path), std::ios::in);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
         const ErrorCode code = ConvertSysEcToErrorCode(ec);
@@ -315,7 +315,7 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
     } else {
         mode = (std::ios::out | std::ios::app);
     }
-    std::ofstream file(path.data(), mode);
+    std::ofstream file(std::string(path), mode);
     if (!file.is_open()) {
         std::error_code const ec(errno, std::generic_category());
         const ErrorCode code = ConvertSysEcToErrorCode(ec);
@@ -388,10 +388,10 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
         return code;
     }
 
-    FILETIME ftCreate = fileAttr.ftCreationTime;
+    FILETIME ftLastWrite = fileAttr.ftLastWriteTime;
     ULARGE_INTEGER ul;
-    ul.LowPart = ftCreate.dwLowDateTime;
-    ul.HighPart = ftCreate.dwHighDateTime;
+    ul.LowPart = ftLastWrite.dwLowDateTime;
+    ul.HighPart = ftLastWrite.dwHighDateTime;
 
     // FILETIME基准：1601-01-01 单位100ns
     // 转毫秒，再减去1601到1970的毫秒差值 11644473600000

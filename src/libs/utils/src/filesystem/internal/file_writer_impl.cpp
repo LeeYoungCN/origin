@@ -124,6 +124,13 @@ void FileWriterImpl::close()
     if (_stream.is_open()) {
         _stream.flush();
         _stream.close();
+        if (_stream.fail()) {
+            _errcode = ERR_UTILS_IO_ERROR;
+            ORIGIN_DEBUG_ERR("Close file failed. file: \"{}\", msg: {}.",
+                             _file.c_str(),
+                             get_utils_err_msg(_errcode));
+            return;
+        }
         _currSize = 0;
         ORIGIN_DEBUG_TRACE("Close file success. file: \"{}\".", _file.data());
     }
@@ -135,11 +142,19 @@ void FileWriterImpl::write(std::string_view str)
         _errcode = ERR_UTILS_FILE_NOT_OPEN;
         ORIGIN_DEBUG_ERR(
             "Write failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
-    } else {
-        _errcode = ERR_COMM_SUCCESS;
-        _stream << str;
-        _currSize += str.length();
+        return;
     }
+
+    _stream.write(str.data(), static_cast<std::streamsize>(str.size()));
+    if (_stream.fail()) {
+        _errcode = ERR_UTILS_IO_ERROR;
+        ORIGIN_DEBUG_ERR(
+            "Write failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
+        return;
+    }
+
+    _errcode = ERR_COMM_SUCCESS;
+    _currSize += str.length();
 }
 
 void FileWriterImpl::write_line(std::string_view str)
@@ -149,17 +164,34 @@ void FileWriterImpl::write_line(std::string_view str)
         ORIGIN_DEBUG_ERR("Write line failed. file: \"{}\", msg: {}.",
                          _file.c_str(),
                          get_utils_err_msg(_errcode));
-    } else {
-        _errcode = ERR_COMM_SUCCESS;
-        _stream << str << '\n';
-        _currSize += str.length() + origin::filesystem::LF_LENGTH;
+        return;
     }
+
+    _stream.write(str.data(), static_cast<std::streamsize>(str.size()));
+    _stream.put('\n');
+    if (_stream.fail()) {
+        _errcode = ERR_UTILS_IO_ERROR;
+        ORIGIN_DEBUG_ERR("Write line failed. file: \"{}\", msg: {}.",
+                         _file.c_str(),
+                         get_utils_err_msg(_errcode));
+        return;
+    }
+
+    _errcode = ERR_COMM_SUCCESS;
+    _currSize += str.length() + origin::filesystem::LF_LENGTH;
 }
 
 void FileWriterImpl::flush()
 {
-    _errcode = ERR_COMM_SUCCESS;
     _stream.flush();
+    if (_stream.fail()) {
+        _errcode = ERR_UTILS_IO_ERROR;
+        ORIGIN_DEBUG_ERR(
+            "Flush failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
+        return;
+    }
+
+    _errcode = ERR_COMM_SUCCESS;
     _currSize = get_file_size_it();
 }
 

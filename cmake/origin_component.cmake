@@ -6,8 +6,13 @@
 #   origin_add_component(<lib>)             创建组件库的公共配置
 #   origin_add_component_tests(<lib>)       创建组件测试目标与 CTest 用例
 
-# 编译选项统一走 target 级，避免全局 add_compile_options 污染 GTest、Qt 等第三方目标。
 function(origin_apply_compile_options target)
+    target_compile_definitions(${target} PUBLIC
+        $<$<CONFIG:Debug>:ORIGIN_DEBUG_BUILD=1>
+        $<$<CONFIG:Release>:ORIGIN_RELEASE_BUILD=1>
+        $<$<CONFIG:RelWithDebInfo>:ORIGIN_RELWITHDEBINFO_BUILD=1>
+        $<$<CONFIG:MinSizeRel>:ORIGIN_MINSIZEREL_BUILD=1>)
+
     if (MSVC)
         target_compile_options(${target} PRIVATE
             /utf-8

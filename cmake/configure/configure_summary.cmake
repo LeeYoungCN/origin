@@ -51,6 +51,7 @@ origin_summary_print(CMAKE_THIRD_PARTY_PATH "${CMAKE_THIRD_PARTY_PATH}")
 origin_summary_print(ORIGIN_BUILD_TESTS    "${ORIGIN_BUILD_TESTS}")
 origin_summary_print(ORIGIN_ENABLE_ASAN    "${ORIGIN_ENABLE_ASAN}")
 origin_summary_print(ORIGIN_INSTALL        "${ORIGIN_INSTALL}")
+origin_summary_print(ORIGIN_DEBUG_LOG_ALL_LEVELS "${ORIGIN_DEBUG_LOG_ALL_LEVELS}")
 
 # 平台
 origin_summary_print(CMAKE_SYSTEM_NAME     "${CMAKE_SYSTEM_NAME}")

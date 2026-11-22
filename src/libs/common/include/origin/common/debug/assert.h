@@ -14,7 +14,7 @@
 
 #include "origin/common/debug/debug_logger.h"
 
-#ifdef NDEBUG
+#if !ORIGIN_BUILD_DEBUG
 
 #ifndef ORIGIN_ASSERT
 #define ORIGIN_ASSERT(condition) (static_cast<void>(0))
@@ -43,5 +43,5 @@
         }                                                       \
     } while (0)
 #endif  // COMMON_ASSERT_MSG
-#endif  // NDEBUG
+#endif  // ORIGIN_BUILD_DEBUG 
 #endif  // COMMON_DEBUG_ASSERT_H

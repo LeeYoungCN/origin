@@ -1,4 +1,5 @@
 #include "origin/common/debug/debug_logger.h"
+#include <string_view>
 
 #include "origin/common/macros/compiler.h"
 
@@ -179,7 +180,7 @@ public:
         } else {
             std::cout << logMsg << std::endl;
         }
-#if ORIGIN_DEBUG_LOG_ENABLED
+#if ORIGIN_BUILD_DEBUG || ORIGIN_BUILD_RELWITHDEBINFO || ORIGIN_DEBUG_LOG_ALL_LEVELS
         if (level == ORG_DBG_LVL_FATAL) {
             std::abort();
         }
@@ -192,33 +193,30 @@ private:
 
     static std::string format_log(const OriginDbgLvl level,
                                   const std::string& message,
-                                  [[maybe_unused]] const char* file = nullptr,
-                                  [[maybe_unused]] int line = 0,
-                                  [[maybe_unused]] const char* func = nullptr)
+                                  const char* file,
+                                  int line,
+                                  const char* func)
     {
-#if ORIGIN_DEBUG_LOG_ENABLED
+        const std::string_view fileView = file ? std::string_view(file) : std::string_view{};
+        const auto slash = fileView.find_last_of("/\\");
+        const std::string_view baseName =
+            slash == std::string_view::npos ? fileView : fileView.substr(slash + 1);
+
         return std::format("[{}][{}][Tid: {}][{}:{}][{}]: {}",
                            time_string(),
                            get_debug_log_lvl_str(level),
                            get_current_tid(),
-                           std::filesystem::path(file).filename().string(),
+                           baseName.empty() ? "<unknown>" : baseName,
                            line,
-                           func,
+                           func ? func : "<unknown>",
                            message);
-#else
-        return std::format("[{}][{}][Tid: {}]: {}",
-                           time_string(),
-                           get_debug_log_lvl_str(level),
-                           get_current_tid(),
-                           message);
-#endif
     }
 
 private:
-#if ORIGIN_DEBUG_LOG_ENABLED
-    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_ERR;
+#if ORIGIN_BUILD_DEBUG || ORIGIN_BUILD_RELWITHDEBINFO
+    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_INFO;
 #else
-    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_OFF;
+    OriginDbgLvl _logLevel = OriginDbgLvl::ORG_DBG_LVL_ERR;
 #endif
     std::mutex _mtx;
 };

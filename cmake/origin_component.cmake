@@ -8,10 +8,16 @@
 
 function(origin_apply_compile_options target)
     target_compile_definitions(${target} PUBLIC
-        $<$<CONFIG:Debug>:ORIGIN_DEBUG_BUILD=1>
-        $<$<CONFIG:Release>:ORIGIN_RELEASE_BUILD=1>
-        $<$<CONFIG:RelWithDebInfo>:ORIGIN_RELWITHDEBINFO_BUILD=1>
-        $<$<CONFIG:MinSizeRel>:ORIGIN_MINSIZEREL_BUILD=1>)
+        $<$<CONFIG:Debug>:ORIGIN_BUILD_DEBUG=1>
+        $<$<CONFIG:Release>:ORIGIN_BUILD_RELEASE=1>
+        $<$<CONFIG:RelWithDebInfo>:ORIGIN_BUILD_RELWITHDEBINFO=1>
+        $<$<CONFIG:MinSizeRel>:ORIGIN_BUILD_MINSIZEREL=1>)
+
+    if (ORIGIN_DEBUG_LOG_ALL_LEVELS)
+        target_compile_definitions(${target} PUBLIC ORIGIN_DEBUG_LOG_ALL_LEVELS=1)
+    else()
+        target_compile_definitions(${target} PUBLIC ORIGIN_DEBUG_LOG_ALL_LEVELS=0)
+    endif()
 
     if (MSVC)
         target_compile_options(${target} PRIVATE

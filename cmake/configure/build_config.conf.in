@@ -29,6 +29,7 @@ cmake_third_party_path="@CMAKE_THIRD_PARTY_PATH@"
 cmake_build_test="@ORIGIN_BUILD_TESTS@"
 cmake_enable_asan="@ORIGIN_ENABLE_ASAN@"
 cmake_install_rules="@ORIGIN_INSTALL@"
+cmake_debug_log_all_levels="@ORIGIN_DEBUG_LOG_ALL_LEVELS@"
 
 # 平台
 cmake_system_name="@CMAKE_SYSTEM_NAME@"

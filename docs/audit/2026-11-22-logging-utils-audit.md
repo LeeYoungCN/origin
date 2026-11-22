@@ -3,8 +3,8 @@
 ## 元信息
 
 - 仓库：`origin`
-- 基线：`0ab76e7`（`build(cmake): Linux GCC 工具链改用 PATH 查找编译器`）
-- 工作区：包含调试日志策略和 sink 兜底调整，**尚未提交**
+- 基线：`cd77a75`（`build(common): 统一构建类型宏和调试日志级别`）
+- 工作区：代码干净；本报告随审计记录更新
 - 范围：`src/libs/utils`、`src/libs/logging` 的生产代码和公共头文件
 - 方法：静态阅读 + MinGW/MSVC 构建 + 全量测试 + 少量编译期/二进制抽查
 - 限制：
@@ -25,7 +25,7 @@
 
 - `utils` 的 `ErrorCode` 方向正确，但仍有异常泄漏、错误被吞和错误映射错误；
 - `logging` 是异常 + 静默降级模型，存在生命周期和并发安全问题；
-- Release 现在保留 `ERR/FATAL`，sink 异常通过 `origin_debug_logger_force_log` 输出，不再有 fallback logger API。
+- Release 现在保留 `ERR/FATAL`，sink 异常通过 `ORIGIN_DEBUG_ERR` 输出；不再有 fallback logger API。
 
 ## 设计决策
 
@@ -33,17 +33,20 @@
 
 | 构建 | 编译期最低级别 | 运行时默认 |
 |---|---|---|
-| Debug / RelWithDebInfo | TRACE | ERR |
+| Debug / RelWithDebInfo | TRACE | INFO |
 | Release 默认 | ERR/FATAL | ERR |
-| Release + `ORIGIN_ENABLE_DEBUG_LOG=ON` | TRACE | TRACE |
+| Release + `ORIGIN_DEBUG_LOG_ALL_LEVELS=ON` | TRACE | ERR（仍由 API 调整） |
 | 测试 | 不再自动强制 TRACE | 继承构建类型 |
 
-- `ORIGIN_ENABLE_DEBUG_LOG` 是 CMake 选项，默认 `OFF`；
+- `ORIGIN_DEBUG_LOG_ALL_LEVELS` 是 CMake 选项，默认 `OFF`；
+- 该选项只决定哪些级别被编译进来，运行时过滤仍由 `origin_set_debug_logger_level` 控制；
 - 不再有 `ORIGIN_ENABLE_TEST` 的强制 TRACE 分支；
-- sink 失败调用 `origin_debug_logger_force_log` 绕过运行时级别；
+- 调试日志始终输出 `文件:行号[函数]`；
+- FATAL 仅在 Debug / RelWithDebInfo / ALL_LEVELS 下 abort，Release 默认只记录；
+- sink 异常使用 `ORIGIN_DEBUG_ERR` 输出；若运行时级别为 OFF，仍可能被抑制；
 - 不新增 fallback logger API。
 
-状态：**已实现（工作区）**。
+状态：**已实现（`cd77a75`）**。
 
 ### D-002 基础库错误与日志分层
 
@@ -165,19 +168,20 @@
 | UTILS-006 | open | `filesystem_utils_file.cpp:173`、`:207` | `copy_file`/`rename_file` 忽略目标路径探测错误，权限错误被压成 NOT_FILE | 保留 `typeCode` 并原样返回 |
 | UTILS-007 | open | `filesystem_utils_path.cpp:62`、`:105-107`、`:126-165` | `join_paths`/`to_absolute_path` 的 path 构造在 try 外；`get_directory` 等值返回函数可能抛异常 | path 构造移入 try；值返回接口明确失败语义，或新增 ErrorCode 版本 |
 | LOGGING-004 | open | `logging_c.cpp:48`、`:61`、`:85`、`:98`、`:169`、`:258`、`:263` | 非法 `LogLevelC` 经 `c_to_cpp_log_level` 抛异常，可能穿过 C ABI | C 入口先校验范围，非法值返回默认/void，不抛 |
-| LOGGING-005 | partial | `sink_impl_base.cpp:20-60` | sink 异常现在会 force log，但 `FileWriter` 写失败仍被吞，日志仍可能静默丢失 | 先修 UTILS-003，再让 sink 检查写入结果 |
+| LOGGING-005 | partial | `sink_impl_base.cpp:20-60` | sink 异常通过 `ORIGIN_DEBUG_ERR` 输出，但运行时可被 OFF 抑制；`FileWriter` 写失败仍被吞 | 先修 UTILS-003，再让 sink 检查写入结果 |
 | UTILS-008 | open | `filesystem.h`、`date_time.h`、`process.h`、`thread.h` | 所有 `ErrorCode` 返回都没有 `[[nodiscard]]`，调用方可静默忽略 | 统一加 `[[nodiscard]]`，修调用点 |
 | UTILS-009 | open | `date_time_utils.cpp:137-142` | `get_now_date_time` 忽略 `timestamp_to_date_time` 失败，返回全 0 时间 | 增加 ErrorCode 版本或 `Result<DateTimeSt>` |
 
 ### LOGGING-005 补充
 
-当前工作区已把 sink 的 `log/flush` 异常改为：
+当前代码已把 sink 的 `log/flush` 异常改为 `ORIGIN_DEBUG_ERR`：
 
 ```cpp
-origin_debug_logger_force_log(..., ORG_DBG_LVL_ERR, std::format(...));
+ORIGIN_DEBUG_ERR(
+    "Sink log failed. [Param]: \"{}\". [Exception]: \"{}\".", _paramStr, ex.what());
 ```
 
-这解决了“异常被 Debug 宏吞掉”的问题，但**没有解决 `FileWriter` 写失败**：`_stream << str` 失败时 sink 仍认为成功。因此状态是 `partial`，依赖 UTILS-003。
+Release 保留 ERR，所以默认可见；但它仍受 `origin_set_debug_logger_level` 过滤，若运行时设为 OFF 会被抑制。并且**没有解决 `FileWriter` 写失败**：`_stream << str` 失败时 sink 仍认为成功。因此状态是 `partial`，依赖 UTILS-003。
 
 ## P2：一致性和细节
 
@@ -190,7 +194,7 @@ origin_debug_logger_force_log(..., ORG_DBG_LVL_ERR, std::format(...));
 | UTILS-014 | open | `filesystem_utils_file.cpp:335` | 写失败用 `errno` + `system_category()`，与其它处 generic 不一致 | 统一 errno/generic，或读取 `GetLastError` |
 | UTILS-015 | open | `filesystem_utils_file.cpp:374-384` | UTF-8 转 UTF-16 失败时 `wpath` 为空，最终报系统错误而非路径非法 | 转换失败返回 `ERR_UTILS_PATH_INVALID` |
 | UTILS-016 | open | `filesystem_utils_file.cpp:107-112`、`directory.cpp:35-40` | `file_exists`/`dir_exists` 忽略错误，权限错误也返回 false | 文档写清；需要区分时用 `get_entry_type` |
-| LOGGING-008 | fixed | `rotating_file_sink_impl_base.cpp:80-92` | 旋转后 `reopen` 返回码被忽略，失败后继续用坏 writer | 已检查 `reopen` 并 force log（工作区，未提交） |
+| LOGGING-008 | open | `rotating_file_sink_impl_base.cpp:80-92` | 旋转后 `reopen` 返回码被忽略，失败后继续用坏 writer | 检查 `reopen` 返回码并报警 |
 | LOGGING-009 | open | `logging/src/internal/common.cpp:18-24` | `get_proc_path()` 失败返回空串，默认日志路径可能变成 `logs/.log` | 用 ErrorCode 版本；失败时明确报错 |
 | LOGGING-010 | open | `sink_impl_base.cpp:88-91` | `set_param_string` 无锁，`log()` 持锁读，存在数据竞争 | 加锁或改为初始化后不可变 |
 | LOGGING-011 | open | 多处 | `ConvertSysEcToErrorCode` 已打一条，调用方 catch 又打一条，Debug 下重复 | 只在调用边界打一次，或降为 TRACE |
@@ -225,7 +229,7 @@ MSVC Debug:
 
 Release 编译期抽查:
   默认构建：ERR 字符串保留，TRACE 字符串不保留
-  ORIGIN_ENABLE_DEBUG_LOG=ON：TRACE 编译进来
+  ORIGIN_DEBUG_LOG_ALL_LEVELS=ON：TRACE 编译进来
 ```
 
 尚未执行：

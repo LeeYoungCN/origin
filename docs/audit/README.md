@@ -26,9 +26,11 @@
 
 ## 当前记录
 
+基线：`cd77a75`。当前代码审计共 28 项：27 `open`、1 `partial`、0 `fixed`。
+
 | 日期 | 范围 | 报告 | 未修复/部分修复 |
 |---|---|---|---|
-| 2026-11-22 | `utils` + `logging` 错误处理、日志、生命周期 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 见 `findings.json` |
+| 2026-11-22 | `utils` + `logging` 错误处理、日志、生命周期 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 27 open / 1 partial |
 
 ## 如何新增一次扫描
 

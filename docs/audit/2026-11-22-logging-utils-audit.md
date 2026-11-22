@@ -3,7 +3,7 @@
 ## 元信息
 
 - 仓库：`origin`
-- 基线：`cd77a75`（`build(common): 统一构建类型宏和调试日志级别`）
+- 基线：`c37a364`（`fix(utils,logging): 修复 P0 路径、时间、写入和生命周期问题`）
 - 工作区：代码干净；本报告随审计记录更新
 - 范围：`src/libs/utils`、`src/libs/logging` 的生产代码和公共头文件
 - 方法：静态阅读 + MinGW/MSVC 构建 + 全量测试 + 少量编译期/二进制抽查
@@ -16,15 +16,17 @@
 
 | 级别 | 数量 | 说明 |
 |---|---:|---|
-| P0 | 6 | 越界、时间语义错误、写入失败静默、生命周期崩溃/UAF |
+| P0 | 6 | 5 fixed，1 partial（LOGGING-003 raw API 兼容保留） |
 | P1 | 8 | 异常契约、错误映射、C ABI、可观测性 |
 | P2 | 14 | API 一致性、细节正确性、测试缺口 |
-| 决策 | 3 | 调试日志策略、日志分层、FileWriter 方向 |
+| 决策 | 4 | 调试日志策略、日志分层、FileWriter 方向、FATAL 语义 |
+
+状态：21 `open` / 2 `partial` / 5 `fixed`。
 
 总体判断：
 
-- `utils` 的 `ErrorCode` 方向正确，但仍有异常泄漏、错误被吞和错误映射错误；
-- `logging` 是异常 + 静默降级模型，存在生命周期和并发安全问题；
+- `utils` 的路径越界、修改时间、FileWriter 写入失败已修复；仍有异常泄漏和错误映射问题；
+- `logging` 的 async 池失效、shutdown 幂等、根 logger 公共路径已修复；raw API 仍保留风险；
 - Release 现在保留 `ERR/FATAL`，sink 异常通过 `ORIGIN_DEBUG_ERR` 输出；不再有 fallback logger API。
 
 ## 设计决策
@@ -67,7 +69,7 @@
 
 ### UTILS-001 `string_view.data()` 当 C 字符串
 
-- 状态：`open`
+- 状态：`fixed`（`c37a364`）
 - 位置：
   - `src/libs/utils/src/filesystem/filesystem_utils_file.cpp:129`
   - `:247`
@@ -85,7 +87,7 @@
 
 ### UTILS-002 `get_file_modify_time` 返回创建时间
 
-- 状态：`open`
+- 状态：`fixed`（`c37a364`）
 - 位置：`src/libs/utils/src/filesystem/filesystem_utils_file.cpp:391`
 - 证据：
 
@@ -98,7 +100,7 @@
 
 ### UTILS-003 `FileWriter` 写入/刷新失败被当成成功
 
-- 状态：`open`
+- 状态：`fixed`（`c37a364`）
 - 位置：`src/libs/utils/src/filesystem/internal/file_writer_impl.cpp:132-164`
 - 证据：
 
@@ -115,7 +117,7 @@
 
 ### LOGGING-001 异步 logger 在 TaskPool 销毁后空指针解引用
 
-- 状态：`open`
+- 状态：`fixed`（`c37a364`）
 - 位置：`src/libs/logging/src/loggers/internal/async_logger_impl.cpp:50`、`:55`
 - 证据：
 
@@ -129,7 +131,7 @@
 
 ### LOGGING-002 TaskPool 重复 shutdown 可能死锁
 
-- 状态：`open`
+- 状态：`fixed`（`c37a364`）
 - 位置：`src/libs/logging/src/internal/task_pool.cpp:40-44`（析构调用）、`:65-80`（public shutdown）
 - 证据：
 
@@ -146,7 +148,7 @@
 
 ### LOGGING-003 `root_logger_raw()` 返回裸指针后解锁
 
-- 状态：`open`
+- 状态：`partial`（`c37a364` 已修内部公共路径；raw API 兼容保留）
 - 位置：`src/libs/logging/src/internal/registry.cpp:43-51`
 - 证据：
 
@@ -220,12 +222,12 @@ MinGW Debug:
   cmake --build --preset=win_mingw_debug_build
   ctest --output-on-failure
   -> 3/3 passed
-  test_origin -> 399 tests passed
+  test_origin -> 403 tests passed
 
 MSVC Debug:
   cmake --preset=msvc_x64_debug
   cmake --build ... --target test_origin
-  test_origin -> 399 tests passed
+  test_origin -> 403 tests passed
 
 Release 编译期抽查:
   默认构建：ERR 字符串保留，TRACE 字符串不保留

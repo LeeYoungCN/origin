@@ -3,7 +3,7 @@
   "project": "origin",
   "updated_at": "2026-11-22",
   "baseline": {
-    "head": "cd77a75",
+    "head": "c37a364",
     "worktree": "code clean",
     "scope": [
       "src/libs/utils",
@@ -60,7 +60,7 @@
     {
       "id": "UTILS-001",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "string_view.data() 当 C 字符串，可能越界",
       "files": [
@@ -76,12 +76,13 @@
       ],
       "impact": "子串视图不保证 NUL 结尾，ifstream/ofstream 构造可能读越界，未定义行为。",
       "recommendation": "改用 std::string(path) 或 fs::path(path)，同一函数只转换一次。",
-      "verification": "新增子串视图路径测试；ASan 下跑文件读写。"
+      "verification": "MinGW/MSVC test_origin 403；新增非 NUL 结尾 string_view 路径用例。",
+      "fixed_in": "c37a364"
     },
     {
       "id": "UTILS-002",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "get_file_modify_time 返回创建时间",
       "files": [
@@ -94,12 +95,13 @@
       ],
       "impact": "Windows 用 ftCreationTime，POSIX 用 last_write_time，跨平台语义不一致。",
       "recommendation": "改用 ftLastWriteTime，并补修改时间测试。",
-      "verification": "创建文件后修改，断言时间变化。"
+      "verification": "新增最后写入时间变化用例。",
+      "fixed_in": "c37a364"
     },
     {
       "id": "UTILS-003",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "FileWriter 写入/刷新失败被当成成功",
       "files": [
@@ -119,12 +121,13 @@
       ],
       "impact": "磁盘满、句柄失效时仍返回成功，日志会静默丢失。",
       "recommendation": "写入后检查 failbit/badbit；flush/close 检查结果；失败停止累加大小。",
-      "verification": "自定义 streambuf 模拟写失败，断言错误码。"
+      "verification": "新增 close 后写入错误用例；FileWriter 检查 write/flush/close。",
+      "fixed_in": "c37a364"
     },
     {
       "id": "LOGGING-001",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
       "module": "logging",
       "title": "AsyncLogger 在 TaskPool 销毁后空指针解引用",
       "files": [
@@ -138,12 +141,13 @@
       ],
       "impact": "TaskPool 被重置后 lock() 返回空，直接崩溃。",
       "recommendation": "lock() 后判空；为空降级同步 backend_log 或计数丢弃。",
-      "verification": "销毁 TaskPool 后再写日志，不崩溃。"
+      "verification": "新增 TaskPool 销毁后异步 logger 降级同步用例。",
+      "fixed_in": "c37a364"
     },
     {
       "id": "LOGGING-002",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
       "module": "logging",
       "title": "TaskPool 重复 shutdown 可能死锁",
       "files": [
@@ -158,12 +162,13 @@
       ],
       "impact": "用户先 shutdown，析构再 shutdown，工作线程已退出，enqueue_wait 可能永久阻塞。",
       "recommendation": "增加原子停止标志，shutdown 幂等，析构只走一次。",
-      "verification": "连续 shutdown 两次，析构不挂起。"
+      "verification": "shutdown 增加 atomic 幂等保护；析构只调用一次。",
+      "fixed_in": "c37a364"
     },
     {
       "id": "LOGGING-003",
       "severity": "P0",
-      "status": "open",
+      "status": "partial",
       "module": "logging",
       "title": "Registry 返回裸指针后解锁，存在 UAF",
       "files": [
@@ -177,7 +182,9 @@
       ],
       "impact": "另一线程 set_root_logger/remove_all 后，裸指针失效。",
       "recommendation": "公共路径用 root_logger() 的 shared_ptr；raw 只在短临界区内部使用。",
-      "verification": "并发替换根 logger 与写入压力测试。"
+      "verification": "根 logger 公共 API 已改用 shared_ptr；root_logger_raw() 仍保留，外部调用方仍有裸指针风险。",
+      "fixed_in": "c37a364",
+      "note": "内部公共路径已修复；raw API 兼容保留。"
     },
     {
       "id": "UTILS-004",

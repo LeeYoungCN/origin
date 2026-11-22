@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "project": "origin",
+  "updated_at": "2026-11-22",
+  "baseline": {
+    "head": "0ab76e7",
+    "worktree": "debug logger / sink changes uncommitted",
+    "scope": ["src/libs/utils", "src/libs/logging"]
+  },
+  "status_values": ["open", "partial", "fixed", "decision", "wontfix"],
+  "audits": [
+    {
+      "id": "2026-11-22-logging-utils",
+      "path": "docs/audit/2026-11-22-logging-utils-audit.md",
+      "date": "2026-11-22",
+      "scope": ["utils", "logging"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D-001",
+      "status": "implemented",
+      "title": "Release 默认保留 ERR/FATAL；CMake 参数强制全开",
+      "detail": "Release 编译期最低级别为 ERR；ORIGIN_ENABLE_DEBUG_LOG=ON 时强制 TRACE；测试不再自动强制 TRACE；sink 失败用 origin_debug_logger_force_log 绕过运行时级别；不新增 fallback logger API。",
+      "verification": "MinGW Debug ctest 3/3、test_origin 399；MSVC test_origin 399；Release 默认 ERR 字符串保留、TRACE 字符串不保留；ORIGIN_ENABLE_DEBUG_LOG=ON 时 TRACE 编入。"
+    },
+    {
+      "id": "D-002",
+      "status": "decided",
+      "title": "基础库返回错误码，日志在边界记录",
+      "detail": "基础库不决定业务日志；预期失败不打 ERR；日志只在调用边界记录一次。"
+    },
+    {
+      "id": "D-003",
+      "status": "pending",
+      "title": "FileWriter 是否改为返回 ErrorCode",
+      "detail": "write/write_line/flush/close 返回 ErrorCode 会破坏 ABI，需要版本决策。"
+    }
+  ],
+  "issues": [
+    {
+      "id": "UTILS-001",
+      "severity": "P0",
+      "status": "open",
+      "module": "utils",
+      "title": "string_view.data() 当 C 字符串，可能越界",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [129, 247, 271, 318]}
+      ],
+      "impact": "子串视图不保证 NUL 结尾，ifstream/ofstream 构造可能读越界，未定义行为。",
+      "recommendation": "改用 std::string(path) 或 fs::path(path)，同一函数只转换一次。",
+      "verification": "新增子串视图路径测试；ASan 下跑文件读写。"
+    },
+    {
+      "id": "UTILS-002",
+      "severity": "P0",
+      "status": "open",
+      "module": "utils",
+      "title": "get_file_modify_time 返回创建时间",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [391]}
+      ],
+      "impact": "Windows 用 ftCreationTime，POSIX 用 last_write_time，跨平台语义不一致。",
+      "recommendation": "改用 ftLastWriteTime，并补修改时间测试。",
+      "verification": "创建文件后修改，断言时间变化。"
+    },
+    {
+      "id": "UTILS-003",
+      "severity": "P0",
+      "status": "open",
+      "module": "utils",
+      "title": "FileWriter 写入/刷新失败被当成成功",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/internal/file_writer_impl.cpp", "lines": [132, 139, 140, 153, 154, 159, 161, 162]}
+      ],
+      "impact": "磁盘满、句柄失效时仍返回成功，日志会静默丢失。",
+      "recommendation": "写入后检查 failbit/badbit；flush/close 检查结果；失败停止累加大小。",
+      "verification": "自定义 streambuf 模拟写失败，断言错误码。"
+    },
+    {
+      "id": "LOGGING-001",
+      "severity": "P0",
+      "status": "open",
+      "module": "logging",
+      "title": "AsyncLogger 在 TaskPool 销毁后空指针解引用",
+      "files": [
+        {"path": "src/libs/logging/src/loggers/internal/async_logger_impl.cpp", "lines": [50, 55]}
+      ],
+      "impact": "TaskPool 被重置后 lock() 返回空，直接崩溃。",
+      "recommendation": "lock() 后判空；为空降级同步 backend_log 或计数丢弃。",
+      "verification": "销毁 TaskPool 后再写日志，不崩溃。"
+    },
+    {
+      "id": "LOGGING-002",
+      "severity": "P0",
+      "status": "open",
+      "module": "logging",
+      "title": "TaskPool 重复 shutdown 可能死锁",
+      "files": [
+        {"path": "src/libs/logging/src/internal/task_pool.cpp", "lines": [40, 65, 68]}
+      ],
+      "impact": "用户先 shutdown，析构再 shutdown，工作线程已退出，enqueue_wait 可能永久阻塞。",
+      "recommendation": "增加原子停止标志，shutdown 幂等，析构只走一次。",
+      "verification": "连续 shutdown 两次，析构不挂起。"
+    },
+    {
+      "id": "LOGGING-003",
+      "severity": "P0",
+      "status": "open",
+      "module": "logging",
+      "title": "Registry 返回裸指针后解锁，存在 UAF",
+      "files": [
+        {"path": "src/libs/logging/src/internal/registry.cpp", "lines": [43, 50]}
+      ],
+      "impact": "另一线程 set_root_logger/remove_all 后，裸指针失效。",
+      "recommendation": "公共路径用 root_logger() 的 shared_ptr；raw 只在短临界区内部使用。",
+      "verification": "并发替换根 logger 与写入压力测试。"
+    },
+    {
+      "id": "UTILS-004",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "fs::exists 抛异常，断链 symlink 被误判",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils.cpp", "lines": [29]}
+      ],
+      "impact": "违背不抛异常契约；断链 symlink 返回 NOT_FOUND。",
+      "recommendation": "先 symlink_status(path, ec)，按 ec 映射；不要用 exists 短路。",
+      "verification": "无效路径、权限拒绝、断链 symlink 测试。"
+    },
+    {
+      "id": "UTILS-005",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "get_entry_type 错误映射错误，FIFO/SOCKET 映射错误",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils.cpp", "lines": [39, 57]}
+      ],
+      "impact": "权限/路径错误被压成 ERR_COMM_SYSTEM_ERROR；fifo 映射为 SOCKET，socket 分支缺失。",
+      "recommendation": "统一 ConvertSysEcToErrorCode；补齐 FIFO/SOCKET。",
+      "verification": "各文件类型和错误类别映射测试。"
+    },
+    {
+      "id": "UTILS-006",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "copy_file/rename_file 忽略目标路径探测错误",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [173, 207]}
+      ],
+      "impact": "目标权限错误被压成 ERR_UTILS_NOT_FILE。",
+      "recommendation": "保留 typeCode 并原样返回。",
+      "verification": "只读目标目录下复制/重命名。"
+    },
+    {
+      "id": "UTILS-007",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "路径辅助函数可能抛异常",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_path.cpp", "lines": [62, 105, 126, 132, 138, 144, 151]}
+      ],
+      "impact": "join_paths 的 .string()、to_absolute_path 的 path 构造在 try 外；get_directory 等值返回接口可能抛。",
+      "recommendation": "path 构造移入 try；值返回接口明确失败语义或新增 ErrorCode 版本。",
+      "verification": "非法 UTF-8 / 超长路径测试。"
+    },
+    {
+      "id": "LOGGING-004",
+      "severity": "P1",
+      "status": "open",
+      "module": "logging",
+      "title": "C API 非法 LogLevelC 可能把异常抛过 C 边界",
+      "files": [
+        {"path": "src/libs/logging/src/c/logging_c.cpp", "lines": [48, 61, 85, 98, 169, 258, 263]}
+      ],
+      "impact": "c_to_cpp_log_level 对非法枚举抛 std::invalid_argument。",
+      "recommendation": "C 入口先校验范围，非法值返回默认/void。",
+      "verification": "以非法枚举调用每个 C API，确认不抛。"
+    },
+    {
+      "id": "LOGGING-005",
+      "severity": "P1",
+      "status": "partial",
+      "module": "logging",
+      "title": "sink 失败可观测性只完成一部分",
+      "files": [
+        {"path": "src/libs/logging/src/sinks/internal/sink_impl_base.cpp", "lines": [20, 40]}
+      ],
+      "impact": "异常已 force log，但 FileWriter 写失败仍被吞，日志仍可能静默丢失。",
+      "recommendation": "先修 UTILS-003，再让 sink 检查写入结果。",
+      "verification": "模拟写失败，确认 sink 输出错误。"
+    },
+    {
+      "id": "UTILS-008",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "ErrorCode 返回缺少 [[nodiscard]]",
+      "files": [
+        {"path": "src/libs/utils/include/origin/filesystem/filesystem.h", "lines": []},
+        {"path": "src/libs/utils/include/origin/date_time/date_time.h", "lines": []},
+        {"path": "src/libs/utils/include/origin/process/process.h", "lines": []},
+        {"path": "src/libs/utils/include/origin/thread/thread.h", "lines": []}
+      ],
+      "impact": "调用方可静默忽略失败。",
+      "recommendation": "统一加 [[nodiscard]]，修调用点。",
+      "verification": "开启 warnings-as-errors 构建。"
+    },
+    {
+      "id": "UTILS-009",
+      "severity": "P1",
+      "status": "open",
+      "module": "utils",
+      "title": "get_now_date_time 吞掉错误",
+      "files": [
+        {"path": "src/libs/utils/src/date_time/date_time_utils.cpp", "lines": [137, 140]}
+      ],
+      "impact": "失败返回全 0 时间，调用方无法区分。",
+      "recommendation": "增加 ErrorCode 版本或 Result<DateTimeSt>。",
+      "verification": "无效时间戳测试。"
+    },
+    {
+      "id": "UTILS-010",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "FileWriter 仍是隐藏 last_error API",
+      "files": [
+        {"path": "src/libs/utils/include/origin/filesystem/file_writer.h", "lines": [19, 22, 24, 32]}
+      ],
+      "impact": "write/flush 返回 void，错误靠 get_last_error 事后读取，容易漏检。",
+      "recommendation": "改为返回 ErrorCode，保留 deprecated get_last_error。",
+      "verification": "调用点编译检查。"
+    },
+    {
+      "id": "UTILS-011",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "FileWriter 构造函数抛异常且忽略 to_absolute_path 错误",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/internal/file_writer_impl.cpp", "lines": [28, 33, 36]}
+      ],
+      "impact": "与 ErrorCode 契约不一致；当前目录失败时 _file 为空，后续报错误导。",
+      "recommendation": "统一错误契约；至少检查 to_absolute_path 返回值。",
+      "verification": "构造失败路径测试。"
+    },
+    {
+      "id": "UTILS-012",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "is_path_too_long 按 UTF-8 字节数判断",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_path.cpp", "lines": [156, 161]}
+      ],
+      "impact": "Windows MAX_PATH 按 UTF-16 单元，中文路径会误判。",
+      "recommendation": "按平台原生字符数判断。",
+      "verification": "中文/ASCII 边界路径测试。"
+    },
+    {
+      "id": "UTILS-013",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "get_proc_path 使用 ANSI API 和固定缓冲区",
+      "files": [
+        {"path": "src/libs/utils/src/process_utils.cpp", "lines": [43, 47, 53]}
+      ],
+      "impact": "Unicode 路径丢失；长路径失败。",
+      "recommendation": "改用 W API + UTF-8 转换，支持长路径。",
+      "verification": "中文路径、长路径测试。"
+    },
+    {
+      "id": "UTILS-014",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "write_text_file 写失败用 system_category 配 errno",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [335]}
+      ],
+      "impact": "errno 与 system_category 不匹配，错误码映射可能错误。",
+      "recommendation": "统一 errno/generic，或读取 GetLastError。",
+      "verification": "模拟写失败，检查错误码。"
+    },
+    {
+      "id": "UTILS-015",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "UTF-8 转 UTF-16 失败被报成系统错误",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [374, 381, 384]}
+      ],
+      "impact": "非法 UTF-8 路径最终报系统错误，而不是路径非法。",
+      "recommendation": "转换失败返回 ERR_UTILS_PATH_INVALID。",
+      "verification": "非法 UTF-8 路径测试。"
+    },
+    {
+      "id": "UTILS-016",
+      "severity": "P2",
+      "status": "open",
+      "module": "utils",
+      "title": "file_exists/dir_exists 忽略错误",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_file.cpp", "lines": [107, 110]},
+        {"path": "src/libs/utils/src/filesystem/filesystem_utils_directory.cpp", "lines": [35, 38]}
+      ],
+      "impact": "权限错误也返回 false，调用方无法区分。",
+      "recommendation": "文档写清；需要区分时用 get_entry_type。",
+      "verification": "权限拒绝目录测试。"
+    },
+    {
+      "id": "LOGGING-008",
+      "severity": "P2",
+      "status": "fixed",
+      "module": "logging",
+      "title": "旋转后 reopen 失败被忽略",
+      "files": [
+        {"path": "src/libs/logging/src/sinks/internal/rotating_file_sink_impl_base.cpp", "lines": [80, 88]}
+      ],
+      "impact": "reopen 失败后继续用坏 writer，日志丢失。",
+      "recommendation": "检查 reopen 返回码并 force log。",
+      "fixed_in": "working-tree",
+      "verification": "代码检查；缺少 reopen 失败注入测试。"
+    },
+    {
+      "id": "LOGGING-009",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "get_default_log_file 忽略进程路径错误",
+      "files": [
+        {"path": "src/libs/logging/src/internal/common.cpp", "lines": [18, 21]}
+      ],
+      "impact": "进程路径失败时可能落到 logs/.log 等相对路径。",
+      "recommendation": "改用 ErrorCode 版本，初始化失败明确报错。",
+      "verification": "模拟进程路径失败。"
+    },
+    {
+      "id": "LOGGING-010",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "set_param_string 存在数据竞争",
+      "files": [
+        {"path": "src/libs/logging/src/sinks/internal/sink_impl_base.cpp", "lines": [88]}
+      ],
+      "impact": "log() 持锁读 _paramStr，set_param_string 无锁写。",
+      "recommendation": "加锁或初始化后不可变。",
+      "verification": "并发 set/log 压力测试。"
+    },
+    {
+      "id": "LOGGING-011",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "错误转换和调用方重复打日志",
+      "files": [
+        {"path": "src/libs/utils/src/filesystem/internal/common.cpp", "lines": [65, 68, 82]}
+      ],
+      "impact": "Debug 下同一错误出现 2-3 行。",
+      "recommendation": "只在边界打一次，或降为 TRACE。",
+      "verification": "错误路径日志计数。"
+    },
+    {
+      "id": "LOGGING-012",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "缺少 I/O/并发失败注入测试",
+      "files": [
+        {"path": "src/libs/logging/tests", "lines": []}
+      ],
+      "impact": "写失败、权限拒绝、旋转失败、async 销毁等路径未被覆盖。",
+      "recommendation": "增加故障注入和并发测试。",
+      "verification": "新测试在 Debug/Release 下通过。"
+    },
+    {
+      "id": "LOGGING-013",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "sink 只捕获 std::exception",
+      "files": [
+        {"path": "src/libs/logging/src/sinks/internal/sink_impl_base.cpp", "lines": [23]}
+      ],
+      "impact": "非标准异常会逃出 sink，可能导致进程终止。",
+      "recommendation": "视需要增加 catch (...)，至少保护进程。",
+      "verification": "抛出非 std::exception 的测试。"
+    },
+    {
+      "id": "LOGGING-014",
+      "severity": "P2",
+      "status": "open",
+      "module": "logging",
+      "title": "BasicFileSink 构造吞掉路径错误",
+      "files": [
+        {"path": "src/libs/logging/src/sinks/internal/basic_file_sink_impl.cpp", "lines": [34, 38, 46, 57]}
+      ],
+      "impact": "to_absolute_path 值返回吞错，失败只抛 file empty。",
+      "recommendation": "用 ErrorCode 版本并保留具体错误。",
+      "verification": "无效路径构造测试。"
+    }
+  ]
+}

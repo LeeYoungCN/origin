@@ -26,11 +26,12 @@
 
 ## 当前记录
 
-基线：`c37a364`。当前代码审计共 28 项：21 `open`、2 `partial`、5 `fixed`。
+基线：`c37a364`。当前共 54 项：47 `open`、2 `partial`、5 `fixed`。
 
 | 日期 | 范围 | 报告 | 未修复/部分修复 |
 |---|---|---|---|
-| 2026-11-22 | `utils` + `logging` 错误处理、日志、生命周期 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 21 open / 2 partial |
+| 2026-11-22 | 全项目：`common`/`container`/`logging`/`utils` | [2026-11-22-full-project-audit.md](2026-11-22-full-project-audit.md) | 47 open / 2 partial |
+| 2026-11-22 | `utils` + `logging` 详细审计 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 21 open / 2 partial / 5 fixed |
 
 ## 如何新增一次扫描
 

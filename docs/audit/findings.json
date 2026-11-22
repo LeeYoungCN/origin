@@ -6,8 +6,10 @@
     "head": "c37a364",
     "worktree": "code clean",
     "scope": [
-      "src/libs/utils",
-      "src/libs/logging"
+      "src/libs/common",
+      "src/libs/container",
+      "src/libs/logging",
+      "src/libs/utils"
     ]
   },
   "status_values": [
@@ -25,6 +27,20 @@
       "scope": [
         "utils",
         "logging"
+      ]
+    },
+    {
+      "id": "2026-11-22-full-project",
+      "path": "docs/audit/2026-11-22-full-project-audit.md",
+      "date": "2026-11-22",
+      "scope": [
+        "common",
+        "container",
+        "logging",
+        "utils",
+        "c-api",
+        "build",
+        "tests"
       ]
     }
   ],
@@ -630,6 +646,518 @@
       "impact": "to_absolute_path 值返回吞错，失败只抛 file empty。",
       "recommendation": "用 ErrorCode 版本并保留具体错误。",
       "verification": "无效路径构造测试。"
+    },
+    {
+      "id": "COMMON-001",
+      "severity": "P0",
+      "status": "open",
+      "module": "common",
+      "title": "Linux readlink 失败时越界写",
+      "files": [
+        {
+          "path": "src/libs/common/src/debug/working_env.cpp",
+          "lines": [
+            95,
+            96
+          ]
+        }
+      ],
+      "impact": "readlink 返回 -1 后写 path[-1]，可能破坏栈。",
+      "recommendation": "检查返回值并处理失败/截断。",
+      "verification": "模拟 readlink 失败/长路径。"
+    },
+    {
+      "id": "CONTAINER-001",
+      "severity": "P0",
+      "status": "open",
+      "module": "container",
+      "title": "BlockingQueue 在已构造对象上 placement new",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/blocking_queue.hpp",
+          "lines": [
+            26,
+            29,
+            46,
+            48,
+            56,
+            58
+          ]
+        }
+      ],
+      "impact": "对 vector 中已构造元素再次 construct，非平凡类型触发 UB/生命周期错误。",
+      "recommendation": "使用未初始化存储或先 destroy。",
+      "verification": "非平凡类型构造/析构计数；ASan。"
+    },
+    {
+      "id": "CONTAINER-002",
+      "severity": "P0",
+      "status": "open",
+      "module": "container",
+      "title": "ConcurrentBlockingQueue::dequeue 未检查 try_lock",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/concurrent_blocking_queue.hpp",
+          "lines": [
+            83,
+            85,
+            88
+          ]
+        }
+      ],
+      "impact": "抢锁失败后仍读写队列，数据竞争。",
+      "recommendation": "检查 owns_lock() 后再访问。",
+      "verification": "并发压力测试；TSan。"
+    },
+    {
+      "id": "CONTAINER-003",
+      "severity": "P0",
+      "status": "open",
+      "module": "container",
+      "title": "CString::append(format) 截断后长度越界",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/cstring.hpp",
+          "lines": [
+            49,
+            50,
+            52
+          ]
+        }
+      ],
+      "impact": "rst.size 是完整输出长度，m_length 可超过容量，下一次 append 下溢并越界。",
+      "recommendation": "检查可用空间并按实际写入长度更新。",
+      "verification": "容量边界测试；ASan。"
+    },
+    {
+      "id": "COMMON-002",
+      "severity": "P1",
+      "status": "open",
+      "module": "common",
+      "title": "origin_show_working_env 的异常可能穿过 C ABI",
+      "files": [
+        {
+          "path": "src/libs/common/src/debug/working_env.cpp",
+          "lines": [
+            204,
+            214,
+            215
+          ]
+        }
+      ],
+      "impact": "current_path/iostream 可能抛异常，C 入口未捕获。",
+      "recommendation": "C 入口 try/catch，失败返回错误/空输出。",
+      "verification": "异常注入测试。"
+    },
+    {
+      "id": "CONTAINER-004",
+      "severity": "P1",
+      "status": "open",
+      "module": "container",
+      "title": "CString::append_va 负数返回值和容量下溢",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/cstring.hpp",
+          "lines": [
+            73,
+            76,
+            86
+          ]
+        }
+      ],
+      "impact": "vsnprintf 负值强转 size_t；容量计算可能下溢。",
+      "recommendation": "检查 len<0、空间和加法溢出。",
+      "verification": "注入格式化失败/超长输出。"
+    },
+    {
+      "id": "CONTAINER-005",
+      "severity": "P1",
+      "status": "open",
+      "module": "container",
+      "title": "dequeue_try 调用不存在的 pop_front",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/concurrent_blocking_queue.hpp",
+          "lines": [
+            223,
+            225
+          ]
+        }
+      ],
+      "impact": "一旦实例化即编译失败；即使存在也会重复移除。",
+      "recommendation": "删除 pop_front 调用。",
+      "verification": "编译 dequeue_try 用例。"
+    },
+    {
+      "id": "CONTAINER-006",
+      "severity": "P1",
+      "status": "open",
+      "module": "container",
+      "title": "at/operator[] 解锁后返回元素引用",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/concurrent_blocking_queue.hpp",
+          "lines": [
+            257,
+            264,
+            268
+          ]
+        }
+      ],
+      "impact": "其他线程可并发修改元素，调用方读到竞态数据。",
+      "recommendation": "返回拷贝或提供持锁回调 API。",
+      "verification": "并发读写测试。"
+    },
+    {
+      "id": "CONTAINER-007",
+      "severity": "P1",
+      "status": "open",
+      "module": "container",
+      "title": "dequeue/dequeue_try 不通知生产者",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/concurrent_blocking_queue.hpp",
+          "lines": [
+            80,
+            92,
+            212,
+            226
+          ]
+        }
+      ],
+      "impact": "出队后未 notify _pushCv，等待中的生产者可能永久阻塞。",
+      "recommendation": "出队后 notify_one。",
+      "verification": "生产者/消费者阻塞测试。"
+    },
+    {
+      "id": "COMMON-010",
+      "severity": "P1",
+      "status": "open",
+      "module": "common",
+      "title": "debug logger C API 可能抛异常",
+      "files": [
+        {
+          "path": "src/libs/common/src/debug/debug_logger.cpp",
+          "lines": [
+            116,
+            120,
+            237,
+            252
+          ]
+        }
+      ],
+      "impact": "va_list_to_string 失败抛 runtime_error，C 入口未捕获。",
+      "recommendation": "C 入口 try/catch 或改为不抛格式化。",
+      "verification": "C API 异常注入。"
+    },
+    {
+      "id": "COMMON-003",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "GetProcessPath 固定缓冲区和返回值处理",
+      "files": [
+        {
+          "path": "src/libs/common/src/debug/working_env.cpp",
+          "lines": [
+            88,
+            93,
+            95,
+            96,
+            101
+          ]
+        }
+      ],
+      "impact": "Windows 截断/忽略返回值；macOS 忽略失败；Linux 已单独列为 P0。",
+      "recommendation": "动态扩容并检查返回值。",
+      "verification": "长路径/失败路径测试。"
+    },
+    {
+      "id": "COMMON-004",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "错误消息缺失和拼写错误",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/common_error_code.h",
+          "lines": [
+            45,
+            66,
+            71
+          ]
+        }
+      ],
+      "impact": "ERR_COMM_PARAM_OUT_OF_RANGE 落到 unknown；Unkown 拼写错误。",
+      "recommendation": "补 case，修文案。",
+      "verification": "错误消息映射测试。"
+    },
+    {
+      "id": "COMMON-005",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "MAKE_ERROR 不掩码字段",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/types/error_code_types.h",
+          "lines": [
+            38,
+            41
+          ]
+        }
+      ],
+      "impact": "超宽 module/type/id 会溢出到相邻字段。",
+      "recommendation": "字段先掩码或 static_assert。",
+      "verification": "边界值测试。"
+    },
+    {
+      "id": "COMMON-006",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "attributes.h 的 MSVC 宏不可用/不等价",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/macros/attributes.h",
+          "lines": [
+            6,
+            28,
+            36,
+            43,
+            56
+          ]
+        }
+      ],
+      "impact": "ATTR_ALIGNED 用 GCC 语法；ATTR_USED/PURE/CONST/WEAK 的 MSVC 替代不等价。",
+      "recommendation": "按编译器实现或删除未使用宏。",
+      "verification": "MSVC 编译使用点。"
+    },
+    {
+      "id": "COMMON-007",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "feature.h 在 MinGW 下重定义 thread_local",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/macros/feature.h",
+          "lines": [
+            7,
+            8,
+            10,
+            44
+          ]
+        }
+      ],
+      "impact": "MinGW 未计入 GCC/Clang，SUPPORTS_THREAD_LOCAL=0，随后把 thread_local 定义为 __thread。",
+      "recommendation": "纳入 COMPILER_MINGW，不要重定义关键字。",
+      "verification": "MinGW 包含头文件编译。"
+    },
+    {
+      "id": "COMMON-008",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "warnings.h 只 push 不 pop",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/macros/warnings.h",
+          "lines": [
+            9,
+            14,
+            29
+          ]
+        }
+      ],
+      "impact": "警告状态泄漏到后续代码；SUPPRESS_LOSSY_CONVERSION_WARNING 也泄漏。",
+      "recommendation": "提供 push/pop 宏或删除全局 pragma。",
+      "verification": "包含头文件后的诊断状态检查。"
+    },
+    {
+      "id": "COMMON-009",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "公共类型头包含 windows.h",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/types/process_types.h",
+          "lines": [
+            6,
+            7,
+            9
+          ]
+        }
+      ],
+      "impact": "宏污染和编译负担；ProcessId/ThreadId 在全局命名空间。",
+      "recommendation": "使用窄类型/前置声明并放入命名空间。",
+      "verification": "跨平台包含测试。"
+    },
+    {
+      "id": "COMMON-011",
+      "severity": "P2",
+      "status": "open",
+      "module": "common",
+      "title": "strings va_list 格式化缺少校验",
+      "files": [
+        {
+          "path": "src/libs/utils/src/strings.cpp",
+          "lines": [
+            20,
+            25,
+            33
+          ]
+        }
+      ],
+      "impact": "format 可为空；第二次 vsnprintf 返回值未检查；len+1 写入 len 大小的 string。",
+      "recommendation": "判空；使用 len+1 缓冲或 resize 后回退。",
+      "verification": "空 format/超长输出测试。"
+    },
+    {
+      "id": "COMMON-012",
+      "severity": "P3",
+      "status": "open",
+      "module": "common",
+      "title": "type_traits 使用 C++20 特性但注释 C++17",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/types/type_traits.h",
+          "lines": [
+            22,
+            23
+          ]
+        }
+      ],
+      "impact": "C++17 构建会失败；数字类型覆盖不全。",
+      "recommendation": "改 remove_cv_t/remove_reference_t 或更新文档。",
+      "verification": "C++17 编译。"
+    },
+    {
+      "id": "CONTAINER-008",
+      "severity": "P2",
+      "status": "open",
+      "module": "container",
+      "title": "clear 不通知等待者且不销毁元素",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/concurrent_blocking_queue.hpp",
+          "lines": [
+            271,
+            274
+          ]
+        }
+      ],
+      "impact": "等待线程可能永远不醒；非平凡元素未显式销毁。",
+      "recommendation": "notify_all 并管理生命周期。",
+      "verification": "clear 并发测试。"
+    },
+    {
+      "id": "CONTAINER-009",
+      "severity": "P2",
+      "status": "open",
+      "module": "container",
+      "title": "BlockingQueue 要求 T 默认构造",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/blocking_queue.hpp",
+          "lines": [
+            26,
+            29,
+            165
+          ]
+        }
+      ],
+      "impact": "std::vector<T>(_maxItems) 先构造全部元素，限制类型并放大生命周期问题。",
+      "recommendation": "未初始化存储或文档限制。",
+      "verification": "非默认构造类型编译测试。"
+    },
+    {
+      "id": "CONTAINER-010",
+      "severity": "P2",
+      "status": "open",
+      "module": "container",
+      "title": "CString API 细节",
+      "files": [
+        {
+          "path": "src/libs/container/include/origin/container/cstring.hpp",
+          "lines": [
+            14,
+            46,
+            50,
+            55,
+            61,
+            65
+          ]
+        }
+      ],
+      "impact": "全局命名空间；访问器非 const；forward 未按 Args 展开；缺 utility。",
+      "recommendation": "规范化 API 和转发。",
+      "verification": "编译/const 测试。"
+    },
+    {
+      "id": "CONTAINER-011",
+      "severity": "P2",
+      "status": "open",
+      "module": "container",
+      "title": "容器测试覆盖不足",
+      "files": [
+        {
+          "path": "src/libs/container/tests",
+          "lines": []
+        }
+      ],
+      "impact": "未覆盖非平凡 T、溢出、dequeue_try、clear 唤醒。",
+      "recommendation": "补生命周期/边界/并发测试。",
+      "verification": "测试矩阵。"
+    },
+    {
+      "id": "CROSS-001",
+      "severity": "P1",
+      "status": "open",
+      "module": "cross",
+      "title": "C ABI 异常策略不统一",
+      "files": [
+        {
+          "path": "src/libs/common/src/debug",
+          "lines": []
+        }
+      ],
+      "impact": "部分 C 入口捕获异常，部分直接调用可能抛异常的 C++ 实现。",
+      "recommendation": "所有 extern C 入口统一 catch。",
+      "verification": "逐入口异常测试。"
+    },
+    {
+      "id": "CROSS-002",
+      "severity": "P2",
+      "status": "open",
+      "module": "cross",
+      "title": "测试缺少失败注入",
+      "files": [
+        {
+          "path": "src/libs",
+          "lines": []
+        }
+      ],
+      "impact": "common/container 缺少故障注入；容器并发测试主要覆盖正常路径。",
+      "recommendation": "补故障注入和并发测试。",
+      "verification": "测试矩阵。"
+    },
+    {
+      "id": "CROSS-003",
+      "severity": "P2",
+      "status": "open",
+      "module": "cross",
+      "title": "平台/编译器/构建宏分散",
+      "files": [
+        {
+          "path": "src/libs/common/include/origin/common/macros",
+          "lines": []
+        }
+      ],
+      "impact": "OS_/COMPILER_/ORIGIN_BUILD_ 各成一套，MinGW 归类不一致。",
+      "recommendation": "统一宏层并只暴露一套。",
+      "verification": "跨工具链构建。"
     }
   ]
 }

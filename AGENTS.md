@@ -8,6 +8,8 @@
 2. `docs/audit/findings.json`
 3. 对应日期的审计报告
 
+全项目问题总览以 `docs/audit/2026-11-22-full-project-audit.md` 为准；`utils`/`logging` 的细节见模块报告。
+
 `findings.json` 是问题状态的机器可读来源；报告记录证据和建议。不要把聊天历史当作持久上下文。
 
 - `open` / `partial` 的条目不要重复扫描，先基于已有证据继续；

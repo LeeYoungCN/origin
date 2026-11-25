@@ -21,6 +21,33 @@
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
 
+### 2026-11-26 UNIX socket 测试路径受 sun_path 108 字节限制
+
+- 现象：Linux CI 的 `FilesystemErrorCodeApi.SymlinkAndSpecialFiles` 失败，`ASSERT_LT(socketPath.size(), sizeof(address.sun_path))` 报 `114 vs 108`。
+- 根因：`sockaddr_un::sun_path` 只有约 108 字节（含结尾 NUL），而测试把 socket 建在构建目录下；CI 工作区路径较长，拼出的绝对路径超过上限。普通文件路径的 4096 字节上限在这里不适用。
+- 修复/规避：测试改用 `std::filesystem::temp_directory_path()` 加 pid 生成短路径，并在 `memcpy` 前保留长度断言。另把 FIFO 断言改为“`mkfifo` 成功才校验”，因为 WSL 的 `/mnt` 挂载（drvfs）不支持 FIFO；CI 的 ext4 仍会执行该断言。
+- 验证：WSL Linux `test_Utils` 331/331 通过；MSVC x64 Debug、MinGW Debug 的 `test_Utils` 均 146/146 通过。
+- 适用范围：POSIX 下 `AF_UNIX` 测试或工具；Windows 无 `sun_path` 限制，不适用。FIFO 的 `/mnt` 限制仅针对 WSL drvfs，普通 Linux 文件系统可用。生产代码不应为规避该限制把业务 socket 放到临时目录，本条目只针对测试路径。
+- 关联：2026-11-26 Linux CI 失败、`src/libs/utils/tests/src/test_error_code_api.cpp`。
+
+### 2026-11-26 Windows 上 test_Logging 停在异步用例并以 0xCFFFFFFF/0xC0000409 退出，先排查二进制一致性
+
+- 现象：ctest 报 `test_Logging` 失败，但 gtest 已跑完大部分用例，输出停在 `TestLoggingMPMC.Async_MPMC` 收尾，没有最终 `[ PASSED ]`/`[ FAILED ]` 汇总；退出码为 `0xCFFFFFFF`（Application Hang）或 `0xC0000409`，耗时明显长于正常值。
+- 根因：未最终确认。两次都在整库重建、重新链接 `OriginLoggingd.dll` 后消失；更像测试可执行与共享库不同步，或异步任务池退出时序问题，而不是普通断言失败。
+- 修复/规避：先全量构建目标而非只构建测试目标，确认测试二进制与 DLL 同批；再单独跑 `--gtest_filter=TestLoggingMPMC.*` 复现；最后才怀疑代码。临时 `fprintf` 曾定位到 `TaskPool::reset()`，但重新链接后不再复现，说明不能只凭一次挂起下结论。
+- 验证：重建后 MSVC 与 MinGW 的 ctest 均 3/3，`test_Logging` 231 个用例通过；`TestLoggingMPMC.*` 连跑 5 次通过。
+- 适用范围：Windows MSVC Debug 共享库 + ctest；`0xCFFFFFFF`/`0xC0000409` 只作为“异常退出”线索，不能直接等同于某段代码缺陷。Linux/MinGW 未复现，根因待确认。
+- 关联：2026-11-25/26 P1/P2 批次验证。
+
+### 2026-11-26 PowerShell 下 ctest 的 stderr 会触发 NativeCommandError
+
+- 现象：`ctest --output-on-failure` 实际测试通过，PowerShell 仍抛 `NativeCommandError`，甚至让整条命令看起来失败；gtest/日志写到 stderr 时更明显。
+- 根因：PowerShell 把原生进程的 stderr 当成错误记录；在管道/重定向组合里，`$LASTEXITCODE` 与错误流容易混在一起判断。
+- 修复/规避：把 ctest 输出整体重定向到文件（`ctest ... *> out\ctest.log`），先看文件末尾和 `ctest` 的退出码；不要把 gtest 的 stderr 当成命令失败。bash 下无此问题。
+- 验证：同一 ctest 命令在重定向后能正确读到 `100% tests passed` 与退出码。
+- 适用范围：Windows PowerShell 5.1/7 调用会写 stderr 的原生程序；bash、cmd 不受影响。
+- 关联：[testing.md](testing.md)、2026-11-25/26 构建验证。
+
 ### 2026-11-25 symlink_status 对“文件/子路径”返回 ENOTDIR，不能直接当目录类型错误
 
 - 现象：Linux CI 上 `delete_dir("<可执行文件>/nonexistent")` 返回 `ERR_UTILS_NOT_DIRECTORY`，测试期望 `ERR_COMM_SUCCESS`；日志显示 `get_entry_type` 的 `symlink_status` 返回 errCode 20（ENOTDIR）。

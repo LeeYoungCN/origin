@@ -17,6 +17,7 @@
 #include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/macros/compiler.h"
+#include "origin/common/types/date_time_types.h"
 
 #include "origin/filesystem/filesystem.h"
 

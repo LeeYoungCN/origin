@@ -110,6 +110,30 @@ TEST(FilesystemErrorCodeApi, MissingPath)
     EXPECT_EQ(type, EntryType::NONEXISTENT);
 }
 
+TEST(FilesystemErrorCodeApi, MissingPathUnderFileComponent)
+{
+    std::string cwd;
+    ASSERT_EQ(get_curr_working_dir(cwd), ERR_COMM_SUCCESS);
+
+    std::string dir;
+    ASSERT_EQ(to_absolute_path("origin_ec_test_under_file", cwd, dir), ERR_COMM_SUCCESS);
+    (void)delete_dir(dir, true);
+    ASSERT_EQ(create_dir(dir, true), ERR_COMM_SUCCESS);
+
+    std::string file;
+    ASSERT_EQ(join_paths({dir, "file.txt"}, file), ERR_COMM_SUCCESS);
+    ASSERT_EQ(create_file(file), ERR_COMM_SUCCESS);
+
+    // 路径中间一段是普通文件，任何子项都不可能存在；应与 ENOENT 一样按不存在处理。
+    const std::string missing = file + "/missing";
+    EntryType type = EntryType::UNKNOWN;
+    EXPECT_EQ(get_entry_type(missing, type), ERR_UTILS_NOT_FOUND);
+    EXPECT_EQ(type, EntryType::NONEXISTENT);
+    EXPECT_EQ(delete_dir(missing), ERR_COMM_SUCCESS);
+
+    EXPECT_EQ(delete_dir(dir, true), ERR_COMM_SUCCESS);
+}
+
 TEST(FilesystemErrorCodeApi, SymlinkAndSpecialFiles)
 {
     std::string cwd;

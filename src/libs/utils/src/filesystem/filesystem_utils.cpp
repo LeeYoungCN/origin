@@ -32,7 +32,10 @@ ErrorCode get_entry_type(std::string_view path, EntryType& out)
     std::error_code ec;
     fs::file_status const status = fs::symlink_status(path, ec);
     if (ec) {
-        if (ec == std::errc::no_such_file_or_directory) {
+        // 路径中间某段不是目录时（如 "<file>/missing"），symlink_status 返回
+        // ENOTDIR/ERROR_DIRECTORY；该路径不可能对应任何目录项，应按“不存在”处理，
+        // 与 std::filesystem::exists 的语义及 remove/delete_dir 的幂等行为保持一致。
+        if (ec == std::errc::no_such_file_or_directory || ec == std::errc::not_a_directory) {
             out = EntryType::NONEXISTENT;
             return ERR_UTILS_NOT_FOUND;
         }

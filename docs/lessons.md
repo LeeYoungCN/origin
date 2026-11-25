@@ -21,6 +21,15 @@
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
 
+### 2026-11-25 symlink_status 对“文件/子路径”返回 ENOTDIR，不能直接当目录类型错误
+
+- 现象：Linux CI 上 `delete_dir("<可执行文件>/nonexistent")` 返回 `ERR_UTILS_NOT_DIRECTORY`，测试期望 `ERR_COMM_SUCCESS`；日志显示 `get_entry_type` 的 `symlink_status` 返回 errCode 20（ENOTDIR）。
+- 根因：`get_entry_type` 从 `fs::exists` 改为 `fs::symlink_status(path, ec)` 后，只把 `no_such_file_or_directory` 映射为不存在。路径中间一段是普通文件时，POSIX 返回 ENOTDIR；`delete_dir` 忽略该错误，把 `UNKNOWN` 当成“不是目录”，破坏了“删除不存在的目录应成功”的幂等语义。`fs::exists` 对同一路径返回 false，所以旧实现没有暴露。
+- 修复/规避：`get_entry_type` 同时把 `std::errc::not_a_directory` 归为 `NONEXISTENT` + `ERR_UTILS_NOT_FOUND`；`delete_dir` 因此回到成功路径。新增 `FilesystemErrorCodeApi.MissingPathUnderFileComponent` 回归测试，直接断言类型和删除结果。
+- 验证：MSVC x64 Debug、MinGW Debug 的 `test_Utils` 均 146/146 通过；Linux CI 由同一回归测试覆盖。
+- 适用范围：`std::filesystem::symlink_status` 替代 `exists` 做存在性判断的代码，POSIX 下尤其明显；Windows 上该路径通常报 `ERROR_PATH_NOT_FOUND`，但仍建议保留 `not_a_directory` 分支。不要把 ENOTDIR 一律映射为 `ERR_UTILS_NOT_DIRECTORY`，否则会破坏删除/创建等幂等操作。
+- 关联：UTILS-004、提交 `b5e02e0`、2026-11-25 Linux CI 失败。
+
 ### 2026-11-25 DSH 沙箱下 CMake/Ninja 的 try_compile 挂起
 
 - 现象：`cmake --preset=msvc_x64_debug` 停在 “Detecting C compiler ABI info” / `try_compile`，长时间不返回；`cmake`、`ninja` 进程存在但 CPU 接近 0，没有 `cl.exe` 子进程；删除 `.ninja_lock` 无效。

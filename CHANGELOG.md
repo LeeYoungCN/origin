@@ -72,6 +72,13 @@
   `CPACK_PACKAGE_DIRECTORY` / `ORIGIN_ENABLE_ASAN` / `ENV_PARAM_FILE`；`msvc_x86_*` 取消 hidden
   并注明需要 32 位工具链环境；补全 `preset_array` 里的 `win_clang_mingw_*` / `win_clang_cl_*`。
 
+- **BREAKING**：移除 `origin/common/debug/working_env.h` 及 C ABI `origin_show_working_env`。
+  它是调试辅助接口，不参与库契约；对应 COMMON-001～003 的越界写/异常边界问题随删除消失。
+- **BREAKING**：移除 `origin/container/cstring.hpp`（`CString`）。Container 层只保留阻塞队列，
+  对应 CONTAINER-003/004/010 随删除消失；`ERR_CONTAINER_OVERFLOW` 错误码保留。
+- **BREAKING**：移除 `origin::logging::root_logger_raw()`。公共路径统一使用
+  `root_logger()` 返回的 `shared_ptr`，避免解锁后的裸指针 UAF（LOGGING-003）。
+
 ### 修复
 
 - 支持被 `FetchContent` / `add_subdirectory` 嵌入：路径改用 `PROJECT_SOURCE_DIR`，

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "origin",
-  "updated_at": "2026-11-22",
+  "updated_at": "2026-11-25",
   "baseline": {
     "head": "c37a364",
     "worktree": "code clean",
@@ -184,7 +184,7 @@
     {
       "id": "LOGGING-003",
       "severity": "P0",
-      "status": "partial",
+      "status": "fixed",
       "module": "logging",
       "title": "Registry 返回裸指针后解锁，存在 UAF",
       "files": [
@@ -198,9 +198,9 @@
       ],
       "impact": "另一线程 set_root_logger/remove_all 后，裸指针失效。",
       "recommendation": "公共路径用 root_logger() 的 shared_ptr；raw 只在短临界区内部使用。",
-      "verification": "根 logger 公共 API 已改用 shared_ptr；root_logger_raw() 仍保留，外部调用方仍有裸指针风险。",
-      "fixed_in": "c37a364",
-      "note": "内部公共路径已修复；raw API 兼容保留。"
+      "verification": "删除 root_logger_raw 公共 API 及测试引用；MSVC x64 Debug ctest 3/3（226 个 logging 用例）通过（2026-11-25）。",
+      "fixed_in": "working-tree",
+      "note": "raw API 已删除。"
     },
     {
       "id": "UTILS-004",
@@ -650,7 +650,8 @@
     {
       "id": "COMMON-001",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "common",
       "title": "Linux readlink 失败时越界写",
       "files": [
@@ -664,12 +665,13 @@
       ],
       "impact": "readlink 返回 -1 后写 path[-1]，可能破坏栈。",
       "recommendation": "检查返回值并处理失败/截断。",
-      "verification": "模拟 readlink 失败/长路径。"
+      "verification": "随 debug/working_env 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-001",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "BlockingQueue 在已构造对象上 placement new",
       "files": [
@@ -687,12 +689,13 @@
       ],
       "impact": "对 vector 中已构造元素再次 construct，非平凡类型触发 UB/生命周期错误。",
       "recommendation": "使用未初始化存储或先 destroy。",
-      "verification": "非平凡类型构造/析构计数；ASan。"
+      "verification": "改用 std::vector<std::optional<T>>，不再预构造；新增 NoDefaultEntry/LifecycleEntry 用例；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-002",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "ConcurrentBlockingQueue::dequeue 未检查 try_lock",
       "files": [
@@ -707,12 +710,13 @@
       ],
       "impact": "抢锁失败后仍读写队列，数据竞争。",
       "recommendation": "检查 owns_lock() 后再访问。",
-      "verification": "并发压力测试；TSan。"
+      "verification": "dequeue 改用阻塞 lock 并在出队后 notify；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-003",
       "severity": "P0",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "CString::append(format) 截断后长度越界",
       "files": [
@@ -727,12 +731,13 @@
       ],
       "impact": "rst.size 是完整输出长度，m_length 可超过容量，下一次 append 下溢并越界。",
       "recommendation": "检查可用空间并按实际写入长度更新。",
-      "verification": "容量边界测试；ASan。"
+      "verification": "随 CString 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "COMMON-002",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "common",
       "title": "origin_show_working_env 的异常可能穿过 C ABI",
       "files": [
@@ -747,12 +752,13 @@
       ],
       "impact": "current_path/iostream 可能抛异常，C 入口未捕获。",
       "recommendation": "C 入口 try/catch，失败返回错误/空输出。",
-      "verification": "异常注入测试。"
+      "verification": "随 debug/working_env 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-004",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "CString::append_va 负数返回值和容量下溢",
       "files": [
@@ -767,12 +773,13 @@
       ],
       "impact": "vsnprintf 负值强转 size_t；容量计算可能下溢。",
       "recommendation": "检查 len<0、空间和加法溢出。",
-      "verification": "注入格式化失败/超长输出。"
+      "verification": "随 CString 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-005",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "dequeue_try 调用不存在的 pop_front",
       "files": [
@@ -786,7 +793,7 @@
       ],
       "impact": "一旦实例化即编译失败；即使存在也会重复移除。",
       "recommendation": "删除 pop_front 调用。",
-      "verification": "编译 dequeue_try 用例。"
+      "verification": "删除不存在的 pop_front 和重复出队，新增 dequeue_try 测试；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-006",
@@ -811,7 +818,8 @@
     {
       "id": "CONTAINER-007",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "dequeue/dequeue_try 不通知生产者",
       "files": [
@@ -827,7 +835,7 @@
       ],
       "impact": "出队后未 notify _pushCv，等待中的生产者可能永久阻塞。",
       "recommendation": "出队后 notify_one。",
-      "verification": "生产者/消费者阻塞测试。"
+      "verification": "dequeue/dequeue_try 成功后 notify _pushCv；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "COMMON-010",
@@ -853,7 +861,8 @@
     {
       "id": "COMMON-003",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "common",
       "title": "GetProcessPath 固定缓冲区和返回值处理",
       "files": [
@@ -870,7 +879,7 @@
       ],
       "impact": "Windows 截断/忽略返回值；macOS 忽略失败；Linux 已单独列为 P0。",
       "recommendation": "动态扩容并检查返回值。",
-      "verification": "长路径/失败路径测试。"
+      "verification": "随 debug/working_env 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "COMMON-004",
@@ -1036,7 +1045,8 @@
     {
       "id": "CONTAINER-008",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "clear 不通知等待者且不销毁元素",
       "files": [
@@ -1050,12 +1060,13 @@
       ],
       "impact": "等待线程可能永远不醒；非平凡元素未显式销毁。",
       "recommendation": "notify_all 并管理生命周期。",
-      "verification": "clear 并发测试。"
+      "verification": "clear 解锁后 notify_all；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-009",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "BlockingQueue 要求 T 默认构造",
       "files": [
@@ -1070,12 +1081,13 @@
       ],
       "impact": "std::vector<T>(_maxItems) 先构造全部元素，限制类型并放大生命周期问题。",
       "recommendation": "未初始化存储或文档限制。",
-      "verification": "非默认构造类型编译测试。"
+      "verification": "optional 存储不再要求 T 默认构造；NoDefaultEntry 用例通过；MSVC x64 Debug ctest 3/3（2026-11-25）。"
     },
     {
       "id": "CONTAINER-010",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
+      "fixed_in": "working-tree",
       "module": "container",
       "title": "CString API 细节",
       "files": [
@@ -1093,7 +1105,7 @@
       ],
       "impact": "全局命名空间；访问器非 const；forward 未按 Args 展开；缺 utility。",
       "recommendation": "规范化 API 和转发。",
-      "verification": "编译/const 测试。"
+      "verification": "随 CString 整体删除；MSVC x64 Debug ctest 3/3 通过（2026-11-25）。"
     },
     {
       "id": "CONTAINER-011",

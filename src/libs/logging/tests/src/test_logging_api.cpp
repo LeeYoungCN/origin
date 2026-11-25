@@ -94,7 +94,6 @@ TEST_F(TestLoggingApi, remove_logger_when_logger_is_root_logger)
     remove_logger(name);
     EXPECT_EQ(nullptr, get_logger(name));
     EXPECT_EQ(nullptr, root_logger());
-    EXPECT_EQ(nullptr, root_logger_raw());
     EXPECT_FALSE(is_logger_exists(name));
 }
 

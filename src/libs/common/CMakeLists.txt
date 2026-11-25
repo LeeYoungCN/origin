@@ -5,8 +5,6 @@ set(LIB_NAME Common)
 set(SRC_LIST
     src/c/version_c.cpp
     src/debug/debug_logger.cpp
-    src/debug/working_env.cpp
-    src/debug/working_env_c.c
     src/version.cpp
 )
 add_library(${LIB_NAME} SHARED ${SRC_LIST})

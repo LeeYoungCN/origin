@@ -64,7 +64,6 @@ TEST_F(TestRootLogger, set_and_get_root_logger)
 TEST_F(TestRootLogger, get_root_logger_failed_when_nullptr)
 {
     EXPECT_EQ(root_logger(), nullptr);
-    EXPECT_EQ(root_logger_raw(), nullptr);
 }
 
 TEST_F(TestRootLogger, log_level_filter)

@@ -10,9 +10,9 @@
 |---|---|
 | 快照日期 | 2026-11-25 |
 | 分支 / 基线 HEAD | `master` / `1fa6636`（`docs: 增加跨语言封装说明`） |
-| 工作区 | 无代码改动；本次仅文档与 skill 更新 |
+| 工作区 | **有代码改动，未提交**：删除 `working_env` / `CString` / `root_logger_raw`，修复并发队列 |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
-| 审计基线 | `c37a364`（2026-11-22 全量审计） |
+| 审计基线 | `c37a364`（2026-11-22 全量审计）；工作区 54 项 = 35 open / 1 partial / 18 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
 
 审计计数、证据和验证方式以 [audit/README.md](audit/README.md) 与 [findings.json](audit/findings.json) 为准，本文不重复统计表。
@@ -26,9 +26,10 @@
 
 ## 3. 构建与测试健康
 
-本次文档整改没有重新跑构建/测试；不要把本文当成“当前构建通过”的证明。
+本工作区已跑过 MSVC x64 Debug 与 MinGW Debug 的构建与 ctest。
 
 - 常规验证矩阵：MSVC x64 Debug + MinGW Debug；平台相关改动再补 Linux/macOS。
+- 2026-11-25 工作区：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 27、`test_Utils` 143、`test_Logging` 226）。
 - ctest 只注册 `test_Container`、`test_Utils`、`test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest 中**。
 - `cmake --build --preset=*_build` 会连带 install；CI 的 `cmake-multi-cmake-presets.yml` 覆盖 6 个配置，`clang-tidy.yml` 不阻塞合并，`cmake-multi-platform.yml` 已过时。
 
@@ -36,17 +37,17 @@
 
 ## 4. 审计状态
 
-只列仍 open / partial 的 P0。触发条件和规避建议是本文的增量，完整证据见对应报告。
+当前没有仍 open / partial 的 P0。本次工作区关闭了 5 条 P0：
 
-| ID | 状态 | 触发条件 | 规避 |
-|---|---|---|---|
-| COMMON-001 | open | Linux 下 `readlink` 失败 | 写 `path[-1]`，可能破坏栈；不要依赖异常环境下的 working env 输出 |
-| CONTAINER-001 | open | `BlockingQueue` 元素类型非平凡 | 对已构造对象 placement new，UB；暂用平凡类型或外部加锁 |
-| CONTAINER-002 | open | 多线程争用 `ConcurrentBlockingQueue::dequeue` | `try_lock` 失败后仍访问队列；高并发下避免依赖该路径 |
-| CONTAINER-003 | open | `CString` 容量不足时走 `append(std::format...)` | `m_length` 越界后下溢；预留容量或改用 `append_va` 路径 |
-| LOGGING-003 | partial | 多线程 `set_root_logger` / `remove_all` 与 `root_logger_raw()` 并发 | 裸指针 UAF；公共路径改用 `root_logger()` 的 `shared_ptr` |
+| ID | 原问题 | 处理 |
+|---|---|---|
+| COMMON-001 | Linux `readlink` 失败写 `path[-1]` | 随调试接口 `working_env` 整体删除 |
+| CONTAINER-001 | `BlockingQueue` 预构造后 placement new | 改用 `optional` 槽位，按需构造/析构 |
+| CONTAINER-002 | `dequeue` 不检查 `try_lock` | 改为阻塞锁 + 出队通知 |
+| CONTAINER-003 | `CString` 格式化截断后长度越界 | 随 `CString` 整体删除 |
+| LOGGING-003 | `root_logger_raw()` 裸指针 UAF | 删除该公共 API |
 
-P1 与完整清单见 `findings.json`，本文不再展开。
+证据和逐项状态见 [findings.json](audit/findings.json) 与 [audit/README.md](audit/README.md)。P1 与剩余清单不再在本文展开。
 
 ## 5. 文档偏差记录
 

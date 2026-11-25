@@ -27,7 +27,6 @@ class Registry : public common::base::SingletonBase<Registry> {
 public:
 #pragma region root logger
     std::shared_ptr<Logger> root_logger();
-    Logger* root_logger_raw();
     void set_root_logger(std::shared_ptr<Logger> logger);
 #pragma endregion
 

@@ -13,8 +13,6 @@ int main(int argc, char* argv[])
                          origin::compiled_version().string,
                          origin::version());
     }
-    // origin_show_working_env();
-
     testing::InitGoogleTest(&argc, argv);
     auto rst = RUN_ALL_TESTS();
 

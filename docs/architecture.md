@@ -8,14 +8,14 @@
 | 模块 | CMake 目标 | 类型 | 命名空间 | 公共头文件 |
 |---|---|---|---|---|
 | Common | `Origin::Common` | `SHARED` | `origin::common`；C ABI 在全局 | `src/libs/common/include/origin/common/` |
-| Container | `Origin::Container` | `INTERFACE`（纯头文件） | `origin::container`；`CString` 在全局 | `src/libs/container/include/origin/container/` |
+| Container | `Origin::Container` | `INTERFACE`（纯头文件） | `origin::container` | `src/libs/container/include/origin/container/` |
 | Utils | `Origin::Utils` | `SHARED` | `origin::filesystem` / `date_time` / `strings` / `thread` / `process` | `src/libs/utils/include/origin/` |
 | Logging | `Origin::Logging` | `SHARED` | `origin::logging`；C ABI 在全局 | `src/libs/logging/include/origin/logging/` |
 
 要点：
 
 - 实际输出名是 `OriginCommon` / `OriginUtils` / `OriginLogging`，**不是** `Origin::Common`；后者只是 CMake alias。
-- Container 没有二进制，也没有导出宏；`BlockingQueue` / `ConcurrentBlockingQueue` / `CString` 都是头文件实现。
+- Container 没有二进制，也没有导出宏；`BlockingQueue` / `ConcurrentBlockingQueue` 都是头文件实现。
 - Debug 构建带 `d` 后缀（`OriginUtilsd`），安装导出仍使用 alias；版本 `2.0.0`，`SOVERSION` 为 `2`，没有静态库产物。
 
 依赖方向固定，低层不能 include 高层：
@@ -77,7 +77,7 @@ Logger ──shared_ptr──> Sink ──unique_ptr──> Formatter
 | Formatter | Sink 按 `unique_ptr` 持有 | 随 Sink 释放 | 设置时是 clone，不是转移原对象 |
 | TaskPool | 调用方 / Registry 持有 | `shutdown()` + 释放 | AsyncLogger 只持 `weak_ptr` |
 | C 句柄 | 调用方 | `origin_destroy_*` | 必须成对，顺序不敏感 |
-| `CString` | 栈/成员对象 | 析构自动释放 | 容量含结尾 NUL |
+| 队列元素 `T`（`optional` 槽位） | 队列 | 出队 / `clear` 时 `reset` | 不再要求 `T` 默认构造 |
 
 C ABI 的通用约定：跨边界只用 C 类型、UTF-8、显式所有权；异常不能穿出 `extern "C"`。当前实现尚未完全做到（CROSS-001、LOGGING-004、COMMON-010 等仍 open），调用 C 接口时要按“可能失败/可能不返回错误”设计防御。
 
@@ -86,7 +86,7 @@ C ABI 的通用约定：跨边界只用 C 类型、UTF-8、显式所有权；异
 | 对象 | 是否线程安全 | 说明 |
 |---|---|---|
 | `BlockingQueue` | **否** | 无锁、无原子；只适合单线程或外部加锁 |
-| `ConcurrentBlockingQueue` | 是（有已知缺陷） | 内部 mutex + 条件变量；`dequeue` 的 `try_lock` 检查、`clear` 唤醒等仍 open |
+| `ConcurrentBlockingQueue` | 是（有已知缺陷） | 内部 mutex + 条件变量；`dequeue` 已改阻塞锁并通知生产者，`at/operator[]` 解锁后返回引用仍 open（CONTAINER-006） |
 | Logger 级别 / flush 级别 | 是 | `std::atomic` |
 | Sink 写入 | 基本是 | 内部互斥锁；失败可观测性仍不完整 |
 | Registry | 是 | `std::mutex`；key 是非拥有 `string_view`，同名替换存在悬垂风险 |

@@ -163,7 +163,7 @@ Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系�
   路径辅助函数在非法 UTF-8 / 超长路径下仍可能抛异常（见 UTILS-007）。处理不可信输入时
   用 `ErrorCode` 版，或在边界统一兜底。
 - C ABI 的目标是“返回 `ErrorCode`、不抛异常”，但当前尚未完全做到：非法枚举、
-  `working_env`、debug logger 等入口仍可能抛（CROSS-001、LOGGING-004、COMMON-010）。
+  debug logger 等入口仍可能抛（CROSS-001、LOGGING-004、COMMON-010）。
   C 侧调用要按“可能异常/可能没有错误码”做防御，不能假设失败一定返回错误码。
 - 文案函数未命中会逐级回退：`get_utils_err_msg` / `get_container_err_msg` → Common 文案。
   错误文本只用于展示，**不要解析文本做逻辑判断**。

@@ -26,11 +26,12 @@
 
 ## 当前记录
 
-基线：`c37a364`。当前共 54 项：47 `open`、2 `partial`、5 `fixed`。
+基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
+当前工作区（2026-11-25，未提交）关闭 13 项，变为 35 `open`、1 `partial`、18 `fixed`；逐项证据见报告“后续”段落。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
 |---|---|---|---|
-| 2026-11-22 | 全项目：`common`/`container`/`logging`/`utils` | [2026-11-22-full-project-audit.md](2026-11-22-full-project-audit.md) | 新增 26 项，全部 open；另汇总既有 28 项 |
+| 2026-11-22 | 全项目：`common`/`container`/`logging`/`utils` | [2026-11-22-full-project-audit.md](2026-11-22-full-project-audit.md) | 新增 26 项（基线时全部 open；2026-11-25 工作区已关闭 13 项） |
 | 2026-11-22 | `utils` + `logging` 详细审计 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 21 open / 2 partial / 5 fixed |
 
 ## 54 项总览（2026-11-22 基线）
@@ -43,9 +44,9 @@
 
 | ID | 状态 | 一句话 | 报告 |
 |---|---|---|---|
-| COMMON-001 | open | Linux `readlink` 失败后写 `path[-1]` | full |
-| COMMON-002 | open | `origin_show_working_env` 的 C 入口可能抛异常 | full |
-| COMMON-003 | open | `GetProcessPath` 固定 256 字节并忽略返回值 | full |
+| COMMON-001 | fixed | 随 `working_env` 删除，不再存在 `readlink` 越界写 | full |
+| COMMON-002 | fixed | 随 `working_env` 删除，C ABI 异常入口一并移除 | full |
+| COMMON-003 | fixed | 随 `working_env` 删除，固定缓冲区逻辑移除 | full |
 | COMMON-004 | open | `ERR_COMM_PARAM_OUT_OF_RANGE` 缺文案，`Unkown` 拼写错误 | full |
 | COMMON-005 | open | `MAKE_ERROR` 不掩码，超宽值污染相邻字段 | full |
 | COMMON-006 | open | `ATTR_ALIGNED` 在 MSVC 用 `__attribute__` | full |
@@ -55,16 +56,16 @@
 | COMMON-010 | open | `origin_debug_logger_c` 可能抛异常穿出 C ABI | full |
 | COMMON-011 | open | `strings.cpp` 未判空，第二次 `vsnprintf` 返回值未检查 | full |
 | COMMON-012 | open | `type_traits.h` 注释写 C++17，实际用 C++20 | full |
-| CONTAINER-001 | open | `BlockingQueue` 在已构造对象上 placement new | full |
-| CONTAINER-002 | open | `ConcurrentBlockingQueue::dequeue` 不检查 `owns_lock` | full |
-| CONTAINER-003 | open | `CString::append(std::format...)` 截断后长度越界 | full |
-| CONTAINER-004 | open | `vsnprintf` 负返回值被强转 `size_t` | full |
-| CONTAINER-005 | open | `dequeue_try` 调用不存在的 `pop_front`，实例化即编译失败 | full |
+| CONTAINER-001 | fixed | 改用 `optional` 槽位，不再在已构造对象上 placement new | full |
+| CONTAINER-002 | fixed | `dequeue` 改阻塞锁并通知生产者 | full |
+| CONTAINER-003 | fixed | 随 `CString` 删除，越界路径移除 | full |
+| CONTAINER-004 | fixed | 随 `CString` 删除，`vsnprintf` 路径移除 | full |
+| CONTAINER-005 | fixed | 删除 `pop_front` 和重复出队，`dequeue_try` 可实例化 | full |
 | CONTAINER-006 | open | `operator[]`/`at` 解锁后返回元素引用 | full |
-| CONTAINER-007 | open | 出队后不通知 `_pushCv`，生产者可能永久阻塞 | full |
-| CONTAINER-008 | open | `clear()` 不唤醒等待线程，也不销毁元素 | full |
-| CONTAINER-009 | open | 要求 `T` 默认构造，构造时预构造全部元素 | full |
-| CONTAINER-010 | open | `CString` 在全局命名空间，const/转发有误 | full |
+| CONTAINER-007 | fixed | 出队后通知 `_pushCv` | full |
+| CONTAINER-008 | fixed | `clear()` 后 `notify_all` | full |
+| CONTAINER-009 | fixed | 不再要求 `T` 默认构造 | full |
+| CONTAINER-010 | fixed | 随 `CString` 删除，全局命名空间/转发问题移除 | full |
 | CONTAINER-011 | open | 容器测试未覆盖非平凡 T、溢出和并发唤醒 | full |
 | CROSS-001 | open | C ABI 异常策略不统一 | full |
 | CROSS-002 | open | 测试缺少失败注入 | full |
@@ -87,7 +88,7 @@
 | UTILS-016 | open | `file_exists`/`dir_exists` 忽略错误，权限错误也返回 false | logging |
 | LOGGING-001 | fixed | 异步 logger 在 TaskPool 销毁后空指针解引用 | logging |
 | LOGGING-002 | fixed | TaskPool 重复 `shutdown` 可能死锁 | logging |
-| LOGGING-003 | partial | `root_logger_raw()` 返回裸指针后解锁 | logging |
+| LOGGING-003 | fixed | `root_logger_raw()` 已删除，公共路径只用 `shared_ptr` | logging |
 | LOGGING-004 | open | C API 非法 `LogLevel` 抛异常，可能穿出 C 边界 | logging |
 | LOGGING-005 | partial | sink 失败可观测性不足，`FileWriter` 写失败仍被吞 | logging |
 | LOGGING-008 | open | 旋转后 `reopen` 返回码被忽略 | logging |
@@ -110,7 +111,7 @@
 
 ### 统一修复顺序
 
-1. **P0 正确性**：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
+1. **P0 正确性**（2026-11-25 工作区已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
 2. **错误契约**：UTILS-004/005/006/007、LOGGING-004、COMMON-002/010、CONTAINER-004~007。
 3. **可观测性与 API 收敛**：UTILS-008/009、LOGGING-005、UTILS-010/011、LOGGING-008~010。
 4. **测试与剩余 P2**：CONTAINER-011、LOGGING-012、CROSS-002，再按模块收口其余 P2。
@@ -118,6 +119,7 @@
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
+- 2026-11-25 工作区：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

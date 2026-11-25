@@ -246,3 +246,9 @@ Release 编译期抽查:
 - [ ] 决定 FileWriter 是否在 2.0.0 内做破坏性签名调整；
 - [ ] 补失败注入测试；
 - [ ] 清理 utils 中“预期失败也打 ERR”的调用点。
+
+## 后续（2026-11-25）
+
+LOGGING-003 已由 `partial` 改为 `fixed`：删除 `root_logger_raw()` 公共 API 及测试引用，
+公共路径只保留 `root_logger()` 的 `shared_ptr`。MSVC x64 Debug 与 MinGW Debug 的 ctest
+均 3/3 通过；逐项记录见 `docs/audit/findings.json`。

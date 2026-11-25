@@ -67,7 +67,6 @@ LOGGING_API std::shared_ptr<TaskPool> create_task_pool(uint32_t capacity, uint32
 
 #pragma region Root logger
 LOGGING_API std::shared_ptr<Logger> root_logger();
-LOGGING_API Logger* root_logger_raw();
 LOGGING_API void set_root_logger(std::shared_ptr<Logger> logger);
 
 LOGGING_API void set_level(LogLevel level);

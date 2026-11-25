@@ -172,3 +172,17 @@ MSVC Debug:  test_origin 403 passed
 - [ ] 为 `BlockingQueue` / `CString` 补生命周期和溢出测试；
 - [ ] 统一 C ABI 异常边界；
 - [ ] 补充 `common` / `container` 的失败注入测试。
+
+## 后续（2026-11-25）
+
+工作区改动（未提交）已关闭本报告新增的全部 P0，以及 CString 和队列相关的连带项：
+
+- COMMON-001/002/003：随 `working_env` 整体删除；
+- CONTAINER-001/009：`BlockingQueue` 改用 `std::optional` 槽位，不再要求 `T` 默认构造；
+- CONTAINER-002/007：`dequeue` 改阻塞锁，出队后通知 `_pushCv`；
+- CONTAINER-003/004/010：随 `CString` 删除；
+- CONTAINER-005：删除不存在的 `pop_front` 和重复出队；
+- CONTAINER-008：`clear` 后 `notify_all`；
+- LOGGING-003：删除 `root_logger_raw()`。
+
+验证：MSVC x64 Debug 与 MinGW Debug 的 ctest 均 3/3 通过（`test_Container` 27、`test_Utils` 143、`test_Logging` 226）；`test_origin` 仍未注册。逐项状态与 `fixed_in` / `verification` 见 `docs/audit/findings.json`。

@@ -159,4 +159,18 @@ TEST_F(TestConcurrentBlockingQueueSt, queue_and_dequeue_wait_for)
         EXPECT_EQ(queue[i], capacity / 2 + i);
     }
 }
+// 验证 dequeue_try 在队列为空时返回 false，有元素时成功出队。
+TEST_F(TestConcurrentBlockingQueueSt, dequeue_try)
+{
+    auto queue = ConcurrentBlockingQueue<uint32_t>(2);
+    uint32_t item = 0;
+
+    EXPECT_FALSE(queue.dequeue_try(item));
+
+    EXPECT_TRUE(queue.enqueue(7));
+    EXPECT_TRUE(queue.dequeue_try(item));
+    EXPECT_EQ(item, 7);
+    EXPECT_TRUE(queue.empty());
+}
+
 }  // namespace test::test_container::test_concurrent_queue

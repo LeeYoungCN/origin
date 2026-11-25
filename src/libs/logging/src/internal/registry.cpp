@@ -40,16 +40,6 @@ std::shared_ptr<Logger> Registry::root_logger()
     return _rootLogger;
 }
 
-Logger* Registry::root_logger_raw()
-{
-    std::lock_guard const lock(_loggerMapMtx);
-    if (_rootLogger == nullptr) {
-        ORIGIN_DEBUG_ERR("Root logger is nullptr.");
-        return nullptr;
-    }
-    return _rootLogger.get();
-}
-
 void Registry::set_root_logger(std::shared_ptr<Logger> logger)
 {
     if (logger == nullptr) {

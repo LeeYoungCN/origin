@@ -25,7 +25,7 @@
 | 组件 | 目标 | 内容 |
 |---|---|---|
 | Common | `Origin::Common` | 版本信息、错误码体系、调试日志、平台/编译器宏、公共类型与常量、C ABI 版本 |
-| Container | `Origin::Container` | 阻塞队列（`BlockingQueue` 本身不保证线程安全；`ConcurrentBlockingQueue` 提供并发封装）、C 字符串封装（`cstring`） |
+| Container | `Origin::Container` | 阻塞队列（`BlockingQueue` 本身不保证线程安全；`ConcurrentBlockingQueue` 提供并发封装） |
 | Utils | `Origin::Utils` | 文件系统（`origin/filesystem`）、时间（`origin/date_time`）、字符串（`origin/strings`）、线程（`origin/thread`）、进程（`origin/process`） |
 | Logging | `Origin::Logging` | 同步/异步 logger、pattern formatter、文件 sink（basic / daily / rotating）、C API |
 

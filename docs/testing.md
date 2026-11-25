@@ -8,7 +8,7 @@
 | 目标 | 来源 | 是否注册到 ctest | 说明 |
 |---|---|---|---|
 | `test_origin` | `src/tests/` | **否** | 聚合入口：`main.cpp` + `test_version.cpp` + 所有组件的测试对象库 |
-| `test_Container` | `src/libs/container/tests/` | 是 | 队列、CString |
+| `test_Container` | `src/libs/container/tests/` | 是 | 阻塞队列、并发队列、生命周期 |
 | `test_Utils` | `src/libs/utils/tests/` | 是 | 时间、文件系统、FileWriter、线程、错误码接口 |
 | `test_Logging` | `src/libs/logging/tests/` | 是 | logger、sink、formatter、C API、MPMC |
 | `test_<lib>_obj` | `origin_add_component_tests` | 否 | 每个组件的 OBJECT 库，供聚合目标复用 |
@@ -92,7 +92,7 @@ Common 目前没有独立测试目标；涉及 Common 的用例通常放在 `tes
 ## 4. 已知覆盖缺口
 
 完整缺口以 [findings.json](audit/findings.json) 和审计报告为准，这里不维护第二份清单。与测试最相关的基线项是 CONTAINER-011、LOGGING-012、CROSS-002：
-C 侧 rotating/daily/stderr 创建、`root_logger_raw` 生命周期、失败注入和并发唤醒都缺少覆盖。
+C 侧 rotating/daily/stderr 创建、失败注入和并发唤醒仍有缺口（`root_logger_raw` 已删除，对应风险随之消失）。
 改到相关代码时先看对应 finding，不要因为“没有测试失败”就认为路径安全。
 
 ## 5. CI 现状

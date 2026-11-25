@@ -61,11 +61,6 @@ std::shared_ptr<Logger> root_logger()
     return REGISTRY.root_logger();
 }
 
-Logger* root_logger_raw()
-{
-    return REGISTRY.root_logger_raw();
-}
-
 void set_root_logger(std::shared_ptr<Logger> logger)
 {
     REGISTRY.set_root_logger(std::move(logger));

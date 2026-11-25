@@ -20,6 +20,12 @@ namespace origin::container {
 constexpr uint32_t CONCURRENT_BLOCKING_QUEUE_DEFAULT_TIMEOUT = 200;
 constexpr uint32_t CONCURRENT_BLOCKING_QUEUE_DEFAULT_CAPACITY = 1024;
 
+/**
+ * @brief 线程安全队列：在 BlockingQueue 外组合互斥锁和条件变量。
+ *
+ * 所有对 _queue 的访问都必须持有 _queueMtx；`*_try` 系列抢锁失败立即返回 false，
+ * 其余接口使用阻塞锁。BlockingQueue 自身不加锁，不能直接暴露给多线程使用。
+ */
 template <typename T>
 class ConcurrentBlockingQueue {
 public:
@@ -80,13 +86,16 @@ public:
     bool dequeue(T& item)
     {
         {
-            std::unique_lock<std::mutex> lock(_queueMtx, std::try_to_lock);
+            // 访问 _queue 前必须持有 _queueMtx，保证 empty()/dequeue() 是原子操作。
+            std::unique_lock<std::mutex> lock(_queueMtx);
 
             if (_queue.empty()) {
                 return false;
             }
             _queue.dequeue(item);
         }
+        // 出队释放了一个槽位，唤醒可能因队列满而等待的生产者。
+        _pushCv.notify_one();
 
         return true;
     }
@@ -211,7 +220,9 @@ public:
      */
     bool dequeue_try(T& item)
     {
+        bool dequeued = false;
         {
+            // try_to_lock 失败时立即返回，不能在没有锁的情况下 empty()/dequeue()。
             std::unique_lock<std::mutex> lock(_queueMtx, std::try_to_lock);
             if (!lock.owns_lock()) {
                 return false;
@@ -220,10 +231,14 @@ public:
             if (_queue.empty()) {
                 return false;
             }
-            _queue.dequeue(item);
+            // 抢锁成功且队列非空时只出队一次。
+            dequeued = _queue.dequeue(item);
         }
-        _queue.pop_front();
-        return true;
+
+        if (dequeued) {
+            _pushCv.notify_one();
+        }
+        return dequeued;
     }
 
     [[nodiscard]] size_t discard_counter() const { return _discardCounter; }
@@ -254,6 +269,11 @@ public:
 
     [[nodiscard]] size_t capacity() const { return _queue.capacity(); }
 
+    /**
+     * @brief 返回队首偏移 idx 的只读引用。
+     * @warning 返回的引用只在本次调用期间有效；解锁后其他线程可能覆盖/移除该元素，
+     *          需要稳定数据时请使用 dequeue 拷贝。
+     */
     const T& operator[](size_t idx)
     {
         std::lock_guard lock(_queueMtx);
@@ -261,6 +281,11 @@ public:
         return _queue.at(idx);
     }
 
+    /**
+     * @brief 返回队首偏移 idx 的只读引用。
+     * @warning 返回的引用只在本次调用期间有效；解锁后其他线程可能覆盖/移除该元素，
+     *          需要稳定数据时请使用 dequeue 拷贝。
+     */
     const T& at(size_t idx)
     {
         std::lock_guard lock(_queueMtx);
@@ -270,8 +295,13 @@ public:
 
     void clear()
     {
-        std::lock_guard lock(_queueMtx);
-        _queue.clear();
+        {
+            std::lock_guard lock(_queueMtx);
+            _queue.clear();
+        }
+        // clear 同时释放元素和空位，唤醒等待数据的消费者和等待空间的生产者。
+        _popCv.notify_all();
+        _pushCv.notify_all();
     }
 
 private:
@@ -287,9 +317,9 @@ private:
 
 private:
     BlockingQueue<T> _queue;
-    std::mutex _queueMtx;
-    std::condition_variable _popCv;
-    std::condition_variable _pushCv;
+    std::mutex _queueMtx;             // 保护 _queue 及对其的所有读写
+    std::condition_variable _popCv;   // 等待数据
+    std::condition_variable _pushCv;  // 等待空位
     std::atomic<size_t> _discardCounter = 0;
 };
 }  // namespace origin::container

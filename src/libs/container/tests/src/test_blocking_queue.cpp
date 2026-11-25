@@ -19,6 +19,43 @@ private:
     int32_t x = -1;
 };
 
+// 验证队列支持无默认构造、仅可移动的元素类型。
+class NoDefaultEntry {
+public:
+    NoDefaultEntry() = delete;
+    explicit NoDefaultEntry(int32_t n) : x(n) {}
+    NoDefaultEntry(const NoDefaultEntry&) = delete;
+    NoDefaultEntry& operator=(const NoDefaultEntry&) = delete;
+    NoDefaultEntry(NoDefaultEntry&&) = default;
+    NoDefaultEntry& operator=(NoDefaultEntry&&) = default;
+    ~NoDefaultEntry() = default;
+    [[nodiscard]] int32_t get() const { return x; }
+
+private:
+    int32_t x = 0;
+};
+
+// 统计存活对象，验证入队/出队/clear/overrun 不会泄漏，也不会二次构造。
+class LifecycleEntry {
+public:
+    explicit LifecycleEntry(int32_t n) : x(n) { ++alive; }
+    LifecycleEntry(const LifecycleEntry&) = delete;
+    LifecycleEntry& operator=(const LifecycleEntry&) = delete;
+    LifecycleEntry(LifecycleEntry&& other) noexcept : x(other.x) { ++alive; }
+    LifecycleEntry& operator=(LifecycleEntry&& other) noexcept
+    {
+        x = other.x;
+        return *this;
+    }
+    ~LifecycleEntry() { --alive; }
+    [[nodiscard]] int32_t get() const { return x; }
+
+    static inline int32_t alive = 0;
+
+private:
+    int32_t x = 0;
+};
+
 class TestBlockingQueue : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
@@ -209,6 +246,41 @@ TEST_F(TestBlockingQueue, queue_and_dequeue)
     for (uint32_t i = 0; i < capacity; i++) {
         EXPECT_EQ(queue[i], capacity / 2 + i);
     }
+}
+
+TEST_F(TestBlockingQueue, non_default_constructible)
+{
+    BlockingQueue<NoDefaultEntry> queue(2);
+    EXPECT_TRUE(queue.emplace_back(42));
+    EXPECT_EQ(queue.size(), 1);
+
+    NoDefaultEntry item(0);
+    EXPECT_TRUE(queue.dequeue(item));
+    EXPECT_EQ(item.get(), 42);
+    EXPECT_TRUE(queue.empty());
+}
+
+TEST_F(TestBlockingQueue, lifecycle_with_clear_and_overrun)
+{
+    LifecycleEntry::alive = 0;
+    {
+        BlockingQueue<LifecycleEntry> queue(2);
+        EXPECT_TRUE(queue.emplace_back(1));
+        EXPECT_TRUE(queue.emplace_back(2));
+        EXPECT_EQ(LifecycleEntry::alive, 2);
+
+        queue.emplace_back_overrun(3);
+        EXPECT_EQ(queue.size(), 2);
+        EXPECT_EQ(LifecycleEntry::alive, 2);
+
+        queue.clear();
+        EXPECT_EQ(LifecycleEntry::alive, 0);
+        EXPECT_TRUE(queue.empty());
+
+        EXPECT_TRUE(queue.emplace_back(4));
+        EXPECT_EQ(LifecycleEntry::alive, 1);
+    }
+    EXPECT_EQ(LifecycleEntry::alive, 0);
 }
 
 }  // namespace test::test_container::test_blocking_queue

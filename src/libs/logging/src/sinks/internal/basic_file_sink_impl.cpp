@@ -73,11 +73,19 @@ void BasicFileSinkImpl::log_it(const LogMsg& logMsg)
 void BasicFileSinkImpl::sink_it(const std::string_view message)
 {
     _fileWriter.write_line(message);
+    if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
+        throw std::runtime_error("Failed to write log: " +
+                                 std::string(get_utils_err_msg(errc)));
+    }
 }
 
 void BasicFileSinkImpl::flush_it()
 {
     _fileWriter.flush();
+    if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
+        throw std::runtime_error("Failed to flush log: " +
+                                 std::string(get_utils_err_msg(errc)));
+    }
 }
 
 }  // namespace origin::logging

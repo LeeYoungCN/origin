@@ -252,3 +252,18 @@ Release 编译期抽查:
 LOGGING-003 已由 `partial` 改为 `fixed`：删除 `root_logger_raw()` 公共 API 及测试引用，
 公共路径只保留 `root_logger()` 的 `shared_ptr`。MSVC x64 Debug 与 MinGW Debug 的 ctest
 均 3/3 通过；逐项记录见 `docs/audit/findings.json`。
+
+## 后续（2026-11-25，P1 LOGGING）
+
+- LOGGING-004 已由 `open` 改为 `fixed`：`origin_logging_set_level_all` /
+  `origin_logging_flush_on_all` 增加非法等级守卫；`origin_log_level_full_name` /
+  `origin_log_level_abbr_name` 对非法值分别返回 `"UNKNOWN"` / `"UNK"`，不再让
+  `c_to_cpp_log_level` 的异常穿出 C ABI。
+- LOGGING-005 已由 `partial` 改为 `fixed`：`SinkImplBase` 用
+  `origin_debug_logger_force_log` 上报 sink 异常，不受运行时调试级别 OFF 抑制；
+  `BasicFileSinkImpl` 检查 `FileWriter::get_last_error()`，`StreamSinkImpl` 检查
+  `_stream.fail()`，失败由基类捕获上报，不抛给调用方。
+- 验证：新增非法等级名称/批量设置用例，以及调试级别 OFF 下 sink 失败仍输出到 stderr
+  的用例；MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` /
+  `test_Logging` 均 3/3 通过（`test_Logging` 230 个用例）。改动未提交，
+  `fixed_in` 记为 `working-tree`。

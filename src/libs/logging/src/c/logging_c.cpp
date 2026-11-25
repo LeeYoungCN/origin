@@ -255,11 +255,19 @@ void origin_logging_initialize_logger(LoggerSt const* logger, bool autoRegister)
 
 void origin_logging_set_level_all(LogLevelC level)
 {
+    if (log_level_c_invalid(level)) {
+        ORIGIN_DEBUG_ERR("Set level all failed. {}", LOG_LEVEL_C_INVALID_LOG);
+        return;
+    }
     REGISTRY.set_level_all(c_to_cpp_log_level(level));
 }
 
 void origin_logging_flush_on_all(const LogLevelC level)
 {
+    if (log_level_c_invalid(level)) {
+        ORIGIN_DEBUG_ERR("Flush on all failed. {}", LOG_LEVEL_C_INVALID_LOG);
+        return;
+    }
     REGISTRY.flush_on_all(c_to_cpp_log_level(level));
 }
 

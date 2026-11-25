@@ -19,11 +19,17 @@ static_assert(static_cast<uint32_t>(LogLevel::OFF) == LOG_LEVEL_C_OFF);
 extern "C" {
 const char* origin_log_level_full_name(const LogLevelC level)
 {
+    if (log_level_c_invalid(level)) {
+        return "UNKNOWN";
+    }
     return log_level_full_name(c_to_cpp_log_level(level));
 }
 
 const char* origin_log_level_abbr_name(const LogLevelC level)
 {
+    if (log_level_c_invalid(level)) {
+        return "UNK";
+    }
     return log_level_abbr_name(c_to_cpp_log_level(level));
 }
 }

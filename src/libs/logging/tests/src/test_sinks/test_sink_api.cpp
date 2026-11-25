@@ -1,11 +1,15 @@
 #include "gtest/gtest.h"
 
+#include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
+#include "origin/common/debug/debug_logger.h"
 #include "origin/filesystem/filesystem.h"
 
+#include "origin/logging/formatters/formatter.hpp"
 #include "origin/logging/formatters/pattern_formatter.hpp"
 #include "origin/logging/log_level.hpp"
 #include "origin/logging/log_msg.hpp"
@@ -19,6 +23,18 @@ using namespace origin::logging;
 using namespace origin::filesystem;
 
 namespace logging_test {
+namespace {
+class ThrowingFormatter : public Formatter {
+public:
+    void format(const LogMsg&, std::string&) override { throw std::runtime_error("format failed"); }
+
+    [[nodiscard]] std::unique_ptr<Formatter> clone() const override
+    {
+        return std::make_unique<ThrowingFormatter>();
+    }
+};
+}  // namespace
+
 class TestSinkApi : public ::testing::Test {
 protected:
     static void SetUpTestSuite() {}
@@ -98,6 +114,28 @@ TEST_F(TestSinkApi, set_formatter)
     std::string expected;
     formatter->format(logMsg, expected);
     EXPECT_EQ(read_text_file(_file), expected + '\n');
+}
+
+TEST_F(TestSinkApi, log_failure_is_reported_when_debug_logger_off)
+{
+    InitSink(test_info_);
+    _sink->set_formatter(std::make_unique<ThrowingFormatter>());
+
+    origin_set_debug_logger_level(ORG_DBG_LVL_OFF);
+
+    std::ostringstream captured;
+    auto* const oldBuffer = std::cerr.rdbuf(captured.rdbuf());
+    try {
+        EXPECT_NO_THROW(
+            _sink->log(create_log_msg(LOG_SRC_LOCAL, _name, LogLevel::INFO, "Test.")));
+    } catch (...) {
+        std::cerr.rdbuf(oldBuffer);
+        throw;
+    }
+    std::cerr.rdbuf(oldBuffer);
+    origin_set_debug_logger_level(ORG_DBG_LVL_TRACE);
+
+    EXPECT_NE(captured.str().find("Sink log failed"), std::string::npos);
 }
 
 TEST_F(TestSinkApi, log_level_filter)

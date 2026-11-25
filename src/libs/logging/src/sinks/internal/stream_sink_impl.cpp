@@ -1,6 +1,7 @@
 #include "sinks/internal/stream_sink_impl.hpp"
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
@@ -26,11 +27,17 @@ void StreamSinkImpl::log_it(const LogMsg& logMsg)
 void StreamSinkImpl::sink_it(const std::string_view message) const
 {
     _stream << message << '\n';
+    if (_stream.fail()) {
+        throw std::runtime_error("Failed to write stream log.");
+    }
 }
 
 void StreamSinkImpl::flush_it()
 {
     _stream.flush();
+    if (_stream.fail()) {
+        throw std::runtime_error("Failed to flush stream log.");
+    }
 }
 
 }  // namespace origin::logging

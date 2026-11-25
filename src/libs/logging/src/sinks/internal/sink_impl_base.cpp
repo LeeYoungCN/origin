@@ -23,8 +23,7 @@ void SinkImplBase::log(const LogMsg& logMsg)
     try {
         log_it(logMsg);
     } catch (std::exception& ex) {
-        ORIGIN_DEBUG_ERR(
-            "Sink log failed. [Param]: \"{}\". [Exception]: \"{}\".", _paramStr, ex.what());
+        report_error("log", ex.what());
     }
 }
 
@@ -34,8 +33,24 @@ void SinkImplBase::flush()
     try {
         flush_it();
     } catch (std::exception& ex) {
-        ORIGIN_DEBUG_ERR(
-            "Sink flush failed. [Param]: \"{}\". [Exception]: \"{}\".", _paramStr, ex.what());
+        report_error("flush", ex.what());
+    }
+}
+
+void SinkImplBase::report_error(const char* action, const char* detail) const noexcept
+{
+    try {
+        std::string message = "Sink ";
+        message += action;
+        message += " failed. [Param]: \"";
+        message += _paramStr;
+        message += "\". [Exception]: \"";
+        message += detail == nullptr ? "unknown" : detail;
+        message += "\".";
+        origin_debug_logger_force_log(
+            __FILE__, __LINE__, __FUNCTION__, ORG_DBG_LVL_ERR, message);
+    } catch (...) {
+        // 错误上报本身不能再抛异常。
     }
 }
 

@@ -41,6 +41,11 @@ protected:
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
     mutable std::mutex _sinkMtx;
     std::string _paramStr{"unknown"};
+
+private:
+    // Sink 位于日志链路末端，不能再把异常抛回调用方；失败信息用强制日志输出，
+    // 避免被 origin_set_debug_logger_level(OFF) 过滤掉。
+    void report_error(const char* action, const char* detail) const noexcept;
 };
 }  // namespace origin::logging
 

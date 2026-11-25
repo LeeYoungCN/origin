@@ -371,4 +371,26 @@ TEST_F(TestRootLoggerC, flush_failed_when_root_logger_nullptr)
 {
     origin_logging_flush();
 }
+
+TEST_F(TestRootLoggerC, level_names_when_level_invalid)
+{
+    EXPECT_STREQ(origin_log_level_full_name(INVALID_LEVEL_C), "UNKNOWN");
+    EXPECT_STREQ(origin_log_level_abbr_name(INVALID_LEVEL_C), "UNK");
+}
+
+TEST_F(TestRootLoggerC, set_level_all_failed_when_level_invalid)
+{
+    init_root_logger(test_info_);
+    const LogLevelC level = origin_logging_level();
+    EXPECT_NO_THROW(origin_logging_set_level_all(INVALID_LEVEL_C));
+    EXPECT_EQ(origin_logging_level(), level);
+}
+
+TEST_F(TestRootLoggerC, flush_on_all_failed_when_level_invalid)
+{
+    init_root_logger(test_info_);
+    const LogLevelC level = origin_logging_flush_level();
+    EXPECT_NO_THROW(origin_logging_flush_on_all(INVALID_LEVEL_C));
+    EXPECT_EQ(origin_logging_flush_level(), level);
+}
 }  // namespace logging_test

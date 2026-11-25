@@ -27,7 +27,8 @@
 ## 当前记录
 
 基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
-本次修复（2026-11-25，提交 `d075c87`）关闭 13 项，变为 35 `open`、1 `partial`、18 `fixed`；逐项证据见报告“后续”段落。
+2026-11-25：提交 `d075c87` 关闭 13 项；随后工作区修复 `LOGGING-004/005`（未提交）。
+当前 54 项 = 34 `open` / 0 `partial` / 20 `fixed`。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
 |---|---|---|---|
@@ -89,8 +90,8 @@
 | LOGGING-001 | fixed | 异步 logger 在 TaskPool 销毁后空指针解引用 | logging |
 | LOGGING-002 | fixed | TaskPool 重复 `shutdown` 可能死锁 | logging |
 | LOGGING-003 | fixed | `root_logger_raw()` 已删除，公共路径只用 `shared_ptr` | logging |
-| LOGGING-004 | open | C API 非法 `LogLevel` 抛异常，可能穿出 C 边界 | logging |
-| LOGGING-005 | partial | sink 失败可观测性不足，`FileWriter` 写失败仍被吞 | logging |
+| LOGGING-004 | fixed | C API 非法 `LogLevel` 不再抛异常，入口已校验 | logging |
+| LOGGING-005 | fixed | sink 失败用强制调试日志上报，写失败不再被吞 | logging |
 | LOGGING-008 | open | 旋转后 `reopen` 返回码被忽略 | logging |
 | LOGGING-009 | open | `get_proc_path` 失败导致默认路径变成 `logs/.log` | logging |
 | LOGGING-010 | open | `set_param_string` 无锁，与 `log()` 存在数据竞争 | logging |
@@ -105,21 +106,21 @@
 
 | 归纳项 | 依赖的具体条目 |
 |---|---|
-| CROSS-001 C ABI 异常策略 | COMMON-002、COMMON-010、LOGGING-004 |
+| CROSS-001 C ABI 异常策略 | COMMON-002、COMMON-010、LOGGING-004（已关闭） |
 | CROSS-002 失败注入 | CONTAINER-011、LOGGING-012、UTILS 中未覆盖的失败路径 |
 | CROSS-003 构建/平台宏 | COMMON-006、COMMON-007 |
 
 ### 统一修复顺序
 
 1. **P0 正确性**（2026-11-25 已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
-2. **错误契约**：UTILS-004/005/006/007、LOGGING-004、COMMON-002/010、CONTAINER-004~007。
-3. **可观测性与 API 收敛**：UTILS-008/009、LOGGING-005、UTILS-010/011、LOGGING-008~010。
+2. **错误契约**：UTILS-004/005/006/007、COMMON-002/010、CONTAINER-004~007（`LOGGING-004` 已关闭）。
+3. **可观测性与 API 收敛**：UTILS-008/009、UTILS-010/011、LOGGING-008~010（`LOGGING-005` 已关闭）。
 4. **测试与剩余 P2**：CONTAINER-011、LOGGING-012、CROSS-002，再按模块收口其余 P2。
 
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；工作区 P1 LOGGING 修复后 `test_Logging` 为 230 个用例。
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

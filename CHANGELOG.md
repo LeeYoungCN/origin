@@ -93,6 +93,10 @@
 - `cmake_tools.sh --preset=list` 输出为空、`--clean` 不带 `-s` 时会删到 `out/build` 根目录。
 - CI：Windows runner 的 clang-cl 任务显式安装 LLVM 22（VS 18 的 MSVC STL 14.52 要求
   Clang 22+，镜像自带的 LLVM 20 会触发 STL1000 编译失败）。
+- C API 日志等级入口（`origin_log_level_full_name` / `origin_log_level_abbr_name` /
+  `origin_logging_set_level_all` / `origin_logging_flush_on_all`）对非法枚举不再抛异常；
+  sink 写/刷失败改用强制调试日志上报，并检查 `FileWriter` / 流的结果，避免运行时级别
+  设为 OFF 时静默丢失（LOGGING-004/005）。
 
 ### 新增
 

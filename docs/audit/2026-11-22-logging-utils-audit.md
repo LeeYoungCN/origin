@@ -265,5 +265,21 @@ LOGGING-003 已由 `partial` 改为 `fixed`：删除 `root_logger_raw()` 公共 
   `_stream.fail()`，失败由基类捕获上报，不抛给调用方。
 - 验证：新增非法等级名称/批量设置用例，以及调试级别 OFF 下 sink 失败仍输出到 stderr
   的用例；MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` /
-  `test_Logging` 均 3/3 通过（`test_Logging` 230 个用例）。改动未提交，
-  `fixed_in` 记为 `working-tree`。
+  `test_Logging` 均 3/3 通过（`test_Logging` 230 个用例）。改动已随 `f0ad8af` 提交，
+  `fixed_in` 指向该提交。
+
+## 后续（2026-11-25，P1 Utils / C ABI 批次）
+
+提交 `b5e02e0` 继续关闭本报告中的 Utils 条目：
+
+- UTILS-004/005：`get_entry_type` 改用 `symlink_status(path, ec)`，按错误码映射；
+  FIFO 与 SOCKET 分别返回对应类型，POSIX 错误不再统一压成 `ERR_COMM_SYSTEM_ERROR`；
+- UTILS-006：`copy_file`/`rename_file` 保留目标路径探测的 `ErrorCode` 并原样返回；
+- UTILS-007：`join_paths`、`to_absolute_path` 与路径辅助函数包 try/catch，值返回失败为空串/false；
+- UTILS-008：`filesystem.h`、`date_time.h`、`process.h`、`thread.h`、`file_writer.h`、
+  `strings.h` 的 `ErrorCode` 声明补 `[[nodiscard]]`，修测试忽略返回值；
+- UTILS-009：新增 `ErrorCode get_now_date_time(DateTimeSt&)`，值返回版本委托它。
+
+验证：新增 symlink/FIFO/socket、`get_now_date_time` 用例；MSVC x64 Debug 与 MinGW Debug
+ctest 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）。逐项记录见
+`docs/audit/findings.json`。

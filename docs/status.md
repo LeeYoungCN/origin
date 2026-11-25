@@ -9,10 +9,10 @@
 | 项 | 值 |
 |---|---|
 | 快照日期 | 2026-11-25 |
-| 分支 / 基线 HEAD | `master` / `1fa6636`（`docs: 增加跨语言封装说明`） |
-| 工作区 | 无未提交改动；P0 修复已提交 `d075c87`，P1 `LOGGING-004`/`LOGGING-005` 已提交 `f0ad8af` |
+| 分支 / 修复提交 | `master` / `b5e02e0`（审计基线仍为 `c37a364`） |
+| 工作区 | 干净（P1/C ABI 批次已提交） |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
-| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 34 open / 0 partial / 20 fixed |
+| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 24 open / 0 partial / 30 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
 
 审计计数、证据和验证方式以 [audit/README.md](audit/README.md) 与 [findings.json](audit/findings.json) 为准，本文不重复统计表。
@@ -29,7 +29,7 @@
 本快照对应的工作区已跑过 MSVC x64 Debug 与 MinGW Debug 的构建与 ctest。
 
 - 常规验证矩阵：MSVC x64 Debug + MinGW Debug；平台相关改动再补 Linux/macOS。
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 27、`test_Utils` 143、`test_Logging` 230）。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）。
 - ctest 只注册 `test_Container`、`test_Utils`、`test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest 中**。
 - `cmake --build --preset=*_build` 会连带 install；CI 的 `cmake-multi-cmake-presets.yml` 覆盖 6 个配置，`clang-tidy.yml` 不阻塞合并，`cmake-multi-platform.yml` 已过时。
 
@@ -52,6 +52,12 @@
 2026-11-25 后续（提交 `f0ad8af`）：`LOGGING-004` 的 C API 非法等级入口已改为校验后返回，不再让异常穿出；
 `LOGGING-005` 的 sink 失败改用强制调试日志上报，并检查 `FileWriter` / 流的写入与刷新结果。
 审计计数变为 34 open / 0 partial / 20 fixed。
+
+2026-11-25 后续（提交 `b5e02e0`）：关闭 `COMMON-010`、`CROSS-001`、`CONTAINER-006`、
+`UTILS-004`~`009`、`LOGGING-013`。`common`/`logging` 的 `extern "C"` 入口统一加异常保护；
+`get_entry_type` 改用 `symlink_status` 并分开 FIFO/SOCKET；路径辅助不再抛异常；
+`ErrorCode` 接口补 `[[nodiscard]]`；新增 `get_now_date_time(DateTimeSt&)`；
+并发队列 `at/operator[]` 改为持锁返回拷贝。审计计数变为 24 open / 0 partial / 30 fixed。
 
 ## 5. 文档偏差记录
 

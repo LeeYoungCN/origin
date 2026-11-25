@@ -205,7 +205,7 @@
     {
       "id": "UTILS-004",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "fs::exists 抛异常，断链 symlink 被误判",
       "files": [
@@ -218,12 +218,13 @@
       ],
       "impact": "违背不抛异常契约；断链 symlink 返回 NOT_FOUND。",
       "recommendation": "先 symlink_status(path, ec)，按 ec 映射；不要用 exists 短路。",
-      "verification": "无效路径、权限拒绝、断链 symlink 测试。"
+      "verification": "symlink_status + ec；断链 symlink 不再误判；新增 symlink 测试。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "UTILS-005",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "get_entry_type 错误映射错误，FIFO/SOCKET 映射错误",
       "files": [
@@ -237,12 +238,13 @@
       ],
       "impact": "权限/路径错误被压成 ERR_COMM_SYSTEM_ERROR；fifo 映射为 SOCKET，socket 分支缺失。",
       "recommendation": "统一 ConvertSysEcToErrorCode；补齐 FIFO/SOCKET。",
-      "verification": "各文件类型和错误类别映射测试。"
+      "verification": "错误统一 ConvertSysEcToErrorCode；FIFO/SOCKET 分开映射；新增 FIFO/socket 测试。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "UTILS-006",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "copy_file/rename_file 忽略目标路径探测错误",
       "files": [
@@ -256,12 +258,13 @@
       ],
       "impact": "目标权限错误被压成 ERR_UTILS_NOT_FILE。",
       "recommendation": "保留 typeCode 并原样返回。",
-      "verification": "只读目标目录下复制/重命名。"
+      "verification": "copy_file/rename_file 保留 get_entry_type 错误并返回；目标目录非法用例通过。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "UTILS-007",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "路径辅助函数可能抛异常",
       "files": [
@@ -280,7 +283,8 @@
       ],
       "impact": "join_paths 的 .string()、to_absolute_path 的 path 构造在 try 外；get_directory 等值返回接口可能抛。",
       "recommendation": "path 构造移入 try；值返回接口明确失败语义或新增 ErrorCode 版本。",
-      "verification": "非法 UTF-8 / 超长路径测试。"
+      "verification": "join_paths/to_absolute_path/path 辅助 try/catch；值返回失败空串/false。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "LOGGING-004",
@@ -330,7 +334,7 @@
     {
       "id": "UTILS-008",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "ErrorCode 返回缺少 [[nodiscard]]",
       "files": [
@@ -353,12 +357,13 @@
       ],
       "impact": "调用方可静默忽略失败。",
       "recommendation": "统一加 [[nodiscard]]，修调用点。",
-      "verification": "开启 warnings-as-errors 构建。"
+      "verification": "6 个头文件 ErrorCode 声明补 [[nodiscard]]，修测试忽略返回值；MSVC/MinGW 无 C4834/-Wunused-result。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "UTILS-009",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "get_now_date_time 吞掉错误",
       "files": [
@@ -372,7 +377,8 @@
       ],
       "impact": "失败返回全 0 时间，调用方无法区分。",
       "recommendation": "增加 ErrorCode 版本或 Result<DateTimeSt>。",
-      "verification": "无效时间戳测试。"
+      "verification": "新增 ErrorCode get_now_date_time(DateTimeSt&)，值版本委托；新增测试。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "UTILS-010",
@@ -613,7 +619,7 @@
     {
       "id": "LOGGING-013",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "logging",
       "title": "sink 只捕获 std::exception",
       "files": [
@@ -626,7 +632,8 @@
       ],
       "impact": "非标准异常会逃出 sink，可能导致进程终止。",
       "recommendation": "视需要增加 catch (...)，至少保护进程。",
-      "verification": "抛出非 std::exception 的测试。"
+      "verification": "SinkImplBase log/flush 增加 catch (...)，抛 int 的 Formatter 测试通过。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "LOGGING-014",
@@ -800,7 +807,7 @@
     {
       "id": "CONTAINER-006",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "container",
       "title": "at/operator[] 解锁后返回元素引用",
       "files": [
@@ -815,7 +822,8 @@
       ],
       "impact": "其他线程可并发修改元素，调用方读到竞态数据。",
       "recommendation": "返回拷贝或提供持锁回调 API。",
-      "verification": "并发读写测试。"
+      "verification": "at/operator[] 持锁返回 T 拷贝；新增 snapshot 与越界测试。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "CONTAINER-007",
@@ -842,7 +850,7 @@
     {
       "id": "COMMON-010",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "debug logger C API 可能抛异常",
       "files": [
@@ -858,7 +866,8 @@
       ],
       "impact": "va_list_to_string 失败抛 runtime_error，C 入口未捕获。",
       "recommendation": "C 入口 try/catch 或改为不抛格式化。",
-      "verification": "C API 异常注入。"
+      "verification": "C 入口双层 try/catch，format=nullptr 回退 fputs；MSVC/MinGW ctest 3/3。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "COMMON-003",
@@ -1128,7 +1137,7 @@
     {
       "id": "CROSS-001",
       "severity": "P1",
-      "status": "open",
+      "status": "fixed",
       "module": "cross",
       "title": "C ABI 异常策略不统一",
       "files": [
@@ -1139,7 +1148,8 @@
       ],
       "impact": "部分 C 入口捕获异常，部分直接调用可能抛异常的 C++ 实现。",
       "recommendation": "所有 extern C 入口统一 catch。",
-      "verification": "逐入口异常测试。"
+      "verification": "common/logging 所有 extern C 入口统一 try/catch；MSVC/MinGW ctest 3/3，C API 空指针/非法枚举用例通过。",
+      "fixed_in": "b5e02e0"
     },
     {
       "id": "CROSS-002",

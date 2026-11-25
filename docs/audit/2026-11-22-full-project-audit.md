@@ -186,3 +186,19 @@ MSVC Debug:  test_origin 403 passed
 - LOGGING-003：删除 `root_logger_raw()`。
 
 验证：MSVC x64 Debug 与 MinGW Debug 的 ctest 均 3/3 通过（`test_Container` 27、`test_Utils` 143、`test_Logging` 226）；`test_origin` 仍未注册。逐项状态与 `fixed_in` / `verification` 见 `docs/audit/findings.json`。
+
+## 后续（2026-11-25，P1 / C ABI 批次）
+
+提交 `b5e02e0` 关闭 CROSS-001 及其具体条目：
+
+- COMMON-010：`origin_debug_logger_c` 整体 try/catch，`format == nullptr` 回退到 `fputs`；
+- CROSS-001：`common` / `logging` 的 `extern "C"` 入口统一异常保护，指针回 `nullptr`、`bool` 回 `false`、`LogLevelC` 回 `OFF`；
+- CONTAINER-006：`at/operator[]` 改为持锁返回 `T` 拷贝；
+- UTILS-004/005：`get_entry_type` 改用 `symlink_status(path, ec)`，FIFO/SOCKET 分开映射；
+- UTILS-006：`copy_file`/`rename_file` 保留目标路径探测错误；
+- UTILS-007：路径辅助函数与 `join_paths` 包 try/catch，值返回失败为空串/false；
+- UTILS-008：`ErrorCode` 声明统一补 `[[nodiscard]]`，修测试忽略返回值；
+- UTILS-009：新增 `ErrorCode get_now_date_time(DateTimeSt&)`；
+- LOGGING-013：`SinkImplBase::log/flush` 补 `catch (...)`。
+
+验证：MSVC x64 Debug 与 MinGW Debug ctest 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）；新增 symlink/FIFO/socket、非 `std::exception`、队列快照、`get_now_date_time` 测试。逐项 `fixed_in` / `verification` 见 `docs/audit/findings.json`。

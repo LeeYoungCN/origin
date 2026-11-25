@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -188,6 +189,62 @@ TEST_F(TestConcurrentBlockingQueueMt, SPMC)
 TEST_F(TestConcurrentBlockingQueueMt, MPMC)
 {
     RunTest(5, 5);
+}
+
+TEST_F(TestConcurrentBlockingQueueMt, clear_wakes_blocked_producer)
+{
+    _queue = std::make_shared<ConcurrentBlockingQueue<TestEntry>>(1);
+    ASSERT_TRUE(_queue->enqueue(TestEntry(0)));
+
+    std::atomic<bool> enqueued{false};
+    const auto start = std::chrono::steady_clock::now();
+    std::thread producer(
+        [this, &enqueued]() { enqueued = _queue->enqueue_wait_for(TestEntry(1), 2000); });
+
+    sleep_ms(20);
+    _queue->clear();
+    producer.join();
+
+    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+                             std::chrono::steady_clock::now() - start)
+                             .count();
+    EXPECT_TRUE(enqueued.load());
+    EXPECT_LT(elapsed, 1000);
+    EXPECT_EQ(_queue->size(), 1U);
+}
+
+namespace {
+struct CountedEntry {
+    static inline int32_t alive = 0;
+
+    explicit CountedEntry(const int32_t v) : value(v) { ++alive; }
+    CountedEntry(const CountedEntry& other) : value(other.value) { ++alive; }
+    CountedEntry(CountedEntry&& other) noexcept : value(other.value) { ++alive; }
+    CountedEntry& operator=(const CountedEntry& other) = default;
+    CountedEntry& operator=(CountedEntry&& other) noexcept
+    {
+        value = other.value;
+        return *this;
+    }
+    ~CountedEntry() { --alive; }
+
+    int32_t value;
+};
+}  // namespace
+
+TEST_F(TestConcurrentBlockingQueueMt, non_trivial_entry_lifecycle)
+{
+    CountedEntry::alive = 0;
+    {
+        ConcurrentBlockingQueue<CountedEntry> queue(2);
+        ASSERT_TRUE(queue.enqueue(CountedEntry(1)));
+        ASSERT_TRUE(queue.enqueue(CountedEntry(2)));
+        queue.enqueue_overrun(CountedEntry(3));
+        EXPECT_EQ(queue.size(), 2U);
+        queue.clear();
+        EXPECT_EQ(CountedEntry::alive, 0);
+    }
+    EXPECT_EQ(CountedEntry::alive, 0);
 }
 
 }  // namespace test::test_container::test_concurrent_queue

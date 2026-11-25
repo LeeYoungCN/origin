@@ -6,21 +6,42 @@
 
 #include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
+#include "origin/common/types/error_code_types.h"
 
 #include "origin/date_time/date_time.h"
 #include "origin/filesystem/filesystem.h"
 #include "origin/process/process.h"
+#include "origin/utils/utils_error_code.h"
 
 namespace origin::logging {
 using namespace origin::filesystem;
 using namespace origin::process;
 using namespace origin::date_time;
 
+ErrorCode get_default_log_file(const std::string_view suffix, std::string& out)
+{
+    std::string process;
+    if (const auto errc = get_proc_path(process); errc != ERR_COMM_SUCCESS) {
+        ORIGIN_DEBUG_ERR("Get default log file failed. msg: \"{}\".", get_utils_err_msg(errc));
+        out.clear();
+        return errc;
+    }
+
+    out = join_paths(
+        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
+    if (out.empty()) {
+        ORIGIN_DEBUG_ERR("Get default log file failed. Process path: \"{}\".", process);
+        return ERR_COMM_PARAM_EMPTY;
+    }
+
+    return ERR_COMM_SUCCESS;
+}
+
 std::string get_default_log_file(const std::string_view suffix)
 {
-    const std::string process = get_proc_path();
-    return join_paths(
-        {get_directory(process), "logs", get_filename_stem(process) + "." + std::string(suffix)});
+    std::string out;
+    (void)get_default_log_file(suffix, out);
+    return out;
 }
 
 bool delete_file_retry(const std::string_view file, const uint32_t maxRetry, const uint32_t sleepMs)

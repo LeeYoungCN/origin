@@ -9,10 +9,10 @@
 | 项 | 值 |
 |---|---|
 | 快照日期 | 2026-11-25 |
-| 分支 / 修复提交 | `master` / `b5e02e0`（审计基线仍为 `c37a364`） |
-| 工作区 | 干净（P1/C ABI 批次已提交） |
+| 分支 / 修复提交 | `master` / `325b550`（审计基线仍为 `c37a364`） |
+| 工作区 | 有未提交改动（P2 批次） |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
-| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 24 open / 0 partial / 30 fixed |
+| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 13 open / 1 partial / 40 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
 
 审计计数、证据和验证方式以 [audit/README.md](audit/README.md) 与 [findings.json](audit/findings.json) 为准，本文不重复统计表。
@@ -29,7 +29,7 @@
 本快照对应的工作区已跑过 MSVC x64 Debug 与 MinGW Debug 的构建与 ctest。
 
 - 常规验证矩阵：MSVC x64 Debug + MinGW Debug；平台相关改动再补 Linux/macOS。
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 30、`test_Utils` 146、`test_Logging` 231）。
 - ctest 只注册 `test_Container`、`test_Utils`、`test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest 中**。
 - `cmake --build --preset=*_build` 会连带 install；CI 的 `cmake-multi-cmake-presets.yml` 覆盖 6 个配置，`clang-tidy.yml` 不阻塞合并，`cmake-multi-platform.yml` 已过时。
 
@@ -58,6 +58,10 @@
 `get_entry_type` 改用 `symlink_status` 并分开 FIFO/SOCKET；路径辅助不再抛异常；
 `ErrorCode` 接口补 `[[nodiscard]]`；新增 `get_now_date_time(DateTimeSt&)`；
 并发队列 `at/operator[]` 改为持锁返回拷贝。审计计数变为 24 open / 0 partial / 30 fixed。
+
+2026-11-25 后续（P2 批次，工作区未提交）：关闭 `UTILS-010/011/014/016`、`LOGGING-008/009/010/014`、
+`CONTAINER-011`、`CROSS-002`；`LOGGING-012` 因缺少真实 I/O 失败注入标 `partial`。
+审计计数变为 13 open / 1 partial / 40 fixed。
 
 ## 5. 文档偏差记录
 

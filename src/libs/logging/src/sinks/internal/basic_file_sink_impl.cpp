@@ -20,7 +20,19 @@
 namespace origin::logging {
 using namespace origin::filesystem;
 
-BasicFileSinkImpl::BasicFileSinkImpl() : BasicFileSinkImpl(get_default_log_file("log"), true) {}
+namespace {
+std::string default_log_file()
+{
+    std::string file;
+    if (const auto errc = get_default_log_file("log", file); errc != ERR_COMM_SUCCESS) {
+        throw std::runtime_error("Failed to resolve default log file: " +
+                                 std::string(get_utils_err_msg(errc)));
+    }
+    return file;
+}
+}  // namespace
+
+BasicFileSinkImpl::BasicFileSinkImpl() : BasicFileSinkImpl(default_log_file(), true) {}
 
 BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool overwrite)
     : BasicFileSinkImpl(
@@ -34,27 +46,32 @@ BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file, const bool ove
 BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file,
                                      const bool overwrite,
                                      const std::string_view paramStr)
-    : SinkImplBase(paramStr),
-      _file(to_absolute_path(file)),
-      _directory(get_directory(_file)),
-      _filename(get_filename(_file)),
-      _filenameStem(get_filename_stem(_file)),
-      _extension(get_extension(_file)),
-      _overwrite(overwrite),
-      _fileWriter(_file)
+    : SinkImplBase(paramStr), _overwrite(overwrite), _fileWriter(file)
 {
+    _file = _fileWriter.full_path();
     if (_file.empty()) {
-        throw std::invalid_argument("file empty");
-    }
-
-    (void)_fileWriter.open(_overwrite);
-    if (_fileWriter.get_last_error() != ERR_COMM_SUCCESS) {
+        const auto errc = _fileWriter.get_last_error();
         ORIGIN_DEBUG_ERR("Create BasicFileSinkImpl failed. File: \"{}\", mode: {}. msg: \"{}\".",
                          file,
                          get_file_mode_str(_overwrite),
-                         get_utils_err_msg(_fileWriter.get_last_error()));
+                         get_utils_err_msg(errc));
+        throw std::invalid_argument("Failed to resolve log file: " + std::string(file) +
+                                    ", msg: " + std::string(get_utils_err_msg(errc)));
+    }
 
-        throw std::runtime_error("Failed to open file: " + std::string(file));
+    _directory = get_directory(_file);
+    _filename = get_filename(_file);
+    _filenameStem = get_filename_stem(_file);
+    _extension = get_extension(_file);
+
+    if (const auto errc = _fileWriter.open(_overwrite); errc != ERR_COMM_SUCCESS) {
+        ORIGIN_DEBUG_ERR("Create BasicFileSinkImpl failed. File: \"{}\", mode: {}. msg: \"{}\".",
+                         _file,
+                         get_file_mode_str(_overwrite),
+                         get_utils_err_msg(errc));
+
+        throw std::runtime_error("Failed to open file: " + _file +
+                                 ", msg: " + std::string(get_utils_err_msg(errc)));
     }
 }
 
@@ -72,16 +89,14 @@ void BasicFileSinkImpl::log_it(const LogMsg& logMsg)
 
 void BasicFileSinkImpl::sink_it(const std::string_view message)
 {
-    _fileWriter.write_line(message);
-    if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
+    if (const auto errc = _fileWriter.write_line(message); errc != ERR_COMM_SUCCESS) {
         throw std::runtime_error("Failed to write log: " + std::string(get_utils_err_msg(errc)));
     }
 }
 
 void BasicFileSinkImpl::flush_it()
 {
-    _fileWriter.flush();
-    if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
+    if (const auto errc = _fileWriter.flush(); errc != ERR_COMM_SUCCESS) {
         throw std::runtime_error("Failed to flush log: " + std::string(get_utils_err_msg(errc)));
     }
 }

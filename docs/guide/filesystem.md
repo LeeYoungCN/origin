@@ -104,9 +104,9 @@ public:
     ErrorCode open(bool overwrite = true);
     ErrorCode reopen(bool overwrite = true);
     void close();
-    void write(std::string_view str);
-    void write_line(std::string_view str);
-    void flush();
+    [[nodiscard]] ErrorCode write(std::string_view str);
+    [[nodiscard]] ErrorCode write_line(std::string_view str);
+    [[nodiscard]] ErrorCode flush();
     [[nodiscard]] ErrorCode get_last_error() const;
 };
 ```
@@ -117,10 +117,10 @@ public:
 
 - `open()` 会自动创建父目录；`reopen()` 只重新打开文件，**不会**创建父目录；
 - `open()` 成功后会固定 `sleep_ms(10)` 等待文件系统就绪（Windows 上更明显）；
-- `write` / `write_line` 返回 `void`，错误通过 `get_last_error()` 读取；
+- `write` / `write_line` / `flush` 直接返回 `ErrorCode`，调用方应检查；`get_last_error()` 保留用于兼容旧代码；
 - `write_line` 会按平台计入换行长度（Windows 的 `LF_LENGTH=2`）；`write` 内含 `\n` 时，Windows 文本模式实际写 CRLF，但内部计数只加原字符串长度，`size()` 可能偏小；
 - `size()` 在流打开时返回内部计数，关闭后回退到磁盘查询；
-- 构造时路径为空会抛 `std::invalid_argument`；`open` 失败不会抛，返回 `ErrorCode`。
+- 构造函数不再抛异常；空路径或路径解析失败会记录在 `_initError`，由 `open()` / `get_last_error()` 返回；`open` 失败同样不抛。
 
 ### 值返回便捷重载（忽略错误码）
 

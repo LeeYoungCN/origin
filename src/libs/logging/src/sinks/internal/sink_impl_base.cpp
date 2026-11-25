@@ -95,9 +95,4 @@ std::string_view SinkImplBase::param_string() const
     return _paramStr;
 }
 
-void SinkImplBase::set_param_string(const std::string_view param)
-{
-    _paramStr = param;
-}
-
 }  // namespace origin::logging

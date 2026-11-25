@@ -38,19 +38,19 @@ void FileWriter::close()
     _pimpl->close();
 }
 
-void FileWriter::write(std::string_view str)
+ErrorCode FileWriter::write(std::string_view str)
 {
-    _pimpl->write(str);
+    return _pimpl->write(str);
 }
 
-void FileWriter::write_line(std::string_view str)
+ErrorCode FileWriter::write_line(std::string_view str)
 {
-    _pimpl->write_line(str);
+    return _pimpl->write_line(str);
 }
 
-void FileWriter::flush()
+ErrorCode FileWriter::flush()
 {
-    _pimpl->flush();
+    return _pimpl->flush();
 }
 
 FileSize FileWriter::size() const

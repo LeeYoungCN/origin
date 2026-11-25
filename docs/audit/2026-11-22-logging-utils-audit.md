@@ -283,3 +283,13 @@ LOGGING-003 已由 `partial` 改为 `fixed`：删除 `root_logger_raw()` 公共 
 验证：新增 symlink/FIFO/socket、`get_now_date_time` 用例；MSVC x64 Debug 与 MinGW Debug
 ctest 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）。逐项记录见
 `docs/audit/findings.json`。
+
+## 后续（2026-11-25，P2 批次）
+
+- UTILS-010/011：FileWriter 写接口改为返回 ErrorCode，构造失败不再抛异常，改由 open() 返回。
+- UTILS-014：write_text_file 写失败统一 generic_category()，并检查 close。
+- UTILS-016：ile_exists/dir_exists 文档说明权限错误也返回 false。
+- LOGGING-008/009/010/014：旋转
+eopen 检查返回值；新增 get_default_log_file ErrorCode 重载；param_string 改为构造后不可变；BasicFileSinkImpl 保留具体错误。
+- LOGGING-012：标 partial，真实 I/O 失败注入仍缺。
+- 验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Logging 231。

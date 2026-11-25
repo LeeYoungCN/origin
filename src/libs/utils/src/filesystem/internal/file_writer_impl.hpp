@@ -20,9 +20,9 @@ public:
     ErrorCode open(bool overwrite = true);
     ErrorCode reopen(bool overwrite = true);
     void close();
-    void write(std::string_view str);
-    void write_line(std::string_view str);
-    void flush();
+    ErrorCode write(std::string_view str);
+    ErrorCode write_line(std::string_view str);
+    ErrorCode flush();
 
     [[nodiscard]] FileSize size();
     [[nodiscard]] std::string filename_stem() const;
@@ -40,6 +40,7 @@ private:
     std::string _file;
     std::ofstream _stream;
     std::ios::openmode _mode{(std::ios::out | std::ios::trunc)};
+    ErrorCode _initError{ERR_COMM_SUCCESS};
     ErrorCode _errcode{ERR_COMM_SUCCESS};
     FileSize _currSize{0};
 };

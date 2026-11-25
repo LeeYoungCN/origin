@@ -26,11 +26,11 @@ protected:
     void flush_it() override;
     void sink_it(std::string_view message);
 
-    const std::string _file;
-    const std::string _directory;
-    const std::string _filename;
-    const std::string _filenameStem;
-    const std::string _extension;
+    std::string _file;
+    std::string _directory;
+    std::string _filename;
+    std::string _filenameStem;
+    std::string _extension;
     bool _overwrite{false};
     filesystem::FileWriter _fileWriter;
 };

@@ -19,9 +19,9 @@ public:
     [[nodiscard]] ErrorCode open(bool overwrite = true);
     [[nodiscard]] ErrorCode reopen(bool overwrite = true);
     void close();
-    void write(std::string_view str);
-    void write_line(std::string_view str);
-    void flush();
+    [[nodiscard]] ErrorCode write(std::string_view str);
+    [[nodiscard]] ErrorCode write_line(std::string_view str);
+    [[nodiscard]] ErrorCode flush();
 
     [[nodiscard]] FileSize size() const;
     [[nodiscard]] std::string filename_stem() const;
@@ -29,6 +29,7 @@ public:
     [[nodiscard]] std::string directory() const;
     [[nodiscard]] std::string full_path() const;
     [[nodiscard]] std::string extension() const;
+    // 兼容旧用法；新代码应直接检查 write/write_line/flush 的返回值。
     [[nodiscard]] ErrorCode get_last_error() const;
 
 private:

@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 #include "origin/common/common_error_code.h"
@@ -49,12 +48,15 @@ void TestFileWriter::TearDown()
     if (m_fileWriter) {
         m_fileWriter->close();
     }
-    delete_dir(m_directory);
+    (void)delete_dir(m_directory);
 }
 
 TEST_F(TestFileWriter, file_name_empty)
 {
-    EXPECT_THROW(FileWriter(""), std::invalid_argument);
+    FileWriter writer("");
+    EXPECT_EQ(writer.open(true), ERR_COMM_PARAM_EMPTY);
+    EXPECT_EQ(writer.get_last_error(), ERR_COMM_PARAM_EMPTY);
+    EXPECT_TRUE(writer.full_path().empty());
 }
 
 TEST_F(TestFileWriter, file_name_process)
@@ -68,7 +70,7 @@ TEST_F(TestFileWriter, file_name_process)
 TEST_F(TestFileWriter, open_success)
 {
     m_fileWriter = std::make_shared<FileWriter>(m_testFile);
-    m_fileWriter->open(true);
+    EXPECT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
     EXPECT_TRUE(file_exists(m_testFile));
 }
@@ -76,7 +78,7 @@ TEST_F(TestFileWriter, open_success)
 TEST_F(TestFileWriter, append_size)
 {
     m_fileWriter = std::make_shared<FileWriter>(m_testFile);
-    m_fileWriter->open(true);
+    EXPECT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->size(), 0);
     EXPECT_TRUE(file_exists(m_testFile));
@@ -85,12 +87,12 @@ TEST_F(TestFileWriter, append_size)
     for (uint32_t i = 0; i < 1024; i++) {
         std::string line = "line" + std::to_string(i);
         expectSize += line.length();
-        m_fileWriter->write(line);
+        EXPECT_EQ(m_fileWriter->write(line), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
         EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
-    m_fileWriter->flush();
+    EXPECT_EQ(m_fileWriter->flush(), ERR_COMM_SUCCESS);
     m_fileWriter->close();
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
 }
@@ -98,7 +100,7 @@ TEST_F(TestFileWriter, append_size)
 TEST_F(TestFileWriter, append_line_size)
 {
     m_fileWriter = std::make_shared<FileWriter>(m_testFile);
-    m_fileWriter->open(true);
+    EXPECT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->size(), 0);
     EXPECT_TRUE(file_exists(m_testFile));
@@ -107,12 +109,12 @@ TEST_F(TestFileWriter, append_line_size)
     for (uint32_t i = 0; i < 1024; i++) {
         std::string line = "line" + std::to_string(i);
         expectSize += line.length() + origin::filesystem::LF_LENGTH;
-        m_fileWriter->write_line(line);
+        EXPECT_EQ(m_fileWriter->write_line(line), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
         EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
-    m_fileWriter->flush();
+    EXPECT_EQ(m_fileWriter->flush(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     m_fileWriter->close();
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
@@ -121,7 +123,7 @@ TEST_F(TestFileWriter, append_line_size)
 TEST_F(TestFileWriter, append_mode)
 {
     m_fileWriter = std::make_shared<FileWriter>(m_testFile);
-    m_fileWriter->open(true);
+    EXPECT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->size(), 0);
     EXPECT_TRUE(file_exists(m_testFile));
@@ -130,15 +132,15 @@ TEST_F(TestFileWriter, append_mode)
     for (uint32_t i = 0; i < 64; i++) {
         std::string line = "line" + std::to_string(i);
         expectSize += line.length() + origin::filesystem::LF_LENGTH;
-        m_fileWriter->write_line(line);
+        EXPECT_EQ(m_fileWriter->write_line(line), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         m_fileWriter->close();
-        m_fileWriter->reopen(false);
+        EXPECT_EQ(m_fileWriter->reopen(false), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->get_last_error(), ERR_COMM_SUCCESS);
         EXPECT_EQ(m_fileWriter->size(), expectSize);
         EXPECT_GE(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     }
-    m_fileWriter->flush();
+    EXPECT_EQ(m_fileWriter->flush(), ERR_COMM_SUCCESS);
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
     m_fileWriter->close();
     EXPECT_EQ(m_fileWriter->size(), utils_test::filesystem_test::fs_size(m_testFile));
@@ -150,8 +152,8 @@ TEST_F(TestFileWriter, write_after_close_reports_not_open)
     ASSERT_EQ(m_fileWriter->open(true), ERR_COMM_SUCCESS);
     m_fileWriter->close();
 
-    m_fileWriter->write("should fail");
-
+    EXPECT_EQ(m_fileWriter->write("should fail"), ERR_UTILS_FILE_NOT_OPEN);
+    EXPECT_EQ(m_fileWriter->flush(), ERR_UTILS_FILE_NOT_OPEN);
     EXPECT_EQ(m_fileWriter->get_last_error(), ERR_UTILS_FILE_NOT_OPEN);
 }
 

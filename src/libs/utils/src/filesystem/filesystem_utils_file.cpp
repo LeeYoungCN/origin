@@ -336,13 +336,17 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
 
     if (file << content) {
         file.close();
+        if (file.fail()) {
+            ORIGIN_DEBUG_ERR("Write to text file failed while closing. file: \"{}\".", path);
+            return ERR_UTILS_IO_ERROR;
+        }
         ORIGIN_DEBUG_TRACE("Write to text file succeeded. file: \"{}\", mode: {}.",
                            path,
                            get_file_mode_str(overwrite));
         return ERR_COMM_SUCCESS;
     }
 
-    std::error_code const ec(errno, std::system_category());
+    std::error_code const ec(errno, std::generic_category());
     const ErrorCode code = ConvertSysEcToErrorCode(ec);
     ORIGIN_DEBUG_ERR("Write text failed. file \"{}\", mode: {}. msg: \"{}\".",
                      path,

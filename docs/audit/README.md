@@ -28,7 +28,7 @@
 
 基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
 2026-11-25：提交 `d075c87` 关闭 13 项；提交 `f0ad8af` 修复 `LOGGING-004/005`。
-当前 54 项 = 24 `open` / 0 `partial` / 30 `fixed`。
+当前 54 项 = 13 `open` / 1 `partial` / 40 `fixed`。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
 |---|---|---|---|
@@ -67,9 +67,9 @@
 | CONTAINER-008 | fixed | `clear()` 后 `notify_all` | full |
 | CONTAINER-009 | fixed | 不再要求 `T` 默认构造 | full |
 | CONTAINER-010 | fixed | 随 `CString` 删除，全局命名空间/转发问题移除 | full |
-| CONTAINER-011 | open | 容器测试未覆盖非平凡 T、溢出和并发唤醒 | full |
+| CONTAINER-011 | fixed | 容器测试未覆盖非平凡 T、溢出和并发唤醒 | full |
 | CROSS-001 | fixed | C ABI 异常策略不统一 | full |
-| CROSS-002 | open | 测试缺少失败注入 | full |
+| CROSS-002 | fixed | 测试缺少失败注入 | full |
 | CROSS-003 | open | 构建宏与平台检测分散 | full |
 | UTILS-001 | fixed | `string_view.data()` 当 C 字符串 | logging |
 | UTILS-002 | fixed | `get_file_modify_time` 返回创建时间 | logging |
@@ -80,25 +80,25 @@
 | UTILS-007 | fixed | 路径值返回接口可能抛异常 | logging |
 | UTILS-008 | fixed | 所有 `ErrorCode` 接口缺 `[[nodiscard]]` | logging |
 | UTILS-009 | fixed | `get_now_date_time` 吞错，返回全 0 时间 | logging |
-| UTILS-010 | open | `FileWriter::write/flush` 返回 `void`，错误隐藏 | logging |
-| UTILS-011 | open | `FileWriter` 构造抛异常，`to_absolute_path` 返回值被忽略 | logging |
+| UTILS-010 | fixed | `FileWriter::write/flush` 返回 `void`，错误隐藏 | logging |
+| UTILS-011 | fixed | `FileWriter` 构造抛异常，`to_absolute_path` 返回值被忽略 | logging |
 | UTILS-012 | open | `is_path_too_long` 按 UTF-8 字节判断 | logging |
 | UTILS-013 | open | `GetModuleFileNameA` 丢 Unicode，固定 `MAX_PATH` | logging |
-| UTILS-014 | open | 写失败用 `errno` + `system_category`，与其它处不一致 | logging |
+| UTILS-014 | fixed | 写失败用 `errno` + `system_category`，与其它处不一致 | logging |
 | UTILS-015 | open | UTF-8 转 UTF-16 失败时报系统错误而非路径非法 | logging |
-| UTILS-016 | open | `file_exists`/`dir_exists` 忽略错误，权限错误也返回 false | logging |
+| UTILS-016 | fixed | `file_exists`/`dir_exists` 忽略错误，权限错误也返回 false | logging |
 | LOGGING-001 | fixed | 异步 logger 在 TaskPool 销毁后空指针解引用 | logging |
 | LOGGING-002 | fixed | TaskPool 重复 `shutdown` 可能死锁 | logging |
 | LOGGING-003 | fixed | `root_logger_raw()` 已删除，公共路径只用 `shared_ptr` | logging |
 | LOGGING-004 | fixed | C API 非法 `LogLevel` 不再抛异常，入口已校验 | logging |
 | LOGGING-005 | fixed | sink 失败用强制调试日志上报，写失败不再被吞 | logging |
-| LOGGING-008 | open | 旋转后 `reopen` 返回码被忽略 | logging |
-| LOGGING-009 | open | `get_proc_path` 失败导致默认路径变成 `logs/.log` | logging |
-| LOGGING-010 | open | `set_param_string` 无锁，与 `log()` 存在数据竞争 | logging |
+| LOGGING-008 | fixed | 旋转后 `reopen` 返回码被忽略 | logging |
+| LOGGING-009 | fixed | `get_proc_path` 失败导致默认路径变成 `logs/.log` | logging |
+| LOGGING-010 | fixed | `set_param_string` 无锁，与 `log()` 存在数据竞争 | logging |
 | LOGGING-011 | open | `ConvertSysEcToErrorCode` 重复打错误日志 | logging |
-| LOGGING-012 | open | 测试缺少写失败、权限、旋转失败等注入 | logging |
+| LOGGING-012 | partial | 测试缺少写失败、权限、旋转失败等注入 | logging |
 | LOGGING-013 | fixed | sink 只捕获 `std::exception` | logging |
-| LOGGING-014 | open | `basic_file_sink` 的 `to_absolute_path` 吞错 | logging |
+| LOGGING-014 | fixed | `basic_file_sink` 的 `to_absolute_path` 吞错 | logging |
 
 ### 跨模块条目的明细映射
 
@@ -107,20 +107,20 @@
 | 归纳项 | 依赖的具体条目 |
 |---|---|
 | CROSS-001 C ABI 异常策略 | COMMON-002、COMMON-010、LOGGING-004（均已关闭） |
-| CROSS-002 失败注入 | CONTAINER-011、LOGGING-012、UTILS 中未覆盖的失败路径 |
+| CROSS-002 失败注入 | CONTAINER-011（已关闭）、LOGGING-012（partial）、UTILS 中未覆盖的失败路径 |
 | CROSS-003 构建/平台宏 | COMMON-006、COMMON-007 |
 
 ### 统一修复顺序
 
 1. **P0 正确性**（2026-11-25 已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
 2. **错误契约**（2026-11-25 已关闭）：UTILS-004/005/006/007、COMMON-002/010、CONTAINER-004~007、`LOGGING-004`。
-3. **可观测性与 API 收敛**：UTILS-008/009 已关闭；剩余 UTILS-010/011、LOGGING-008~010。
-4. **测试与剩余 P2**：CONTAINER-011、LOGGING-012、CROSS-002，再按模块收口其余 P2。
+3. **可观测性与 API 收敛**（2026-11-25 已关闭）：UTILS-008/009/010/011/014/016、LOGGING-008/009/010/014。
+4. **测试与剩余 P2**：CONTAINER-011、CROSS-002 已关闭；LOGGING-012 partial（缺真实 I/O 失败注入），再按模块收口其余 P2。
 
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例；P2 批次后 `test_Container` 30、`test_Utils` 146、`test_Logging` 231，MSVC 13.32s、MinGW 12.31s，均 3/3。
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

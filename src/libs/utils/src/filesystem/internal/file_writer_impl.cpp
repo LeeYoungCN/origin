@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <fstream>
 #include <ios>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <system_error>
@@ -28,12 +27,19 @@ namespace origin::filesystem {
 FileWriterImpl::FileWriterImpl(std::string_view file) : _file()
 {
     if (file.empty()) {
-        _errcode = ERR_COMM_PARAM_EMPTY;
+        _initError = ERR_COMM_PARAM_EMPTY;
+        _errcode = _initError;
         ORIGIN_DEBUG_ERR("Create FileWriterImpl failed. File path is empty.");
-        throw std::invalid_argument("Create FileWriterImpl failed. File path is empty.");
         return;
     }
-    (void)to_absolute_path(file, "", _file);
+
+    _initError = to_absolute_path(file, "", _file);
+    if (_initError != ERR_COMM_SUCCESS) {
+        _errcode = _initError;
+        ORIGIN_DEBUG_ERR("Create FileWriterImpl failed. File: \"{}\", msg: \"{}\".",
+                         file,
+                         get_utils_err_msg(_initError));
+    }
 }
 
 ErrorCode FileWriterImpl::open_it(bool overwrite)
@@ -94,6 +100,10 @@ FileSize FileWriterImpl::get_file_size_it()
 
 ErrorCode FileWriterImpl::open(bool overwrite)
 {
+    if (_initError != ERR_COMM_SUCCESS) {
+        return _initError;
+    }
+
     close();
     EntryType type = EntryType::UNKNOWN;
     (void)get_entry_type(_file, type);
@@ -115,6 +125,9 @@ ErrorCode FileWriterImpl::open(bool overwrite)
 
 ErrorCode FileWriterImpl::reopen(bool overwrite)
 {
+    if (_initError != ERR_COMM_SUCCESS) {
+        return _initError;
+    }
     return open_it(overwrite);
 }
 
@@ -136,13 +149,13 @@ void FileWriterImpl::close()
     }
 }
 
-void FileWriterImpl::write(std::string_view str)
+ErrorCode FileWriterImpl::write(std::string_view str)
 {
     if (!_stream.is_open()) {
         _errcode = ERR_UTILS_FILE_NOT_OPEN;
         ORIGIN_DEBUG_ERR(
             "Write failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
-        return;
+        return _errcode;
     }
 
     _stream.write(str.data(), static_cast<std::streamsize>(str.size()));
@@ -150,21 +163,22 @@ void FileWriterImpl::write(std::string_view str)
         _errcode = ERR_UTILS_IO_ERROR;
         ORIGIN_DEBUG_ERR(
             "Write failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
-        return;
+        return _errcode;
     }
 
     _errcode = ERR_COMM_SUCCESS;
     _currSize += str.length();
+    return _errcode;
 }
 
-void FileWriterImpl::write_line(std::string_view str)
+ErrorCode FileWriterImpl::write_line(std::string_view str)
 {
     if (!_stream.is_open()) {
         _errcode = ERR_UTILS_FILE_NOT_OPEN;
         ORIGIN_DEBUG_ERR("Write line failed. file: \"{}\", msg: {}.",
                          _file.c_str(),
                          get_utils_err_msg(_errcode));
-        return;
+        return _errcode;
     }
 
     _stream.write(str.data(), static_cast<std::streamsize>(str.size()));
@@ -174,25 +188,34 @@ void FileWriterImpl::write_line(std::string_view str)
         ORIGIN_DEBUG_ERR("Write line failed. file: \"{}\", msg: {}.",
                          _file.c_str(),
                          get_utils_err_msg(_errcode));
-        return;
+        return _errcode;
     }
 
     _errcode = ERR_COMM_SUCCESS;
     _currSize += str.length() + origin::filesystem::LF_LENGTH;
+    return _errcode;
 }
 
-void FileWriterImpl::flush()
+ErrorCode FileWriterImpl::flush()
 {
+    if (!_stream.is_open()) {
+        _errcode = ERR_UTILS_FILE_NOT_OPEN;
+        ORIGIN_DEBUG_ERR(
+            "Flush failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
+        return _errcode;
+    }
+
     _stream.flush();
     if (_stream.fail()) {
         _errcode = ERR_UTILS_IO_ERROR;
         ORIGIN_DEBUG_ERR(
             "Flush failed. file: \"{}\", msg: {}.", _file.c_str(), get_utils_err_msg(_errcode));
-        return;
+        return _errcode;
     }
 
     _errcode = ERR_COMM_SUCCESS;
     _currSize = get_file_size_it();
+    return _errcode;
 }
 
 FileSize FileWriterImpl::size()
@@ -232,6 +255,9 @@ std::string FileWriterImpl::extension() const
 
 ErrorCode FileWriterImpl::get_last_error() const
 {
+    if (_initError != ERR_COMM_SUCCESS) {
+        return _initError;
+    }
     return _errcode;
 }
 

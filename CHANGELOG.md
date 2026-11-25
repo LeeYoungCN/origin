@@ -78,6 +78,9 @@
   对应 CONTAINER-003/004/010 随删除消失；`ERR_CONTAINER_OVERFLOW` 错误码保留。
 - **BREAKING**：移除 `origin::logging::root_logger_raw()`。公共路径统一使用
   `root_logger()` 返回的 `shared_ptr`，避免解锁后的裸指针 UAF（LOGGING-003）。
+- **BREAKING**：`FileWriter::write` / `write_line` / `flush` 由 `void` 改为返回
+  `[[nodiscard]] ErrorCode`；`FileWriter` 构造函数不再抛异常，初始化失败由
+  `open()` / `get_last_error()` 返回（UTILS-010/011）。
 
 ### 修复
 
@@ -114,6 +117,18 @@
 - `ConcurrentBlockingQueue::at/operator[]` 改为持锁返回元素拷贝，不再返回解锁后的引用
   （CONTAINER-006）；sink 的 `log/flush` 增加 `catch (...)`，非 `std::exception`
   异常也会被上报（LOGGING-013）。
+- `FileWriter` 的写入、刷新错误直接随返回值返回，`get_last_error()` 保留兼容旧用法
+  （UTILS-010/011）。`write_text_file` 写失败统一使用 `generic_category()` + errno，
+  并检查 close（UTILS-014）；`file_exists` / `dir_exists` 文档说明权限错误也返回
+  `false`（UTILS-016）。
+- 旋转文件 sink 在 `reopen` 失败时上报并抛 `runtime_error`（LOGGING-008）；新增
+  `ErrorCode get_default_log_file(std::string_view, std::string&)`，默认日志路径失败
+  保留具体错误（LOGGING-009）；`SinkImplBase` 的 `_paramStr` 构造后只读，移除无锁
+  写入口（LOGGING-010）；`BasicFileSinkImpl` 保留路径解析/打开的具体错误
+  （LOGGING-014）。
+- 补充容器非平凡类型生命周期、容量边界、`clear` 唤醒，以及 C API 异常与 sink
+  失败路径测试（CONTAINER-011、CROSS-002）；真实磁盘写满/权限拒绝/旋转失败注入
+  仍缺失，`LOGGING-012` 保持 `partial`。
 
 ### 新增
 
@@ -157,6 +172,11 @@
    不想写这些参数时用值返回重载（保留 `format = DEFAULT_TIME_FMT`、`timeZone = LOCAL`）。
 7. **并发队列只读访问**：`ConcurrentBlockingQueue::at` / `operator[]` 改为返回元素拷贝，
    不再返回 `const T&`；原先用 `auto&` 绑定的代码改为 `auto`，大对象请改用 `dequeue`。
+8. **FileWriter 写接口**：`write` / `write_line` / `flush` 返回 `ErrorCode`，
+   调用方需检查返回值；构造函数不再抛 `std::invalid_argument`，空路径等初始化错误
+   在 `open()` 时返回，或通过 `get_last_error()` 读取。
+9. **默认日志路径**：需要区分“解析失败”和“空路径”时改用
+   `ErrorCode get_default_log_file(std::string_view, std::string&)`；原值返回版仍可用。
 8. **`[[nodiscard]]`**：`ErrorCode` 返回接口现在标记为 `[[nodiscard]]`，忽略返回值会触发
    编译器警告；确实不需要错误详情时显式写 `(void)`。C ABI 入口不再让 C++ 异常穿出，
    失败时返回 `nullptr` / `false` / `OFF` 或静默返回。

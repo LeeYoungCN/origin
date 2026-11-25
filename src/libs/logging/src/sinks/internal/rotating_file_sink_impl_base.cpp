@@ -5,11 +5,15 @@
 #include <deque>
 #include <format>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
+
+#include "origin/utils/utils_error_code.h"
 
 #include "internal/common.hpp"
 #include "sinks/internal/basic_file_sink_impl.hpp"
@@ -62,11 +66,17 @@ void RotatingFileSinkImplBase::rotate(const std::string_view newFile)
     _fileWriter.close();
 
     if (rename_file_retry(file(), newFile, true, RENAME_FILE_RETRY, RENAME_FILE_SLEEP_MS)) {
-        _fileWriter.reopen(true);
+        if (const auto errc = _fileWriter.reopen(true); errc != ERR_COMM_SUCCESS) {
+            throw std::runtime_error(
+                "Failed to reopen log file after rotation: " + std::string(newFile) +
+                ", msg: " + std::string(get_utils_err_msg(errc)));
+        }
         push_back_file(newFile);
         ORIGIN_DEBUG_DBG("Rotate log file success. {}", newFile);
-    } else {
-        _fileWriter.reopen(false);
+    } else if (const auto errc = _fileWriter.reopen(false); errc != ERR_COMM_SUCCESS) {
+        throw std::runtime_error(
+            "Failed to reopen log file after rename failure: " + std::string(file()) +
+            ", msg: " + std::string(get_utils_err_msg(errc)));
     }
 
     delete_overflow_file();

@@ -182,6 +182,8 @@ bool is_path_too_long(std::string_view path);
  * @brief 判断文件是否存在且为普通文件
  * @param path 文件路径
  * @return 存在且为文件返回true，否则返回false
+ * @note 该接口只返回布尔值：权限不足、路径过长等错误也会返回false。
+ *       需要区分“不存在”和“无法访问”时，请使用 get_entry_type。
  */
 bool file_exists(std::string_view path);
 
@@ -189,7 +191,7 @@ bool file_exists(std::string_view path);
  * @brief 创建空文件
  * @param path 要创建的文件路径
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
- * @note 若文件已存在，将被截断为0字节
+ * @note 若文件已存在，直接返回成功，不会截断或修改内容。
  */
 [[nodiscard]] ErrorCode create_file(std::string_view path);
 
@@ -281,6 +283,8 @@ bool file_exists(std::string_view path);
  * @brief 判断目录是否存在且为目录
  * @param path 目录路径
  * @return 存在且为目录返回true，否则返回false
+ * @note 该接口只返回布尔值：权限不足、路径过长等错误也会返回false。
+ *       需要区分“不存在”和“无法访问”时，请使用 get_entry_type。
  */
 bool dir_exists(std::string_view path);
 

@@ -35,12 +35,11 @@ public:
 protected:
     virtual void log_it(const LogMsg& logMsg) = 0;
     virtual void flush_it() = 0;
-    void set_param_string(std::string_view param);
 
     std::atomic<LogLevel> _level{LogLevel::TRACE};  // 默认不按级别过滤，由 logger 决定
     std::unique_ptr<Formatter> _formatter{std::make_unique<PatternFormatter>()};
     mutable std::mutex _sinkMtx;
-    std::string _paramStr{"unknown"};
+    const std::string _paramStr{"unknown"};
 
 private:
     // Sink 位于日志链路末端，不能再把异常抛回调用方；失败信息用强制日志输出，

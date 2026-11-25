@@ -215,6 +215,7 @@ set_root_logger(logger);
 - 构造时就会打开文件，打开失败抛 `std::runtime_error`，目录不存在也算失败；
 - `overwrite` 参数（`BasicFileSink` / `DailyFileSink`）：`true` 表示启动时清空，`false` 表示追加；
 - `RotatingFileSink` 没有 `overwrite`，`rotateOnOpen = true` 表示启动时先把已存在的文件转成历史文件（变成 `.1`），再新开一个空文件；
+- 旋转后重新打开文件失败会记录 sink 错误并抛 `std::runtime_error`，不会继续向旧文件句柄写入；
 - `DailyFileSink` 的 `hour`/`minute` 是每天的滚动时刻（默认 00:00），取值越界抛 `std::out_of_range`；
 - `get_file_list()` 可以拿到已经滚动出来的文件列表，便于排查或打包；
 - 每个 sink 有自己的级别和格式，`logger->set_pattern()` 会把格式 **clone 后下发**到它所有的 sink；之后再修改原来的 formatter 对象不会生效；

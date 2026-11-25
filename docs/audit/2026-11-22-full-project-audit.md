@@ -202,3 +202,22 @@ MSVC Debug:  test_origin 403 passed
 - LOGGING-013：`SinkImplBase::log/flush` 补 `catch (...)`。
 
 验证：MSVC x64 Debug 与 MinGW Debug ctest 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）；新增 symlink/FIFO/socket、非 `std::exception`、队列快照、`get_now_date_time` 测试。逐项 `fixed_in` / `verification` 见 `docs/audit/findings.json`。
+
+## 后续（2026-11-25，P2 批次）
+
+本批次在工作区关闭以下 P2；提交前 ixed_in 记为 working-tree：
+
+- UTILS-010/011：FileWriter::write/write_line/flush 返回 ErrorCode；构造函数不再抛异常，	o_absolute_path 失败通过 open() 返回。
+- UTILS-014：write_text_file 写失败统一使用 generic_category() + errno，并检查 close()。
+- UTILS-016：ile_exists/dir_exists 文档说明权限错误也返回 false。
+- LOGGING-008：旋转后
+eopen 返回值被检查，失败上报并抛
+untime_error。
+- LOGGING-009：新增 ErrorCode get_default_log_file(..., std::string&)，默认路径失败保留具体错误。
+- LOGGING-010：SinkImplBase 删除无调用的 set_param_string，_paramStr 构造后只读。
+- LOGGING-014：BasicFileSinkImpl 用 FileWriter 的 ErrorCode 结果，保留解析/打开的具体错误。
+- CONTAINER-011：补非平凡类型生命周期、clear 唤醒、容量边界测试。
+- CROSS-002：容器生命周期/边界与 C API 异常测试已覆盖审计建议的注入点。
+- LOGGING-012：标 partial，已有 sink 异常、非法路径、async 池销毁降级；仍缺真实磁盘写满、权限拒绝、旋转失败注入。
+
+验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。

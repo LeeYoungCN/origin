@@ -259,13 +259,13 @@ function emit_github_annotations() {
 
 function collect_files() {
     if [ "${ALL}" -eq 1 ]; then
-        find src -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' \) | sort
+        find src -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.hpp' \) | sort
     else
         {
             git diff --cached --name-only --diff-filter=ACMR
             git diff --name-only --diff-filter=ACMR
             git ls-files --others --exclude-standard
-        } | sort -u | grep -E '^src/.*\.(c|cc|cpp|cxx)$' || true
+        } | sort -u | grep -E '^src/.*\.(c|cc|cpp|cxx|hpp)$' || true
     fi
 }
 

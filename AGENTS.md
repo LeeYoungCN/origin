@@ -1,6 +1,6 @@
 # Origin 项目约定
 
-Origin 是跨平台 C++20 基础库，组件包括 `Common`、`Container`、`Utils`、`Logging`。既支持独立构建，也被下游通过 `find_package` / `FetchContent` 集成，因此公共 API、ABI 和 CMake 行为都要保持稳定。
+Origin 是跨平台 C++20 基础库，组件包括 `Common`、`Container`、`Utils`、`Logging`。既支持独立构建，也被下游通过 `find_package` / `FetchContent` 集成，因此公共 API、ABI 和 CMake 行为都要保持稳定。发布包还会被 C#、Python 等语言通过 C ABI 封装调用，因此跨语言 ABI、字符串所有权和错误返回是硬约束。
 
 ## 开始前先读
 
@@ -108,6 +108,7 @@ ctest --preset=linux_gnu_debug_ctest
 - 可失败接口返回 `ErrorCode` + 错误文本，并尽量提供值返回重载；错误文本应是纯函数，不依赖全局状态。
 - 错误码接口加 `[[nodiscard]]`；调用方显式处理或显式丢弃。
 - C ABI 入口不得让 C++ 异常穿出，必须捕获所有异常并返回错误码/空值；C ABI 不暴露 STL 类型。
+- 面向 C#/Python 等宿主语言的导出接口使用 `extern "C"`，保持结构体布局、调用约定和句柄生命周期稳定；字符串统一 UTF-8，明确由哪一侧分配/释放。
 - 库代码不打业务日志；日志组件自身也不应把业务语义写死。调试日志统一带 `文件:行号[函数]`。
 - 优先使用 RAII；避免裸 `new/delete` 和长期持有裸指针；异步回调要明确生命周期归属。
 - 风格以 `.clang-format` / `.clang-tidy` 为准；提交前跑：

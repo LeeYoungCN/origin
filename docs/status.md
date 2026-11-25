@@ -10,7 +10,7 @@
 |---|---|
 | 快照日期 | 2026-11-25 |
 | 分支 / 基线 HEAD | `master` / `1fa6636`（`docs: 增加跨语言封装说明`） |
-| 工作区 | 有未提交改动：修复 P1 `LOGGING-004`/`LOGGING-005`（C API 非法枚举、sink 失败上报）；P0 修复已提交 `d075c87` |
+| 工作区 | 无未提交改动；P0 修复已提交 `d075c87`，P1 `LOGGING-004`/`LOGGING-005` 已提交 `f0ad8af` |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
 | 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 34 open / 0 partial / 20 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
@@ -49,7 +49,7 @@
 
 证据和逐项状态见 [findings.json](audit/findings.json) 与 [audit/README.md](audit/README.md)。P1 与剩余清单不再在本文展开。
 
-2026-11-25 后续（未提交）：`LOGGING-004` 的 C API 非法等级入口已改为校验后返回，不再让异常穿出；
+2026-11-25 后续（提交 `f0ad8af`）：`LOGGING-004` 的 C API 非法等级入口已改为校验后返回，不再让异常穿出；
 `LOGGING-005` 的 sink 失败改用强制调试日志上报，并检查 `FileWriter` / 流的写入与刷新结果。
 审计计数变为 34 open / 0 partial / 20 fixed。
 

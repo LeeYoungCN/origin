@@ -27,7 +27,7 @@
 ## 当前记录
 
 基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
-2026-11-25：提交 `d075c87` 关闭 13 项；随后工作区修复 `LOGGING-004/005`（未提交）。
+2026-11-25：提交 `d075c87` 关闭 13 项；提交 `f0ad8af` 修复 `LOGGING-004/005`。
 当前 54 项 = 34 `open` / 0 `partial` / 20 `fixed`。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
@@ -120,7 +120,7 @@
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；工作区 P1 LOGGING 修复后 `test_Logging` 为 230 个用例。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 的 P1 LOGGING 修复后 `test_Logging` 为 230 个用例。
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

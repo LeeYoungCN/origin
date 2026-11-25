@@ -152,6 +152,22 @@ Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系�
   `std::error_code`；
 - 直接调用标准库 / 系统 API 时，仍按标准方式使用 `std::error_code`。
 
+### 2.4 实现边界（读代码前必看）
+
+- `MAKE_ERROR` **不做字段掩码**。`severity/module/type/id` 超出 16 位会污染相邻字段；
+  新增宏时先确认取值在范围内，必要时加 `static_assert`（见 COMMON-005）。
+- `system_category` 到 Origin 错误码的映射很有限：Windows 只覆盖少量 Win32 错误，
+  POSIX 基本统一坍缩成 `ERR_COMM_SYSTEM_ERROR`。不要指望从 `ErrorCode` 反推出精确的
+  `errno`（见 UTILS-005）。
+- **值返回重载不是 `noexcept`**：`get_directory`、`join_paths`、`to_absolute_path` 等
+  路径辅助函数在非法 UTF-8 / 超长路径下仍可能抛异常（见 UTILS-007）。处理不可信输入时
+  用 `ErrorCode` 版，或在边界统一兜底。
+- C ABI 的目标是“返回 `ErrorCode`、不抛异常”，但当前尚未完全做到：非法枚举、
+  `working_env`、debug logger 等入口仍可能抛（CROSS-001、LOGGING-004、COMMON-010）。
+  C 侧调用要按“可能异常/可能没有错误码”做防御，不能假设失败一定返回错误码。
+- 文案函数未命中会逐级回退：`get_utils_err_msg` / `get_container_err_msg` → Common 文案。
+  错误文本只用于展示，**不要解析文本做逻辑判断**。
+
 ## 三、添加新错误码
 
 1. 在对应模块的 `*_error_code.h` 里定义 `ErrorId` 枚举值；

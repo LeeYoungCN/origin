@@ -2,6 +2,32 @@
 
 Origin 是跨平台 C++20 基础库，组件包括 `Common`、`Container`、`Utils`、`Logging`。既支持独立构建，也被下游通过 `find_package` / `FetchContent` 集成，因此公共 API、ABI 和 CMake 行为都要保持稳定。发布包还会被 C#、Python 等语言通过 C ABI 封装调用，因此跨语言 ABI、字符串所有权和错误返回是硬约束。
 
+## 项目速览
+
+Origin 是 C++20 跨平台基础库，四个组件：
+
+- `Common`（`SHARED`）：版本、错误码、调试日志、平台宏、C ABI 版本；
+- `Container`（`INTERFACE`，纯头文件）：阻塞队列、C 字符串封装；
+- `Utils`（`SHARED`）：文件系统、时间、字符串、线程、进程；
+- `Logging`（`SHARED`）：logger、sink、formatter、异步线程池、C API。
+
+依赖方向：`Common <- Container / Utils <- Logging`。Debug 产物带 `d` 后缀，没有静态库；所有 `*_build` preset 的 target 包含 `install`。
+
+### 非平凡改动先读
+
+1. [`docs/architecture.md`](docs/architecture.md)：模块、错误模型、日志对象图、所有权、C ABI；
+2. [`docs/status.md`](docs/status.md)：当前 HEAD、审计基线、仍 open 的 P0；
+3. [`docs/testing.md`](docs/testing.md)：ctest 实际跑什么、测试放哪里；
+4. 任务相关 guide（`logging.md` / `filesystem.md` / `system_error_code.md` 等）。
+
+### 五个常见陷阱
+
+- `ctest` **不跑**聚合进程 `test_origin`，只跑 `test_Container` / `test_Utils` / `test_Logging`；
+- `BlockingQueue` 本身不是线程安全的；并发场景用 `ConcurrentBlockingQueue`，并先看其 open 缺陷；
+- `write_text_file` 要求目标文件已存在，不会创建文件或父目录；
+- `create_logger` 不注册、不继承全局格式；root logger 在 Registry 构造时已注册，且可被 `remove_all` 删除；
+- C ABI 的异常边界尚未完全统一（见 CROSS-001），C 侧不能假设失败一定返回错误码。
+
 ## 开始前先读
 
 1. `README.md`：构建、preset、安装、集成和版本管理。
@@ -95,7 +121,7 @@ ctest --preset=linux_gnu_debug_ctest
 - 主要选项：`ORIGIN_BUILD_TESTS`、`ORIGIN_ENABLE_ASAN`、`ORIGIN_INSTALL`、`ORIGIN_DEBUG_LOG_ALL_LEVELS`。
 - 默认做 **Debug** 构建并跑全部测试。
 - 改动至少验证 **MSVC 与 MinGW 各一次**；平台相关改动再补 Linux/macOS。
-- 测试目标：聚合 `test_origin`，以及 `test_Container`、`test_Utils`、`test_Logging`。
+- 测试目标：聚合 `test_origin`，以及 `test_Container`、`test_Utils`、`test_Logging`；ctest 只注册后三个，`test_origin` 需直接运行构建产物。
 - 涉及文件 I/O、日志、异步生命周期、并发时，补失败路径或并发测试。
 - ctest 日志和 JUnit 报告在 `out/Testing/<preset>_ctest/`。
 - 不提交 `out/`、`_deps/` 等构建产物。

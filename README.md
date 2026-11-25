@@ -25,7 +25,7 @@
 | 组件 | 目标 | 内容 |
 |---|---|---|
 | Common | `Origin::Common` | 版本信息、错误码体系、调试日志、平台/编译器宏、公共类型与常量、C ABI 版本 |
-| Container | `Origin::Container` | 线程安全阻塞队列（`blocking_queue` / `concurrent_blocking_queue`）、C 字符串封装（`cstring`） |
+| Container | `Origin::Container` | 阻塞队列（`BlockingQueue` 本身不保证线程安全；`ConcurrentBlockingQueue` 提供并发封装）、C 字符串封装（`cstring`） |
 | Utils | `Origin::Utils` | 文件系统（`origin/filesystem`）、时间（`origin/date_time`）、字符串（`origin/strings`）、线程（`origin/thread`）、进程（`origin/process`） |
 | Logging | `Origin::Logging` | 同步/异步 logger、pattern formatter、文件 sink（basic / daily / rotating）、C API |
 
@@ -105,15 +105,18 @@ cpack --preset=msvc_x64_debug_pkg
 
 | 选项 | 默认 | 说明 |
 |---|---|---|
-| `ORIGIN_BUILD_TESTS` | `OFF` | 构建并运行测试（presets 里默认 `ON`） |
+| `ORIGIN_BUILD_TESTS` | `OFF` | 构建测试目标（presets 里默认 `ON`；ctest 只跑组件进程，见下文） |
 | `ORIGIN_ENABLE_ASAN` | `OFF` | 开启 AddressSanitizer |
+| `ORIGIN_INSTALL` | `ON` | 生成 install 与 export 规则 |
+| `ORIGIN_DEBUG_LOG_ALL_LEVELS` | `OFF` | 编译进全部 `ORIGIN_DEBUG_*` 级别；运行时过滤仍由 `origin_set_debug_logger_level` 控制 |
 
-> 这两个选项在所有模式下统一使用 `ORIGIN_` 前缀，嵌入父项目时不会和父项目同名选项冲突。
+> 这些选项在所有模式下统一使用 `ORIGIN_` 前缀，嵌入父项目时不会和父项目同名选项冲突。
+> 另注意：所有 `*_build` preset 的 target 包含 `all` 和 `install`，`cmake --build --preset=*_build` 会顺带安装。
 
 ## 测试
 
-- 聚合进程 `test_origin`：包含 Utils / Logging / Container / Version 的全部用例；
-- 组件进程：`test_Container`、`test_Utils`、`test_Logging`；
+- 聚合进程 `test_origin`：包含 Utils / Logging / Container / Version 的全部用例，但**没有注册到 ctest**，需要直接运行构建产物；
+- 组件进程：`test_Container`、`test_Utils`、`test_Logging`，这三个由 `ctest` 执行；
 - `ctest --preset=<preset>_ctest` 会同时写出文本日志和 JUnit 报告：
 
 ```
@@ -131,12 +134,15 @@ cmake --install out/build/<preset> --prefix <install-prefix>
 
 ```
 <prefix>/
-├── bin/                     # DLL（Windows）与 PDB
-├── include/origin/...       # 公共头文件
+├── bin/                        # DLL（Windows）与 PDB
+├── include/origin/...          # 公共头文件
 └── lib/
-    ├── libOrigin*.so/.a     # 共享库 / 导入库（Linux/macOS）
-    └── cmake/Origin/        # OriginConfig.cmake 与导出目标
+    ├── libOrigin<Module>.so/.dylib   # Linux/macOS 共享库；Debug 带 d 后缀
+    ├── Origin<Module>.lib            # Windows 导入库（无静态库）
+    └── cmake/Origin/                 # OriginConfig.cmake 与导出目标
 ```
+
+Container 是 `INTERFACE` 目标（纯头文件），没有对应二进制。Debug 构建输出名带 `d`（如 `OriginUtilsd`），安装导出仍使用 `Origin::Utils` alias。
 
 Windows 下 DLL 与可执行文件同在 `bin/`；Linux/macOS 需要可执行文件带 RPATH
 （`$ORIGIN/../lib`），或把 `<prefix>/lib` 加入 `LD_LIBRARY_PATH`。
@@ -204,6 +210,9 @@ origin::headers_match_binary();    // 头文件与二进制是否一致
 | 文档 | 内容 |
 |---|---|
 | [docs/README.md](docs/README.md) | 文档索引 |
+| [docs/architecture.md](docs/architecture.md) | 模块、错误模型、日志生命周期与 C ABI 约定 |
+| [docs/status.md](docs/status.md) | 当前版本、审计基线、open P0 与文档偏差 |
+| [docs/testing.md](docs/testing.md) | 测试目标矩阵、ctest 现状与补测指引 |
 | [docs/guide/logging.md](docs/guide/logging.md) | 日志组件使用说明 |
 | [docs/guide/date_time.md](docs/guide/date_time.md) | 日期时间工具 |
 | [docs/guide/filesystem.md](docs/guide/filesystem.md) | 文件系统工具 |
@@ -224,7 +233,7 @@ origin::headers_match_binary();    // 头文件与二进制是否一致
 - 编辑器：`.clangd` 指向 `out/build/compile_commands.json`，该文件由
   `check_tidy.sh` / VS Code 从当前 preset 的构建目录自动复制刷新；
 - CI：`.github/workflows/clang-tidy.yml` 在 Windows / Linux / macOS 三平台跑同一套
-  检查（当前 Windows 阻塞，Linux/macOS 处于观察期）；
+  检查（不设 required，不阻塞合并；Windows 需 LLVM 22.1.8）；
 - 提交前建议至少跑一遍：
 
 ```bash

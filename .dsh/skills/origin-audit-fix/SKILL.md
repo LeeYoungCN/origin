@@ -33,6 +33,13 @@ docs/audit/findings.json
 
 如果 ID 不存在，停止并报告；不要临时发明 ID。
 
+### 1.1 先核对基线
+
+- `findings.json` 的审计基线是 `c37a364`，当前 HEAD 可能已经前进；`files[].lines` 会漂移，按符号和源码定位，不要只按行号改。
+- 选条目前重新确认 `status`/`severity`：当前 P0 仍有 COMMON-001、CONTAINER-001/002/003（open）和 LOGGING-003（partial）。不要凭记忆选。
+- 复现优先写会失败的回归测试；测试放对应组件的 `tests/src/`，聚合 `test_origin` 不在 ctest，验证记录要写清跑的是组件 ctest 还是聚合进程。
+- 没有测试或明确证据时保持 `open`，不要标 `fixed`。
+
 ## 2. 选择条目
 
 用户给了 ID 就按 ID；否则按以下顺序选：

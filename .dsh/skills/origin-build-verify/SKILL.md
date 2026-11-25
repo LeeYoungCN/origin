@@ -14,6 +14,14 @@ description: 在 Origin 仓库发生代码、CMake 或测试改动后验证构�
 - 只报告和验证，不修改源码，不自动格式化，不提交；用户明确要求修复时才改代码。
 - 不执行 `git clean`、`rm -rf out`、`--clean` 等破坏性操作；需要清理构建目录时先征得用户同意。
 
+## 0. 先确认三个事实
+
+- 所有 `*_build` preset 的 target 是 `all` + `install`；`cmake --build --preset=...` 会顺带安装，不要误判为“多做了事”。
+- `ctest` 只注册 `test_Container` / `test_Utils` / `test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest**。需要聚合结果时直接运行 `out/build/<preset>/bin/test_origin`（Windows 加 `.exe`），并在报告中说明两者都跑了还是只跑了一个。
+- 当前 CI 的 `cmake-multi-platform.yml` 已过时；`clang-tidy.yml` 三平台但不阻塞合并。不要把“CI 没红”当成完整验证。
+
+纯文档、Skill、注释改动不要求构建；涉及代码/CMake/测试时才走下面的矩阵。
+
 ## 1. 记录基线
 
 ```bash

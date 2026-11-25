@@ -189,6 +189,8 @@ set_root_logger(logger);
 
 `create_logger<SyncLogger>(name, sink)` 内部走 `std::make_shared`，返回 `std::shared_ptr<SyncLogger>`（模板实参决定静态类型）。
 
+注意：`create_logger` **只创建对象，不注册，也不继承全局级别/格式**。要让 `get_logger` 找到它、并让 `set_level_all` / `set_pattern_all` 作用于它，必须调用 `initialize_logger(logger)`（默认 `autoRegister = true`），或显式 `register_logger`。root logger 在 Registry 构造时已经创建并注册，不需要再注册。
+
 ## 7. Sink 一览
 
 | Sink | 构造参数 | 落地点 |
@@ -215,7 +217,7 @@ set_root_logger(logger);
 - `RotatingFileSink` 没有 `overwrite`，`rotateOnOpen = true` 表示启动时先把已存在的文件转成历史文件（变成 `.1`），再新开一个空文件；
 - `DailyFileSink` 的 `hour`/`minute` 是每天的滚动时刻（默认 00:00），取值越界抛 `std::out_of_range`；
 - `get_file_list()` 可以拿到已经滚动出来的文件列表，便于排查或打包；
-- 每个 sink 有自己的级别和格式，`logger->set_pattern()` 会把格式**下发到它所有的 sink**；
+- 每个 sink 有自己的级别和格式，`logger->set_pattern()` 会把格式 **clone 后下发**到它所有的 sink；之后再修改原来的 formatter 对象不会生效；
 - sink 级别默认 `TRACE`（不过滤），不调就永远不挡消息，需要按 sink 分流时才显式 `set_level`。
 
 ## 8. 异步日志与线程池
@@ -243,11 +245,12 @@ auto logger = create_async_logger("app", sink, pool);
 | 项 | 说明 |
 |---|---|
 | 没有池 | `AsyncLogger` 构造抛 `std::runtime_error`（"requires a task pool to be registered in the registry"） |
+| 池失效 | 已持有的 `weak_ptr<TaskPool>` 过期后，`log` / `flush` 静默降级为同步执行，不会抛异常；不会补投递到旧队列 |
 | 池只能设一次 | `set_root_task_pool` 已存在时返回 `false`，不会覆盖 |
 | 参数校验 | `capacity` 或 `threadCnt` 为 0 时构造抛 `std::invalid_argument` |
 | 队列满 | 投递用 `enqueue_wait`，队列满会**阻塞调用线程**（背压）；不丢日志，但会拖慢业务线程 |
 | 生命周期 | `AsyncLogger` 内部持有 `weak_ptr<TaskPool>`，池必须比 logger 活得久 |
-| 退出前 | `flush_all()` 只是往队列投递 flush 任务，**不等待**；真正保证落盘的是线程池销毁或 `shutdown()`（会 join 工作线程、把队列排空） |
+| 退出前 | `flush_all()` 只是往队列投递 flush 任务，**不等待**；`shutdown()` 会排空队列并 join 工作线程，但**不主动 flush sink**。多 worker 下 FLUSH 任务可能越过先前的 LOG；`flush()` 返回不代表已落盘。`shutdown()` 之后不要再写日志（`log` / `flush` 不检查停止标志，可能静默入队或阻塞） |
 
 ## 9. 日志格式（PatternFormatter）
 
@@ -271,6 +274,7 @@ auto logger = create_async_logger("app", sink, pool);
 规则细节：
 
 - 未知占位符按原样输出（如 `%x` → `%x`），不会报错；
+- pattern 末尾孤立的 `%` 会被静默丢弃（不产生字符，也不报错）；
 - 空 pattern 抛 `std::invalid_argument`；
 - 源位置相关占位符在没传 `source` 时会输出占位文本：`%s` → `Filename`、`%g` → `FilePath`、`%!` → `Function`。
 
@@ -392,6 +396,10 @@ origin_destroy_sink(sink);
 - `origin_create_async_logger` 需要传入 `TaskPoolSt*`；用 `origin_create_async_logger_use_root_tp` 可以复用全局池；
 - 版本查询不在 logging 的 C 接口里：用 `origin/common/c/version_c.h` 的 `origin_c_abi_version()` / `origin_version()` /
   `origin_version_commit()`，它们属于 Common，反映整个 Origin 的版本。
+- `origin_logger_name` 返回的是**借用指针**，生命周期随 logger，不要 free，也不要跨线程长期保存；
+- C 宏末尾自带分号（`logging_c.h`），不要直接放在 `if/else` 的单语句分支里；
+- `origin_create_rotating_file_sink` 当前实际构造的是 `DailyFileSink`：参数按“每天滚动”解释，`hour=maxFileSize` 可能抛 `std::out_of_range`。这是已知缺陷，不要按“按大小滚动”依赖它；
+- 非法 `LogLevelC` 等错误路径仍可能抛异常穿过 C 边界（LOGGING-004）；C 侧调用要防御，不能假设失败一定返回错误码。
 
 ## 13. 线程安全与生命周期
 

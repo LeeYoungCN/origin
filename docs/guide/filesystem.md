@@ -75,13 +75,13 @@ struct FileInfo {
 | 接口 | 说明 |
 |---|---|
 | `file_exists(path)` | 存在且为普通文件 |
-| `create_file(path)` | 创建空文件；已存在则截断为 0 字节 |
+| `create_file(path)` | 创建空文件；已存在且为普通文件时直接返回成功（**不截断**） |
 | `delete_file(path)` | 删除文件；不存在视为成功 |
 | `copy_file(src, dest, overwrite = false)` | 复制文件 |
 | `rename_file(src, dest, overwrite = false)` | 移动/重命名 |
 | `read_text_file(path, out)` | 读文本到 `out` |
-| `read_binary_file(path, out)` | 读二进制到 `out` |
-| `write_text_file(path, content, overwrite = false)` | 写文本；`overwrite=false` 为追加 |
+| `read_binary_file(path, out)` | 读二进制到 `out`；当前实现以文本模式打开，遇 `0x1A` 可能提前 EOF（已知缺陷，见 `docs/status.md`） |
+| `write_text_file(path, content, overwrite = false)` | 写文本；**要求目标文件已存在**（不会创建文件或父目录）；`overwrite=false` 为追加；Windows 文本模式写 CRLF |
 | `get_file_size(path, out)` | 出参为字节数 |
 | `get_file_modify_time(path, out)` | 出参为最后修改时间戳（毫秒） |
 | `get_file_info(path, out)` | 出参为 `FileInfo` |
@@ -113,6 +113,15 @@ public:
 
 适合高频写入场景（内部缓冲，减少系统调用）。
 
+行为细节：
+
+- `open()` 会自动创建父目录；`reopen()` 只重新打开文件，**不会**创建父目录；
+- `open()` 成功后会固定 `sleep_ms(10)` 等待文件系统就绪（Windows 上更明显）；
+- `write` / `write_line` 返回 `void`，错误通过 `get_last_error()` 读取；
+- `write_line` 会按平台计入换行长度（Windows 的 `LF_LENGTH=2`）；`write` 内含 `\n` 时，Windows 文本模式实际写 CRLF，但内部计数只加原字符串长度，`size()` 可能偏小；
+- `size()` 在流打开时返回内部计数，关闭后回退到磁盘查询；
+- 构造时路径为空会抛 `std::invalid_argument`；`open` 失败不会抛，返回 `ErrorCode`。
+
 ### 值返回便捷重载（忽略错误码）
 
 不需要区分错误原因时，可以直接取返回值，失败时返回默认值：
@@ -129,6 +138,8 @@ public:
 | `FileSize get_file_size(path)` | `0` |
 | `TimestampMs get_file_modify_time(path)` | `0` |
 | `FileInfo get_file_info(path)` | `path`/`type` 有效，`size`/`modifyTime` 为 `0` |
+
+> 注意：路径辅助函数（`get_directory`、`join_paths`、`to_absolute_path` 等）的值返回重载在非法 UTF-8 / 超长路径下仍可能抛异常（UTILS-007），不能当作 `noexcept`。
 
 ## 错误处理
 
@@ -191,7 +202,7 @@ int main()
 
 ## 注意事项
 
-- 所有路径参数/返回值都是 UTF-8；Windows 内部转 UTF-16；
+- 所有路径参数/返回值都是 UTF-8；Windows 内部转 UTF-16（例外：`process::get_proc_path` 当前用 ANSI API，见 `docs/status.md`）；
 - 输入 `\` 和 `/` 都接受，返回值使用平台原生分隔符；
 - `normalize_path`、`to_absolute_path` 都是纯词法操作，**不检查路径是否存在**，
   也不解析符号链接；

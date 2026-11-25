@@ -120,7 +120,7 @@
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例；P2 批次后 `test_Container` 30、`test_Utils` 146、`test_Logging` 231，MSVC 13.32s、MinGW 12.31s，均 3/3。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例；P2 批次后 `test_Container` 30、`test_Utils` 146、`test_Logging` 231，MSVC 13.32s、MinGW 12.31s，均 3/3；P2 批次提交 `5806cf7`。
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

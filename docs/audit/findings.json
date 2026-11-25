@@ -400,7 +400,7 @@
       "impact": "write/flush 返回 void，错误靠 get_last_error 事后读取，容易漏检。",
       "recommendation": "改为返回 ErrorCode，保留 deprecated get_last_error。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "UTILS-011",
@@ -421,7 +421,7 @@
       "impact": "与 ErrorCode 契约不一致；当前目录失败时 _file 为空，后续报错误导。",
       "recommendation": "统一错误契约；至少检查 to_absolute_path 返回值。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "UTILS-012",
@@ -479,7 +479,7 @@
       "impact": "errno 与 system_category 不匹配，错误码映射可能错误。",
       "recommendation": "统一 errno/generic，或读取 GetLastError。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "UTILS-015",
@@ -526,7 +526,7 @@
       "impact": "权限错误也返回 false，调用方无法区分。",
       "recommendation": "文档写清；需要区分时用 get_entry_type。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "LOGGING-008",
@@ -546,7 +546,7 @@
       "impact": "reopen 失败后继续用坏 writer，日志丢失。",
       "recommendation": "检查 reopen 返回码并报警。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "LOGGING-009",
@@ -566,7 +566,7 @@
       "impact": "进程路径失败时可能落到 logs/.log 等相对路径。",
       "recommendation": "改用 ErrorCode 版本，初始化失败明确报错。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "LOGGING-010",
@@ -585,7 +585,7 @@
       "impact": "log() 持锁读 _paramStr，set_param_string 无锁写。",
       "recommendation": "加锁或初始化后不可变。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "LOGGING-011",
@@ -622,7 +622,7 @@
       "impact": "写失败、权限拒绝、旋转失败、async 销毁等路径未被覆盖。",
       "recommendation": "增加故障注入和并发测试。",
       "verification": "已覆盖 sink 非标准异常、非法路径/参数、构造失败、async 池销毁降级；未覆盖真实磁盘写满、权限拒绝、旋转失败注入。",
-      "fixed_in": "working-tree",
+      "fixed_in": "5806cf7",
       "note": "剩余缺口：缺乏可控 I/O 失败注入点，需引入测试用 sink 或文件系统抽象后再补。"
     },
     {
@@ -664,7 +664,7 @@
       "impact": "to_absolute_path 值返回吞错，失败只抛 file empty。",
       "recommendation": "用 ErrorCode 版本并保留具体错误。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "COMMON-001",
@@ -1143,7 +1143,7 @@
       "impact": "未覆盖非平凡 T、溢出、dequeue_try、clear 唤醒。",
       "recommendation": "补生命周期/边界/并发测试。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "CROSS-001",
@@ -1177,7 +1177,7 @@
       "impact": "common/container 缺少故障注入；容器并发测试主要覆盖正常路径。",
       "recommendation": "补故障注入和并发测试。",
       "verification": "MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。FileWriter 返回值与未打开路径有直接用例；容器新增非平凡类型生命周期与 clear 唤醒用例；旋转 reopen、默认日志路径、param 不可变通过现有 test_Logging 回归，未新增专门故障注入。",
-      "fixed_in": "working-tree"
+      "fixed_in": "5806cf7"
     },
     {
       "id": "CROSS-003",

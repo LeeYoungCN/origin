@@ -53,7 +53,7 @@
 - **BREAKING**：`origin::string` 命名空间改为 `origin::strings`，头文件
   `origin/string/string.h` 改为 `origin/strings/strings.h`，源文件改为 `strings.cpp`
   （复数形式表示工具集合，与 abseil 的 `absl::strings` 一致）。
-- 文档整理：`doc/` 下文件名统一为小写下划线（`date_time.md`、`filesystem.md`、
+- 文档整理：`docs/guide/` 下文件名统一为小写下划线（`date_time.md`、`filesystem.md`、
   `system_error_code.md`、`windows_sandbox_label.md`），并刷新过期的命名空间、
   头文件路径与示例。
 - 构建选项统一为 `ORIGIN_BUILD_TESTS` / `ORIGIN_ENABLE_ASAN`（原 `BUILD_TESTS` /
@@ -89,7 +89,7 @@
 
 ### 新增
 
-- `doc/integration.md`：下游集成指南（`find_package` / `FetchContent` / `add_subdirectory` /
+- `docs/integration.md`：下游集成指南（`find_package` / `FetchContent` / `add_subdirectory` /
   vcpkg 的用法、版本锁定策略、常见问题）。
 
 - `script/load_msvc_env.ps1`：用 `vswhere` 定位 Visual Studio，执行 `vcvarsall.bat`

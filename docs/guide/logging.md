@@ -434,5 +434,5 @@ if (!origin::headers_match_binary()) { /* 记日志或直接终止 */ }
 
 ## 15. 相关文档
 
-- 日期时间工具（`%d` 依赖的格式化能力）：`doc/date_time.md`
-- 文件工具（文件 sink 的读写基础）：`doc/filesystem.md`
+- 日期时间工具（`%d` 依赖的格式化能力）：[date_time.md](date_time.md)
+- 文件工具（文件 sink 的读写基础）：[filesystem.md](filesystem.md)

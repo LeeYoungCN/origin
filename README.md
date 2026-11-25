@@ -162,7 +162,7 @@ FetchContent_MakeAvailable(origin)
 target_link_libraries(app PRIVATE Origin::Logging)
 ```
 
-完整说明（版本锁定、部署、常见问题）见 [doc/integration.md](doc/integration.md)。
+完整说明（版本锁定、部署、常见问题）见 [docs/integration.md](docs/integration.md)。
 
 ## 版本管理
 
@@ -185,7 +185,9 @@ origin::headers_match_binary();    // 头文件与二进制是否一致
 .
 ├── cmake/                 # 构建模块（版本、工具链、打包、FetchContent、IDE 信息）
 ├── config/                # 配置模板
-├── doc/                   # 使用文档
+├── docs/                  # 文档
+│   ├── guide/             # 组件使用文档
+│   └── audit/             # 审计记录
 ├── script/                # 构建、发布、格式化脚本
 ├── src/
 │   ├── libs/              # Common / Container / Utils / Logging
@@ -199,13 +201,14 @@ origin::headers_match_binary();    // 头文件与二进制是否一致
 
 | 文档 | 内容 |
 |---|---|
-| [doc/logging.md](doc/logging.md) | 日志组件使用说明 |
-| [doc/date_time.md](doc/date_time.md) | 日期时间工具 |
-| [doc/filesystem.md](doc/filesystem.md) | 文件系统工具 |
-| [doc/system_error_code.md](doc/system_error_code.md) | 错误码体系与 `std::error_category` |
-| [doc/platform_macros.md](doc/platform_macros.md) | 平台/编译器宏 |
-| [doc/windows_sandbox_label.md](doc/windows_sandbox_label.md) | Windows 沙箱完整性标签问题 |
-| [doc/integration.md](doc/integration.md) | 下游集成与部署 |
+| [docs/README.md](docs/README.md) | 文档索引 |
+| [docs/guide/logging.md](docs/guide/logging.md) | 日志组件使用说明 |
+| [docs/guide/date_time.md](docs/guide/date_time.md) | 日期时间工具 |
+| [docs/guide/filesystem.md](docs/guide/filesystem.md) | 文件系统工具 |
+| [docs/guide/system_error_code.md](docs/guide/system_error_code.md) | 错误码体系与 `std::error_category` |
+| [docs/guide/platform_macros.md](docs/guide/platform_macros.md) | 平台/编译器宏 |
+| [docs/guide/windows_sandbox_label.md](docs/guide/windows_sandbox_label.md) | Windows 沙箱完整性标签问题 |
+| [docs/integration.md](docs/integration.md) | 下游集成与部署 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本变更记录 |
 
 ## 开发约定

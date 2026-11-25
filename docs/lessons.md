@@ -20,3 +20,30 @@
 ## 条目
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
+
+### 2026-11-25 DSH 沙箱下 CMake/Ninja 的 try_compile 挂起
+
+- 现象：`cmake --preset=msvc_x64_debug` 停在 “Detecting C compiler ABI info” / `try_compile`，长时间不返回；`cmake`、`ninja` 进程存在但 CPU 接近 0，没有 `cl.exe` 子进程；删除 `.ninja_lock` 无效。
+- 根因：DSH 的 workspace-write/只读沙箱限制子进程创建命名管道，Ninja 在 `try_compile` 中用 pipe 捕获编译器输出，子进程无法启动，父进程一直等待。不是编译慢，也不是 Ninja 锁残留。
+- 修复/规避：构建和 ctest 从开始就使用完整权限（`sandbox_permissions: danger-full-access`）或放到普通终端/持久终端运行；不要反复删锁文件。若失败配置已把 `CMAKE_C_COMPILER` 写成相对 `cl.exe`，用完整 `cl.exe` 路径加 `--fresh` 重新 configure。
+- 验证：同一 configure/build/install 命令在 full access 下通过；MSVC x64 Debug 与 MinGW Debug 的 ctest 均 3/3。
+- 适用范围：Windows + DSH 受限沙箱 + CMake 的 Ninja 生成器；MinGW Makefiles 未复现，Linux/WSL 未复现。普通终端或无沙箱环境不需要此规避。
+- 关联：2026-11-25 P0 修复；[testing.md](testing.md)、[status.md](status.md)。
+
+### 2026-11-25 PowerShell 无法 dot-source load_msvc_env.ps1
+
+- 现象：`. .\script\load_msvc_env.ps1` 被执行策略拒绝，当前会话仍未导入 MSVC 环境。
+- 根因：PowerShell 默认 ExecutionPolicy（Restricted/AllSigned 等）禁止加载本地脚本；`load_msvc_env.ps1` 需要 dot-source 才能修改当前会话环境。
+- 修复/规避：先执行 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force`，再 dot-source；只影响当前进程，不修改机器或用户级策略。
+- 验证：同一会话内 `cl.exe`、`cmake` 可用，configure/build 通过。
+- 适用范围：Windows PowerShell 5.1 与 PowerShell 7，策略为 Restricted/AllSigned 时；bash 的 `source ./script/load_msvc_env.sh` 不受影响。
+- 关联：`script/load_msvc_env.ps1`；构建说明见项目 `AGENTS.md`。
+
+### 2026-11-25 Origin 构建/测试入口的非直觉点
+
+- 现象：`cmake --build --preset=*_build` 会顺带 install；ctest 只出现 `test_Container`/`test_Utils`/`test_Logging`，看不到 `test_origin`；`check_tidy.sh` 会自己执行 configure，可能选中 Linux/WSL preset。
+- 根因：所有 `*_build` 继承 `project_build_base`，targets 含 `install`；`src/tests/CMakeLists.txt` 只有 `add_executable`，没有 `add_test`；`check_tidy.sh` 在没有编译数据库时自动 configure。
+- 修复/规避：改动后先跑组件 ctest，最后再单独运行 `test_origin` 聚合进程；构建/测试前先导入 MSVC 环境；跑 `check_tidy.sh` 前确认 preset 和编译数据库，避免误在 WSL 中配置。
+- 验证：2026-11-25 MSVC 与 MinGW 的组件 ctest 均 3/3；`test_origin` 需手动运行，未注册进 ctest。
+- 适用范围：Origin 仓库所有平台；具体命令和测试目标见 [testing.md](testing.md)。
+- 关联：[testing.md](testing.md)、[status.md](status.md)、`CMakePresets.json`、`src/tests/CMakeLists.txt`。

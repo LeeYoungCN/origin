@@ -55,12 +55,24 @@ ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out)
         ORIGIN_DEBUG_WARN("Join paths failed: empty list.");
         return ERR_UTILS_PATH_INVALID;
     }
-    fs::path result(parts[0]);
-    for (size_t i = 1; i < parts.size(); ++i) {
-        result /= parts[i];  // std::filesystem 自动处理分隔符
+    try {
+        fs::path result(parts[0]);
+        for (size_t i = 1; i < parts.size(); ++i) {
+            result /= parts[i];  // std::filesystem 自动处理分隔符
+        }
+        out = result.string();
+        return ERR_COMM_SUCCESS;
+    } catch (const fs::filesystem_error& e) {
+        const ErrorCode code = ConvertSysEcToErrorCode(e.code());
+        ORIGIN_DEBUG_ERR(
+            "Join paths failed. message: {}. ex: {}", get_utils_err_msg(code), e.what());
+        return code;
+    } catch (const std::exception& e) {
+        const ErrorCode code = ConvertExceptionToErrorCode(e);
+        ORIGIN_DEBUG_ERR(
+            "Join paths failed. message: {}. ex: {}", get_utils_err_msg(code), e.what());
+        return code;
     }
-    out = result.string();
-    return ERR_COMM_SUCCESS;
 }
 
 ErrorCode normalize_path(std::string_view path, std::string& out)
@@ -92,18 +104,18 @@ ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, s
         return ERR_COMM_SUCCESS;
     }
 
-    std::string base;
-    if (baseDir.empty()) {
-        const ErrorCode rc = get_curr_working_dir(base);
-        if (rc != ERR_COMM_SUCCESS) {
-            return rc;
-        }
-    } else {
-        base.assign(baseDir);
-    }
-
-    fs::path const combined = fs::path(base) / fs::path(relPath);
     try {
+        std::string base;
+        if (baseDir.empty()) {
+            const ErrorCode rc = get_curr_working_dir(base);
+            if (rc != ERR_COMM_SUCCESS) {
+                return rc;
+            }
+        } else {
+            base.assign(baseDir);
+        }
+
+        fs::path const combined = fs::path(base) / fs::path(relPath);
         out = fs::absolute(combined).lexically_normal().string();
         return ERR_COMM_SUCCESS;
     } catch (const fs::filesystem_error& e) {
@@ -125,32 +137,51 @@ ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, s
 
 std::string get_directory(std::string_view path)
 {
-    fs::path const proc(path);
-    return proc.parent_path().string();
+    try {
+        fs::path const proc(path);
+        return proc.parent_path().string();
+    } catch (...) {
+        return {};
+    }
 }
 
 std::string get_filename(std::string_view path)
 {
-    fs::path const p(path);
-    return p.filename().string();
+    try {
+        fs::path const p(path);
+        return p.filename().string();
+    } catch (...) {
+        return {};
+    }
 }
 
 std::string get_filename_stem(std::string_view path)
 {
-    fs::path const p(path);
-    return p.stem().string();
+    try {
+        fs::path const p(path);
+        return p.stem().string();
+    } catch (...) {
+        return {};
+    }
 }
 
 std::string get_extension(std::string_view path)
 {
-    fs::path const p(path);
-    return p.extension().string();
+    try {
+        fs::path const p(path);
+        return p.extension().string();
+    } catch (...) {
+        return {};
+    }
 }
 
 bool is_absolute_path(std::string_view path)
 {
-    bool const result = fs::path(path).is_absolute();
-    return result;
+    try {
+        return fs::path(path).is_absolute();
+    } catch (...) {
+        return false;
+    }
 }
 
 bool is_path_too_long(std::string_view path)

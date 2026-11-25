@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 
 #include "origin/container/concurrent_blocking_queue.hpp"
 
@@ -67,6 +68,23 @@ TEST_F(TestConcurrentBlockingQueueSt, enqueue)
 
     EXPECT_FALSE(queue.enqueue(0));
     EXPECT_TRUE(queue.full());
+}
+
+TEST_F(TestConcurrentBlockingQueueSt, at_returns_snapshot)
+{
+    ConcurrentBlockingQueue<std::string> queue(4);
+    ASSERT_TRUE(queue.enqueue("first"));
+
+    const std::string snapshot = queue.at(0);
+    const std::string subscript = queue[0];
+
+    std::string dequeued;
+    ASSERT_TRUE(queue.dequeue(dequeued));
+
+    EXPECT_EQ(snapshot, "first");
+    EXPECT_EQ(subscript, "first");
+    EXPECT_EQ(dequeued, "first");
+    EXPECT_THROW(static_cast<void>(queue.at(0)), std::out_of_range);
 }
 
 TEST_F(TestConcurrentBlockingQueueSt, enqueue_overrun)

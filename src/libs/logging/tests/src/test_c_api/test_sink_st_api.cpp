@@ -48,7 +48,7 @@ void TestSinkStApi::InitSink(const testing::TestInfo* test_info_)
 
 void TestSinkStApi::SetUp()
 {
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -57,7 +57,7 @@ void TestSinkStApi::TearDown()
     origin_destroy_logger(_logger);
     origin_destroy_sink(_sink);
     destroy_mock_sink_st(_nullSink);
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 

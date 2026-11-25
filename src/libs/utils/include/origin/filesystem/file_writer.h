@@ -16,8 +16,8 @@ public:
     explicit FileWriter(std::string_view file);
     ~FileWriter();
 
-    ErrorCode open(bool overwrite = true);
-    ErrorCode reopen(bool overwrite = true);
+    [[nodiscard]] ErrorCode open(bool overwrite = true);
+    [[nodiscard]] ErrorCode reopen(bool overwrite = true);
     void close();
     void write(std::string_view str);
     void write_line(std::string_view str);

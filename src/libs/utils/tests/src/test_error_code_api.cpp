@@ -11,9 +11,19 @@
 #include <cstdarg>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <filesystem>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <vector>
+
+#ifndef _WIN32
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <unistd.h>
+#endif
 
 #include "origin/common/constants/date_time_constants.h"
 #include "origin/common/types/date_time_types.h"
@@ -98,6 +108,67 @@ TEST(FilesystemErrorCodeApi, MissingPath)
     EntryType type = EntryType::UNKNOWN;
     EXPECT_EQ(get_entry_type(missing, type), ERR_UTILS_NOT_FOUND);
     EXPECT_EQ(type, EntryType::NONEXISTENT);
+}
+
+TEST(FilesystemErrorCodeApi, SymlinkAndSpecialFiles)
+{
+    std::string cwd;
+    ASSERT_EQ(get_curr_working_dir(cwd), ERR_COMM_SUCCESS);
+
+    std::string dir;
+    ASSERT_EQ(to_absolute_path("origin_ec_test_special_dir", cwd, dir), ERR_COMM_SUCCESS);
+    (void)delete_dir(dir, true);
+    ASSERT_EQ(create_dir(dir, true), ERR_COMM_SUCCESS);
+
+    std::string target;
+    ASSERT_EQ(join_paths({dir, "target.txt"}, target), ERR_COMM_SUCCESS);
+    ASSERT_EQ(create_file(target), ERR_COMM_SUCCESS);
+
+    std::string link;
+    ASSERT_EQ(join_paths({dir, "link"}, link), ERR_COMM_SUCCESS);
+    std::error_code ec;
+    std::filesystem::create_symlink(target, link, ec);
+    if (!ec) {
+        EntryType type = EntryType::UNKNOWN;
+        EXPECT_EQ(get_entry_type(link, type), ERR_COMM_SUCCESS);
+        EXPECT_EQ(type, EntryType::SYMBOL_LINK);
+    }
+
+#ifndef _WIN32
+    std::string fifo;
+    ASSERT_EQ(join_paths({dir, "fifo"}, fifo), ERR_COMM_SUCCESS);
+    ASSERT_EQ(mkfifo(fifo.c_str(), 0600), 0);
+    EntryType fifoType = EntryType::UNKNOWN;
+    EXPECT_EQ(get_entry_type(fifo, fifoType), ERR_COMM_SUCCESS);
+    EXPECT_EQ(fifoType, EntryType::FIFO);
+
+    const int fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    ASSERT_GE(fd, 0);
+    const std::string socketPath = join_paths({dir, "socket"});
+    sockaddr_un address{};
+    address.sun_family = AF_UNIX;
+    ASSERT_LT(socketPath.size(), sizeof(address.sun_path));
+    std::memcpy(address.sun_path, socketPath.c_str(), socketPath.size() + 1);
+    ASSERT_EQ(bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)), 0);
+    close(fd);
+
+    EntryType socketType = EntryType::UNKNOWN;
+    EXPECT_EQ(get_entry_type(socketPath, socketType), ERR_COMM_SUCCESS);
+    EXPECT_EQ(socketType, EntryType::SOCKET);
+    (void)unlink(socketPath.c_str());
+#endif
+
+    (void)delete_dir(dir, true);
+}
+
+TEST(DateTimeErrorCodeApi, GetNowDateTime)
+{
+    DateTimeSt now{};
+    ASSERT_EQ(get_now_date_time(now), ERR_COMM_SUCCESS);
+    EXPECT_GT(now.year, 1970u);
+
+    const DateTimeSt value = get_now_date_time();
+    EXPECT_GT(value.year, 1970u);
 }
 
 TEST(DateTimeErrorCodeApi, Conversions)

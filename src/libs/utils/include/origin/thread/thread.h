@@ -31,7 +31,7 @@ ThreadId get_curr_thread_id();
  * @param name 线程名称
  * @return 成功返回 ERR_COMM_SUCCESS
  */
-ErrorCode set_curr_thread_name(const char* name);
+[[nodiscard]] ErrorCode set_curr_thread_name(const char* name);
 
 /**
  * @brief 获取当前线程名称
@@ -39,7 +39,7 @@ ErrorCode set_curr_thread_name(const char* name);
  * @param[out] out 当前线程名称，未设置则为空串
  * @return 成功返回 ERR_COMM_SUCCESS
  */
-ErrorCode get_curr_thread_name(std::string& out);
+[[nodiscard]] ErrorCode get_curr_thread_name(std::string& out);
 
 /**
  * @brief 获取当前线程名称（值返回）

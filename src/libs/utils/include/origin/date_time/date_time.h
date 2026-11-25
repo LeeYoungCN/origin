@@ -30,9 +30,16 @@ TimestampMs get_now_timestamp_ms();
 
 /**
  * @brief 获取当前系统时间的时间组件
+ * @param[out] out 当前本地时间的分解结构；失败时所有字段置 0
+ * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
+ */
+[[nodiscard]] ErrorCode get_now_date_time(DateTimeSt& out);
+
+/**
+ * @brief 获取当前系统时间的时间组件（值返回）
  * @details
  * 直接返回分解后的时间信息（年、月、日等），等价于Timestamp2Component(get_now_timestamp_ms())
- * @return DateTimeSt 当前时间的分解结构
+ * @return DateTimeSt 当前时间的分解结构；失败时所有字段为 0
  */
 DateTimeSt get_now_date_time();
 
@@ -42,7 +49,7 @@ DateTimeSt get_now_date_time();
  * @param[out] out 转换后的时间组件；失败时所有字段置0
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode local_date_time(TimestampMs timestamp, DateTimeSt& out);
+[[nodiscard]] ErrorCode local_date_time(TimestampMs timestamp, DateTimeSt& out);
 
 /**
  * @brief 将毫秒级时间戳转换为UTC时间的时间组件
@@ -50,7 +57,7 @@ ErrorCode local_date_time(TimestampMs timestamp, DateTimeSt& out);
  * @param[out] out 转换后的时间组件；失败时所有字段置0
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode utc_date_time(TimestampMs timestamp, DateTimeSt& out);
+[[nodiscard]] ErrorCode utc_date_time(TimestampMs timestamp, DateTimeSt& out);
 
 /**
  * @brief 将毫秒级时间戳转换为时间组件
@@ -59,7 +66,9 @@ ErrorCode utc_date_time(TimestampMs timestamp, DateTimeSt& out);
  * @param[out] out 转换后的时间组件；失败时所有字段置0
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回 ERR_UTILS_TIMESTAMP_INVALID 等错误码
  */
-ErrorCode timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone, DateTimeSt& out);
+[[nodiscard]] ErrorCode timestamp_to_date_time(TimestampMs timestamp,
+                                               TimeZone timeZone,
+                                               DateTimeSt& out);
 
 /**
  * @brief 将时间组件转换为毫秒级时间戳
@@ -67,7 +76,7 @@ ErrorCode timestamp_to_date_time(TimestampMs timestamp, TimeZone timeZone, DateT
  * @param[out] out 转换后的毫秒级时间戳；失败时置 -1
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回 ERR_UTILS_TIMESTAMP_INVALID
  */
-ErrorCode date_time_to_timestamp(const DateTimeSt& dateTime, TimestampMs& out);
+[[nodiscard]] ErrorCode date_time_to_timestamp(const DateTimeSt& dateTime, TimestampMs& out);
 
 /**
  * @brief 比较两个毫秒级时间戳之间毫秒级时间差
@@ -87,7 +96,7 @@ DurationMs diff_date_time(const DateTimeSt& x, const DateTimeSt& y);
  * @param[out] out 完整月份名称（如"January"）；失败时为空字符串视图
  * @return 成功返回 ERR_COMM_SUCCESS，参数越界返回 ERR_UTILS_MONTH_INVALID
  */
-ErrorCode get_month_full_name(uint32_t month, std::string_view& out);
+[[nodiscard]] ErrorCode get_month_full_name(uint32_t month, std::string_view& out);
 
 /**
  * @brief 获取月份的缩写英文名称
@@ -95,7 +104,7 @@ ErrorCode get_month_full_name(uint32_t month, std::string_view& out);
  * @param[out] out 缩写月份名称（如"Jan"）；失败时为空字符串视图
  * @return 成功返回 ERR_COMM_SUCCESS，参数越界返回 ERR_UTILS_MONTH_INVALID
  */
-ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out);
+[[nodiscard]] ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out);
 
 /**
  * @brief 获取星期的完整英文名称
@@ -103,7 +112,7 @@ ErrorCode get_month_abbr_name(uint32_t month, std::string_view& out);
  * @param[out] out 完整星期名称（如"Monday"）；失败时为空字符串视图
  * @return 成功返回 ERR_COMM_SUCCESS，参数越界返回 ERR_UTILS_WEEKDAY_INVALID
  */
-ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out);
+[[nodiscard]] ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out);
 
 /**
  * @brief 获取星期的缩写英文名称
@@ -111,7 +120,7 @@ ErrorCode get_weekday_full_name(uint32_t weekday, std::string_view& out);
  * @param[out] out 缩写星期名称（如"Mon"）；失败时为空字符串视图
  * @return 成功返回 ERR_COMM_SUCCESS，参数越界返回 ERR_UTILS_WEEKDAY_INVALID
  */
-ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out);
+[[nodiscard]] ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out);
 
 /**
  * @brief 将时间戳按指定格式转换为字符串
@@ -123,10 +132,10 @@ ErrorCode get_weekday_abbr_name(uint32_t weekday, std::string_view& out);
  * @param[out] out 格式化结果；函数进入时先清空
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode format_time_string(TimestampMs timestamp,
-                             const std::string_view& format,
-                             TimeZone timeZone,
-                             std::string& out);
+[[nodiscard]] ErrorCode format_time_string(TimestampMs timestamp,
+                                           const std::string_view& format,
+                                           TimeZone timeZone,
+                                           std::string& out);
 
 /**
  * @brief 将时间组件按指定格式转换为字符串
@@ -137,9 +146,9 @@ ErrorCode format_time_string(TimestampMs timestamp,
  * @param[out] out 格式化结果；函数进入时先清空
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode format_time_string(const DateTimeSt& dateTime,
-                             const std::string_view& format,
-                             std::string& out);
+[[nodiscard]] ErrorCode format_time_string(const DateTimeSt& dateTime,
+                                           const std::string_view& format,
+                                           std::string& out);
 
 /**
  * @brief 将时间戳按指定格式转换为字符串并追加到已有字符串中
@@ -152,10 +161,10 @@ ErrorCode format_time_string(const DateTimeSt& dateTime,
  * @param[in] timeZone 时区（LOCAL / UTC）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode append_time_string(std::string& timeString,
-                             TimestampMs timestamp,
-                             const std::string_view& format,
-                             TimeZone timeZone);
+[[nodiscard]] ErrorCode append_time_string(std::string& timeString,
+                                           TimestampMs timestamp,
+                                           const std::string_view& format,
+                                           TimeZone timeZone);
 
 /**
  * @brief 将时间组件按指定格式转换为字符串并追加到已有字符串中
@@ -167,9 +176,9 @@ ErrorCode append_time_string(std::string& timeString,
  *                   （"%Y-%m-%d %H:%M:%S"），需显式传入
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode append_time_string(std::string& timeString,
-                             const DateTimeSt& dateTime,
-                             const std::string_view& format);
+[[nodiscard]] ErrorCode append_time_string(std::string& timeString,
+                                           const DateTimeSt& dateTime,
+                                           const std::string_view& format);
 
 /**
  * @brief 将时间戳按指定格式写入字符缓冲区（高性能）
@@ -185,12 +194,12 @@ ErrorCode append_time_string(std::string& timeString,
  * @return 成功返回 ERR_COMM_SUCCESS；参数无效返回 ERR_COMM_PARAM_INVALID，
  *         缓冲区不足返回 ERR_COMM_BUFFER_OVERFLOW
  */
-ErrorCode format_time_buffer(char* buffer,
-                             size_t bufferSize,
-                             TimestampMs timestamp,
-                             const std::string_view& format,
-                             TimeZone timeZone,
-                             size_t& outLen);
+[[nodiscard]] ErrorCode format_time_buffer(char* buffer,
+                                           size_t bufferSize,
+                                           TimestampMs timestamp,
+                                           const std::string_view& format,
+                                           TimeZone timeZone,
+                                           size_t& outLen);
 
 /**
  * @brief 将时间组件按指定格式写入字符缓冲区（高性能）
@@ -205,11 +214,11 @@ ErrorCode format_time_buffer(char* buffer,
  * @return 成功返回 ERR_COMM_SUCCESS；参数无效返回 ERR_COMM_PARAM_INVALID，
  *         缓冲区不足返回 ERR_COMM_BUFFER_OVERFLOW
  */
-ErrorCode format_time_buffer(char* buffer,
-                             size_t bufferSize,
-                             const DateTimeSt& dateTime,
-                             const std::string_view& format,
-                             size_t& outLen);
+[[nodiscard]] ErrorCode format_time_buffer(char* buffer,
+                                           size_t bufferSize,
+                                           const DateTimeSt& dateTime,
+                                           const std::string_view& format,
+                                           size_t& outLen);
 
 // ------------------------------ 值返回便捷接口（忽略错误码） ------------------------------
 

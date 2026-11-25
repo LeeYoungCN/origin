@@ -398,8 +398,9 @@ origin_destroy_sink(sink);
   `origin_version_commit()`，它们属于 Common，反映整个 Origin 的版本。
 - `origin_logger_name` 返回的是**借用指针**，生命周期随 logger，不要 free，也不要跨线程长期保存；
 - C 宏末尾自带分号（`logging_c.h`），不要直接放在 `if/else` 的单语句分支里；
-- `origin_create_rotating_file_sink` 当前实际构造的是 `DailyFileSink`：参数按“每天滚动”解释，`hour=maxFileSize` 可能抛 `std::out_of_range`。这是已知缺陷，不要按“按大小滚动”依赖它；
-- 非法 `LogLevelC` 等错误路径仍可能抛异常穿过 C 边界（LOGGING-004）；C 侧调用要防御，不能假设失败一定返回错误码。
+- `origin_create_rotating_file_sink` 当前实际构造的是 `DailyFileSink`：参数按“每天滚动”解释，这是已知映射缺陷，不要按“按大小滚动”依赖它；
+- 所有 `extern "C"` 入口已统一捕获异常（CROSS-001）：指针返回 `nullptr`、`bool` 返回 `false`、
+  `LogLevelC` 返回 `OFF`，`void` 入口静默返回；失败不会抛到 C 侧，但也不会返回详细错误码。
 
 ## 13. 线程安全与生命周期
 

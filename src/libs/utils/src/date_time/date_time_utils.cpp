@@ -134,10 +134,15 @@ TimestampMs get_now_timestamp_ms()
 #endif
 }
 
+ErrorCode get_now_date_time(DateTimeSt& out)
+{
+    return timestamp_to_date_time(get_now_timestamp_ms(), TimeZone::LOCAL, out);
+}
+
 DateTimeSt get_now_date_time()
 {
     DateTimeSt out{};
-    (void)timestamp_to_date_time(get_now_timestamp_ms(), TimeZone::LOCAL, out);
+    (void)get_now_date_time(out);
     return out;
 }
 

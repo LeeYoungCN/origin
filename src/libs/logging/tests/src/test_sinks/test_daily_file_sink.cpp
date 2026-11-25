@@ -51,13 +51,13 @@ protected:
 
 void TestDailyFileSink::SetUp()
 {
-    delete_dir(_dir);
+    (void)delete_dir(_dir);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestDailyFileSink::TearDown()
 {
-    delete_dir(_dir);
+    (void)delete_dir(_dir);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -122,7 +122,7 @@ void TestDailyFileSink::TestRotateAndDelete(const testing::TestInfo* testInfo,
     for (uint32_t i = 0; i < existFiles; i++) {
         auto timeStamp = now - (i + 1) * MILLIS_PER_DAY;
         std::string const file = calc_log_file(baseFile, timeStamp);
-        create_file(file);
+        (void)create_file(file);
         allFilesList.push_back(file);
         sleep_ms(10);
     }
@@ -180,7 +180,7 @@ TEST_F(TestDailyFileSink, create_when_param_invalid)
 
 TEST_F(TestDailyFileSink, init_with_existing_files)
 {
-    create_dir(_dir);
+    (void)create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
 
     const std::string filenameStem = get_logger_name(test_info_);
@@ -190,19 +190,18 @@ TEST_F(TestDailyFileSink, init_with_existing_files)
     for (int32_t i = 10; i >= 0; --i) {
         const auto timeStamp = now - i * MILLIS_PER_DAY;
         const std::string file = calc_log_file(baseFile, timeStamp);
-        create_file(file);
+        (void)create_file(file);
         validFiles.push_back(file);
         sleep_ms(10);
     }
 
-    create_file(baseFile);
-    create_file(baseFile + ".log");
-    create_file(join_paths({_dir, filenameStem + ".2026.log"}));
-    create_file(join_paths({_dir, filenameStem + ".202601.log"}));
-    create_file(join_paths({_dir, filenameStem + ".20260732.log"}));
-    create_file(join_paths({_dir, filenameStem + ".00000000.log"}));
-    create_file(join_paths({_dir, filenameStem + ".test.log"}));
-
+    (void)create_file(baseFile);
+    (void)create_file(baseFile + ".log");
+    (void)create_file(join_paths({_dir, filenameStem + ".2026.log"}));
+    (void)create_file(join_paths({_dir, filenameStem + ".202601.log"}));
+    (void)create_file(join_paths({_dir, filenameStem + ".20260732.log"}));
+    (void)create_file(join_paths({_dir, filenameStem + ".00000000.log"}));
+    (void)create_file(join_paths({_dir, filenameStem + ".test.log"}));
     const DailyFileSink sink(baseFile);
     const auto fileList = sink.get_file_list();
     ASSERT_EQ(fileList.size(), validFiles.size());

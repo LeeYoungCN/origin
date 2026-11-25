@@ -7,6 +7,7 @@
 #include <string>
 
 #include "origin/common/debug/debug_logger.h"
+
 #include "origin/filesystem/filesystem.h"
 
 #include "origin/logging/formatters/formatter.hpp"
@@ -31,6 +32,17 @@ public:
     [[nodiscard]] std::unique_ptr<Formatter> clone() const override
     {
         return std::make_unique<ThrowingFormatter>();
+    }
+};
+
+class ThrowingNonStdFormatter : public Formatter {
+public:
+    // NOLINTNEXTLINE(hicpp-exception-baseclass): 故意抛出非 std::exception 异常
+    void format(const LogMsg&, std::string&) override { throw 42; }
+
+    [[nodiscard]] std::unique_ptr<Formatter> clone() const override
+    {
+        return std::make_unique<ThrowingNonStdFormatter>();
     }
 };
 }  // namespace
@@ -60,14 +72,14 @@ void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
 
 void TestSinkApi::SetUp()
 {
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestSinkApi::TearDown()
 {
     _sink.reset();
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -126,8 +138,7 @@ TEST_F(TestSinkApi, log_failure_is_reported_when_debug_logger_off)
     std::ostringstream captured;
     auto* const oldBuffer = std::cerr.rdbuf(captured.rdbuf());
     try {
-        EXPECT_NO_THROW(
-            _sink->log(create_log_msg(LOG_SRC_LOCAL, _name, LogLevel::INFO, "Test.")));
+        EXPECT_NO_THROW(_sink->log(create_log_msg(LOG_SRC_LOCAL, _name, LogLevel::INFO, "Test.")));
     } catch (...) {
         std::cerr.rdbuf(oldBuffer);
         throw;
@@ -136,6 +147,27 @@ TEST_F(TestSinkApi, log_failure_is_reported_when_debug_logger_off)
     origin_set_debug_logger_level(ORG_DBG_LVL_TRACE);
 
     EXPECT_NE(captured.str().find("Sink log failed"), std::string::npos);
+}
+
+TEST_F(TestSinkApi, non_std_exception_is_reported)
+{
+    InitSink(test_info_);
+    _sink->set_formatter(std::make_unique<ThrowingNonStdFormatter>());
+
+    origin_set_debug_logger_level(ORG_DBG_LVL_OFF);
+
+    std::ostringstream captured;
+    auto* const oldBuffer = std::cerr.rdbuf(captured.rdbuf());
+    try {
+        EXPECT_NO_THROW(_sink->log(create_log_msg(LOG_SRC_LOCAL, _name, LogLevel::INFO, "Test.")));
+    } catch (...) {
+        std::cerr.rdbuf(oldBuffer);
+        throw;
+    }
+    std::cerr.rdbuf(oldBuffer);
+    origin_set_debug_logger_level(ORG_DBG_LVL_TRACE);
+
+    EXPECT_NE(captured.str().find("unknown exception"), std::string::npos);
 }
 
 TEST_F(TestSinkApi, log_level_filter)

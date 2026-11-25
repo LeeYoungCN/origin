@@ -86,7 +86,7 @@ C ABI 的通用约定：跨边界只用 C 类型、UTF-8、显式所有权；异
 | 对象 | 是否线程安全 | 说明 |
 |---|---|---|
 | `BlockingQueue` | **否** | 无锁、无原子；只适合单线程或外部加锁 |
-| `ConcurrentBlockingQueue` | 是（有已知缺陷） | 内部 mutex + 条件变量；`dequeue` 已改阻塞锁并通知生产者，`at/operator[]` 解锁后返回引用仍 open（CONTAINER-006） |
+| `ConcurrentBlockingQueue` | 是 | 内部 mutex + 条件变量；`dequeue` 用阻塞锁并通知生产者，`at/operator[]` 持锁返回元素拷贝（CONTAINER-006 已关闭） |
 | Logger 级别 / flush 级别 | 是 | `std::atomic` |
 | Sink 写入 | 基本是 | 内部互斥锁；失败可观测性仍不完整 |
 | Registry | 是 | `std::mutex`；key 是非拥有 `string_view`，同名替换存在悬垂风险 |

@@ -97,6 +97,23 @@
   `origin_logging_set_level_all` / `origin_logging_flush_on_all`）对非法枚举不再抛异常；
   sink 写/刷失败改用强制调试日志上报，并检查 `FileWriter` / 流的结果，避免运行时级别
   设为 OFF 时静默丢失（LOGGING-004/005）。
+- `common` / `logging` 的所有 `extern "C"` 入口统一加异常保护：指针返回 `nullptr`、
+  `bool` 返回 `false`、`LogLevelC` 返回 `OFF`，`void` 入口吞掉异常，异常不再穿出 C ABI
+  （COMMON-010、CROSS-001）。`origin_debug_logger_c` 在 `format == nullptr` 时回退到
+  `stderr` 固定文本。
+- `get_entry_type` 改用 `symlink_status(path, ec)`，不再用会抛异常的 `fs::exists`；
+  断链 symlink 保留链接类型，FIFO/SOCKET 分开映射，系统错误统一经
+  `ConvertSysEcToErrorCode` 转换（UTILS-004/005）。`copy_file` / `rename_file`
+  不再忽略目标路径探测错误（UTILS-006）。
+- 路径辅助函数（`join_paths`、`to_absolute_path`、`get_directory`、`get_filename`、
+  `get_filename_stem`、`get_extension`、`is_absolute_path`）不再让 `std::filesystem`
+  异常穿出；值返回版本失败时返回空串或 `false`（UTILS-007）。
+- `filesystem` / `date_time` / `process` / `thread` / `file_writer` / `strings`
+  的 `ErrorCode` 返回接口统一加 `[[nodiscard]]`（UTILS-008）；新增
+  `ErrorCode get_now_date_time(DateTimeSt&)`，值返回版本委托它（UTILS-009）。
+- `ConcurrentBlockingQueue::at/operator[]` 改为持锁返回元素拷贝，不再返回解锁后的引用
+  （CONTAINER-006）；sink 的 `log/flush` 增加 `catch (...)`，非 `std::exception`
+  异常也会被上报（LOGGING-013）。
 
 ### 新增
 
@@ -138,7 +155,12 @@
 5. **移除的接口**：公共 `get_thread_last_err*`（线程局部错误状态）已删除，错误码只随返回值传递。
 6. **date_time 默认参数**：`ErrorCode` 版格式化接口没有默认参数，需显式传 `format` / `timeZone`；
    不想写这些参数时用值返回重载（保留 `format = DEFAULT_TIME_FMT`、`timeZone = LOCAL`）。
-7. **版本匹配**：`OriginConfigVersion.cmake` 使用 `SameMinorVersion`，下游改为
+7. **并发队列只读访问**：`ConcurrentBlockingQueue::at` / `operator[]` 改为返回元素拷贝，
+   不再返回 `const T&`；原先用 `auto&` 绑定的代码改为 `auto`，大对象请改用 `dequeue`。
+8. **`[[nodiscard]]`**：`ErrorCode` 返回接口现在标记为 `[[nodiscard]]`，忽略返回值会触发
+   编译器警告；确实不需要错误详情时显式写 `(void)`。C ABI 入口不再让 C++ 异常穿出，
+   失败时返回 `nullptr` / `false` / `OFF` 或静默返回。
+9. **版本匹配**：`OriginConfigVersion.cmake` 使用 `SameMinorVersion`，下游改为
    `find_package(Origin 2.0 CONFIG REQUIRED)`；SOVERSION 从 1 变为 2（Linux/macOS 为 `.so.2`）。
 
 ## [1.0.1] - 2026-11-14

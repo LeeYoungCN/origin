@@ -1,4 +1,5 @@
 #include "origin/common/debug/debug_logger.h"
+
 #include <string_view>
 
 #include "origin/common/macros/compiler.h"
@@ -29,7 +30,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <filesystem>
 #include <format>
 #include <iomanip>
 #include <iostream>
@@ -241,14 +241,27 @@ void origin_debug_logger_c(const char* file,
                            const char* format,
                            ...)
 {
-    if (!DebugLoggerImpl::instance().should_log(level)) {
-        return;
-    }
+    // C ABI 边界不允许异常穿出；格式化失败时退回固定文本。
+    try {
+        if (!DebugLoggerImpl::instance().should_log(level)) {
+            return;
+        }
+        if (format == nullptr) {
+            std::fputs("origin_debug_logger_c: format is nullptr\n", stderr);
+            return;
+        }
 
-    va_list args;
-    va_start(args, format);
-    DebugLoggerImpl::instance().log_va(file, line, func, level, format, args);
-    va_end(args);
+        va_list args;
+        va_start(args, format);
+        try {
+            DebugLoggerImpl::instance().log_va(file, line, func, level, format, args);
+        } catch (...) {
+            std::fputs("origin_debug_logger_c: failed to format or write log\n", stderr);
+        }
+        va_end(args);
+    } catch (...) {
+        std::fputs("origin_debug_logger_c: failed inside logger\n", stderr);
+    }
 }
 }
 

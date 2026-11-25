@@ -159,12 +159,12 @@ Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系�
 - `system_category` 到 Origin 错误码的映射很有限：Windows 只覆盖少量 Win32 错误，
   POSIX 基本统一坍缩成 `ERR_COMM_SYSTEM_ERROR`。不要指望从 `ErrorCode` 反推出精确的
   `errno`（见 UTILS-005）。
-- **值返回重载不是 `noexcept`**：`get_directory`、`join_paths`、`to_absolute_path` 等
-  路径辅助函数在非法 UTF-8 / 超长路径下仍可能抛异常（见 UTILS-007）。处理不可信输入时
-  用 `ErrorCode` 版，或在边界统一兜底。
-- C ABI 的目标是“返回 `ErrorCode`、不抛异常”，但当前尚未完全做到：非法枚举、
-  debug logger 等入口仍可能抛（CROSS-001、LOGGING-004、COMMON-010）。
-  C 侧调用要按“可能异常/可能没有错误码”做防御，不能假设失败一定返回错误码。
+- **值返回重载不能表达错误原因**：`get_directory`、`get_filename` 等路径辅助函数已
+  捕获 `std::filesystem` 异常，非法 UTF-8 / 超长路径下返回空串，`is_absolute_path`
+  返回 `false`（见 UTILS-007）；需要区分错误时用 `ErrorCode` 版。
+- C ABI 入口已统一捕获异常（CROSS-001、COMMON-010、LOGGING-004）：失败时返回
+  `nullptr` / `false` / `OFF`，`void` 入口静默返回。C 侧不会收到异常，但也拿不到
+  详细错误码，不能把“返回安全值”当成“成功”。
 - 文案函数未命中会逐级回退：`get_utils_err_msg` / `get_container_err_msg` → Common 文案。
   错误文本只用于展示，**不要解析文本做逻辑判断**。
 

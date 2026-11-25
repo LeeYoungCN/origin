@@ -170,7 +170,12 @@ ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite)
     }
 
     EntryType type = EntryType::UNKNOWN;
-    (void)get_entry_type(dest, type);
+    const ErrorCode destCode = get_entry_type(dest, type);
+    if (destCode != ERR_COMM_SUCCESS && destCode != ERR_UTILS_NOT_FOUND) {
+        ORIGIN_DEBUG_ERR(
+            "Copy file failed. dest: {}, error: {}", dest, get_utils_err_msg(destCode));
+        return destCode;
+    }
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
         ORIGIN_DEBUG_ERR("Copy file failed. file: {}, dest invalid: {}, type: {}",
                          src,
@@ -204,7 +209,12 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
     }
 
     EntryType type = EntryType::UNKNOWN;
-    (void)get_entry_type(dest, type);
+    const ErrorCode destCode = get_entry_type(dest, type);
+    if (destCode != ERR_COMM_SUCCESS && destCode != ERR_UTILS_NOT_FOUND) {
+        ORIGIN_DEBUG_ERR(
+            "Rename file failed. dest: {}, error: {}", dest, get_utils_err_msg(destCode));
+        return destCode;
+    }
     // 类型错误
     if (type != EntryType::FILE && type != EntryType::NONEXISTENT) {
         ORIGIN_DEBUG_ERR("Rename file failed. file: {}. dest invalid: {}, type: {}",

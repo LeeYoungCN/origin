@@ -24,6 +24,8 @@ void SinkImplBase::log(const LogMsg& logMsg)
         log_it(logMsg);
     } catch (std::exception& ex) {
         report_error("log", ex.what());
+    } catch (...) {
+        report_error("log", "unknown exception");
     }
 }
 
@@ -34,6 +36,8 @@ void SinkImplBase::flush()
         flush_it();
     } catch (std::exception& ex) {
         report_error("flush", ex.what());
+    } catch (...) {
+        report_error("flush", "unknown exception");
     }
 }
 
@@ -47,8 +51,7 @@ void SinkImplBase::report_error(const char* action, const char* detail) const no
         message += "\". [Exception]: \"";
         message += detail == nullptr ? "unknown" : detail;
         message += "\".";
-        origin_debug_logger_force_log(
-            __FILE__, __LINE__, __FUNCTION__, ORG_DBG_LVL_ERR, message);
+        origin_debug_logger_force_log(__FILE__, __LINE__, __FUNCTION__, ORG_DBG_LVL_ERR, message);
     } catch (...) {
         // 错误上报本身不能再抛异常。
     }

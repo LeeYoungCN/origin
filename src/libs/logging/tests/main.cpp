@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     testing::InitGoogleTest(&argc, argv);
     auto rst = RUN_ALL_TESTS();
     ORIGIN_DEBUG_INFO("Run all tests finish. Result: {}.", rst);
-    origin::filesystem::delete_dir(dir);
+    (void)origin::filesystem::delete_dir(dir);
 
     return rst;
 }

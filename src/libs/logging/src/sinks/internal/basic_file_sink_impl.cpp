@@ -47,7 +47,7 @@ BasicFileSinkImpl::BasicFileSinkImpl(const std::string_view file,
         throw std::invalid_argument("file empty");
     }
 
-    _fileWriter.open(_overwrite);
+    (void)_fileWriter.open(_overwrite);
     if (_fileWriter.get_last_error() != ERR_COMM_SUCCESS) {
         ORIGIN_DEBUG_ERR("Create BasicFileSinkImpl failed. File: \"{}\", mode: {}. msg: \"{}\".",
                          file,
@@ -74,8 +74,7 @@ void BasicFileSinkImpl::sink_it(const std::string_view message)
 {
     _fileWriter.write_line(message);
     if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
-        throw std::runtime_error("Failed to write log: " +
-                                 std::string(get_utils_err_msg(errc)));
+        throw std::runtime_error("Failed to write log: " + std::string(get_utils_err_msg(errc)));
     }
 }
 
@@ -83,8 +82,7 @@ void BasicFileSinkImpl::flush_it()
 {
     _fileWriter.flush();
     if (const auto errc = _fileWriter.get_last_error(); errc != ERR_COMM_SUCCESS) {
-        throw std::runtime_error("Failed to flush log: " +
-                                 std::string(get_utils_err_msg(errc)));
+        throw std::runtime_error("Failed to flush log: " + std::string(get_utils_err_msg(errc)));
     }
 }
 

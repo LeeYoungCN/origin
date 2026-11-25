@@ -270,11 +270,12 @@ public:
     [[nodiscard]] size_t capacity() const { return _queue.capacity(); }
 
     /**
-     * @brief 返回队首偏移 idx 的只读引用。
-     * @warning 返回的引用只在本次调用期间有效；解锁后其他线程可能覆盖/移除该元素，
-     *          需要稳定数据时请使用 dequeue 拷贝。
+     * @brief 返回队首偏移 idx 处元素的拷贝。
+     * @details 持锁读取并拷贝，返回后即使其他线程覆盖/移除该位置也不影响结果。
+     * @note 需要 T 可拷贝；拷贝成本由调用方承担。只读访问请优先使用本接口。
+     * @throw std::out_of_range idx 越界时抛出。
      */
-    const T& operator[](size_t idx)
+    T operator[](size_t idx)
     {
         std::lock_guard lock(_queueMtx);
         throw_if_out_of_range(idx);
@@ -282,15 +283,16 @@ public:
     }
 
     /**
-     * @brief 返回队首偏移 idx 的只读引用。
-     * @warning 返回的引用只在本次调用期间有效；解锁后其他线程可能覆盖/移除该元素，
-     *          需要稳定数据时请使用 dequeue 拷贝。
+     * @brief 返回队首偏移 idx 处元素的拷贝。
+     * @details 持锁读取并拷贝，返回后即使其他线程覆盖/移除该位置也不影响结果。
+     * @note 需要 T 可拷贝；拷贝成本由调用方承担。
+     * @throw std::out_of_range idx 越界时抛出。
      */
-    const T& at(size_t idx)
+    T at(size_t idx)
     {
         std::lock_guard lock(_queueMtx);
         throw_if_out_of_range(idx);
-        return _queue[idx];
+        return _queue.at(idx);
     }
 
     void clear()

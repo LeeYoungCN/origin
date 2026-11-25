@@ -139,7 +139,9 @@ public:
 | `TimestampMs get_file_modify_time(path)` | `0` |
 | `FileInfo get_file_info(path)` | `path`/`type` 有效，`size`/`modifyTime` 为 `0` |
 
-> 注意：路径辅助函数（`get_directory`、`join_paths`、`to_absolute_path` 等）的值返回重载在非法 UTF-8 / 超长路径下仍可能抛异常（UTILS-007），不能当作 `noexcept`。
+> 注意：路径辅助函数（`get_directory`、`join_paths`、`to_absolute_path` 等）已捕获
+> `std::filesystem` 异常；值返回版本在非法 UTF-8 / 超长路径下返回空串或 `false`，
+> 但无法区分具体错误原因，需要错误详情时用 `ErrorCode` 版本（UTILS-007）。
 
 ## 错误处理
 

@@ -62,7 +62,7 @@ namespace origin::filesystem {
  * @note 函数内部处理了符号链接的特殊情况：返回链接本身的类型，
  *       而非链接指向的目标类型。如需获取目标类型，需先解析链接。
  */
-ErrorCode get_entry_type(std::string_view path, EntryType& out);
+[[nodiscard]] ErrorCode get_entry_type(std::string_view path, EntryType& out);
 
 const char* get_entry_type_str(EntryType type);
 
@@ -77,7 +77,7 @@ inline const char* get_file_mode_str(bool overwrite)
  * @param[out] out 当前工作路径；失败时不被修改
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode get_curr_working_dir(std::string& out);
+[[nodiscard]] ErrorCode get_curr_working_dir(std::string& out);
 
 /**
  * @brief 拼接多个路径片段为完整路径
@@ -88,7 +88,7 @@ ErrorCode get_curr_working_dir(std::string& out);
  * @note 片段中若出现绝对路径，会替换掉前面已拼接的部分
  *       （std::filesystem::operator/= 语义）
  */
-ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
+[[nodiscard]] ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
 
 /**
  * @brief 纯词法规范化路径（不访问磁盘）
@@ -104,7 +104,7 @@ ErrorCode join_paths(const std::vector<std::string>& parts, std::string& out);
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @see to_absolute_path 需要绝对路径时使用
  */
-ErrorCode normalize_path(std::string_view path, std::string& out);
+[[nodiscard]] ErrorCode normalize_path(std::string_view path, std::string& out);
 
 /**
  * @brief 将路径拼到基准目录后转为绝对路径
@@ -124,7 +124,9 @@ ErrorCode normalize_path(std::string_view path, std::string& out);
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @see normalize_path 只做词法规范化、不转绝对路径
  */
-ErrorCode to_absolute_path(std::string_view relPath, std::string_view baseDir, std::string& out);
+[[nodiscard]] ErrorCode to_absolute_path(std::string_view relPath,
+                                         std::string_view baseDir,
+                                         std::string& out);
 
 /**
  * @brief 获取路径中的目录部分（父目录路径）
@@ -189,14 +191,14 @@ bool file_exists(std::string_view path);
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  * @note 若文件已存在，将被截断为0字节
  */
-ErrorCode create_file(std::string_view path);
+[[nodiscard]] ErrorCode create_file(std::string_view path);
 
 /**
  * @brief 删除文件
  * @param path 要删除的文件路径
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode delete_file(std::string_view path);
+[[nodiscard]] ErrorCode delete_file(std::string_view path);
 
 /**
  * @brief 复制文件
@@ -205,7 +207,9 @@ ErrorCode delete_file(std::string_view path);
  * @param overwrite 若目标已存在，是否覆盖（默认为false）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite = false);
+[[nodiscard]] ErrorCode copy_file(std::string_view src,
+                                  std::string_view dest,
+                                  bool overwrite = false);
 
 /**
  * @brief 移动文件
@@ -214,7 +218,9 @@ ErrorCode copy_file(std::string_view src, std::string_view dest, bool overwrite 
  * @param overwrite 若目标已存在，是否覆盖（默认为false）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrite = false);
+[[nodiscard]] ErrorCode rename_file(std::string_view src,
+                                    std::string_view dest,
+                                    bool overwrite = false);
 
 /**
  * @brief 读取文本文件内容
@@ -223,7 +229,7 @@ ErrorCode rename_file(std::string_view src, std::string_view dest, bool overwrit
  * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
  *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
-ErrorCode read_text_file(std::string_view path, std::string& out);
+[[nodiscard]] ErrorCode read_text_file(std::string_view path, std::string& out);
 
 /**
  * @brief 读取二进制文件内容
@@ -232,7 +238,7 @@ ErrorCode read_text_file(std::string_view path, std::string& out);
  * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
  *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
-ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out);
+[[nodiscard]] ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out);
 
 /**
  * @brief 写入文本内容到文件
@@ -241,7 +247,9 @@ ErrorCode read_binary_file(std::string_view path, std::vector<uint8_t>& out);
  * @param overwrite 是否以覆盖模式写入（默认为false，追加模式）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode write_text_file(std::string_view path, std::string_view content, bool overwrite = false);
+[[nodiscard]] ErrorCode write_text_file(std::string_view path,
+                                        std::string_view content,
+                                        bool overwrite = false);
 
 /**
  * @brief 获取文件大小（字节数）
@@ -250,7 +258,7 @@ ErrorCode write_text_file(std::string_view path, std::string_view content, bool 
  * @return 成功返回 ERR_COMM_SUCCESS；文件不存在返回 ERR_UTILS_NOT_FOUND，
  *         存在但不是文件返回 ERR_UTILS_NOT_FILE
  */
-ErrorCode get_file_size(std::string_view path, FileSize& out);
+[[nodiscard]] ErrorCode get_file_size(std::string_view path, FileSize& out);
 
 /**
  * @brief 获取文件的最后修改时间
@@ -258,7 +266,7 @@ ErrorCode get_file_size(std::string_view path, FileSize& out);
  * @param[out] out 毫秒级时间戳（Unix纪元基准）；失败时不被修改
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
+[[nodiscard]] ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
 
 /**
  * @brief 获取文件的详细信息
@@ -267,7 +275,7 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out);
  *                 仍会写入，size 与 modifyTime 保持默认值
  * @return 成功返回 ERR_COMM_SUCCESS；路径不存在返回 ERR_UTILS_NOT_FOUND
  */
-ErrorCode get_file_info(std::string_view path, FileInfo& out);
+[[nodiscard]] ErrorCode get_file_info(std::string_view path, FileInfo& out);
 
 /**
  * @brief 判断目录是否存在且为目录
@@ -282,7 +290,7 @@ bool dir_exists(std::string_view path);
  * @param recursive 是否递归创建父目录（默认为true）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode create_dir(std::string_view path, bool recursive = true);
+[[nodiscard]] ErrorCode create_dir(std::string_view path, bool recursive = true);
 
 /**
  * @brief 删除目录
@@ -290,7 +298,7 @@ ErrorCode create_dir(std::string_view path, bool recursive = true);
  * @param recursive 是否递归删除非空目录（默认为true）
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode delete_dir(std::string_view path, bool recursive = true);
+[[nodiscard]] ErrorCode delete_dir(std::string_view path, bool recursive = true);
 
 // ------------------------------ 值返回便捷重载（忽略错误码） ------------------------------
 

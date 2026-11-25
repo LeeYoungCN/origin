@@ -63,7 +63,8 @@ typedef enum {
 | 接口 | 说明 |
 |---|---|
 | `TimestampMs get_now_timestamp_ms()` | 当前毫秒时间戳 |
-| `DateTimeSt get_now_date_time()` | 当前本地时间组件 |
+| `ErrorCode get_now_date_time(DateTimeSt& out)` | 当前本地时间组件；失败返回错误码 |
+| `DateTimeSt get_now_date_time()` | 值返回便捷版；失败返回全 0 时间 |
 
 ### 时间转换
 

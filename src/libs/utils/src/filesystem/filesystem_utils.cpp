@@ -21,24 +21,29 @@
 #include "origin/filesystem/filesystem.h"
 #include "origin/utils/utils_error_code.h"
 
+#include "filesystem/internal/common.hpp"
+
 namespace origin::filesystem {
 namespace fs = std::filesystem;
 
 ErrorCode get_entry_type(std::string_view path, EntryType& out)
 {
-    if (!fs::exists(path)) {
-        out = EntryType::NONEXISTENT;
-        return ERR_UTILS_NOT_FOUND;
-    }
-    // 获取文件状态（使用symlink_status而非status，保留符号链接本身的类型）
-    std::error_code ec;  // 用于非抛出式错误处理
+    // symlink_status 不跟随链接，可保留“链接本身”的类型；用 error_code 重载避免抛异常。
+    std::error_code ec;
     fs::file_status const status = fs::symlink_status(path, ec);
     if (ec) {
+        if (ec == std::errc::no_such_file_or_directory) {
+            out = EntryType::NONEXISTENT;
+            return ERR_UTILS_NOT_FOUND;
+        }
         ORIGIN_DEBUG_ERR("Failed to get symlink status. errCode: {}", ec.value());
         out = EntryType::UNKNOWN;
-        return ERR_COMM_SYSTEM_ERROR;
+        return ConvertSysEcToErrorCode(ec);
     }
     switch (status.type()) {
+        case fs::file_type::not_found:
+            out = EntryType::NONEXISTENT;
+            return ERR_UTILS_NOT_FOUND;
         case fs::file_type::regular:  // 普通文件
             out = EntryType::FILE;
             break;
@@ -55,6 +60,9 @@ ErrorCode get_entry_type(std::string_view path, EntryType& out)
             out = EntryType::BLOCK_DEVICE;
             break;
         case fs::file_type::fifo:
+            out = EntryType::FIFO;
+            break;
+        case fs::file_type::socket:
             out = EntryType::SOCKET;
             break;
         case fs::file_type::unknown:

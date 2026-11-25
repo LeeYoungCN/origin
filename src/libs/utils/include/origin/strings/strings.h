@@ -9,7 +9,7 @@
 #include "origin/common/types/type_traits.h"
 
 namespace origin::strings {
-ErrorCode va_list_to_string(const char* format, va_list args, std::string& out);
+[[nodiscard]] ErrorCode va_list_to_string(const char* format, va_list args, std::string& out);
 bool string_is_null_or_empty(const char* str);
 
 /**

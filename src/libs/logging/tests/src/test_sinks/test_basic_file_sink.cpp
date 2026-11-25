@@ -33,13 +33,13 @@ protected:
 
 void TestBasicFileSink::SetUp()
 {
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestBasicFileSink::TearDown()
 {
-    delete_dir(_dir, true);
+    (void)delete_dir(_dir, true);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -50,7 +50,7 @@ TEST_F(TestBasicFileSink, create_file_empty)
 
 TEST_F(TestBasicFileSink, create_file_invalid_path)
 {
-    create_dir(_dir);
+    (void)create_dir(_dir);
     EXPECT_THROW(const BasicFileSink sink(_dir), std::runtime_error);
 }
 

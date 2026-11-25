@@ -26,7 +26,7 @@ namespace origin::process {
  *       - Windows: 通过GetModuleFileName获取
  *       - Linux/macOS: 通过/proc/self/exe符号链接获取
  */
-ErrorCode get_proc_path(std::string& out);
+[[nodiscard]] ErrorCode get_proc_path(std::string& out);
 
 /**
  * @brief 获取当前进程所在目录
@@ -34,7 +34,7 @@ ErrorCode get_proc_path(std::string& out);
  * @param[out] out 目录的绝对路径；失败时不被修改
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode get_proc_directory(std::string& out);
+[[nodiscard]] ErrorCode get_proc_directory(std::string& out);
 
 /**
  * @brief 获取当前进程名称（不含扩展名）
@@ -42,7 +42,7 @@ ErrorCode get_proc_directory(std::string& out);
  * @param[out] out 进程文件名；失败时不被修改
  * @return 成功返回 ERR_COMM_SUCCESS，失败返回错误码
  */
-ErrorCode get_proc_filename_stem(std::string& out);
+[[nodiscard]] ErrorCode get_proc_filename_stem(std::string& out);
 
 /**
  * @brief 获取当前进程ID

@@ -27,11 +27,11 @@
 ## 当前记录
 
 基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
-当前工作区（2026-11-25，未提交）关闭 13 项，变为 35 `open`、1 `partial`、18 `fixed`；逐项证据见报告“后续”段落。
+本次修复（2026-11-25，提交 `d075c87`）关闭 13 项，变为 35 `open`、1 `partial`、18 `fixed`；逐项证据见报告“后续”段落。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
 |---|---|---|---|
-| 2026-11-22 | 全项目：`common`/`container`/`logging`/`utils` | [2026-11-22-full-project-audit.md](2026-11-22-full-project-audit.md) | 新增 26 项（基线时全部 open；2026-11-25 工作区已关闭 13 项） |
+| 2026-11-22 | 全项目：`common`/`container`/`logging`/`utils` | [2026-11-22-full-project-audit.md](2026-11-22-full-project-audit.md) | 新增 26 项（基线时全部 open；2026-11-25 修复已关闭 13 项） |
 | 2026-11-22 | `utils` + `logging` 详细审计 | [2026-11-22-logging-utils-audit.md](2026-11-22-logging-utils-audit.md) | 21 open / 2 partial / 5 fixed |
 
 ## 54 项总览（2026-11-22 基线）
@@ -111,7 +111,7 @@
 
 ### 统一修复顺序
 
-1. **P0 正确性**（2026-11-25 工作区已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
+1. **P0 正确性**（2026-11-25 已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
 2. **错误契约**：UTILS-004/005/006/007、LOGGING-004、COMMON-002/010、CONTAINER-004~007。
 3. **可观测性与 API 收敛**：UTILS-008/009、LOGGING-005、UTILS-010/011、LOGGING-008~010。
 4. **测试与剩余 P2**：CONTAINER-011、LOGGING-012、CROSS-002，再按模块收口其余 P2。
@@ -119,7 +119,7 @@
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 工作区：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

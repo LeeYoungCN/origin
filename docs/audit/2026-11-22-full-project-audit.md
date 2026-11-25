@@ -175,7 +175,7 @@ MSVC Debug:  test_origin 403 passed
 
 ## 后续（2026-11-25）
 
-工作区改动（未提交）已关闭本报告新增的全部 P0，以及 CString 和队列相关的连带项：
+修复提交 `d075c87` 已关闭本报告新增的全部 P0，以及 CString 和队列相关的连带项：
 
 - COMMON-001/002/003：随 `working_env` 整体删除；
 - CONTAINER-001/009：`BlockingQueue` 改用 `std::optional` 槽位，不再要求 `T` 默认构造；

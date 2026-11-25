@@ -10,9 +10,9 @@
 |---|---|
 | 快照日期 | 2026-11-25 |
 | 分支 / 基线 HEAD | `master` / `1fa6636`（`docs: 增加跨语言封装说明`） |
-| 工作区 | **有代码改动，未提交**：删除 `working_env` / `CString` / `root_logger_raw`，修复并发队列 |
+| 工作区 | 干净：P0 修复已提交 `d075c87`（删除 `working_env` / `CString` / `root_logger_raw`，修复并发队列） |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
-| 审计基线 | `c37a364`（2026-11-22 全量审计）；工作区 54 项 = 35 open / 1 partial / 18 fixed |
+| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 35 open / 1 partial / 18 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
 
 审计计数、证据和验证方式以 [audit/README.md](audit/README.md) 与 [findings.json](audit/findings.json) 为准，本文不重复统计表。
@@ -26,10 +26,10 @@
 
 ## 3. 构建与测试健康
 
-本工作区已跑过 MSVC x64 Debug 与 MinGW Debug 的构建与 ctest。
+本快照对应的工作区已跑过 MSVC x64 Debug 与 MinGW Debug 的构建与 ctest。
 
 - 常规验证矩阵：MSVC x64 Debug + MinGW Debug；平台相关改动再补 Linux/macOS。
-- 2026-11-25 工作区：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 27、`test_Utils` 143、`test_Logging` 226）。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 27、`test_Utils` 143、`test_Logging` 226）。
 - ctest 只注册 `test_Container`、`test_Utils`、`test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest 中**。
 - `cmake --build --preset=*_build` 会连带 install；CI 的 `cmake-multi-cmake-presets.yml` 覆盖 6 个配置，`clang-tidy.yml` 不阻塞合并，`cmake-multi-platform.yml` 已过时。
 
@@ -37,7 +37,7 @@
 
 ## 4. 审计状态
 
-当前没有仍 open / partial 的 P0。本次工作区关闭了 5 条 P0：
+当前没有仍 open / partial 的 P0。本次修复关闭了 5 条 P0：
 
 | ID | 原问题 | 处理 |
 |---|---|---|

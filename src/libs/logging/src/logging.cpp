@@ -144,7 +144,7 @@ uint32_t log_all(const LogSource& source, LogLevel level, std::string_view messa
     uint32_t count = 0;
     apply_all([&](const std::shared_ptr<Logger>& logger) {
         if (logger->should_log(level)) {
-            logger->force_log(source, level, message);
+            logger->log(source, level, message);
             ++count;
         }
     });

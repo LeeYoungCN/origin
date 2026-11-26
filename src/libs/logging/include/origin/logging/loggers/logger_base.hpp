@@ -36,9 +36,8 @@ public:
 
     void flush() override;
 
-    void force_log(const LogSource& source, LogLevel level, std::string_view message) override;
-
 protected:
+    void log_unchecked(const LogSource& source, LogLevel level, std::string_view message) override;
     void throw_if_pimpl_null() const;
 #if COMPILER_MSVC
 #pragma warning(push)

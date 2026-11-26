@@ -81,18 +81,6 @@ std::vector<std::shared_ptr<Sink>> sink_ptr_vector(const SinkSt* const sinks[],
     return sinkPtrs;
 }
 
-void origin_force_log_it(const std::shared_ptr<Logger>& logger,
-                         const char* file,
-                         const int line,
-                         const char* func,
-                         const LogLevel level,
-                         const char* format,
-                         va_list args)
-{
-    logger->force_log(
-        LogSource(file, line, func), level, origin::strings::va_list_to_string(format, args));
-}
-
 void origin_log_it(const std::shared_ptr<Logger>& logger,
                    const char* file,
                    const int line,
@@ -101,8 +89,7 @@ void origin_log_it(const std::shared_ptr<Logger>& logger,
                    const char* format,
                    va_list args)
 {
-    if (logger->should_log(level)) {
-        origin_force_log_it(logger, file, line, func, level, format, args);
-    }
+    logger->log(
+        LogSource(file, line, func), level, origin::strings::va_list_to_string(format, args));
 }
 }  // namespace origin::logging::c_api

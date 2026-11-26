@@ -66,14 +66,6 @@ LogLevelC cpp_to_c_log_level(LogLevel level);
 std::vector<std::shared_ptr<origin::logging::Sink>> sink_ptr_vector(const SinkSt* const sinks[],
                                                                     uint32_t sinkCnt);
 
-void origin_force_log_it(const std::shared_ptr<origin::logging::Logger>& logger,
-                         const char* file,
-                         int line,
-                         const char* func,
-                         LogLevel level,
-                         const char* format,
-                         va_list args);
-
 void origin_log_it(const std::shared_ptr<origin::logging::Logger>& logger,
                    const char* file,
                    int line,

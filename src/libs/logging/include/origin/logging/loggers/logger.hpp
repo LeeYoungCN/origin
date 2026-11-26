@@ -19,6 +19,7 @@
 #include "origin/logging/sinks/sink.hpp"
 
 namespace origin::logging {
+class LoggerBase;
 class LOGGING_API Logger {
 public:
     Logger() = default;
@@ -38,7 +39,6 @@ public:
     virtual void set_pattern(std::string_view pattern) const = 0;
     virtual void set_formatter(const std::unique_ptr<Formatter>& formatter) const = 0;
 
-    virtual void force_log(const LogSource& source, LogLevel level, std::string_view message) = 0;
     virtual void flush() = 0;
 
 #pragma region log function
@@ -47,7 +47,7 @@ public:
     void log(const LogSource& source, const LogLevel level, const T& message)
     {
         if (should_log(level)) {
-            force_log(source, level, origin::strings::type_to_string(message));
+            log_unchecked(source, level, origin::strings::type_to_string(message));
         }
     }
 
@@ -58,7 +58,7 @@ public:
              Args&&... args)
     {
         if (should_log(level)) {
-            force_log(source, level, std::format(format, std::forward<Args>(args)...));
+            log_unchecked(source, level, std::format(format, std::forward<Args>(args)...));
         }
     }
 
@@ -218,6 +218,10 @@ public:
         log(source, LogLevel::FATAL, message);
     }
 #pragma endregion
+
+protected:
+    virtual void log_unchecked(const LogSource& source, LogLevel level, std::string_view message) = 0;
+    friend class LoggerBase;
 };
 }  // namespace origin::logging
 

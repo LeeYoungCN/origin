@@ -154,8 +154,8 @@ Origin 内部会把系统错误转换成自己的 `ErrorCode`（例如文件系�
 
 ### 2.4 实现边界（读代码前必看）
 
-- `MAKE_ERROR` **不做字段掩码**。`severity/module/type/id` 超出 16 位会污染相邻字段；
-  新增宏时先确认取值在范围内，必要时加 `static_assert`（见 COMMON-005）。
+- `MAKE_ERROR` 会先把 `severity/module/type/id` 各自截到 16 位再拼接，超宽值不会污染
+  相邻字段；但截断仍会改变原值，新增模块/类型 ID 时应保持在 16 位范围内。
 - `system_category` 到 Origin 错误码的映射很有限：Windows 只覆盖少量 Win32 错误，
   POSIX 基本统一坍缩成 `ERR_COMM_SYSTEM_ERROR`。不要指望从 `ErrorCode` 反推出精确的
   `errno`（见 UTILS-005）。

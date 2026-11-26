@@ -3,11 +3,8 @@
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
-// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
-#include <windows.h>
-
-#include <minwindef.h>
-typedef DWORD ProcessId;
+// 与 DWORD 宽度一致（32 位无符号），但不引入 windows.h，避免污染公共头文件。
+typedef unsigned long ProcessId;
 #elif OS_LINUX || OS_MACOS
 #include <sys/types.h>
 typedef pid_t ProcessId;

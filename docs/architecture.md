@@ -37,7 +37,7 @@ Common / Container / Utils  <- Logging
 ```
 
 - `module`：`COMMON=1`、`UTILS=2`、`CONTAINER=3`；成功值是 `ERR_COMM_SUCCESS`（`0`）。
-- 构造用 `MAKE_ERROR(severity, module, type, id)`，各模块再包一层 `MAKE_*_ERROR`；`MAKE_ERROR` 不做字段掩码，传超宽值会污染相邻字段。
+- 构造用 `MAKE_ERROR(severity, module, type, id)`，各模块再包一层 `MAKE_*_ERROR`；`MAKE_ERROR` 对每个字段先做 16 位掩码，超宽值不会污染相邻字段。
 - 文案函数是纯函数：`get_comm_err_msg`、`get_utils_err_msg`、`get_container_err_msg`，后两者未命中会回退到 Common。
 - 可失败接口的标准形态是 `ErrorCode fn(..., Out& out)`，同名 inline 重载直接返回值；值版只适合“不关心失败原因”的场景。
 - 部分路径辅助函数（`get_directory`、`join_paths`、`to_absolute_path` 等）的值返回重载仍可能抛异常，不能当 `noexcept`。

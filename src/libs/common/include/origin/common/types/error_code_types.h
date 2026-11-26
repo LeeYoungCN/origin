@@ -35,10 +35,12 @@ typedef enum {
 #define ERR_ID_SHIFT       0   // 具体错误码无需移位
 
 // ======================== 错误码构造宏 ========================
-#define MAKE_ERROR(severity, module, type, errId)                                                  \
-    ((ErrorCode)(((uint64_t)(severity) << ERR_SEVERITY_SHIFT) |                                    \
-                 ((uint64_t)(module) << ERR_MODULE_SHIFT) | ((uint64_t)(type) << ERR_TYPE_SHIFT) | \
-                 ((uint64_t)(errId) << ERR_ID_SHIFT)))
+// 每个字段先截断到 16 位再移位，避免超宽值污染相邻字段。
+#define MAKE_ERROR(severity, module, type, errId)                                         \
+    ((ErrorCode)((((uint64_t)(((uint32_t)(severity)) & 0xFFFFu)) << ERR_SEVERITY_SHIFT) | \
+                 (((uint64_t)(((uint32_t)(module)) & 0xFFFFu)) << ERR_MODULE_SHIFT) |     \
+                 (((uint64_t)(((uint32_t)(type)) & 0xFFFFu)) << ERR_TYPE_SHIFT) |         \
+                 (((uint64_t)(((uint32_t)(errId)) & 0xFFFFu)) << ERR_ID_SHIFT)))
 #ifdef __cplusplus
 }
 #endif

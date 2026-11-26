@@ -219,3 +219,13 @@ MSVC Debug:  test_origin 403 passed
 - LOGGING-012：标 `partial`，已有 sink 异常、非法路径、async 池销毁降级；仍缺真实磁盘写满、权限拒绝、旋转失败注入。
 
 验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Container 30、test_Utils 146、test_Logging 231。
+
+
+## 后续（2026-11-26，Common/宏收口）
+
+- COMMON-004/005：补齐错误文案；`MAKE_ERROR` 对 module/type/id 做 16 位掩码。
+- COMMON-006/007/008：修正 `ATTR_ALIGNED`、删除未使用且不等价的属性宏；MinGW 归入 GCC 家族并移除 `thread_local` 重定义；`warnings.h` 改为成对 push/pop，不再在头文件顶层修改全局警告状态。
+- COMMON-009：Windows 类型头不再包含 `<windows.h>`，`ProcessId`/`ThreadId` 改用 `unsigned long`。
+- COMMON-011/012：`va_list` 格式化补空指针、长度和返回值校验；`remove_cvref_t` 改用 C++17 可实现的写法。
+- CROSS-003：OS/编译器/构建类型默认值集中到 `compiler.h`，独立包含公共头不再把未定义构建宏当成 Release。
+- 验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；`test_Utils` 150。

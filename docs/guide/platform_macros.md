@@ -242,7 +242,7 @@ int main() {
 | `OS_MACOS` | macOS |
 | `COMPILER_MSVC` | MSVC（cl.exe） |
 | `COMPILER_MINGW` | MinGW（Windows 上的 GCC） |
-| `COMPILER_GCC` | GCC |
+| `COMPILER_GCC` | GCC；MinGW 下也为 1 |
 | `COMPILER_CLANG` | Clang（含 clang-cl） |
 
 ```cpp
@@ -267,9 +267,11 @@ int main() {
 |---|---|
 | `ATTR_FORCE_INLINE` | 强制内联 |
 | `ATTR_NOINLINE` | 禁止内联 |
-| `ATTR_PURE` | 无副作用（可缓存返回值） |
-| `ATTR_CONST` | 结果只依赖参数 |
-| `ATTR_WEAK` | 弱符号 |
+| `ATTR_DEPRECATED(msg)` | 标记废弃接口 |
+| `ATTR_ALIGNED(n)` | 指定类型/变量的内存对齐 |
+
+> `ATTR_USED` / `ATTR_PURE` / `ATTR_CONST` / `ATTR_WEAK` 的 MSVC 替代并不等价，已删除；
+> 需要这些语义时按编译器直接写扩展属性并做平台验证。
 
 ### 6.3 特性探测（`origin/common/macros/feature.h`）
 
@@ -283,4 +285,19 @@ int main() {
 | `SUPPORTS_FOLD_EXPRESSIONS` | 折叠表达式 |
 
 > 项目要求 C++20，这些特性在目标编译器上都可用，`feature.h` 主要用于兼容旧代码或第三方环境。
+> 不再把 `thread_local` 重定义为 `__thread`；不支持该关键字的环境应直接编译失败。
+
+### 6.4 局部警告控制（`origin/common/macros/warnings.h`）
+
+`warnings.h` 不再在头文件顶层修改全局警告状态，只提供成对宏：
+
+```cpp
+#include "origin/common/macros/warnings.h"
+
+ORIGIN_WARNINGS_PUSH
+// 可能触发警告的声明或实现
+ORIGIN_WARNINGS_POP
+```
+
+警告级别本身由目标的编译选项决定（MSVC `/W4`，GCC/Clang `-Wall -Wextra`）。
 

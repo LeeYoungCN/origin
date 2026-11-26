@@ -59,13 +59,13 @@ protected:
 
 void TestRotatingFileSink::SetUp()
 {
-    delete_dir(_dir);
+    (void)delete_dir(_dir);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestRotatingFileSink::TearDown()
 {
-    delete_dir(_dir);
+    (void)delete_dir(_dir);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -109,7 +109,7 @@ void TestRotatingFileSink::CreateLogFiles(const std::vector<std::uint32_t>& exis
 {
     for (const auto& idx : existFileIdx) {
         std::string file = calc_log_file(idx);
-        create_file(file);
+        (void)create_file(file);
         sleep_ms(sleepMs);  // 确保文件修改时间不同
     }
 }
@@ -133,7 +133,7 @@ void TestRotatingFileSink::TestRotate(const testing::TestInfo* test_info,
                                       const uint32_t existFileCount,
                                       const uint32_t rotateCount)
 {
-    create_dir(_dir);
+    (void)create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
     const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
@@ -174,7 +174,7 @@ void TestRotatingFileSink::TestRotateAndDelete(const testing::TestInfo* test_inf
                                                const uint32_t existFileCount,
                                                const uint32_t rotateCount)
 {
-    create_dir(_dir);
+    (void)create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info);
     const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
@@ -221,7 +221,7 @@ TEST_F(TestRotatingFileSink, invalid_param)
 
 TEST_F(TestRotatingFileSink, init_with_existing_files)
 {
-    create_dir(_dir);
+    (void)create_dir(_dir);
     EXPECT_TRUE(dir_exists(_dir));
     _fileNameStem = get_logger_name(test_info_);
     const std::string logFile = join_paths({_dir, _fileNameStem + _extension});
@@ -242,13 +242,13 @@ TEST_F(TestRotatingFileSink, init_with_existing_files)
     CreateLogFiles(validFileIdx);
 
     // invalid file
-    create_file(logFile);
-    create_file(calc_log_file("0"));
-    create_file(calc_log_file("00"));
-    create_file(calc_log_file("01"));
-    create_file(calc_log_file(""));
-    create_file(calc_log_file("a"));
-    create_file(calc_log_file(RotatingFileSink::MAX_INDEX + 1));
+    (void)create_file(logFile);
+    (void)create_file(calc_log_file("0"));
+    (void)create_file(calc_log_file("00"));
+    (void)create_file(calc_log_file("01"));
+    (void)create_file(calc_log_file(""));
+    (void)create_file(calc_log_file("a"));
+    (void)create_file(calc_log_file(RotatingFileSink::MAX_INDEX + 1));
 
     const RotatingFileSink sink(logFile, false);
 

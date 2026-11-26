@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "origin",
-  "updated_at": "2026-11-25",
+  "updated_at": "2026-11-26",
   "baseline": {
     "head": "c37a364",
     "worktree": "code clean",
@@ -426,7 +426,7 @@
     {
       "id": "UTILS-012",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "is_path_too_long 按 UTF-8 字节数判断",
       "files": [
@@ -440,12 +440,13 @@
       ],
       "impact": "Windows MAX_PATH 按 UTF-16 单元，中文路径会误判。",
       "recommendation": "按平台原生字符数判断。",
-      "verification": "中文/ASCII 边界路径测试。"
+      "verification": "PathLengthUsesPlatformNativeUnits 覆盖 Windows UTF-16 计数与 POSIX 字节计数。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "UTILS-013",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "get_proc_path 使用 ANSI API 和固定缓冲区",
       "files": [
@@ -460,7 +461,8 @@
       ],
       "impact": "Unicode 路径丢失；长路径失败。",
       "recommendation": "改用 W API + UTF-8 转换，支持长路径。",
-      "verification": "中文路径、长路径测试。"
+      "verification": "Windows 改用 GetModuleFileNameW + 动态扩容 + UTF-8 转换；get_proc_path 测试通过。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "UTILS-014",
@@ -484,7 +486,7 @@
     {
       "id": "UTILS-015",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "utils",
       "title": "UTF-8 转 UTF-16 失败被报成系统错误",
       "files": [
@@ -499,7 +501,8 @@
       ],
       "impact": "非法 UTF-8 路径最终报系统错误，而不是路径非法。",
       "recommendation": "转换失败返回 ERR_UTILS_PATH_INVALID。",
-      "verification": "非法 UTF-8 路径测试。"
+      "verification": "InvalidUtf8PathReturnsPathInvalid 覆盖 Windows 非法 UTF-8。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "UTILS-016",
@@ -590,7 +593,7 @@
     {
       "id": "LOGGING-011",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "logging",
       "title": "错误转换和调用方重复打日志",
       "files": [
@@ -605,7 +608,8 @@
       ],
       "impact": "Debug 下同一错误出现 2-3 行。",
       "recommendation": "只在边界打一次，或降为 TRACE。",
-      "verification": "错误路径日志计数。"
+      "verification": "ConvertSysEcToErrorCode 降为 TRACE，调用方保留 ERR；MSVC/MinGW 全量 ctest 3/3。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "LOGGING-012",
@@ -905,7 +909,7 @@
     {
       "id": "COMMON-004",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "错误消息缺失和拼写错误",
       "files": [
@@ -920,12 +924,13 @@
       ],
       "impact": "ERR_COMM_PARAM_OUT_OF_RANGE 落到 unknown；Unkown 拼写错误。",
       "recommendation": "补 case，修文案。",
-      "verification": "错误消息映射测试。"
+      "verification": "MSVC/MinGW test_Utils 150/150；MessagesAndMasking 验证文案与掩码。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-005",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "MAKE_ERROR 不掩码字段",
       "files": [
@@ -939,12 +944,13 @@
       ],
       "impact": "超宽 module/type/id 会溢出到相邻字段。",
       "recommendation": "字段先掩码或 static_assert。",
-      "verification": "边界值测试。"
+      "verification": "MessagesAndMasking 验证 module/type/id 越界不污染相邻字段。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-006",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "attributes.h 的 MSVC 宏不可用/不等价",
       "files": [
@@ -961,12 +967,13 @@
       ],
       "impact": "ATTR_ALIGNED 用 GCC 语法；ATTR_USED/PURE/CONST/WEAK 的 MSVC 替代不等价。",
       "recommendation": "按编译器实现或删除未使用宏。",
-      "verification": "MSVC 编译使用点。"
+      "verification": "编译验证 ATTR_ALIGNED 在 MSVC/MinGW 生效；未使用宏已删除。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-007",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "feature.h 在 MinGW 下重定义 thread_local",
       "files": [
@@ -982,12 +989,13 @@
       ],
       "impact": "MinGW 未计入 GCC/Clang，SUPPORTS_THREAD_LOCAL=0，随后把 thread_local 定义为 __thread。",
       "recommendation": "纳入 COMPILER_MINGW，不要重定义关键字。",
-      "verification": "MinGW 包含头文件编译。"
+      "verification": "MinGW 与 MSVC test_Utils 150/150；公共头不再重定义 thread_local。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-008",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "warnings.h 只 push 不 pop",
       "files": [
@@ -1002,12 +1010,13 @@
       ],
       "impact": "警告状态泄漏到后续代码；SUPPRESS_LOSSY_CONVERSION_WARNING 也泄漏。",
       "recommendation": "提供 push/pop 宏或删除全局 pragma。",
-      "verification": "包含头文件后的诊断状态检查。"
+      "verification": "warnings.h 只提供 push/pop 宏，不再在头文件顶层修改全局警告状态；编译通过。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-009",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "公共类型头包含 windows.h",
       "files": [
@@ -1022,12 +1031,13 @@
       ],
       "impact": "宏污染和编译负担；ProcessId/ThreadId 在全局命名空间。",
       "recommendation": "使用窄类型/前置声明并放入命名空间。",
-      "verification": "跨平台包含测试。"
+      "verification": "process_types/thread_types 不再包含 windows.h；MSVC/MinGW 编译通过。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-011",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "strings va_list 格式化缺少校验",
       "files": [
@@ -1042,12 +1052,13 @@
       ],
       "impact": "format 可为空；第二次 vsnprintf 返回值未检查；len+1 写入 len 大小的 string。",
       "recommendation": "判空；使用 len+1 缓冲或 resize 后回退。",
-      "verification": "空 format/超长输出测试。"
+      "verification": "StringsErrorCodeApi.VaListFormatting 覆盖 nullptr、空格式、长输出。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "COMMON-012",
       "severity": "P3",
-      "status": "open",
+      "status": "fixed",
       "module": "common",
       "title": "type_traits 使用 C++20 特性但注释 C++17",
       "files": [
@@ -1061,7 +1072,8 @@
       ],
       "impact": "C++17 构建会失败；数字类型覆盖不全。",
       "recommendation": "改 remove_cv_t/remove_reference_t 或更新文档。",
-      "verification": "C++17 编译。"
+      "verification": "类型特性静态断言在 C++17 语义下编译通过。",
+      "fixed_in": "working-tree"
     },
     {
       "id": "CONTAINER-008",
@@ -1182,7 +1194,7 @@
     {
       "id": "CROSS-003",
       "severity": "P2",
-      "status": "open",
+      "status": "fixed",
       "module": "cross",
       "title": "平台/编译器/构建宏分散",
       "files": [
@@ -1193,7 +1205,8 @@
       ],
       "impact": "OS_/COMPILER_/ORIGIN_BUILD_ 各成一套，MinGW 归类不一致。",
       "recommendation": "统一宏层并只暴露一套。",
-      "verification": "跨工具链构建。"
+      "verification": "compiler.h 集中 OS/编译器/构建类型默认值；MinGW 归入 GCC 家族；MSVC/MinGW 全量 ctest 3/3。",
+      "fixed_in": "working-tree"
     }
   ]
 }

@@ -68,7 +68,7 @@ struct FileInfo {
 | `get_filename_stem(path)` | 去掉最后一段扩展名；`a.tar.gz` → `a.tar` |
 | `get_extension(path)` | 含点的扩展名；`.gitignore` → 空串 |
 | `is_absolute_path(path)` | 是否绝对路径 |
-| `is_path_too_long(path)` | 按 UTF-8 字节数预检 |
+| `is_path_too_long(path)` | 按平台原生长度预检：Windows 用 UTF-16 码元，POSIX 用字节 |
 
 ### 文件操作
 

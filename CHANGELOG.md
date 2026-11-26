@@ -129,6 +129,21 @@
 - 补充容器非平凡类型生命周期、容量边界、`clear` 唤醒，以及 C API 异常与 sink
   失败路径测试（CONTAINER-011、CROSS-002）；真实磁盘写满/权限拒绝/旋转失败注入
   仍缺失，`LOGGING-012` 保持 `partial`。
+- 补齐 `ERR_COMM_PARAM_OUT_OF_RANGE` 文案并修正 `Unknown` 拼写；`MAKE_ERROR` 对
+  module/type/id 做 16 位掩码，超宽值不再污染相邻字段（COMMON-004/005）。
+- 公共宏层收敛：MinGW 归入 GCC 家族；删除把 `thread_local` 重定义为 `__thread`
+  的降级分支；`ATTR_ALIGNED` 支持 MSVC；删除未使用的 `ATTR_USED/PURE/CONST/WEAK`
+  和 `SUPPRESS_LOSSY_CONVERSION_WARNING`，新增成对 `ORIGIN_WARNINGS_PUSH/POP`；
+  构建类型宏在独立包含头文件时补默认值（COMMON-006/007/008、CROSS-003）。
+- Windows 类型头不再包含 `<windows.h>`，`ProcessId`/`ThreadId` 改用同宽的
+  `unsigned long`，避免公共头宏污染（COMMON-009）。
+- `va_list_to_string` 增加空指针、缓冲区长度和 `vsnprintf` 返回值校验；
+  `remove_cvref_t` 改用 C++17 可实现的写法（COMMON-011/012）。
+- `is_path_too_long` 在 Windows 按 UTF-16 码元计数；`get_proc_path` 的 Windows 分支
+  改用 `GetModuleFileNameW`、动态扩容并输出 UTF-8；`get_file_modify_time` 的
+  UTF-8→UTF-16 转换失败返回 `ERR_UTILS_PATH_INVALID`（UTILS-012/013/015）。
+- `ConvertSysEcToErrorCode` 的重复错误日志降为 `TRACE`，错误上报只保留在调用边界
+  （LOGGING-011）。
 
 ### 新增
 
@@ -177,11 +192,14 @@
    在 `open()` 时返回，或通过 `get_last_error()` 读取。
 9. **默认日志路径**：需要区分“解析失败”和“空路径”时改用
    `ErrorCode get_default_log_file(std::string_view, std::string&)`；原值返回版仍可用。
-8. **`[[nodiscard]]`**：`ErrorCode` 返回接口现在标记为 `[[nodiscard]]`，忽略返回值会触发
-   编译器警告；确实不需要错误详情时显式写 `(void)`。C ABI 入口不再让 C++ 异常穿出，
-   失败时返回 `nullptr` / `false` / `OFF` 或静默返回。
-9. **版本匹配**：`OriginConfigVersion.cmake` 使用 `SameMinorVersion`，下游改为
-   `find_package(Origin 2.0 CONFIG REQUIRED)`；SOVERSION 从 1 变为 2（Linux/macOS 为 `.so.2`）。
+10. **`[[nodiscard]]`**：`ErrorCode` 返回接口现在标记为 `[[nodiscard]]`，忽略返回值会触发
+    编译器警告；确实不需要错误详情时显式写 `(void)`。C ABI 入口不再让 C++ 异常穿出，
+    失败时返回 `nullptr` / `false` / `OFF` 或静默返回。
+11. **公共宏**：删除 `ATTR_USED` / `ATTR_PURE` / `ATTR_CONST` / `ATTR_WEAK` 和
+    `SUPPRESS_LOSSY_CONVERSION_WARNING`；需要局部抑制警告时改用成对的
+    `ORIGIN_WARNINGS_PUSH` / `ORIGIN_WARNINGS_POP`。MinGW 下 `COMPILER_GCC` 现在也为 `1`。
+12. **版本匹配**：`OriginConfigVersion.cmake` 使用 `SameMinorVersion`，下游改为
+    `find_package(Origin 2.0 CONFIG REQUIRED)`；SOVERSION 从 1 变为 2（Linux/macOS 为 `.so.2`）。
 
 ## [1.0.1] - 2026-11-14
 

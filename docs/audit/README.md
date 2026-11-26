@@ -28,7 +28,7 @@
 
 基线：`c37a364`。基线时共 54 项：47 `open`、2 `partial`、5 `fixed`。
 2026-11-25：提交 `d075c87` 关闭 13 项；提交 `f0ad8af` 修复 `LOGGING-004/005`。
-当前 54 项 = 13 `open` / 1 `partial` / 40 `fixed`。
+当前 54 项 = 0 `open` / 1 `partial` / 53 `fixed`。
 
 | 日期 | 范围 | 报告 | 条目与状态 |
 |---|---|---|---|
@@ -48,15 +48,15 @@
 | COMMON-001 | fixed | 随 `working_env` 删除，不再存在 `readlink` 越界写 | full |
 | COMMON-002 | fixed | 随 `working_env` 删除，C ABI 异常入口一并移除 | full |
 | COMMON-003 | fixed | 随 `working_env` 删除，固定缓冲区逻辑移除 | full |
-| COMMON-004 | open | `ERR_COMM_PARAM_OUT_OF_RANGE` 缺文案，`Unkown` 拼写错误 | full |
-| COMMON-005 | open | `MAKE_ERROR` 不掩码，超宽值污染相邻字段 | full |
-| COMMON-006 | open | `ATTR_ALIGNED` 在 MSVC 用 `__attribute__` | full |
-| COMMON-007 | open | MinGW 把 `thread_local` 重定义为 `__thread` | full |
-| COMMON-008 | open | warnings 的 push 没有对应 pop | full |
-| COMMON-009 | open | 公共头包含 `<windows.h>`，ID 类型在全局命名空间 | full |
+| COMMON-004 | fixed | `ERR_COMM_PARAM_OUT_OF_RANGE` 缺文案，`Unkown` 拼写错误 | full |
+| COMMON-005 | fixed | `MAKE_ERROR` 不掩码，超宽值污染相邻字段 | full |
+| COMMON-006 | fixed | `ATTR_ALIGNED` 在 MSVC 用 `__attribute__` | full |
+| COMMON-007 | fixed | MinGW 把 `thread_local` 重定义为 `__thread` | full |
+| COMMON-008 | fixed | warnings 的 push 没有对应 pop | full |
+| COMMON-009 | fixed | 公共头包含 `<windows.h>`，ID 类型在全局命名空间 | full |
 | COMMON-010 | fixed | `origin_debug_logger_c` 可能抛异常穿出 C ABI | full |
-| COMMON-011 | open | `strings.cpp` 未判空，第二次 `vsnprintf` 返回值未检查 | full |
-| COMMON-012 | open | `type_traits.h` 注释写 C++17，实际用 C++20 | full |
+| COMMON-011 | fixed | `strings.cpp` 未判空，第二次 `vsnprintf` 返回值未检查 | full |
+| COMMON-012 | fixed | `type_traits.h` 注释写 C++17，实际用 C++20 | full |
 | CONTAINER-001 | fixed | 改用 `optional` 槽位，不再在已构造对象上 placement new | full |
 | CONTAINER-002 | fixed | `dequeue` 改阻塞锁并通知生产者 | full |
 | CONTAINER-003 | fixed | 随 `CString` 删除，越界路径移除 | full |
@@ -70,7 +70,7 @@
 | CONTAINER-011 | fixed | 容器测试未覆盖非平凡 T、溢出和并发唤醒 | full |
 | CROSS-001 | fixed | C ABI 异常策略不统一 | full |
 | CROSS-002 | fixed | 测试缺少失败注入 | full |
-| CROSS-003 | open | 构建宏与平台检测分散 | full |
+| CROSS-003 | fixed | 构建宏与平台检测分散 | full |
 | UTILS-001 | fixed | `string_view.data()` 当 C 字符串 | logging |
 | UTILS-002 | fixed | `get_file_modify_time` 返回创建时间 | logging |
 | UTILS-003 | fixed | `FileWriter` 写入/刷新失败被当成成功 | logging |
@@ -82,10 +82,10 @@
 | UTILS-009 | fixed | `get_now_date_time` 吞错，返回全 0 时间 | logging |
 | UTILS-010 | fixed | `FileWriter::write/flush` 返回 `void`，错误隐藏 | logging |
 | UTILS-011 | fixed | `FileWriter` 构造抛异常，`to_absolute_path` 返回值被忽略 | logging |
-| UTILS-012 | open | `is_path_too_long` 按 UTF-8 字节判断 | logging |
-| UTILS-013 | open | `GetModuleFileNameA` 丢 Unicode，固定 `MAX_PATH` | logging |
+| UTILS-012 | fixed | `is_path_too_long` 按 UTF-8 字节判断 | logging |
+| UTILS-013 | fixed | `GetModuleFileNameA` 丢 Unicode，固定 `MAX_PATH` | logging |
 | UTILS-014 | fixed | 写失败用 `errno` + `system_category`，与其它处不一致 | logging |
-| UTILS-015 | open | UTF-8 转 UTF-16 失败时报系统错误而非路径非法 | logging |
+| UTILS-015 | fixed | UTF-8 转 UTF-16 失败时报系统错误而非路径非法 | logging |
 | UTILS-016 | fixed | `file_exists`/`dir_exists` 忽略错误，权限错误也返回 false | logging |
 | LOGGING-001 | fixed | 异步 logger 在 TaskPool 销毁后空指针解引用 | logging |
 | LOGGING-002 | fixed | TaskPool 重复 `shutdown` 可能死锁 | logging |
@@ -95,7 +95,7 @@
 | LOGGING-008 | fixed | 旋转后 `reopen` 返回码被忽略 | logging |
 | LOGGING-009 | fixed | `get_proc_path` 失败导致默认路径变成 `logs/.log` | logging |
 | LOGGING-010 | fixed | `set_param_string` 无锁，与 `log()` 存在数据竞争 | logging |
-| LOGGING-011 | open | `ConvertSysEcToErrorCode` 重复打错误日志 | logging |
+| LOGGING-011 | fixed | `ConvertSysEcToErrorCode` 重复打错误日志 | logging |
 | LOGGING-012 | partial | 测试缺少写失败、权限、旋转失败等注入 | logging |
 | LOGGING-013 | fixed | sink 只捕获 `std::exception` | logging |
 | LOGGING-014 | fixed | `basic_file_sink` 的 `to_absolute_path` 吞错 | logging |
@@ -108,19 +108,19 @@
 |---|---|
 | CROSS-001 C ABI 异常策略 | COMMON-002、COMMON-010、LOGGING-004（均已关闭） |
 | CROSS-002 失败注入 | CONTAINER-011（已关闭）、LOGGING-012（partial）、UTILS 中未覆盖的失败路径 |
-| CROSS-003 构建/平台宏 | COMMON-006、COMMON-007 |
+| CROSS-003 构建/平台宏 | COMMON-006、COMMON-007（均已关闭） |
 
 ### 统一修复顺序
 
 1. **P0 正确性**（2026-11-25 已全部关闭）：COMMON-001、CONTAINER-001/002/003、LOGGING-003。
 2. **错误契约**（2026-11-25 已关闭）：UTILS-004/005/006/007、COMMON-002/010、CONTAINER-004~007、`LOGGING-004`。
 3. **可观测性与 API 收敛**（2026-11-25 已关闭）：UTILS-008/009/010/011/014/016、LOGGING-008/009/010/014。
-4. **测试与剩余 P2**：CONTAINER-011、CROSS-002 已关闭；LOGGING-012 partial（缺真实 I/O 失败注入），再按模块收口其余 P2。
+4. **测试与剩余 P2**：CONTAINER-011、CROSS-002 及剩余 P2 已关闭；仅 LOGGING-012 partial（缺真实 I/O 失败注入）。
 
 ### 验证来源
 
 - [logging/utils 报告](2026-11-22-logging-utils-audit.md)实际执行了 MinGW Debug ctest 3/3、`test_origin` 403、MSVC Debug `test_origin` 403 和 Release 编译期抽查；
-- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例；P2 批次后 `test_Container` 30、`test_Utils` 146、`test_Logging` 231，MSVC 13.32s、MinGW 12.31s，均 3/3；P2 批次提交 `5806cf7`。
+- 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 `test_Container` / `test_Utils` / `test_Logging` 均 3/3 通过（`test_origin` 仍未注册）；提交 `f0ad8af` 后 `test_Logging` 为 230 个用例；2026-11-25 当前工作区 P1/C ABI 批次后为 231 个用例；P2 批次后 `test_Container` 30、`test_Utils` 146、`test_Logging` 231，MSVC 13.32s、MinGW 12.31s，均 3/3；P2 批次提交 `5806cf7`；2026-11-26 收口批次后 `test_Utils` 150，MSVC 15.78s、MinGW 14.86s，均 3/3，剩余 `LOGGING-012` partial。
 - [全项目报告](2026-11-22-full-project-audit.md)只做静态扫描，未重跑上述测试，其验证记录引用自前者。
 
 ## 如何新增一次扫描

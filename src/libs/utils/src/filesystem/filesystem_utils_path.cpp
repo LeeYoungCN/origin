@@ -20,6 +20,11 @@
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/debug/debug_logger.h"
 #include "origin/common/macros/compiler.h"
+
+#if OS_WINDOWS
+#include <windows.h>
+#endif
+
 #include "origin/common/types/error_code_types.h"
 
 #include "origin/filesystem/filesystem.h"
@@ -186,14 +191,18 @@ bool is_absolute_path(std::string_view path)
 
 bool is_path_too_long(std::string_view path)
 {
-    const auto len = path.length();
-    bool result = false;
 #if OS_WINDOWS
-    result = len > MAX_PATH_LONG;
+    // Windows 路径长度按 UTF-16 码元计算，不能直接用 UTF-8 字节数。
+    const int wideLength = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, path.data(), static_cast<int>(path.size()), nullptr, 0);
+    if (wideLength <= 0) {
+        // 无法转换的路径不可能被 Windows API 使用，按“过长”处理。
+        return true;
+    }
+    return static_cast<size_t>(wideLength) > MAX_PATH_LONG;
 #else
-    result = len > MAX_PATH_STD;
+    return path.length() > MAX_PATH_STD;
 #endif
-    return result;
 }
 
 }  // namespace origin::filesystem

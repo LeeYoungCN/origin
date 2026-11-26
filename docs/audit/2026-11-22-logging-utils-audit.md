@@ -292,3 +292,12 @@ ctest 均 3/3（`test_Container` 28、`test_Utils` 145、`test_Logging` 231）�
 - LOGGING-008/009/010/014：旋转 `reopen` 检查返回值；新增 `get_default_log_file` ErrorCode 重载；`param_string` 改为构造后不可变；`BasicFileSinkImpl` 保留具体错误。
 - LOGGING-012：标 `partial`，真实 I/O 失败注入仍缺。
 - 验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；test_Logging 231。提交 `5806cf7`。
+
+
+## 后续（2026-11-26，平台/Utils/Logging 收口）
+
+- UTILS-012：`is_path_too_long` 在 Windows 按 UTF-16 码元计数，POSIX 仍按字节。
+- UTILS-013：`get_proc_path` 的 Windows 分支改用 `GetModuleFileNameW`、动态扩容并转 UTF-8。
+- UTILS-015：`get_file_modify_time` 的 UTF-8→UTF-16 转换失败返回 `ERR_UTILS_PATH_INVALID`。
+- LOGGING-011：`ConvertSysEcToErrorCode` 的重复错误日志降为 `TRACE`，错误上报留在调用边界。
+- 验证：MSVC x64 Debug 与 MinGW Debug 全量 ctest 3/3；`test_Utils` 150、`test_Logging` 231。

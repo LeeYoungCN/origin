@@ -59,6 +59,8 @@ static inline const char* get_comm_err_msg(ErrorCode errCode)
             return "Input param NULL";
         case ERR_COMM_PARAM_INVALID:
             return "Input param invalid";
+        case ERR_COMM_PARAM_OUT_OF_RANGE:
+            return "Input param out of range";
         case ERR_COMM_PARAM_EMPTY:
             return "Param empty";
         case ERR_COMM_BUFFER_OVERFLOW:
@@ -68,7 +70,7 @@ static inline const char* get_comm_err_msg(ErrorCode errCode)
         case ERR_COMM_GENERIC_ERROR:
             return "Generic error";
         case ERR_COMM_UNKNOWN_ERROR:
-            return "Unkown error";
+            return "Unknown error";
         // Unknown error code.
         default:
             return "Unknown error code";

@@ -20,7 +20,7 @@ namespace origin::type_traits {  // 放入项目公共命名空间，避免命�
 // -------------------------- 内部辅助：移除 const/volatile/引用 修饰（C++17
 // 及以上）--------------------------
 template <typename T>
-using remove_cvref_t = std::remove_cvref_t<T>;
+using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
 
 // -------------------------- 子特性 1：判断是否为直接字符串类类型（可直接转换为
 // std::string）--------------------------
@@ -30,7 +30,7 @@ struct is_direct_string_type
                              std::is_same_v<remove_cvref_t<T>, const char*> ||
                                  std::is_same_v<remove_cvref_t<T>, char*> ||
                                  std::is_same_v<remove_cvref_t<T>, std::string_view> ||
-                                 std::is_same_v<remove_cvref_t<T>, std::string> > {};
+                                 std::is_same_v<remove_cvref_t<T>, std::string>> {};
 
 /**
  * @brief  简化别名：直接字符串类型判断结果（true/false）
@@ -52,7 +52,7 @@ struct is_numeric_type
                                  std::is_same_v<remove_cvref_t<T>, unsigned long long> ||
                                  std::is_same_v<remove_cvref_t<T>, float> ||
                                  std::is_same_v<remove_cvref_t<T>, double> ||
-                                 std::is_same_v<remove_cvref_t<T>, long double> > {};
+                                 std::is_same_v<remove_cvref_t<T>, long double>> {};
 
 /**
  * @brief  简化别名：数字类型判断结果（true/false）
@@ -65,7 +65,7 @@ constexpr bool is_numeric_type_v = is_numeric_type<T>::value;
 // 数字类）--------------------------
 template <typename T>
 struct is_convertible_to_string
-    : std::integral_constant<bool, is_direct_string_type_v<T> || is_numeric_type_v<T> > {};
+    : std::integral_constant<bool, is_direct_string_type_v<T> || is_numeric_type_v<T>> {};
 
 /**
  * @brief  简化别名：可字符串化类型判断结果（true/false）【日常开发优先使用该别名】

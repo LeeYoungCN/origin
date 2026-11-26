@@ -78,11 +78,11 @@ ErrorCode ConvertSysEcToErrorCode(const std::error_code& ec)
     if (!ec) {
         return ERR_COMM_SUCCESS;
     }
-    // 详细日志便于调试
-    ORIGIN_DEBUG_WARN("Convert error: {} (category: {}, value: {})",
-                      ec.message().c_str(),
-                      ec.category().name(),
-                      ec.value());
+    // 错误转换本身不做业务级上报，避免与调用方的错误日志重复；仅在 TRACE 下保留线索。
+    ORIGIN_DEBUG_TRACE("Convert error: {} (category: {}, value: {})",
+                       ec.message().c_str(),
+                       ec.category().name(),
+                       ec.value());
 
     if (ec.category() == std::system_category()) {
         return ConvertSystemCategory(ec);

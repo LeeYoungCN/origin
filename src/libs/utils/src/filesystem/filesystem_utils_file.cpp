@@ -384,12 +384,21 @@ ErrorCode get_file_modify_time(std::string_view path, TimestampMs& out)
     // convert utf-8 path to wide string for Windows API
     std::wstring wpath;
     if (!path.empty()) {
-        int sz =
-            MultiByteToWideChar(CP_UTF8, 0, path.data(), static_cast<int>(path.size()), nullptr, 0);
-        if (sz > 0) {
-            wpath.resize(static_cast<size_t>(sz));
-            MultiByteToWideChar(
-                CP_UTF8, 0, path.data(), static_cast<int>(path.size()), &wpath[0], sz);
+        const int sz = MultiByteToWideChar(
+            CP_UTF8, MB_ERR_INVALID_CHARS, path.data(), static_cast<int>(path.size()), nullptr, 0);
+        if (sz <= 0) {
+            ORIGIN_DEBUG_ERR("Get file modify time failed: invalid UTF-8 path.");
+            return ERR_UTILS_PATH_INVALID;
+        }
+        wpath.resize(static_cast<size_t>(sz));
+        if (MultiByteToWideChar(CP_UTF8,
+                                MB_ERR_INVALID_CHARS,
+                                path.data(),
+                                static_cast<int>(path.size()),
+                                wpath.data(),
+                                sz) <= 0) {
+            ORIGIN_DEBUG_ERR("Get file modify time failed: UTF-8 to UTF-16 conversion failed.");
+            return ERR_UTILS_PATH_INVALID;
         }
     }
     BOOL ok = GetFileAttributesExW(wpath.c_str(), GetFileExInfoStandard, &fileAttr);

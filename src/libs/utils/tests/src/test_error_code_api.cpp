@@ -26,13 +26,42 @@
 #endif
 
 #include "origin/common/constants/date_time_constants.h"
+#include "origin/common/constants/filesystem_constants.h"
+#include "origin/common/macros/attributes.h"
+#include "origin/common/macros/compiler.h"
+#include "origin/common/macros/feature.h"
 #include "origin/common/types/date_time_types.h"
+#include "origin/common/types/error_code_types.h"
 #include "origin/common/types/filesystem_types.h"
+#include "origin/common/types/type_traits.h"
 
 namespace {
 
 using namespace origin::date_time;
 using namespace origin::filesystem;
+
+// 编译器族、线程局部存储和构建类型宏必须保持一致，避免公共头在不同编译器下分叉。
+static_assert(COMPILER_MSVC + COMPILER_CLANG + COMPILER_GCC >= 1);
+static_assert(!(COMPILER_MSVC && COMPILER_GCC));
+static_assert(SUPPORTS_THREAD_LOCAL == 1, "C++11 thread_local should be available");
+static_assert(ORIGIN_BUILD_DEBUG + ORIGIN_BUILD_RELEASE + ORIGIN_BUILD_RELWITHDEBINFO +
+                      ORIGIN_BUILD_MINSIZEREL <=
+                  1,
+              "at most one build type macro may be set");
+
+struct ATTR_ALIGNED(16) AlignedProbe {
+    int values[4];
+};
+static_assert(alignof(AlignedProbe) == 16, "ATTR_ALIGNED must affect type alignment");
+
+ErrorCode FormatViaVaListCode(const char* format, std::string* out, ...)
+{
+    va_list args;
+    va_start(args, out);
+    const ErrorCode code = origin::strings::va_list_to_string(format, args, *out);
+    va_end(args);
+    return code;
+}
 
 std::string FormatViaVaList(const char* format, ...)
 {
@@ -42,6 +71,36 @@ std::string FormatViaVaList(const char* format, ...)
     va_end(args);
     return result;
 }
+
+TEST(CommonErrorCodeApi, MessagesAndMasking)
+{
+    EXPECT_STREQ(get_comm_err_msg(ERR_COMM_PARAM_OUT_OF_RANGE), "Input param out of range");
+    EXPECT_STREQ(get_comm_err_msg(ERR_COMM_UNKNOWN_ERROR), "Unknown error");
+
+    const ErrorCode code = MAKE_ERROR(ERR_SEV_ERROR, 0x10001u, 0x10002u, 0x10003u);
+    EXPECT_EQ((code & ERR_MODULE_MASK) >> ERR_MODULE_SHIFT, 1u);
+    EXPECT_EQ((code & ERR_TYPE_MASK) >> ERR_TYPE_SHIFT, 2u);
+    EXPECT_EQ((code & ERR_ID_MASK) >> ERR_ID_SHIFT, 3u);
+}
+
+TEST(StringsErrorCodeApi, VaListFormatting)
+{
+    std::string out;
+    EXPECT_EQ(FormatViaVaListCode("value=%d", &out, 42), ERR_COMM_SUCCESS);
+    EXPECT_EQ(out, "value=42");
+
+    EXPECT_EQ(FormatViaVaListCode("", &out), ERR_COMM_SUCCESS);
+    EXPECT_TRUE(out.empty());
+
+    EXPECT_EQ(FormatViaVaListCode(nullptr, &out), ERR_COMM_PARAM_NULL);
+
+    const std::string longText(5000, 'x');
+    EXPECT_EQ(FormatViaVaListCode("%s", &out, longText.c_str()), ERR_COMM_SUCCESS);
+    EXPECT_EQ(out, longText);
+}
+
+static_assert(origin::type_traits::is_convertible_to_string_v<const std::string&>);
+static_assert(origin::type_traits::is_convertible_to_string_v<int>);
 
 TEST(FilesystemErrorCodeApi, ReadAndQuery)
 {
@@ -346,5 +405,31 @@ TEST(UtilsErrorCodeApi, GetterValueReturningOverloads)
     EXPECT_EQ(origin::thread::get_curr_thread_name(), "value-overload");
     ASSERT_EQ(origin::thread::set_curr_thread_name(originalName.c_str()), ERR_COMM_SUCCESS);
 }
+
+TEST(FilesystemErrorCodeApi, PathLengthUsesPlatformNativeUnits)
+{
+#if OS_WINDOWS
+    // 20000 个三字节 UTF-8 字符 = 60000 字节，但只有 20000 个 UTF-16 码元。
+    std::string utf8Path;
+    utf8Path.reserve(60000);
+    for (int i = 0; i < 20000; ++i) {
+        utf8Path += "\xE4\xB8\xAD";
+    }
+    EXPECT_FALSE(is_path_too_long(utf8Path));
+    EXPECT_TRUE(is_path_too_long(std::string(MAX_PATH_LONG + 1, 'a')));
+#else
+    EXPECT_FALSE(is_path_too_long("short"));
+    EXPECT_TRUE(is_path_too_long(std::string(MAX_PATH_STD + 1, 'a')));
+#endif
+}
+
+#if OS_WINDOWS
+TEST(FilesystemErrorCodeApi, InvalidUtf8PathReturnsPathInvalid)
+{
+    TimestampMs timestamp = 0;
+    EXPECT_EQ(get_file_modify_time(std::string(1, static_cast<char>(0xFF)), timestamp),
+              ERR_UTILS_PATH_INVALID);
+}
+#endif
 
 }  // namespace

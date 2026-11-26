@@ -4,7 +4,7 @@
 #include "origin/common/macros/compiler.h"
 
 // 检测是否支持thread_local（C++11特性）
-#if CPP_STD_11 && (COMPILER_MSVC || COMPILER_GCC || COMPILER_CLANG)
+#if CPP_STD_11 && (COMPILER_MSVC || COMPILER_GCC || COMPILER_CLANG || COMPILER_MINGW)
 #define SUPPORTS_THREAD_LOCAL 1
 #else
 #define SUPPORTS_THREAD_LOCAL 0
@@ -36,12 +36,6 @@
 #define SUPPORTS_CONCEPTS 1
 #else
 #define SUPPORTS_CONCEPTS 0
-#endif
-
-// 特性兼容宏：如果不支持，提供降级实现
-#if !SUPPORTS_THREAD_LOCAL
-// 不支持thread_local时，用pthread_key_t模拟（仅示例框架）
-#define thread_local __thread  // 对GCC旧版本的兼容
 #endif
 
 #endif  // COMMON_COMPILER_FEATURE_H

@@ -8,11 +8,11 @@
 
 | 项 | 值 |
 |---|---|
-| 快照日期 | 2026-11-25 |
+| 快照日期 | 2026-11-26 |
 | 分支 / 修复提交 | `master` / `5806cf7`（审计基线仍为 `c37a364`） |
-| 工作区 | 干净（P2 批次已提交 `5806cf7`） |
+| 工作区 | 有未提交改动（平台宏、Utils 路径、Logging 收口） |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
-| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 13 open / 1 partial / 40 fixed |
+| 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 0 open / 1 partial / 53 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
 
 审计计数、证据和验证方式以 [audit/README.md](audit/README.md) 与 [findings.json](audit/findings.json) 为准，本文不重复统计表。
@@ -30,6 +30,7 @@
 
 - 常规验证矩阵：MSVC x64 Debug + MinGW Debug；平台相关改动再补 Linux/macOS。
 - 2026-11-25 修复：MSVC x64 Debug 与 MinGW Debug 的 configure/build/install 均通过，`ctest` 均 3/3（`test_Container` 30、`test_Utils` 146、`test_Logging` 231）。
+- 2026-11-26 收口：`test_Utils` 增至 150；MSVC 与 MinGW 全量 `ctest` 均 3/3（`test_Logging` 231）。
 - ctest 只注册 `test_Container`、`test_Utils`、`test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest 中**。
 - `cmake --build --preset=*_build` 会连带 install；CI 的 `cmake-multi-cmake-presets.yml` 覆盖 6 个配置，`clang-tidy.yml` 不阻塞合并，`cmake-multi-platform.yml` 已过时。
 
@@ -62,6 +63,11 @@
 2026-11-25 后续（P2 批次，提交 `5806cf7`）：关闭 `UTILS-010/011/014/016`、`LOGGING-008/009/010/014`、
 `CONTAINER-011`、`CROSS-002`；`LOGGING-012` 因缺少真实 I/O 失败注入标 `partial`。
 审计计数变为 13 open / 1 partial / 40 fixed。
+
+2026-11-26 后续（工作区未提交）：关闭 `COMMON-004/005/006/007/008/009/011/012`、`CROSS-003`、
+`UTILS-012/013/015`、`LOGGING-011`。公共宏层集中到 `compiler.h`；`MAKE_ERROR` 增加字段掩码；
+`get_proc_path` 的 Windows 分支改用宽字符 API；`is_path_too_long` 按 UTF-16 码元判断；
+UTF-8 转 UTF-16 失败返回 `ERR_UTILS_PATH_INVALID`。审计计数变为 0 open / 1 partial / 53 fixed。
 
 ## 5. 文档偏差记录
 

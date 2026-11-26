@@ -3,30 +3,24 @@
 
 #include "origin/common/macros/compiler.h"
 
-// 通用警告设置：开启严格警告（工程推荐）
+// 警告级别由构建系统（target 级编译选项）控制；头文件不改变包含方的全局警告状态。
+// 需要临时屏蔽警告时，在局部范围内成对使用：
+//
+//   ORIGIN_WARNINGS_PUSH
+//   ...可能触发警告的声明...
+//   ORIGIN_WARNINGS_POP
 #if COMPILER_MSVC
-// MSVC：开启所有警告，视为错误
-#pragma warning(push, 4)         // 最高警告级别
-#pragma warning(disable : 4100)  // 屏蔽"未使用参数"警告（调试常用）
-#pragma warning(disable : 4996)  // 屏蔽"函数已废弃"警告（如strcpy）
+#define ORIGIN_WARNINGS_PUSH _Pragma("warning(push, 4)")
+#define ORIGIN_WARNINGS_POP  _Pragma("warning(pop)")
 #elif COMPILER_GCC || COMPILER_CLANG
-// GCC/Clang：开启所有警告，视为错误
-#pragma GCC diagnostic push
-#pragma GCC diagnostic error "-Wall"
-#pragma GCC diagnostic error "-Wextra"
-#pragma GCC diagnostic ignored "-Wunused-parameter"         // 屏蔽"未使用参数"警告
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"  // 屏蔽"废弃声明"警告
+#define ORIGIN_WARNINGS_PUSH _Pragma("GCC diagnostic push")
+#define ORIGIN_WARNINGS_POP  _Pragma("GCC diagnostic pop")
+#else
+#define ORIGIN_WARNINGS_PUSH
+#define ORIGIN_WARNINGS_POP
 #endif
 
-// 特定场景的警告控制宏
-// 示例1：屏蔽"未使用变量"警告（用于必须定义但暂时不用的变量）
+// 屏蔽"未使用变量"警告（用于必须定义但暂时不用的变量）
 #define UNUSED(var) (void)(var)
-
-// 示例2：屏蔽"类型转换可能丢失数据"警告（确认安全时使用）
-#if COMPILER_MSVC
-#define SUPPRESS_LOSSY_CONVERSION_WARNING __pragma(warning(suppress : 4244))
-#elif COMPILER_GCC || COMPILER_CLANG
-#define SUPPRESS_LOSSY_CONVERSION_WARNING _Pragma("GCC diagnostic ignored \"-Wconversion\"")
-#endif
 
 #endif  // COMMON_COMPILER_WARNINGS_H

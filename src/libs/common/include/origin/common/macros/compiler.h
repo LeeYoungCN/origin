@@ -27,7 +27,7 @@
 #define COMPILER_MINGW 0
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 #define COMPILER_MSVC  0
-#define COMPILER_GCC   0
+#define COMPILER_GCC   1  // MinGW 属于 GCC 家族
 #define COMPILER_CLANG 0
 #define COMPILER_MINGW 1
 #elif defined(__clang__)
@@ -79,6 +79,23 @@
 #define CPP_STD_20 1
 #else
 #define CPP_STD_20 0
+#endif
+
+// 构建类型宏由 CMake 注入；独立包含头文件时统一补 0，避免未定义宏被当成“Release”。
+#ifndef ORIGIN_BUILD_DEBUG
+#define ORIGIN_BUILD_DEBUG 0
+#endif
+
+#ifndef ORIGIN_BUILD_RELEASE
+#define ORIGIN_BUILD_RELEASE 0
+#endif
+
+#ifndef ORIGIN_BUILD_RELWITHDEBINFO
+#define ORIGIN_BUILD_RELWITHDEBINFO 0
+#endif
+
+#ifndef ORIGIN_BUILD_MINSIZEREL
+#define ORIGIN_BUILD_MINSIZEREL 0
 #endif
 
 // 链接库宏

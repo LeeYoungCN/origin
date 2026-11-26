@@ -1,7 +1,6 @@
 #include "origin/strings/strings.h"
 
 #include <cstdarg>
-#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -19,8 +18,11 @@ bool string_is_null_or_empty(const char* str)
 
 ErrorCode va_list_to_string(const char* format, va_list args, std::string& out)
 {
-    va_list argsCopy;
+    if (format == nullptr) {
+        return ERR_COMM_PARAM_NULL;
+    }
 
+    va_list argsCopy;
     va_copy(argsCopy, args);
     int const len = vsnprintf(nullptr, 0, format, argsCopy);
     va_end(argsCopy);
@@ -29,8 +31,13 @@ ErrorCode va_list_to_string(const char* format, va_list args, std::string& out)
         return ERR_COMM_SYSTEM_ERROR;
     }
 
-    std::string message(static_cast<uint32_t>(len), '\0');
-    vsnprintf(message.data(), static_cast<uint32_t>(len) + 1, format, args);
+    // 为结尾 NUL 多留 1 字节；第二次格式化后按实际写入长度收缩。
+    std::string message(static_cast<std::size_t>(len) + 1, '\0');
+    int const written = vsnprintf(message.data(), message.size(), format, args);
+    if (written < 0 || written > len) {
+        return ERR_COMM_SYSTEM_ERROR;
+    }
+    message.resize(static_cast<std::size_t>(written));
     out = std::move(message);
     return ERR_COMM_SUCCESS;
 }

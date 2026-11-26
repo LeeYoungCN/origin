@@ -21,6 +21,15 @@
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
 
+### 2026-11-26 clang-tidy 的 include-cleaner 会把 windows.h 判成未使用并模拟删除
+
+- 现象：Windows CI 的 clang-tidy 在 `filesystem_utils_path.cpp` 报 `included header windows.h is not used directly`，随后出现 `winnt.h(169): "No Target Architecture"`、`minwinbase.h:392` / `processthreadsapi.h` 的 `PCONTEXT` 未知等错误；`process_utils.cpp` 另报缺少 `GetLastError`/`WideCharToMultiByte`/`size_t` 的直接 include。
+- 根因：`misc-include-cleaner` 只按符号归属判断，不认 Windows SDK 的“先包含 windows.h，再由窄头文件提供声明”依赖；它把 `windows.h` 当作未使用并在分析中模拟移除，导致 SDK 子头失去目标架构宏。只换成窄头文件（如 `<stringapiset.h>`）同样会触发 `No Target Architecture`。
+- 修复/规避：`windows.h` 保留并标 `// IWYU pragma: keep`，上一行加 `// NOLINTNEXTLINE(misc-include-cleaner)`；同时按实际符号补直接 include：`<stringapiset.h>`（MultiByteToWideChar/WideCharToMultiByte）、`<winnls.h>`（CP_UTF8/MB_ERR_INVALID_CHARS/WC_ERR_INVALID_CHARS）、`<errhandlingapi.h>`（GetLastError）、`<cstddef>`（size_t）。不要只保留窄头文件，也不要把 `NOLINT` 当成万能开关而漏掉直接 include。
+- 验证：本机 clang-tidy 22.1.8 对 `filesystem_utils_path.cpp`、`process_utils.cpp` 加 `--warnings-as-errors='*'` 均无诊断；`test_version.cpp` 也无诊断；MSVC Debug 与 MinGW Debug 全量 ctest 均 3/3（`test_Utils` 150、`test_Logging` 231）。
+- 适用范围：clang-tidy 22 + Windows SDK（10.0.26100）+ MSVC 14.52 的 Windows 目标；Linux/macOS 不涉及 windows.h；MinGW 的 SDK 头实现不同，未复现，改动仍兼容。
+- 关联：2026-11-26 Windows clang-tidy CI 失败、`src/libs/utils/src/filesystem/filesystem_utils_path.cpp`、`src/libs/utils/src/process_utils.cpp`、`docs/guide/platform_macros.md`。
+
 ### 2026-11-26 移除公共头的 windows.h 后，.cpp 不能单独包含 processthreadsapi.h
 
 - 现象：Windows CI 的 Release 构建在 `src/libs/utils/src/thread_utils.cpp` 报 `winnt.h(169): error C1189: #error: "No Target Architecture"`；本机 Debug 增量构建未复现，说明依赖头文件的增量依赖可能漏掉这类问题。

@@ -11,12 +11,19 @@
 #include "origin/process/process.h"
 
 #if OS_WINDOWS
-// NOLINTNEXTLINE(misc-include-cleaner): SDK 窄头文件的平台宏由 windows.h 建立
-#include <windows.h>
+#include <cstddef>
 
+// SDK 窄头文件依赖 windows.h 先建立目标架构与基础类型；include-cleaner
+// 无法识别这种依赖，因此保留 windows.h 并显式标记为需要。
+// NOLINTNEXTLINE(misc-include-cleaner)
+#include <windows.h>  // IWYU pragma: keep
+
+#include <errhandlingapi.h>
 #include <libloaderapi.h>
 #include <minwindef.h>
 #include <processthreadsapi.h>
+#include <stringapiset.h>
+#include <winnls.h>
 
 #include <utility>
 

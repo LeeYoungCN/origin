@@ -22,7 +22,13 @@
 #include "origin/common/macros/compiler.h"
 
 #if OS_WINDOWS
-#include <windows.h>
+// SDK 的窄头文件依赖 windows.h 先建立目标架构与基础类型；include-cleaner
+// 无法识别这种依赖，因此保留 windows.h 并显式标记为需要。
+// NOLINTNEXTLINE(misc-include-cleaner)
+#include <windows.h>  // IWYU pragma: keep
+
+#include <stringapiset.h>
+#include <winnls.h>
 #endif
 
 #include "origin/common/types/error_code_types.h"

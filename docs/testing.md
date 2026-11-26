@@ -89,6 +89,21 @@ Common 目前没有独立测试目标；涉及 Common 的用例通常放在 `tes
 
 现有日志测试的 mock sink 在 `src/libs/logging/tests/src/detail/mock_sinks/`，可以直接复用。
 
+### 3.4 全局状态与测试隔离
+
+每个测试可执行文件的 `main()` 负责设定本进程的调试级别基线；当前各 `main()` 多为 `ORG_DBG_LVL_INFO`，但这不是强制值，可以按测试需要调整。用例可以临时修改级别（例如验证 `ORIGIN_DEBUG_ERR` 的上报路径），但必须在 `TearDown()` 或 RAII guard 中恢复到进入用例前的值，不能硬编码成另一个级别，也不能让状态泄漏到后续用例。
+
+```cpp
+OriginDbgLvl _level = origin_get_debug_logger_level();
+
+void TearDown() override
+{
+    origin_set_debug_logger_level(_level);
+}
+```
+
+同样的原则适用于其他进程级全局状态（默认 logger、注册表、环境变量）：谁修改，谁恢复。
+
 ## 4. 已知覆盖缺口
 
 完整缺口以 [findings.json](audit/findings.json) 和审计报告为准，这里不维护第二份清单。与测试最相关的基线项是 CONTAINER-011、LOGGING-012、CROSS-002：

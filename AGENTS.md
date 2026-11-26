@@ -122,6 +122,7 @@ ctest --preset=linux_gnu_debug_ctest
 - 默认做 **Debug** 构建并跑全部测试。
 - 改动至少验证 **MSVC 与 MinGW 各一次**；平台相关改动再补 Linux/macOS。
 - 测试目标：聚合 `test_origin`，以及 `test_Container`、`test_Utils`、`test_Logging`；ctest 只注册后三个，`test_origin` 需直接运行构建产物。
+- 测试 `main()` 负责设定本进程的调试级别基线（当前多为 `INFO`，可按测试需要调整）；用例可临时修改，但必须在 `TearDown()` 或 RAII guard 中恢复到进入用例前的值，不能泄漏到其他用例。
 - 涉及文件 I/O、日志、异步生命周期、并发时，补失败路径或并发测试。
 - ctest 日志和 JUnit 报告在 `out/Testing/<preset>_ctest/`。
 - 不提交 `out/`、`_deps/` 等构建产物。

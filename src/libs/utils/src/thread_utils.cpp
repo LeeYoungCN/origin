@@ -13,7 +13,12 @@
 
 #if OS_WINDOWS
 
-#include <windows.h>
+// SDK 窄头文件依赖 windows.h 先建立目标架构与基础类型；include-cleaner
+// 无法识别这种依赖，因此保留 windows.h 并显式标记为需要。
+// NOLINTNEXTLINE(misc-include-cleaner)
+#include <windows.h>  // IWYU pragma: keep
+
+#include <processthreadsapi.h>
 
 #elif OS_LINUX
 #include <sys/syscall.h>

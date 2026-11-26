@@ -30,6 +30,8 @@ typedef enum {
     ORG_DBG_LVL_OFF = ORIGIN_DBG_LEVEL_OFF
 } OriginDbgLvl;
 
+COMMON_API OriginDbgLvl origin_get_debug_logger_level();
+
 COMMON_API void origin_set_debug_logger_level(OriginDbgLvl level);
 
 COMMON_API bool origin_debug_logger_should_log(OriginDbgLvl level);
@@ -42,9 +44,6 @@ COMMON_API void origin_debug_logger_c(
 
 #ifdef __cplusplus
 #include <format>
-COMMON_API void origin_debug_logger_force_log(
-    const char* file, int line, const char* func, OriginDbgLvl level, const std::string& message);
-
 COMMON_API void origin_debug_logger_log(
     const char* file, int line, const char* func, OriginDbgLvl level, const std::string& message);
 
@@ -57,7 +56,7 @@ void origin_debug_logger_log(const char* file,
                              Args&&... args)
 {
     if (origin_debug_logger_should_log(level)) {
-        origin_debug_logger_force_log(
+        origin_debug_logger_log(
             file, line, func, level, std::move(std::format(format, std::forward<Args>(args)...)));
     }
 }

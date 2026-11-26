@@ -44,14 +44,10 @@ void SinkImplBase::flush()
 void SinkImplBase::report_error(const char* action, const char* detail) const noexcept
 {
     try {
-        std::string message = "Sink ";
-        message += action;
-        message += " failed. [Param]: \"";
-        message += _paramStr;
-        message += "\". [Exception]: \"";
-        message += detail == nullptr ? "unknown" : detail;
-        message += "\".";
-        origin_debug_logger_force_log(__FILE__, __LINE__, __FUNCTION__, ORG_DBG_LVL_ERR, message);
+        ORIGIN_DEBUG_ERR("Sink {} failed. [Param]: \"{}\". [Exception]: \"{}\".",
+                         action,
+                         _paramStr,
+                         (detail == nullptr ? "unknown" : detail));
     } catch (...) {
         // 错误上报本身不能再抛异常。
     }

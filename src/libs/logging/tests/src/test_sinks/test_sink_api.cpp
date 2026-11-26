@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "origin/common/common_error_code.h"
 #include "origin/common/debug/debug_logger.h"
 
 #include "origin/filesystem/filesystem.h"
@@ -59,6 +60,7 @@ protected:
     std::shared_ptr<BasicFileSink> _sink;
     std::string _name;
     std::string _file;
+    OriginDbgLvl _level = origin_get_debug_logger_level();
 };
 
 void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
@@ -72,14 +74,16 @@ void TestSinkApi::InitSink(const testing::TestInfo* test_info_)
 
 void TestSinkApi::SetUp()
 {
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestSinkApi::TearDown()
 {
+    // 用例只临时调整级别，结束时恢复到进入测试前的值。
+    origin_set_debug_logger_level(_level);
     _sink.reset();
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -128,12 +132,13 @@ TEST_F(TestSinkApi, set_formatter)
     EXPECT_EQ(read_text_file(_file), expected + '\n');
 }
 
-TEST_F(TestSinkApi, log_failure_is_reported_when_debug_logger_off)
+TEST_F(TestSinkApi, log_failure_is_reported)
 {
     InitSink(test_info_);
     _sink->set_formatter(std::make_unique<ThrowingFormatter>());
 
-    origin_set_debug_logger_level(ORG_DBG_LVL_OFF);
+    // 临时：sink 故障经 ORIGIN_DEBUG_ERR 上报，需要运行时级别允许 ERR。
+    origin_set_debug_logger_level(ORG_DBG_LVL_ERR);
 
     std::ostringstream captured;
     auto* const oldBuffer = std::cerr.rdbuf(captured.rdbuf());
@@ -144,7 +149,6 @@ TEST_F(TestSinkApi, log_failure_is_reported_when_debug_logger_off)
         throw;
     }
     std::cerr.rdbuf(oldBuffer);
-    origin_set_debug_logger_level(ORG_DBG_LVL_TRACE);
 
     EXPECT_NE(captured.str().find("Sink log failed"), std::string::npos);
 }
@@ -154,7 +158,8 @@ TEST_F(TestSinkApi, non_std_exception_is_reported)
     InitSink(test_info_);
     _sink->set_formatter(std::make_unique<ThrowingNonStdFormatter>());
 
-    origin_set_debug_logger_level(ORG_DBG_LVL_OFF);
+    // 临时：sink 故障经 ORIGIN_DEBUG_ERR 上报，需要运行时级别允许 ERR。
+    origin_set_debug_logger_level(ORG_DBG_LVL_ERR);
 
     std::ostringstream captured;
     auto* const oldBuffer = std::cerr.rdbuf(captured.rdbuf());
@@ -165,7 +170,6 @@ TEST_F(TestSinkApi, non_std_exception_is_reported)
         throw;
     }
     std::cerr.rdbuf(oldBuffer);
-    origin_set_debug_logger_level(ORG_DBG_LVL_TRACE);
 
     EXPECT_NE(captured.str().find("unknown exception"), std::string::npos);
 }

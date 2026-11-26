@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+#include "origin/common/common_error_code.h"
+
 #include "origin/filesystem/filesystem.h"
 
 #include "origin/logging/c/logging_c.h"
@@ -48,7 +50,7 @@ void TestSinkStApi::InitSink(const testing::TestInfo* test_info_)
 
 void TestSinkStApi::SetUp()
 {
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
@@ -57,7 +59,7 @@ void TestSinkStApi::TearDown()
     origin_destroy_logger(_logger);
     origin_destroy_sink(_sink);
     destroy_mock_sink_st(_nullSink);
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 

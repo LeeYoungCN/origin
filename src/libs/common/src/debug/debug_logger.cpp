@@ -150,6 +150,8 @@ class DebugLoggerImpl : public origin::common::base::SingletonBase<DebugLoggerIm
     friend class SingletonBase;
 
 public:
+    OriginDbgLvl get_debug_log_level() { return _logLevel; }
+
     void set_debug_log_level(const OriginDbgLvl level) { _logLevel = level; }
 
     [[nodiscard]] bool should_log(const OriginDbgLvl level) const
@@ -224,6 +226,11 @@ private:
 }  // namespace
 
 extern "C" {
+OriginDbgLvl origin_get_debug_logger_level()
+{
+    return DebugLoggerImpl::instance().get_debug_log_level();
+}
+
 void origin_set_debug_logger_level(const OriginDbgLvl level)
 {
     DebugLoggerImpl::instance().set_debug_log_level(level);
@@ -265,15 +272,6 @@ void origin_debug_logger_c(const char* file,
 }
 }
 
-void origin_debug_logger_force_log(const char* file,
-                                   const int line,
-                                   const char* func,
-                                   const OriginDbgLvl level,
-                                   const std::string& message)
-{
-    DebugLoggerImpl::instance().log(file, line, func, level, message);
-}
-
 void origin_debug_logger_log(const char* file,
                              const int line,
                              const char* func,
@@ -281,6 +279,6 @@ void origin_debug_logger_log(const char* file,
                              const std::string& message)
 {
     if (origin_debug_logger_should_log(level)) {
-        origin_debug_logger_force_log(file, line, func, level, message);
+        DebugLoggerImpl::instance().log(file, line, func, level, message);
     }
 }

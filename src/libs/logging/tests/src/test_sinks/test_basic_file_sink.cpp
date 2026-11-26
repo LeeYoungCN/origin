@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+#include "origin/common/common_error_code.h"
 #include "origin/common/constants/filesystem_constants.h"
 #include "origin/common/types/filesystem_types.h"
 
@@ -33,13 +34,13 @@ protected:
 
 void TestBasicFileSink::SetUp()
 {
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 
 void TestBasicFileSink::TearDown()
 {
-    (void)delete_dir(_dir, true);
+    EXPECT_EQ(delete_dir(_dir, true), ERR_COMM_SUCCESS);
     EXPECT_FALSE(dir_exists(_dir));
 }
 

@@ -9,8 +9,8 @@
 | 项 | 值 |
 |---|---|
 | 快照日期 | 2026-11-26 |
-| 分支 / 修复提交 | `master` / `5806cf7`（审计基线仍为 `c37a364`） |
-| 工作区 | 有未提交改动（平台宏、Utils 路径、Logging 收口） |
+| 分支 / 修复提交 | `master` / `db4db92`（审计基线仍为 `c37a364`） |
+| 工作区 | 干净（本批次已提交 `db4db92`） |
 | 版本 | `2.0.0`，未发布；已有 tag `v1.0.0`、`v1.0.1` |
 | 审计基线 | `c37a364`（2026-11-22 全量审计）；当前 54 项 = 0 open / 1 partial / 53 fixed |
 | 许可证 | 仓库暂无 `LICENSE`，对外分发前必须补 |
@@ -64,7 +64,7 @@
 `CONTAINER-011`、`CROSS-002`；`LOGGING-012` 因缺少真实 I/O 失败注入标 `partial`。
 审计计数变为 13 open / 1 partial / 40 fixed。
 
-2026-11-26 后续（工作区未提交）：关闭 `COMMON-004/005/006/007/008/009/011/012`、`CROSS-003`、
+2026-11-26 后续（提交 `db4db92`）：关闭 `COMMON-004/005/006/007/008/009/011/012`、`CROSS-003`、
 `UTILS-012/013/015`、`LOGGING-011`。公共宏层集中到 `compiler.h`；`MAKE_ERROR` 增加字段掩码；
 `get_proc_path` 的 Windows 分支改用宽字符 API；`is_path_too_long` 按 UTF-16 码元判断；
 UTF-8 转 UTF-16 失败返回 `ERR_UTILS_PATH_INVALID`。审计计数变为 0 open / 1 partial / 53 fixed。

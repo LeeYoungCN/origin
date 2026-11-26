@@ -13,7 +13,7 @@
 
 #if OS_WINDOWS
 
-#include <processthreadsapi.h>
+#include <windows.h>
 
 #elif OS_LINUX
 #include <sys/syscall.h>

@@ -21,7 +21,14 @@
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
 
-### 2026-11-26 UNIX socket 测试路径受 sun_path 108 字节限制
+### 2026-11-26 移除公共头的 windows.h 后，.cpp 不能单独包含 processthreadsapi.h
+
+- 现象：Windows CI 的 Release 构建在 `src/libs/utils/src/thread_utils.cpp` 报 `winnt.h(169): error C1189: #error: "No Target Architecture"`；本机 Debug 增量构建未复现，说明依赖头文件的增量依赖可能漏掉这类问题。
+- 根因：`thread_utils.cpp` 只包含 `<processthreadsapi.h>`，它依赖 `windows.h` 先定义目标架构宏（如 `_AMD64_`）。之前 `thread_types.h` 间接包含 `<windows.h>`，所以能编译；本次为了公共头去 Windows 宏污染删掉后，单独包含 SDK 子头就失去了架构定义。
+- 修复/规避：在 Windows 分支包含 `<windows.h>`，由它引入 `GetCurrentThreadId` 及所需 SDK 子头；不要只包含 `processthreadsapi.h`/`fileapi.h` 这类依赖 `windows.h` 上下文的头。检查公共头删除 `windows.h` 时，所有原本靠它间接获得声明的 `.cpp`。
+- 验证：本机 `msvc_x64_release` configure/build 通过，Release `ctest` 3/3（`test_Utils` 150、`test_Logging` 231，14.34s）；CI 同一 Release 构建由该提交修复。
+- 适用范围：Windows MSVC（尤其完整 Release 构建）；MinGW 的 SDK 头实现不同，未复现，但同样建议包含 `<windows.h>`。Linux/macOS 不适用。
+- 关联：2026-11-26 Windows CI 失败、`src/libs/utils/src/thread_utils.cpp`、`thread_types.h` 去 `<windows.h>` 的改动。
 
 - 现象：Linux CI 的 `FilesystemErrorCodeApi.SymlinkAndSpecialFiles` 失败，`ASSERT_LT(socketPath.size(), sizeof(address.sun_path))` 报 `114 vs 108`。
 - 根因：`sockaddr_un::sun_path` 只有约 108 字节（含结尾 NUL），而测试把 socket 建在构建目录下；CI 工作区路径较长，拼出的绝对路径超过上限。普通文件路径的 4096 字节上限在这里不适用。

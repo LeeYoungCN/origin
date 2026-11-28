@@ -515,7 +515,7 @@ function run_gtest() {
         fi
         ;;
     *)
-        if "${cmake_test_runtime}" --gtest_filter="${arg_gtest_case}"; then
+        if "${cmake_test_runtime}" --gtest_filter="${arg_gtest_case}" --gtest_fail_if_no_test_selected; then
             print_log "[${cmake_preset}] [${gtest_target}] run test case [${arg_gtest_case}] success." info
         else
             print_log "[${cmake_preset}] [${gtest_target}] run test case [${arg_gtest_case}] failed." error

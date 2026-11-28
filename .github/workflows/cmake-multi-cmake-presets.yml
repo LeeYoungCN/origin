@@ -65,6 +65,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Prepare third_party from third_lib release
+      # 与本地开发一致：把 third_lib 仓库的 release/ 目录原样放到 third_party/。
+      # CMake 默认 CMAKE_THIRD_PARTY_PATH=<源码树>/third_party，因此不需要额外的 -D 参数；
+      # third_party 在 .gitignore 里，checkout 不会带出来，只能在这里拉。
+      shell: bash
+      run: |
+        set -euo pipefail
+        git clone --depth 1 https://github.com/LeeYoungCN/third_lib.git "${RUNNER_TEMP}/third_lib"
+        mv "${RUNNER_TEMP}/third_lib/release" "${GITHUB_WORKSPACE}/third_party"
+        ls -1 "${GITHUB_WORKSPACE}/third_party"
+
     - name: Import MSVC environment (vcvars)
       # Windows runner 默认不初始化 VS 环境，cl.exe 不在 PATH；preset 用 Ninja + cl.exe，
       # 必须先导入 vcvars。arch 必须跟随矩阵，否则 msvc_x86_* 会静默编出 x64 产物。

@@ -227,6 +227,8 @@ CMake 只在当前配置定义以下宏之一：
 
 ## 完成标准
 
+- 验证由用户明确指令决定：用户未要求“构建 / 测试 / 跑验证 / 跑全量”时，不主动执行构建、ctest、`check_layers.sh`、`check_tidy.sh` 或全量扫描，并在结果中说明“未构建 / 未测试”。
+- 以下验证要求仅在用户明确要求验证时适用。
 - 纯文档、Skill、注释等不涉及代码/CMake/测试的改动：不要求构建、ctest、`check_layers.sh` 或 `check_tidy.sh`；在结果中说明未跑的原因。
 - 代码、CMake、测试或构建脚本改动：MSVC 与 MinGW 至少各构建、测试一次（平台不可用时说明原因）。
 - 涉及库代码或公共头文件时，`check_layers.sh` 通过，改动文件跑过 `check_tidy.sh`。

@@ -1,6 +1,6 @@
 ---
 name: origin-build-verify
-description: 在 Origin 仓库发生代码、CMake 或测试改动后验证构建。默认跑 MSVC x64 Debug 与 MinGW Debug，分类环境、配置、编译、链接和测试失败，并给出可复现命令。只读问答或纯审计评审不要使用。
+description: 仅在用户明确要求构建、测试或验证时使用。默认跑 MSVC x64 Debug 与 MinGW Debug，分类环境、配置、编译、链接和测试失败，并给出可复现命令。只读问答、纯审计评审，或仅发生代码/CMake/测试改动但没有明确验证要求时不要使用。
 ---
 
 # Origin 构建验证
@@ -9,6 +9,7 @@ description: 在 Origin 仓库发生代码、CMake 或测试改动后验证构�
 
 ## 输入与边界
 
+- 触发条件：用户明确要求“构建 / 测试 / 验证 / 跑全量 / 按本 skill 跑”。仅仅发生代码、CMake 或测试改动不构成触发条件；未明确要求时不运行任何构建、ctest、`check_layers.sh` 或 `check_tidy.sh`。
 - 可选参数：preset 名称、只跑某一个 preset、只跑某个测试。
 - 默认矩阵：`msvc_x64_debug`、`win_mingw_debug`。
 - 只报告和验证，不修改源码，不自动格式化，不提交；用户明确要求修复时才改代码。
@@ -20,7 +21,7 @@ description: 在 Origin 仓库发生代码、CMake 或测试改动后验证构�
 - `ctest` 只注册 `test_Container` / `test_Utils` / `test_Logging`；聚合进程 `test_origin` 会构建但**不在 ctest**。需要聚合结果时直接运行 `out/build/<preset>/bin/test_origin`（Windows 加 `.exe`），并在报告中说明两者都跑了还是只跑了一个。
 - 当前 CI 的 `cmake-multi-platform.yml` 已过时；`clang-tidy.yml` 三平台但不阻塞合并。不要把“CI 没红”当成完整验证。
 
-纯文档、Skill、注释改动不要求构建；涉及代码/CMake/测试时才走下面的矩阵。
+纯文档、Skill、注释改动不要求构建；涉及代码/CMake/测试的改动，也只在用户明确要求验证时才走下面的矩阵。
 
 ## 1. 记录基线
 

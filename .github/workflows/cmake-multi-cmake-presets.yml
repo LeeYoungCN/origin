@@ -36,15 +36,19 @@ jobs:
           - os: windows-latest
             preset: msvc_x64_debug
             compiler: msvc
+            arch: x64
           - os: windows-latest
             preset: msvc_x64_release
             compiler: msvc
+            arch: x64
           - os: windows-latest
             preset: msvc_x86_debug
             compiler: msvc
+            arch: x86
           - os: windows-latest
             preset: msvc_x86_release
             compiler: msvc
+            arch: x86
           # ---- Linux: gcc ----
           - os: ubuntu-latest
             preset: linux_gnu_release
@@ -60,6 +64,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Import MSVC environment (vcvars)
+      # Windows runner 默认不初始化 VS 环境，cl.exe 不在 PATH；preset 用 Ninja + cl.exe，
+      # 必须先导入 vcvars。arch 必须跟随矩阵，否则 msvc_x86_* 会静默编出 x64 产物。
+      if: matrix.compiler == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.arch }}
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

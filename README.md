@@ -44,7 +44,28 @@
 | C++ 标准 | C++20（C 源文件使用 C23） |
 | CMake | `CMakeLists.txt` 最低 3.14；`CMakePresets.json`（v9）需要 **3.30+**，CI 使用 4.x |
 | 生成器 | Ninja（Windows/MSVC、clang-cl）、MinGW Makefiles、Unix Makefiles |
-| 测试 | GoogleTest 1.18（优先 `find_package(GTest)`，找不到时自动 FetchContent） |
+| 测试 | GoogleTest 1.18：`include(third_party/cmake/third_lib.cmake)` 自动选预设并建 `GTest::gtest`，找不到时才 FetchContent |
+
+### 三方仓（third_lib）
+
+`third_party/` 是 **third_lib** 的产物目录（本机用目录联接指向 `E:\code\third_lib\release`，
+一个目录里放着各预设）。`CMakeLists.txt` 只做两件事：
+
+```cmake
+# 兜底：preset / -D 给了 CMAKE_THIRD_PARTY_PATH 就沿用，没给才用源码树下的 third_party
+if (NOT CMAKE_THIRD_PARTY_PATH)
+    set(CMAKE_THIRD_PARTY_PATH "${PROJECT_SOURCE_DIR}/third_party" CACHE PATH "Default CMAKE_THIRD_PARTY_PATH third_party")
+endif()
+include("${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake")
+```
+
+`CMAKE_THIRD_PARTY_PATH` 此时指向 **放多个预设的目录**（不再是 `third_party/<preset>`）：
+接入脚本按 **消费方编译器 + 构建类型** 挑预设（不需要 `CMAKE_PRESET`），建好
+`third_lib::cjson` / `GTest::gtest` 等 imported target，然后把 `CMAKE_THIRD_PARTY_PATH`
+回填成 `<root>/<preset>`，下游（`src/`、`configure_summary`、`origin_build.conf`）用法不变。
+`THIRD_LIB_PRESET` 可显式覆盖选中的预设。找不到 `third_lib.cmake`（例如 `third_party/`
+还没准备）时只会告警，测试退化为 `FetchContent`。
+
 
 ## 快速开始
 

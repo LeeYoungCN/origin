@@ -22,6 +22,16 @@
 
 ### 变更
 
+- 三方仓引用方式改为 third_lib 的接入脚本：`CMakeLists.txt` 保留
+  `if (NOT CMAKE_THIRD_PARTY_PATH)` 兜底（默认 `<源码>/third_party`），随后
+  `include("${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake")`；脚本按消费方编译器与
+  构建类型自动挑预设并建 imported target，再把 `CMAKE_THIRD_PARTY_PATH` 回填成
+  `<root>/<preset>`，下游路径变量与 `configure_summary` / `origin_build.conf` 输出不变。
+  `CMAKE_THIRD_PARTY_PATH` 的语义从"某个预设目录"变成"放多个预设的根目录"（preset 里填
+  `${sourceDir}/third_party`；指向某个预设目录或解压包根目录也仍然可用）。
+  `src/CMakeLists.txt` 改为 `third_lib_add_package(googletest)`，判 `TARGET GTest::gtest`
+  决定是否回退 `FetchContent`。不再拼 `third_party/${CMAKE_PRESET}`。
+
 - 错误处理统一为长期方案：可失败接口返回 `ErrorCode`，错误文本用
   `get_utils_err_msg(code)` / `get_comm_err_msg(code)`；公共 thread-local API
   （`get_thread_last_err*`）及其内部实现已彻底移除，错误只随返回值传递。

@@ -87,8 +87,19 @@ if(ORIGIN_TOP_LEVEL)
         set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/out/install/${CMAKE_PRESET}" CACHE PATH "Default CMAKE_INSTALL_PREFIX out/install/${CMAKE_PRESET}" FORCE)
     endif()
 
+    # 三方仓统一入口：third_lib 的接入脚本（third_party/ 就是 third_lib/release 的 junction）。
+    # CMAKE_THIRD_PARTY_PATH 指向"放多个预设的目录"，脚本按编译器/构建类型自己挑预设、
+    # 建 imported target，选中后把它回填成 <root>/<preset>，下游照旧使用。
+    # 这里只做兜底：preset 或 -D 给了值就沿用，没给才用源码树下的 third_party。
     if (NOT CMAKE_THIRD_PARTY_PATH)
-        set(CMAKE_THIRD_PARTY_PATH "${PROJECT_SOURCE_DIR}/third_party/${CMAKE_PRESET}" CACHE STRING "Default CMAKE_THIRD_PARTY_PATH third_party" FORCE)
+        set(CMAKE_THIRD_PARTY_PATH "${PROJECT_SOURCE_DIR}/third_party" CACHE PATH "Default CMAKE_THIRD_PARTY_PATH third_party")
+    endif()
+
+    if (EXISTS "${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake")
+        include("${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake")
+    else()
+        message(WARNING "third_lib: ${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake not found; "
+                        "tests fall back to FetchContent until third_party is prepared")
     endif()
 
     if (NOT CPACK_PACKAGE_DIRECTORY)
@@ -106,10 +117,6 @@ if (ORIGIN_ENABLE_ASAN)
     else()
         message(WARNING "ASan is not supported on this platform/compiler.")
     endif()
-endif()
-
-if (ORIGIN_TOP_LEVEL AND NOT EXISTS "${CMAKE_THIRD_PARTY_PATH}")
-    message(WARNING "CMAKE_THIRD_PARTY_PATH does not exist: ${CMAKE_THIRD_PARTY_PATH}")
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/configure/configure_summary.cmake)

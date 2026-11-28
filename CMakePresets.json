@@ -9,7 +9,7 @@
             "description": "Project base config.",
             "cacheVariables": {
                 "CMAKE_PRESET": "${presetName}",
-                "CMAKE_THIRD_PARTY_PATH": "${sourceDir}/third_party/${presetName}",
+                "CMAKE_THIRD_PARTY_PATH": "${sourceDir}/third_party",
                 "CPACK_PACKAGE_DIRECTORY": "${sourceDir}/out/pkg/${presetName}",
                 "ORIGIN_BUILD_TESTS": "ON",
                 "ORIGIN_ENABLE_ASAN": "OFF",

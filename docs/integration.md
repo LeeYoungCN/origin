@@ -124,7 +124,7 @@ Origin 通过 `ORIGIN_TOP_LEVEL`（`CMAKE_SOURCE_DIR == PROJECT_SOURCE_DIR`）�
 | 行为 | 顶层构建 | 嵌入父项目 |
 |---|---|---|
 | `CMAKE_INSTALL_PREFIX` 默认值 | 设为 `out/install/<preset>` | **完全不动父项目** |
-| `CMAKE_THIRD_PARTY_PATH` / `CPACK_PACKAGE_DIRECTORY` | 设置默认值 | 不设置 |
+| `CMAKE_THIRD_PARTY_PATH`（third_lib 接入脚本的根目录）/ `CPACK_PACKAGE_DIRECTORY` | 设置默认值 | 不设置 |
 | `include(CPack)` | 生成 CPack 配置 | 不生成 |
 | 拉取 googletest | `ORIGIN_BUILD_TESTS=ON` 时 | 仅 `ORIGIN_BUILD_TESTS=ON` 时 |
 | `CMAKE_RUNTIME_OUTPUT_DIRECTORY` | `out/build/<preset>/bin` | 父项目的 `bin`（目录级设置，仅影响 Origin 目标） |

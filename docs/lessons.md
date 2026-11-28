@@ -21,6 +21,15 @@
 
 <!-- 新条目放在最上面；同类问题优先补充已有条目，不重复开新条目。 -->
 
+### 2026-11-28 预编译三方仓改由 third_lib 的接入脚本统一接管
+
+- 现象：`third_party/` 已经从 third_lib 的安装树整体刷新（本机是目录联接指向 `third_lib/release`），但 `CMakeLists.txt` / `src/CMakeLists.txt` 仍在拼 `third_party/${CMAKE_PRESET}/googletest` 并 `find_package(GTest QUIET)`；预设名对不上时（如 `win_clang_cl_*` 没有产物、某个 debug 预设被删）就会静默退化成 `FetchContent`，看起来正常其实没用到预编译包。
+- 根因：消费方的预设命名与 third_lib 的产物目录强耦合，而且 `CMAKE_PRESET` 不是普适变量；谁来挑目录、挑不到怎么办，分散在 `CMakeLists.txt`、presets、`src/CMakeLists.txt` 三处。
+- 修复/规避：不要新造根变量——`CMAKE_THIRD_PARTY_PATH` 就是那个根，语义从"某个预设目录"变成"放多个预设的根目录"。顶层保持 `if (NOT CMAKE_THIRD_PARTY_PATH)` 兜底（默认 `${PROJECT_SOURCE_DIR}/third_party`，preset 或 `-D` 给了值就沿用），随后 `if (EXISTS "${CMAKE_THIRD_PARTY_PATH}/cmake/third_lib.cmake") include(...) else() message(WARNING ...)`；脚本会把 `CMAKE_THIRD_PARTY_PATH` 回填成 `<root>/<preset>`，所以 `src/CMakeLists.txt`、`configure_summary`、`origin_build.conf` 全都不用动。`src/CMakeLists.txt` 改 `third_lib_add_package(googletest)`，并按 `TARGET GTest::gtest` 判断是否回退 `FetchContent`（third_lib 在 `find_package(GTest CONFIG)` 失败时会自己造这个 target，所以不能判 `GTest_FOUND`）。`CMakePresets.json` 里同一个变量填 `${sourceDir}/third_party`；需要钉死预设时用 `THIRD_LIB_PRESET`。
+- 验证：本机 MSVC x64 Debug 仅 configure（未编译）：日志 `-- third_lib: E:/code/origin/third_party/msvc_x64_debug`（接入脚本只打印选中路径，且不读消费方 `CMAKE_PRESET`）；`cmake --build ... --target help` 列出 4 个 test target；`build.ninja` 的 `LINK_LIBRARIES` 为 `E:\code\origin\third_party\msvc_x64_debug\googletest\lib\gtest.lib`，且 build 目录没有 `_deps/`（未触发 FetchContent）。
+- 适用范围：Windows/Linux/macOS 全部预设；依赖 third_lib 安装树里存在 `cmake/third_lib.cmake`（第三方产物随 third_lib 一起发布）。third_party 未准备时只告警，不失败。
+- 关联：`CMakeLists.txt`、`src/CMakeLists.txt`、`CMakePresets.json`、`README.md`、`docs/integration.md`、`CHANGELOG.md`、third_lib 仓库 `cmake/config/third_lib.cmake`。
+
 ### 2026-11-26 clang-tidy 的 include-cleaner 会把 windows.h 判成未使用并模拟删除
 
 - 现象：Windows CI 的 clang-tidy 在 `filesystem_utils_path.cpp` 报 `included header windows.h is not used directly`，随后出现 `winnt.h(169): "No Target Architecture"`、`minwinbase.h:392` / `processthreadsapi.h` 的 `PCONTEXT` 未知等错误；`process_utils.cpp` 另报缺少 `GetLastError`/`WideCharToMultiByte`/`size_t` 的直接 include。

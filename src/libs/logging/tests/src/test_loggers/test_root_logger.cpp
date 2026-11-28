@@ -99,7 +99,7 @@ TEST_F(TestRootLogger, flush_level_filter)
             if (level == LogLevel::OFF) {
                 break;
             }
-            log(LOG_SRC_LOCAL, level, i);
+            log(LOG_SRC_LOCAL, level, "{}", i);
             if (!should_flush(level)) {
                 EXPECT_EQ(_sink->buffer().size(), i + 1);
                 EXPECT_EQ(_sink->disk().size(), 0);
@@ -117,7 +117,7 @@ TEST_F(TestRootLogger, flush)
     init_logger(test_info_);
     constexpr uint32_t MAX_ITEM_CNT = 100;
     for (uint32_t i = 0; i < MAX_ITEM_CNT; ++i) {
-        error(LOG_SRC_LOCAL, i);
+        error(LOG_SRC_LOCAL, "{}", i);
         EXPECT_EQ(_sink->buffer().size(), i + 1);
         EXPECT_EQ(_sink->disk().size(), 0);
     }
@@ -134,33 +134,33 @@ TEST_F(TestRootLogger, log_function)
         // trace
         trace(LOG_SRC_LOCAL, "{}", i);
         trace("{}", i);
-        trace(LOG_SRC_LOCAL, i);
-        trace(i);
+        trace(LOG_SRC_LOCAL, "{}", i);
+        trace("{}", i);
         // debug
         debug(LOG_SRC_LOCAL, "{}", i);
         debug("{}", i);
-        debug(LOG_SRC_LOCAL, i);
-        debug(i);
+        debug(LOG_SRC_LOCAL, "{}", i);
+        debug("{}", i);
         // info
         info(LOG_SRC_LOCAL, "{}", i);
         info("{}", i);
-        info(LOG_SRC_LOCAL, i);
-        info(i);
+        info(LOG_SRC_LOCAL, "{}", i);
+        info("{}", i);
         // warn
         warn(LOG_SRC_LOCAL, "{}", i);
         warn("{}", i);
-        warn(LOG_SRC_LOCAL, i);
-        warn(i);
+        warn(LOG_SRC_LOCAL, "{}", i);
+        warn("{}", i);
         // error
         error(LOG_SRC_LOCAL, "{}", i);
         error("{}", i);
-        error(LOG_SRC_LOCAL, i);
-        error(i);
+        error(LOG_SRC_LOCAL, "{}", i);
+        error("{}", i);
         // fatal
         fatal(LOG_SRC_LOCAL, "{}", i);
         fatal("{}", i);
-        fatal(LOG_SRC_LOCAL, i);
-        fatal(i);
+        fatal(LOG_SRC_LOCAL, "{}", i);
+        fatal("{}", i);
     }
 
     flush();
@@ -243,7 +243,7 @@ TEST_F(TestRootLogger, set_pattern)
     init_logger(test_info_);
     set_pattern("%v");
     for (uint32_t i = 0; i < 100; i++) {
-        error(i);
+        error("{}", i);
         EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
     }
 }
@@ -270,7 +270,7 @@ TEST_F(TestRootLogger, set_formatter)
     const std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
     set_formatter(formatter);
     for (uint32_t i = 0; i < 100; i++) {
-        error(i);
+        error("{}", i);
         EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
     }
 }

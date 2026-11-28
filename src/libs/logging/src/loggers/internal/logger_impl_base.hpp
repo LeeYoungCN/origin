@@ -42,17 +42,16 @@ public:
     void set_formatter(const std::unique_ptr<Formatter>& formatter) const override;
 
     void flush() override;
-    void force_log(const LogSource& source, LogLevel level, std::string_view message) override;
 
     void backend_log(const LogMsg& logMsg) const;
     void backend_flush() const;
 
 protected:
+    void log_unchecked(const LogSource& source, LogLevel level, std::string_view message) override;
     virtual void log_it(const LogMsg& logMsg) = 0;
     virtual void flush_it() = 0;
     void throw_if_param_invalid();
 
-protected:
     std::string _name;
     std::vector<std::shared_ptr<Sink>> _sinks;
     std::atomic<LogLevel> _level{LogLevel::INFO};

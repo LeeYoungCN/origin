@@ -78,6 +78,11 @@
   对应 CONTAINER-003/004/010 随删除消失；`ERR_CONTAINER_OVERFLOW` 错误码保留。
 - **BREAKING**：移除 `origin::logging::root_logger_raw()`。公共路径统一使用
   `root_logger()` 返回的 `shared_ptr`，避免解锁后的裸指针 UAF（LOGGING-003）。
+- **BREAKING**：`Logger::force_log` 改为受保护的 `Logger::log_unchecked`，仅作为 checked
+  `log` 的末端实现，公共入口只保留按级别过滤的 `log`。同时删除 `log` / `trace` / `debug` /
+  `info` / `warn` / `error` / `fatal` 的单值 `const T&` 重载：字符串统一用
+  `std::string_view`，需要格式化时用 `std::format_string`（`info(42)` 需改写为
+  `info("{}", 42)`）。
 - **BREAKING**：`FileWriter::write` / `write_line` / `flush` 由 `void` 改为返回
   `[[nodiscard]] ErrorCode`；`FileWriter` 构造函数不再抛异常，初始化失败由
   `open()` / `get_last_error()` 返回（UTILS-010/011）。

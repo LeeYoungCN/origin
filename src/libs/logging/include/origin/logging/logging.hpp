@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -81,10 +80,22 @@ LOGGING_API void set_pattern(std::string_view pattern);
 LOGGING_API void set_formatter(const std::unique_ptr<Formatter>& formatter);
 LOGGING_API void flush();
 
+// 非模板便捷函数直接定义在头文件，必须 inline，否则每个包含该头文件的
+// 翻译单元都会生成强符号，链接时出现 LNK2005。
+inline void log(LogLevel level, std::string_view message)
+{
+    root_logger()->log(level, message);
+}
+
+inline void log(const LogSource& source, LogLevel level, std::string_view message)
+{
+    root_logger()->log(source, level, message);
+}
+
 template <typename... Args>
 void log(LogLevel level, std::format_string<Args...> format, Args&&... args)
 {
-    root_logger()->log(level, std::format(format, std::forward<Args>(args)...));
+    root_logger()->log(level, format, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
@@ -96,22 +107,14 @@ void log(const LogSource& source,
     root_logger()->log(source, level, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void log(const LogSource& source, LogLevel level, const T& msg)
+inline void trace(std::string_view message)
 {
-    root_logger()->log(source, level, msg);
+    root_logger()->trace(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void log(LogLevel level, const T& msg)
+inline void trace(const LogSource& source, std::string_view message)
 {
-    root_logger()->log(level, origin::strings::type_to_string(msg));
-}
-
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void trace(const LogSource& source, LogLevel level, const T& message)
-{
-    root_logger()->trace(source, level, message);
+    root_logger()->trace(source, message);
 }
 
 template <typename... Args>
@@ -126,22 +129,14 @@ void trace(const LogSource& source, std::format_string<Args...> format, Args&&..
     root_logger()->trace(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void trace(const T& message)
+inline void debug(std::string_view message)
 {
-    root_logger()->trace(message);
+    root_logger()->debug(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void trace(const LogSource& source, const T& message)
+inline void debug(const LogSource& source, std::string_view message)
 {
-    root_logger()->trace(source, message);
-}
-
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void debug(const LogSource& source, LogLevel level, const T& message)
-{
-    root_logger()->debug(source, level, message);
+    root_logger()->debug(source, message);
 }
 
 template <typename... Args>
@@ -156,16 +151,14 @@ void debug(const LogSource& source, std::format_string<Args...> format, Args&&..
     root_logger()->debug(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void debug(const T& message)
+inline void info(std::string_view message)
 {
-    root_logger()->debug(message);
+    root_logger()->info(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void debug(const LogSource& source, const T& message)
+inline void info(const LogSource& source, std::string_view message)
 {
-    root_logger()->debug(source, message);
+    root_logger()->info(source, message);
 }
 
 template <typename... Args>
@@ -180,16 +173,14 @@ void info(const LogSource& source, std::format_string<Args...> format, Args&&...
     root_logger()->info(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void info(const T& message)
+inline void warn(std::string_view message)
 {
-    root_logger()->info(message);
+    root_logger()->warn(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void info(const LogSource& source, const T& message)
+inline void warn(const LogSource& source, std::string_view message)
 {
-    root_logger()->info(source, message);
+    root_logger()->warn(source, message);
 }
 
 template <typename... Args>
@@ -204,16 +195,14 @@ void warn(const LogSource& source, std::format_string<Args...> format, Args&&...
     root_logger()->warn(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void warn(const T& message)
+inline void error(std::string_view message)
 {
-    root_logger()->warn(message);
+    root_logger()->error(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void warn(const LogSource& source, const T& message)
+inline void error(const LogSource& source, std::string_view message)
 {
-    root_logger()->warn(source, message);
+    root_logger()->error(source, message);
 }
 
 template <typename... Args>
@@ -228,16 +217,14 @@ void error(const LogSource& source, std::format_string<Args...> format, Args&&..
     root_logger()->error(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void error(const T& message)
+inline void fatal(std::string_view message)
 {
-    root_logger()->error(message);
+    root_logger()->fatal(message);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void error(const LogSource& source, const T& message)
+inline void fatal(const LogSource& source, std::string_view message)
 {
-    root_logger()->error(source, message);
+    root_logger()->fatal(source, message);
 }
 
 template <typename... Args>
@@ -252,17 +239,6 @@ void fatal(const LogSource& source, std::format_string<Args...> format, Args&&..
     root_logger()->fatal(source, format, std::forward<Args>(args)...);
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void fatal(const T& message)
-{
-    root_logger()->fatal(message);
-}
-
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-void fatal(const LogSource& source, const T& message)
-{
-    root_logger()->fatal(source, message);
-}
 #pragma endregion
 
 #pragma region logging manager
@@ -289,12 +265,6 @@ uint32_t log_all(const LogSource& source,
     return log_all(source, level, std::string_view(text));
 }
 
-template <class T, std::enable_if_t<origin::type_traits::is_convertible_to_string_v<T>, int> = 0>
-uint32_t log_all(const LogSource& source, LogLevel level, const T& message)
-{
-    const std::string text = origin::strings::type_to_string(message);
-    return log_all(source, level, std::string_view(text));
-}
 LOGGING_API void flush_all();
 LOGGING_API void apply_all(const std::function<void(const std::shared_ptr<Logger>&)>& fun);
 LOGGING_API void shutdown();

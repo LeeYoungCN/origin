@@ -83,9 +83,19 @@ TEST_F(TestLoggerApi, set_pattern)
     init_logger(test_info_);
     _logger->set_pattern("%v");
     for (uint32_t i = 0; i < 100; i++) {
-        _logger->error(i);
+        _logger->error("{}", i);
         EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
     }
+}
+
+TEST_F(TestLoggerApi, message_uses_string_view)
+{
+    init_logger(test_info_);
+    _logger->set_pattern("%v");
+    _logger->info(std::string("string"));
+    _logger->info(std::string_view("view"));
+    EXPECT_EQ("string", _sink->buffer()[0]);
+    EXPECT_EQ("view", _sink->buffer()[1]);
 }
 
 TEST_F(TestLoggerApi, set_pattern_failed_when_empty)
@@ -107,7 +117,7 @@ TEST_F(TestLoggerApi, set_formatter)
     const std::unique_ptr<Formatter> formatter = std::make_unique<PatternFormatter>("%v");
     _logger->set_formatter(formatter);
     for (uint32_t i = 0; i < 100; i++) {
-        _logger->error(i);
+        _logger->error("{}", i);
         EXPECT_EQ(std::to_string(i), _sink->buffer()[i]);
     }
 }

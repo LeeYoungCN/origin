@@ -102,9 +102,9 @@ void LoggerImplBase::set_formatter(const std::unique_ptr<Formatter>& formatter) 
     }
 }
 
-void LoggerImplBase::force_log(const LogSource& source,
-                               const LogLevel level,
-                               const std::string_view message)
+void LoggerImplBase::log_unchecked(const LogSource& source,
+                                   const LogLevel level,
+                                   const std::string_view message)
 {
     log_it(create_log_msg(source, name(), level, message));
 }

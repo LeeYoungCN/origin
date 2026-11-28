@@ -131,7 +131,8 @@ flush_on(LogLevel::ERR);
 
 ## 5. 快捷日志函数（root logger）
 
-`logging.hpp` 为每个级别提供了一组转发到 root logger 的模板函数，四种常用形态：
+`logging.hpp` 为每个级别提供了一组转发到 root logger 的函数，消息统一用
+`std::string_view`；需要格式化时传 `std::format_string` 和参数：
 
 ```cpp
 // 1. 格式化 + 无源位置
@@ -140,12 +141,15 @@ info("user {} logged in", 42);
 // 2. 格式化 + 带源位置（文件名/行号/函数）
 info(LOG_SRC_LOCAL, "user {} logged in", 42);
 
-// 3. 已经拼好的字符串/可转字符串的对象
-info(std::string("already formatted"));
+// 3. 已经拼好的字符串
+info(std::string_view("already formatted"));
 
 // 4. 任意级别
 log(LOG_SRC_LOCAL, LogLevel::WARN, "value={}", 1);
 ```
+
+单值数字/任意可转字符串的重载已删除：`info(42)` 不再合法，请写
+`info("{}", 42)`；`std::string` / `std::string_view` 会按原始消息处理，不会当成格式串。
 
 | 函数 | 说明 |
 |---|---|
@@ -302,13 +306,15 @@ logger->set_formatter(create_formatter<PatternFormatter>("[%L] %v"));
 | `log_all(source, level, ...)` | 向所有已注册 logger 各写一条日志，返回通过各 logger 级别过滤的数量（sink 级别仍可能再丢弃） |
 | `shutdown()` | 清空注册表（含 root logger）并释放全局线程池 |
 
-`log_all` 的三种调用形态与各自的落点：
+`log_all` 的两种调用形态：
 
 ```cpp
 log_all(LOG_SRC_LOCAL, LogLevel::INFO, "config reloaded, version={}", 2);  // 格式化：消息只格式化一次
-log_all(LOG_SRC_LOCAL, LogLevel::INFO, std::string("already formatted"));  // 已拼好的字符串
-log_all(LOG_SRC_LOCAL, LogLevel::INFO, "{plain}");                         // 字面量：按消息处理，不当格式串
+log_all(LOG_SRC_LOCAL, LogLevel::INFO, std::string_view("already formatted"));  // 原始字符串
 ```
+
+`std::string_view` 和字符串字面量都按原始消息处理，不会当成格式串；需要格式化时
+显式传 `"{}"` 和参数。单值数字重载已删除。
 
 注意两点：
 

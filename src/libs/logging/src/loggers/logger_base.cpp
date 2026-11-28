@@ -94,12 +94,12 @@ void LoggerBase::flush()
     _pImpl->flush();
 }
 
-void LoggerBase::force_log(const LogSource& source,
-                           const LogLevel level,
-                           const std::string_view message)
+void LoggerBase::log_unchecked(const LogSource& source,
+                               const LogLevel level,
+                               const std::string_view message)
 {
     throw_if_pimpl_null();
-    _pImpl->force_log(source, level, message);
+    _pImpl->log_unchecked(source, level, message);
 }
 
 void LoggerBase::throw_if_pimpl_null() const

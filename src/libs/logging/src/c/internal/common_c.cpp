@@ -89,6 +89,10 @@ void origin_log_it(const std::shared_ptr<Logger>& logger,
                    const char* format,
                    va_list args)
 {
+    if (!logger->should_log(level)) {
+        return;
+    }
+
     logger->log(
         LogSource(file, line, func), level, origin::strings::va_list_to_string(format, args));
 }

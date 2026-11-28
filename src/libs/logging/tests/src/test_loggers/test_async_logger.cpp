@@ -199,7 +199,7 @@ TEST_F(TestAsyncLogger, log_flush)
     _sink->set_level(LogLevel::TRACE);
     constexpr uint32_t logCount = 100;
     for (uint32_t i = 0; i < logCount; ++i) {
-        _logger->error(LOG_SRC_LOCAL, i);
+        _logger->error(LOG_SRC_LOCAL, "{}", i);
         sleep_ms(1);
     }
 
@@ -251,33 +251,33 @@ TEST_F(TestAsyncLogger, log_function)
         // trace
         _logger->trace(LOG_SRC_LOCAL, "{}", i);
         _logger->trace("{}", i);
-        _logger->trace(LOG_SRC_LOCAL, i);
-        _logger->trace(i);
+        _logger->trace(LOG_SRC_LOCAL, "{}", i);
+        _logger->trace("{}", i);
         // debug
         _logger->debug(LOG_SRC_LOCAL, "{}", i);
         _logger->debug("{}", i);
-        _logger->debug(LOG_SRC_LOCAL, i);
-        _logger->debug(i);
+        _logger->debug(LOG_SRC_LOCAL, "{}", i);
+        _logger->debug("{}", i);
         // info
         _logger->info(LOG_SRC_LOCAL, "{}", i);
         _logger->info("{}", i);
-        _logger->info(LOG_SRC_LOCAL, i);
-        _logger->info(i);
+        _logger->info(LOG_SRC_LOCAL, "{}", i);
+        _logger->info("{}", i);
         // warn
         _logger->warn(LOG_SRC_LOCAL, "{}", i);
         _logger->warn("{}", i);
-        _logger->warn(LOG_SRC_LOCAL, i);
-        _logger->warn(i);
+        _logger->warn(LOG_SRC_LOCAL, "{}", i);
+        _logger->warn("{}", i);
         // error
         _logger->warn(LOG_SRC_LOCAL, "{}", i);
         _logger->warn("{}", i);
-        _logger->warn(LOG_SRC_LOCAL, i);
-        _logger->warn(i);
+        _logger->warn(LOG_SRC_LOCAL, "{}", i);
+        _logger->warn("{}", i);
         // fatal
         _logger->fatal(LOG_SRC_LOCAL, "{}", i);
         _logger->fatal("{}", i);
-        _logger->fatal(LOG_SRC_LOCAL, i);
-        _logger->fatal(i);
+        _logger->fatal(LOG_SRC_LOCAL, "{}", i);
+        _logger->fatal("{}", i);
         sleep_ms(1);
     }
     _logger->flush();

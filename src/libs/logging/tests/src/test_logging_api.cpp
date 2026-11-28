@@ -274,7 +274,7 @@ TEST_F(TestLoggingApi, log_all_accepts_plain_string_without_recursion)
     EXPECT_EQ(sink->buffer()[0], text);
 }
 
-TEST_F(TestLoggingApi, log_all_accepts_numeric_and_string_view_message)
+TEST_F(TestLoggingApi, log_all_accepts_formatted_and_string_view_message)
 {
     remove_all();
     auto sink = std::make_shared<LogContentBufferSink>();
@@ -286,7 +286,7 @@ TEST_F(TestLoggingApi, log_all_accepts_numeric_and_string_view_message)
     logger->set_level(LogLevel::TRACE);
     ASSERT_TRUE(register_logger(logger));
 
-    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, 42), 1u);
+    EXPECT_EQ(log_all(LOG_SRC_LOCAL, LogLevel::INFO, "{}", 42), 1u);
     ASSERT_EQ(sink->buffer().size(), 1u);
     EXPECT_EQ(sink->buffer()[0], "42");
 

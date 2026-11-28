@@ -393,10 +393,9 @@ function init_cmake_env() {
         print_log "[${cmake_preset}] build dir is not configured: ${cmake_binary_dir}" error
         exit 1
     fi
-    cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
+    # cp "${cmake_binary_dir}/compile_commands.json" "${BUILD_CACHE_ROOT_DIR}/compile_commands.json"
     cmake_configure_param_cfg="${cmake_binary_dir}/origin_build.conf"
-    cmake_enable_asan="${arg_enable_asan}"
-    cmake_build_test="${arg_build_test}"
+
     if [ -e "${cmake_configure_param_cfg}" ]; then
         # shellcheck disable=SC1090
         source "${cmake_configure_param_cfg}"
@@ -508,10 +507,20 @@ function run_gtest() {
         "${cmake_test_runtime}" --gtest_list_tests
         ;;
     all)
-        "${cmake_test_runtime}" --gtest_shuffle
+        if "${cmake_test_runtime}" --gtest_shuffle; then
+            print_log "[${cmake_preset}] [${gtest_target}] run all test case success." info
+        else
+            print_log "[${cmake_preset}] [${gtest_target}] run all test case failed." error
+            exit 1
+        fi
         ;;
     *)
-        "${cmake_test_runtime}" --gtest_filter="${arg_gtest_case}"
+        if "${cmake_test_runtime}" --gtest_filter="${arg_gtest_case}"; then
+            print_log "[${cmake_preset}] [${gtest_target}] run test case [${arg_gtest_case}] success." info
+        else
+            print_log "[${cmake_preset}] [${gtest_target}] run test case [${arg_gtest_case}] failed." error
+            exit 1
+        fi
         ;;
     esac
 }
@@ -526,27 +535,36 @@ function run_ctest() {
         ctest_output_args+=("--output-junit" "${output_dir}/Test_ALL.xml")
     fi
 
-    if [ -z "${arg_ctest_case}" ]; then
-        mkdir -p "${output_dir}"
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
-        return 0
-    fi
-
     case "${arg_ctest_case}" in
     list)
         ctest --test-dir "${cmake_binary_dir}" -N
         ;;
     rerun)
-        mkdir -p "${output_dir}"
-        ctest --rerun-failed --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
+        create_dir "${output_dir}"
+        if ctest --rerun-failed --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"; then
+            print_log "[${cmake_preset}] ctest --rerun-failed success." info
+        else
+            print_log "[${cmake_preset}] ctest --rerun-failed failed." error
+            exit 1
+        fi
         ;;
     all)
-        mkdir -p "${output_dir}"
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"
+        create_dir "${output_dir}"
+        if ctest --output-on-failure --test-dir "${cmake_binary_dir}" "${ctest_output_args[@]}"; then
+            print_log "[${cmake_preset}] ctest all success." info
+        else
+            print_log "[${cmake_preset}] ctest all failed." error
+            exit 1
+        fi
         ;;
     *)
-        mkdir -p "${output_dir}"
-        ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "${arg_ctest_case}" "${ctest_output_args[@]}"
+        create_dir "${output_dir}"
+        if ctest --output-on-failure --test-dir "${cmake_binary_dir}" -R "${arg_ctest_case}" "${ctest_output_args[@]}"; then
+            print_log "[${cmake_preset}] ctest run test case [${arg_ctest_case}] success." info
+        else
+            print_log "[${cmake_preset}] ctest run test case [${arg_ctest_case}] failed." info
+            exit 1
+        fi
         ;;
     esac
 }
@@ -626,7 +644,8 @@ function main() {
             ;;
         --ctest)
             arg_enable_ctest=0
-            if [ -n "${2}" ]; then                arg_ctest_case="${2}"
+            if [ -n "${2}" ]; then
+                arg_ctest_case="${2}"
             fi
             shift 2
             ;;

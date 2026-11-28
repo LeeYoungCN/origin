@@ -21,25 +21,39 @@ jobs:
       matrix:
         include:
           # Windows 配置
+          # ---- Windows: clang-cl ----
           - os: windows-latest
             preset: win_clang_cl_release
             compiler: clang
-          # MSVC 对"临时对象绑非 const 引用"等写法宽容，clang 会直接报错；
-          # 额外跑一个 clang-cl debug 行，提前暴露这类只在 clang 下出现的编译问题
           - os: windows-latest
             preset: win_clang_cl_debug
             compiler: clang
           - os: windows-latest
+          # ---- Windows: MinGW ----
             preset: win_mingw_release
             compiler: mingw
-          # Ubuntu 配置
-          - os: ubuntu-latest
-            preset: linux_clang_release
-            compiler: clang
+          # ---- Windows: MSVC（cl.exe + Ninja，需 vcvars；MSVC ABI 必须 debug/release 双份）----
+          - os: windows-latest
+            preset: msvc_x64_debug
+            compiler: msvc
+          - os: windows-latest
+            preset: msvc_x64_release
+            compiler: msvc
+          - os: windows-latest
+            preset: msvc_x86_debug
+            compiler: msvc
+          - os: windows-latest
+            preset: msvc_x86_release
+            compiler: msvc
+          # ---- Linux: gcc ----
           - os: ubuntu-latest
             preset: linux_gnu_release
             compiler: gcc
-          # macOS 配置
+          # ---- Linux: clang ----
+          - os: ubuntu-latest
+            preset: linux_clang_release
+            compiler: clang
+          # ---- macOS: clang ----
           - os: macos-15
             preset: darwin_clang_release
             compiler: clang
